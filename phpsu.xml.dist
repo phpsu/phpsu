@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpsu xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="http://schema.phpsu.de/5.1/phpsu.xsd">
+  <config>
+    <filesystem type="directory">
+      <option name="directory" value="fileadmin"/>
+      <option name="pattern" value="uploads/tx_dff*"/>
+      <option name="exclude" value="*.mp4"/>
+      <!--<option name="include" value="*.png"/>-->
+    </filesystem>
+    <filesystem type="directory">
+      <option name="directory" value="assets"/>
+    </filesystem>
+    <database name="default">
+      <option name="excludePattern" value="cf_.*"/>
+      <option name="exclude" value="table1"/>
+      <option name="exclude" value="table2"/>
+    </database>
+    <database name="products">
+      <option name="exclude" value="cf_*"/>
+      <option name="exclude" value="cf.*"/>
+      <!--<option name="excludePattern" value="cf_.*"/>-->
+      <option name="include" value="cf_dff_*"/>
+      <!--<option name="includePattern" value="cf_dff_.*"/>-->
+    </database>
+  </config>
+  <hosts>
+    <host name="Production">
+      <console type="ssh">
+        <option name="host" value="faulhaber.com"/>
+        <option name="user" value="faulhaber"/>
+        <option name="port" value="22"/>
+        <option name="rootDir" value="/srv/www/faulhaber/www.faulhaber.com"/>
+      </console>
+      <database type="mysql" name="default">
+        <option name="database" value="mydbname"/>
+        <option name="user" value="user.name"/>
+        <!--<option name="host" value=""/>-->
+        <!--<option name="port" value=""/>-->
+        <!--<option name="socket" value=""/>-->
+        <option name="password" value="topsecret"/>
+        <!--<option name="excludePattern" value="cf_.*"/>-->
+        <!--<option name="exclude" value="table1"/>-->
+        <!--<option name="exclude" value="table2"/>-->
+      </database>
+      <database type="typo3" name="products">
+        <option name="TYPO3_CONTEXT" value="Production"/>
+        <!--<option name="exclude" value="table1"/>-->
+        <option name="exclude" value="*"/>
+        <option name="include" value="tx_dff_*"/>
+      </database>
+    </host>
+  </hosts>
+</phpsu>

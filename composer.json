@@ -1,0 +1,63 @@
+{
+  "name": "phpsu/phpsu",
+  "license": "LGPL-2.0-or-later",
+  "description": "php sync utility",
+  "type": "project",
+  "config": {
+    "platform": {
+      "php": "7.0.30"
+    },
+    "optimize-autoloader": true
+  },
+  "authors": [
+    {
+      "name": "Matthias Vogel",
+      "email": "git@kanti.de"
+    },
+    {
+      "name": "Christian Benthake",
+      "email": "git@cben.co"
+    }
+  ],
+  "bin": [
+    "phpsu"
+  ],
+  "scripts": {
+    "test": "vendor/bin/phpunit -c tests/phpunit.xml",
+    "codecept" : "vendor/bin/codecept run",
+    "phpsu": "php index.php phpsu:sync"
+  },
+  "autoload": {
+    "psr-4": {
+      "PHPSu\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "PHPSu\\Tests\\": "tests"
+    }
+  },
+  "minimum-stability": "stable",
+  "require": {
+    "symfony/console": "^3.4",
+    "league/container": "^3.2",
+    "php": "7.0.* || 7.1.* || 7.2.*",
+    "ext-spltype": "*",
+    "ext-simplexml": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6.5",
+    "codeception/codeception": "^2.4",
+    "spatie/phpunit-snapshot-assertions": "^1.3",
+    "pluswerk/grumphp-config": "^2.7",
+    "roave/security-advisories": "dev-master"
+  },
+  "extra": {
+    "pluswerk/grumphp-config": {
+      "auto-setting": true
+    },
+    "grumphp": {
+      "config-default-path": "vendor/pluswerk/grumphp-config/grumphp.yml"
+    }
+  }
+}
