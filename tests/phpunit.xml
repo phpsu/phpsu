@@ -4,10 +4,24 @@
     convertErrorsToExceptions="true"
     convertNoticesToExceptions="true"
     convertWarningsToExceptions="true"
-    strict="true">
+    strict="true"
+    colors="true">
   <testsuites>
     <testsuite name="Configuration">
       <directory>../tests/Configuration</directory>
     </testsuite>
   </testsuites>
+  <filter>
+    <whitelist>
+      <directory suffix=".php">../src/</directory>
+    </whitelist>
+  </filter>
+  <logging>
+    <log type="coverage-html" target="_output/report" lowUpperBound="49" highLowerBound="89"/>
+    <log type="coverage-clover" target="_output/coverage.xml"/>
+    <log type="coverage-text" target="_output/report.txt" showUncoveredFiles="false"/>
+    <log type="junit" target="_output/logfile.xml"/>
+    <log type="testdox-html" target="_output/testdox.html"/>
+    <log type="testdox-text" target="_output/testdox.txt"/>
+  </logging>
 </phpunit>

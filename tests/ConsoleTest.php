@@ -9,11 +9,11 @@ class ConsoleTest extends \Codeception\Test\Unit
     protected $commandTester;
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function _before()
     {
-        $kernel = new \PHPSu\CommandController();
+        $kernel = new \PHPSu\Kernel();
         $application = $kernel->init()->phpsu->get(\Symfony\Component\Console\Application::class);
         $application->add(new \PHPSu\Console\SyncCommand);
         $command = $application->find('phpsu:sync');

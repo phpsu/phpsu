@@ -5,8 +5,21 @@ namespace PHPSu\Configuration\Enum;
 
 use PHPSu\Configuration\Loader\XmlConfigurationLoader;
 
-final class ConfigurationLoaderEnum extends \SplEnum
+final class ConfigurationLoaderEnum
 {
+
+    protected $value;
+
+    public function __construct($value = null)
+    {
+        $this->value = $value ?? self::__DEFAULT;
+    }
+
+    public function __toString(): string
+    {
+        return $this->value;
+    }
+
     const __DEFAULT = self::XML;
 
     const XML = XmlConfigurationLoader::class;

@@ -21,7 +21,6 @@ class SyncCommand extends Command
             ->setHelp('Deploys locally or on the server')
             ->addOption('dry-run')
             ->addArgument('direction', InputArgument::REQUIRED,'this is the sync direction. eg prod->local');
-//            ->addArgument('optionalSecondDirection');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

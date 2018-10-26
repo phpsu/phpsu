@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu\Configuration\RawConfiguration;
+namespace PHPSu\Configuration\ProcessedConfiguration;
 
-use PHPSu\Configuration\RawConfiguration\RawDatabaseDto as Item;
+use PHPSu\Configuration\ProcessedConfiguration\ProcessedDatabaseDto as Item;
 use PHPSu\Core\AbstractBag;
 
-class RawDatabaseBag extends AbstractBag
+class ProcessedDatabaseBag extends AbstractBag
 {
     public function __construct(Item ...$databases)
     {

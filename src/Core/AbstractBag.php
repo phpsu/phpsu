@@ -6,17 +6,14 @@ namespace PHPSu\Core;
 abstract class AbstractBag implements \Iterator, \ArrayAccess
 {
     protected $bagContent = [];
+    private $itemClass = '';
 
     public function __construct(array $array, string $itemClass)
     {
-        $result = [];
+        $this->itemClass = $itemClass;
         foreach ($array as $item) {
-            if (!($item instanceof $itemClass) && isset($result[$item->getName()])) {
-                throw new \InvalidArgumentException('one ' . static::class . ' can only hold ' . $itemClass . ' with unique names');
-            }
-            $result[$item->getName()] = $item;
+            $this[] = $item;
         }
-        $this->bagContent = $array;
     }
 
     abstract public function current();
@@ -33,7 +30,11 @@ abstract class AbstractBag implements \Iterator, \ArrayAccess
 
     public function valid()
     {
-        return isset($this->bagContent[$this->key()]);
+        $key = $this->key();
+        if ($key === null) {
+            return false;
+        }
+        return isset($this->bagContent[$key]);
     }
 
     public function rewind()
@@ -48,10 +49,23 @@ abstract class AbstractBag implements \Iterator, \ArrayAccess
 
     abstract public function offsetGet($offset);
 
-//    abstract public function offsetSet($offset, $value);
+    public function offsetSet($offset, $item)
+    {
+        if (!($item instanceof $this->itemClass) || isset($result[$item->getName()])) {
+            throw new \InvalidArgumentException('one ' . static::class . ' can only hold ' . $this->itemClass . ' with unique names');
+        }
+        $this->bagContent[$item->getName()] = $item;
+    }
 
     public function offsetUnset($offset)
     {
         unset($this->bagContent[$offset]);
+    }
+
+    public static function __set_state(array $data)
+    {
+        return new static(
+            ...array_values($data['bagContent'] ?? [])
+        );
     }
 }

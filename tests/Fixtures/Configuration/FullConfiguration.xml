@@ -33,6 +33,9 @@
       <filesystem type="directory" name="fileadmin">
         <option name="directory" value="public/fileadmin/"/>
       </filesystem>
+      <database type="mysql">
+        <option name="host" value="db"/>
+      </database>
     </host>
   </hosts>
 </phpsu>
