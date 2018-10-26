@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu\Configuration\RawConfiguration;
+namespace PHPSu\Configuration\ProcessedConfiguration;
 
-class RawOptionBag implements \Iterator, \ArrayAccess
+class ProcessedOptionBag implements \Iterator, \ArrayAccess
 {
     protected $optionValues = [];
 
@@ -31,11 +31,7 @@ class RawOptionBag implements \Iterator, \ArrayAccess
 
     public function valid()
     {
-        $key = $this->key();
-        if ($key === null) {
-            return false;
-        }
-        return isset($this->optionValues[$key]);
+        return $this->current() !== false;
     }
 
     public function rewind()
@@ -58,7 +54,7 @@ class RawOptionBag implements \Iterator, \ArrayAccess
         if (!is_string($value)) {
             throw new \InvalidArgumentException('a ' . static::class . ' can only hold strings');
         }
-        $this->optionValues[$offset] = $value;
+        return isset($this->optionValues[$offset]);
     }
 
     public function offsetUnset($offset)

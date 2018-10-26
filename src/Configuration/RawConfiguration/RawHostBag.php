@@ -22,12 +22,4 @@ class RawHostBag extends AbstractBag
     {
         return $this->bagContent[$offset];
     }
-
-    public function offsetSet($offset, $value)
-    {
-        if (!$value instanceof Item) {
-            throw new \InvalidArgumentException('a ' . static::class . ' can only hold items of type ' . Item::class . ' ');
-        }
-        return $this->bagContent[$offset];
-    }
 }

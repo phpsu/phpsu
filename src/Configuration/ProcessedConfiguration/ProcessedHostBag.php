@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu\Configuration\RawConfiguration;
+namespace PHPSu\Configuration\ProcessedConfiguration;
 
-use PHPSu\Configuration\RawConfiguration\RawDatabaseDto as Item;
+use PHPSu\Configuration\ProcessedConfiguration\ProcessedHostDto as Item;
 use PHPSu\Core\AbstractBag;
 
-class RawDatabaseBag extends AbstractBag
+class ProcessedHostBag extends AbstractBag
 {
-    public function __construct(Item ...$databases)
+    public function __construct(Item ...$hosts)
     {
-        parent::__construct($databases, Item::class);
+        parent::__construct($hosts, Item::class);
     }
 
     public function current(): Item

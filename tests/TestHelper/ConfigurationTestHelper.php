@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\TestHelper;
 
-use PHPSu\Configuration\Dto\ConfigurationDto;
-use PHPSu\Configuration\Dto\ConsoleDto;
-use PHPSu\Configuration\Dto\DatabaseBag;
-use PHPSu\Configuration\Dto\DatabaseDto;
-use PHPSu\Configuration\Dto\FilesystemBag;
-use PHPSu\Configuration\Dto\FilesystemDto;
-use PHPSu\Configuration\Dto\HostBag;
-use PHPSu\Configuration\Dto\HostDto;
-use PHPSu\Configuration\Dto\OptionBag;
+use PHPSu\Configuration\ProcessedConfiguration\ProcessedConfigurationDto;
+use PHPSu\Configuration\ProcessedConfiguration\ProcessedConsoleDto;
+use PHPSu\Configuration\ProcessedConfiguration\ProcessedDatabaseBag;
+use PHPSu\Configuration\ProcessedConfiguration\ProcessedDatabaseDto;
+use PHPSu\Configuration\ProcessedConfiguration\ProcessedFilesystemBag;
+use PHPSu\Configuration\ProcessedConfiguration\ProcessedFilesystemDto;
+use PHPSu\Configuration\ProcessedConfiguration\ProcessedHostBag;
+use PHPSu\Configuration\ProcessedConfiguration\ProcessedHostDto;
+use PHPSu\Configuration\ProcessedConfiguration\ProcessedOptionBag;
 use PHPSu\Configuration\RawConfiguration\RawConfigurationDto;
 use PHPSu\Configuration\RawConfiguration\RawConsoleDto;
 use PHPSu\Configuration\RawConfiguration\RawDatabaseBag;
@@ -28,51 +28,51 @@ final class ConfigurationTestHelper
     {
     }
 
-    public static function assertIfConfigurationDtoIsValid(ConfigurationDto $configuration)
+    public static function assertIfProcessedConfigurationDtoIsValid(ProcessedConfigurationDto $configuration)
     {
         $hosts = $configuration->getHosts();
-        \PHPUnit\Framework\Assert::assertInstanceOf(HostBag::class, $hosts);
+        \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedHostBag::class, $hosts);
         foreach ($hosts as $host) {
-            \PHPUnit\Framework\Assert::assertInstanceOf(HostDto::class, $host);
+            \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedHostDto::class, $host);
 
             $console = $host->getConsole();
-            \PHPUnit\Framework\Assert::assertInstanceOf(ConsoleDto::class, $console);
+            \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedConsoleDto::class, $console);
 
             $options = $console->getOptions();
-            \PHPUnit\Framework\Assert::assertInstanceOf(OptionBag::class, $options);
+            \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedOptionBag::class, $options);
 
             $filesystems = $host->getFilesystems();
-            \PHPUnit\Framework\Assert::assertInstanceOf(FilesystemBag::class, $filesystems);
+            \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedFilesystemBag::class, $filesystems);
             foreach ($filesystems as $filesystem) {
-                \PHPUnit\Framework\Assert::assertInstanceOf(FilesystemDto::class, $filesystem);
+                \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedFilesystemDto::class, $filesystem);
 
                 $options = $filesystem->getOptions();
-                \PHPUnit\Framework\Assert::assertInstanceOf(OptionBag::class, $options);
+                \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedOptionBag::class, $options);
             }
 
             $databases = $host->getDatabases();
-            \PHPUnit\Framework\Assert::assertInstanceOf(DatabaseBag::class, $databases);
+            \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedDatabaseBag::class, $databases);
             foreach ($databases as $database) {
-                \PHPUnit\Framework\Assert::assertInstanceOf(DatabaseDto::class, $database);
+                \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedDatabaseDto::class, $database);
 
                 $options = $database->getOptions();
-                \PHPUnit\Framework\Assert::assertInstanceOf(OptionBag::class, $options);
+                \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedOptionBag::class, $options);
             }
         }
 
         $filesystems = $configuration->getFilesystems();
-        \PHPUnit\Framework\Assert::assertInstanceOf(FilesystemBag::class, $filesystems);
+        \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedFilesystemBag::class, $filesystems);
         foreach ($filesystems as $filesystem) {
-            \PHPUnit\Framework\Assert::assertInstanceOf(FilesystemDto::class, $filesystem);
+            \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedFilesystemDto::class, $filesystem);
         }
 
         $databases = $configuration->getDatabases();
-        \PHPUnit\Framework\Assert::assertInstanceOf(DatabaseBag::class, $databases);
+        \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedDatabaseBag::class, $databases);
         foreach ($databases as $database) {
-            \PHPUnit\Framework\Assert::assertInstanceOf(DatabaseDto::class, $database);
+            \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedDatabaseDto::class, $database);
 
             $options = $database->getOptions();
-            \PHPUnit\Framework\Assert::assertInstanceOf(OptionBag::class, $options);
+            \PHPUnit\Framework\Assert::assertInstanceOf(ProcessedOptionBag::class, $options);
         }
     }
 

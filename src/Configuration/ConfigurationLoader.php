@@ -3,13 +3,28 @@ declare(strict_types=1);
 
 namespace PHPSu\Configuration;
 
+use League\Container\Container;
 use PHPSu\Configuration\Loader\AbstractConfigurationLoader;
 use PHPSu\Configuration\RawConfiguration\RawConfigurationDto;
-use PHPSu\Core\ApplicationContextAwareTrait;
+use PHPSu\Core\ApplicationContext;
 
 class ConfigurationLoader
 {
-    use ApplicationContextAwareTrait;
+    /**
+     * @var Container
+     */
+    private $container;
+
+    /**
+     * @var ApplicationContext
+     */
+    private $context;
+
+    public function __construct(Container $container, ApplicationContext $context)
+    {
+        $this->container = $container;
+        $this->context = $context;
+    }
 
     public function getRawConfig(): RawConfigurationDto
     {
@@ -20,8 +35,10 @@ class ConfigurationLoader
         if (!is_subclass_of($loaderClass, AbstractConfigurationLoader::class)) {
             throw new \RuntimeException('loaderClass ' . $loaderClass . ' dose not implement ' . AbstractConfigurationLoader::class);
         }
-        /** @var AbstractConfigurationLoader $loader */
-        $loader = new $loaderClass();
+        if (!$this->container->has($loaderClass)) {
+            throw new \RuntimeException('Container could not locate Class ' . $loaderClass);
+        }
+        $loader = $this->container->get($loaderClass, false);
         return $loader->getRawConfiguration();
     }
 }

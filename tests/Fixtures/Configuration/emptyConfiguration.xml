@@ -1,38 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpsu xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="http://schema.phpsu.de/5.1/phpsu.xsd">
-  <config>
-    <filesystem type="directory" name="fileadmin">
-      <option name="directory" value="fileadmin/"/>
-    </filesystem>
-  </config>
-  <hosts>
-    <host name="Production">
-      <console type="ssh">
-        <option name="host" value="faulhaber.com"/>
-        <option name="user" value="faulhaber"/>
-        <option name="port" value="22"/>
-        <option name="rootDir" value="/srv/www/faulhaber/www.faulhaber.com"/>
-      </console>
-    </host>
-    <host name="Testing">
-      <console type="ssh">
-        <option name="host" value="faulhaber.com"/>
-        <option name="user" value="faulhaber"/>
-        <option name="port" value="22"/>
-        <option name="rootDir" value="/srv/www/faulhaber/test.faulhaber.wwwserver.net"/>
-      </console>
-    </host>
-
-    <host name="vogel">
-      <console type="ssh">
-        <option name="host" value="10.50.1.223"/>
-        <option name="user" value="user"/>
-        <option name="rootDir" value="/var/www/project_faulhaber"/>
-      </console>
-      <filesystem type="directory" name="fileadmin">
-        <option name="directory" value="public/fileadmin/"/>
-      </filesystem>
-    </host>
-  </hosts>
 </phpsu>

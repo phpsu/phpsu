@@ -27,10 +27,10 @@
   <hosts>
     <host name="Production">
       <console type="ssh">
-        <option name="host" value="faulhaber.com"/>
-        <option name="user" value="faulhaber"/>
+        <option name="host" value="example.com"/>
+        <option name="user" value="example"/>
         <option name="port" value="22"/>
-        <option name="rootDir" value="/srv/www/faulhaber/www.faulhaber.com"/>
+        <option name="rootDir" value="/srv/www/example/www.example.com"/>
       </console>
       <database type="mysql" name="default">
         <option name="database" value="mydbname"/>

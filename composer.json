@@ -23,7 +23,8 @@
     "phpsu"
   ],
   "scripts": {
-    "test": "vendor/bin/phpunit -c tests/phpunit.xml",
+    "test": "vendor/bin/phpunit -c tests/phpunit.xml --colors=always",
+    "test:update": "vendor/bin/phpunit -c tests/phpunit.xml --colors=always -d --update-snapshots",
     "codecept" : "vendor/bin/codecept run",
     "phpsu": "php index.php phpsu:sync"
   },
@@ -42,7 +43,6 @@
     "symfony/console": "^3.4",
     "league/container": "^3.2",
     "php": "7.0.* || 7.1.* || 7.2.*",
-    "ext-spltype": "*",
     "ext-simplexml": "*"
   },
   "require-dev": {
