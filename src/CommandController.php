@@ -14,35 +14,44 @@ final class CommandController
      * @var Container
      */
     private $container;
+
     /**
      * @var Application
      */
     private $application;
 
-    /**
-     * Kernel constructor.
-     * @throws \Exception
-     */
     private function __construct()
     {
         $this->container = new Container();
         $this->container->delegate(new ReflectionContainer());
-        $this->container->
         $this->application = $this->container->get(Application::class);
     }
 
-    /**
-     * @throws \Exception
-     */
-    private function registerCommands()
+    private function registerCommands(): void
     {
         $this->application->add(new SyncCommand());
     }
 
-    public static function command()
+    public function addDependency(string $className): self
+    {
+        $this->container->add($className);
+        return $this;
+    }
+
+    /**
+     * @param string $className
+     * @return array|mixed|object
+     */
+    public function getDependency(string $className)
+    {
+        return $this->container->get($className);
+    }
+
+    public static function command(): self
     {
         $commandController = new self();
         $commandController->registerCommands();
         $commandController->application->run();
+        return $commandController;
     }
 }
