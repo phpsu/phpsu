@@ -20,7 +20,7 @@ final class CommandController
      */
     private $application;
 
-    private function __construct()
+    public function __construct()
     {
         $this->container = new Container();
         $this->container->delegate(new ReflectionContainer());

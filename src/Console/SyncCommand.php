@@ -34,7 +34,7 @@ final class SyncCommand extends AbstractCommand
             ->setDescription('Sync Utility written in PHP')
             ->setHelp('Deploys locally or on the server')
             ->addOption('dry-run')
-            ->addArgument('direction', InputArgument::IS_ARRAY, 'this is the sync direction. eg prod->local');
+            ->addArgument('direction', InputArgument::IS_ARRAY, 'this is the sync direction. eg prod->local', ['production', 'to', 'local']);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -62,17 +62,7 @@ final class SyncCommand extends AbstractCommand
                 ];
                 break;
             case 2:
-                foreach ($direction as $argument) {
-                    $parsedDirectionArray = $this->parseDirectionSymbol($argument);
-                    if (!empty($parsedDirectionArray)) {
-                        throw new \InvalidArgumentException('Target and Destination not detectable');
-                    }
-                }
-                return [
-                    'systems' => $direction,
-                    'direction' => self::DIRECTION_RIGHT
-                ];
-                break;
+                throw new \InvalidArgumentException('amount of arguments are not satisfying the command, cannot determine target, destination and direction');
             case 3:
                 if (!empty($this->parseDirectionSymbol($direction[0])) && !empty($this->parseDirectionSymbol($direction[2]))) {
                     throw new \InvalidArgumentException('Target and Destination not detectable');

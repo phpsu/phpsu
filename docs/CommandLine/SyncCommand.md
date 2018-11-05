@@ -29,9 +29,10 @@ we'd want to synchronise the data between those two systems. The direction comma
 ```bash
 phpsu sync production to local
 ``` 
-Good to know is, that the literal ``to`` in that command is not required. The command also works by just typing the two systems.
-The literal ``to`` or just the two systems though pre-define the direction of synchronising. It's always from system1 to system 2.
-If you do not want to be bound by this but specify the direction on your own, you can use a number of literals such as:
+The literal such as ``to`` in that command is required. ***Important***: The command does not work by just typing the two systems.
+Only the literal ``to`` pre-defines the direction of synchronising and has no counterpart. It's always from system1 to system 2.
+If you do not want to be bound by this specification but rather control the direction on your own,
+you can use a number of literals such as:
 
 Production to Local by: ``→`` ``:=`` ``->`` ``:-`` <br>
 Local to Production by: ``←`` ``=:`` ``<-`` ``-:``
