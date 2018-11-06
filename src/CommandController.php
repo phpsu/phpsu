@@ -27,7 +27,6 @@ final class CommandController
     {
         $this->container = new Container();
         $this->container->delegate(new ReflectionContainer());
-        $this->container->
         $this->application = $this->container->get(Application::class);
     }
 

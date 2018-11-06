@@ -3,7 +3,7 @@
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <phpsu xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:noNamespaceSchemaLocation="http://schema.phpsu.de/5.1/phpsu.xsd">
+       xsi:noNamespaceSchemaLocation="http://schema.phpsu.de/1.0/phpsu.xsd">
        ...
 </phpsu>
 ```

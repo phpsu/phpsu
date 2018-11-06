@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace PHPSu\Configuration\RawConfiguration\AbstractClasses;
 
-abstract class RawNameableDto
+use PHPSu\Core\Interfaces\NameableInterface;
+
+abstract class RawNameableDto implements NameableInterface
 {
     /**
      * @var string
