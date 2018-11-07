@@ -26,7 +26,8 @@
     "test": "vendor/bin/phpunit -c tests/phpunit.xml --colors=always",
     "test:update": "vendor/bin/phpunit -c tests/phpunit.xml --colors=always -d --update-snapshots",
     "codecept" : "vendor/bin/codecept run",
-    "phpsu": "php index.php phpsu:sync"
+    "su:sync": "./phpsu sync",
+    "su:sync:dry": "./phpsu sync --dry-run"
   },
   "autoload": {
     "psr-4": {
@@ -42,7 +43,7 @@
   "require": {
     "symfony/console": "^3.4",
     "league/container": "^3.2",
-    "php": "7.0.* || 7.1.* || 7.2.*",
+    "php": "7.0.* || 7.1.* || 7.2.* || 7.3.*",
     "ext-simplexml": "*"
   },
   "require-dev": {
