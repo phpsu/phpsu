@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class SyncCommand extends AbstractCommand
 {
 
-    private const DIRECTION_LEFT = 0;
+    const DIRECTION_LEFT = 0;
     private const DIRECTION_RIGHT = 1;
 
     private $allowedCharacters = [
