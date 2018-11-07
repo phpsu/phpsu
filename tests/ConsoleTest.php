@@ -1,6 +1,8 @@
 <?php
 namespace PHPSu\Tests;
 
+use PHPSu\CommandController;
+
 class ConsoleTest extends \Codeception\Test\Unit
 {
     /**
@@ -13,22 +15,69 @@ class ConsoleTest extends \Codeception\Test\Unit
      */
     public function _before()
     {
-        $kernel = new \PHPSu\Kernel();
-        $application = $kernel->init()->phpsu->get(\Symfony\Component\Console\Application::class);
+        $kernel = new CommandController();
+        $application = $kernel->getDependency(\Symfony\Component\Console\Application::class);
         $application->add(new \PHPSu\Console\SyncCommand);
-        $command = $application->find('phpsu:sync');
+        $command = $application->find('sync');
         $this->commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
     }
 
-    public function testSyncCommandExecution()
+    public function testSuccessfulSyncCommandExecution(): void
     {
-        $this->commandTester->execute(['direction' => 'blablabla']);
-        $this->assertEquals(0, $this->commandTester->getStatusCode());
+        foreach ($this->getCommandExample() as $result) {
+            $this->commandTester->execute(['direction' => $result['direction']]);
+            $this->assertEquals($this->getSyncCommandResultMessage(...$result['result']), trim($this->commandTester->getDisplay(true)));
+        }
     }
 
-    public function testSyncCommandDirectionDeterminable()
+    private function getCommandExample(): ?\Generator
     {
-        $this->commandTester->execute(['direction' => 'blablabla']);
-        $this->assertEquals(0, $this->commandTester->getStatusCode());
+        yield from [
+            [
+                'direction' => ['blabl<-abla'],
+                'result' => ['abla', 'blabl']
+            ],
+            [
+                'direction' => ['blabl=:abla'],
+                'result' => ['abla', 'blabl']
+            ],
+            [
+                'direction' => ['blabl-:abla'],
+                'result' => ['abla', 'blabl']
+            ],
+            [
+                'direction' => ['blabl←abla'],
+                'result' => ['abla', 'blabl']
+            ],
+            [
+                'direction' => ['blabl->abla'],
+                'result' => ['blabl', 'abla']
+            ],
+            [
+                'direction' => ['blabl:=abla'],
+                'result' => ['blabl', 'abla']
+            ],
+            [
+                'direction' => ['blabl:-abla'],
+                'result' => ['blabl', 'abla']
+            ],
+            [
+                'direction' => ['blabl→abla'],
+                'result' => ['blabl', 'abla']
+            ],
+            [
+                'direction' => [['blabl','to','abla']],
+                'result' => ['blabl', 'abla']
+            ],
+            [
+                'direction' => null,
+                'result' => ['blabl', 'abla']
+            ],
+        ];
+    }
+
+    private function getSyncCommandResultMessage(string $from, string $to): string
+    {
+        return sprintf('PHPSu is going to synchronize from %s to %s', $from, $to);
     }
 }
