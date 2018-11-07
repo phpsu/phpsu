@@ -11,7 +11,7 @@ final class SyncCommand extends AbstractCommand
 {
 
     const DIRECTION_LEFT = 0;
-    private const DIRECTION_RIGHT = 1;
+    const DIRECTION_RIGHT = 1;
 
     private $allowedCharacters = [
         self::DIRECTION_RIGHT => [
