@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace PHPSu\Configuration\ProcessedConfiguration\AbstractClasses;
 
-abstract class ProcessedNameableDto
+use PHPSu\Core\Interfaces\NameableInterface;
+
+abstract class ProcessedNameableDto implements NameableInterface
 {
     protected $name;
 
