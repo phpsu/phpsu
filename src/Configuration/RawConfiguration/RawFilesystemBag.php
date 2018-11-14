@@ -5,8 +5,9 @@ namespace PHPSu\Configuration\RawConfiguration;
 
 use PHPSu\Configuration\RawConfiguration\RawFilesystemDto as Item;
 use PHPSu\Core\AbstractBag;
+use PHPSu\Core\AbstractNameableBag;
 
-class RawFilesystemBag extends AbstractBag
+class RawFilesystemBag extends AbstractNameableBag
 {
     public function __construct(Item ...$filesystems)
     {

@@ -5,8 +5,9 @@ namespace PHPSu\Configuration\ProcessedConfiguration;
 
 use PHPSu\Configuration\ProcessedConfiguration\ProcessedFilesystemDto as Item;
 use PHPSu\Core\AbstractBag;
+use PHPSu\Core\AbstractNameableBag;
 
-class ProcessedFilesystemBag extends AbstractBag
+class ProcessedFilesystemBag extends AbstractNameableBag
 {
     public function __construct(Item ...$filesystems)
     {

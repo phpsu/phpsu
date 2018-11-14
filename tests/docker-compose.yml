@@ -1,0 +1,8 @@
+version: '2'
+
+services:
+  hostA:
+    image: rastasheep/ubuntu-sshd:18.04
+  hostB:
+    image: rastasheep/ubuntu-sshd:18.04
+

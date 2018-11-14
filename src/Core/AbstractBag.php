@@ -12,9 +12,6 @@ abstract class AbstractBag implements \Iterator, \ArrayAccess
 
     public function __construct(array $array, string $itemClass)
     {
-        if (!in_array(NameableInterface::class, class_implements($itemClass))) {
-            throw new \InvalidArgumentException('class ' . $itemClass . ' is not compatible with ' . NameableInterface::class);
-        }
         $this->itemClass = $itemClass;
         foreach ($array as $item) {
             $this[] = $item;
@@ -56,9 +53,6 @@ abstract class AbstractBag implements \Iterator, \ArrayAccess
 
     public function offsetSet($offset, $item)
     {
-        if (!($item instanceof NameableInterface) || !($item instanceof $this->itemClass) || isset($result[$item->getName()])) {
-            throw new \InvalidArgumentException('one ' . static::class . ' can only hold ' . $this->itemClass . ' with unique names');
-        }
         $this->bagContent[$item->getName()] = $item;
     }
 

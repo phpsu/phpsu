@@ -12,6 +12,16 @@ class ApplicationContext
      */
     public $configurationLoaderEnum;
 
+    /**
+     * @var string
+     */
+    public $fromHost;
+
+    /**
+     * @var string
+     */
+    public $toHost;
+
     public function __construct()
     {
         $this->configurationLoaderEnum = new ConfigurationLoaderEnum();

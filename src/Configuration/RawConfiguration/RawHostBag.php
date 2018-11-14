@@ -5,8 +5,9 @@ namespace PHPSu\Configuration\RawConfiguration;
 
 use PHPSu\Configuration\RawConfiguration\RawHostDto as Item;
 use PHPSu\Core\AbstractBag;
+use PHPSu\Core\AbstractNameableBag;
 
-class RawHostBag extends AbstractBag
+class RawHostBag extends AbstractNameableBag
 {
     public function __construct(Item ...$hosts)
     {

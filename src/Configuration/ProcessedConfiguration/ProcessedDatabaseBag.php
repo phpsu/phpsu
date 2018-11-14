@@ -5,8 +5,9 @@ namespace PHPSu\Configuration\ProcessedConfiguration;
 
 use PHPSu\Configuration\ProcessedConfiguration\ProcessedDatabaseDto as Item;
 use PHPSu\Core\AbstractBag;
+use PHPSu\Core\AbstractNameableBag;
 
-class ProcessedDatabaseBag extends AbstractBag
+class ProcessedDatabaseBag extends AbstractNameableBag
 {
     public function __construct(Item ...$databases)
     {

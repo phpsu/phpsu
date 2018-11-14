@@ -1,13 +1,11 @@
 <?php
-declare(strict_types=1);
 
-namespace PHPSu\Configuration\RawConfiguration;
+namespace PHPSu\Actions;
 
-use PHPSu\Configuration\RawConfiguration\RawDatabaseDto as Item;
 use PHPSu\Core\AbstractBag;
-use PHPSu\Core\AbstractNameableBag;
+use PHPSu\Actions\ActionInterface as Item;
 
-class RawDatabaseBag extends AbstractNameableBag
+class ActionList extends AbstractBag
 {
     public function __construct(Item ...$databases)
     {

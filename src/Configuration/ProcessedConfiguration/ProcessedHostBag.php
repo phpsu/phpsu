@@ -5,8 +5,9 @@ namespace PHPSu\Configuration\ProcessedConfiguration;
 
 use PHPSu\Configuration\ProcessedConfiguration\ProcessedHostDto as Item;
 use PHPSu\Core\AbstractBag;
+use PHPSu\Core\AbstractNameableBag;
 
-class ProcessedHostBag extends AbstractBag
+class ProcessedHostBag extends AbstractNameableBag
 {
     public function __construct(Item ...$hosts)
     {
