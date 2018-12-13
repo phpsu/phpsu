@@ -1,0 +1,19 @@
+Host hostc
+    User user
+    HostName host_c
+    ProxyJump hostb
+
+Host hostb
+    User user
+    HostName host_b
+    ProxyJump hosta
+
+Host hosta
+    User user
+    Port 2208
+    HostName localhost
+
+Host *
+    StrictHostKeyChecking=no
+    UserKnownHostsFile=/dev/null
+    IdentityFile ./id_rsa
