@@ -14,6 +14,6 @@ Host hosta
     HostName localhost
 
 Host *
-    StrictHostKeyChecking=no
-    UserKnownHostsFile=/dev/null
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
     IdentityFile ./id_rsa
