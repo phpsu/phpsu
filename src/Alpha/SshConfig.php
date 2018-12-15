@@ -22,7 +22,12 @@ final class SshConfig
         $this->hosts[$name] = $host;
     }
 
-    public function toFileString(): string
+    public function writeConfig(): void
+    {
+        file_put_contents('.phpsu/config/ssh_config', $this->toFileString()) or die('ERROR');
+    }
+
+    private function toFileString(): string
     {
         $result = '';
         foreach ($this->hosts as $host => $config) {

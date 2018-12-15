@@ -45,61 +45,14 @@ final class Run
             ->setToUrl('mysql://root:root@127.0.0.1:2206/sequelmovie2')
             ->setToHost('');
 
-
-        if ($this->ssh($ssh) !== 'ssh -F ./.phpsu/config/ssh_config hosta') {
+        if ($ssh->generate() !== 'ssh -F ./.phpsu/config/ssh_config hosta') {
             throw new \Exception('ERROR');
         }
-        if ($this->rsync($rsync) !== 'rsync -avz -e "ssh -F ./.phpsu/config/ssh_config" hosta:~/test/* ./__test/') {
+        if ($rsync->generate() !== 'rsync -avz -e "ssh -F ./.phpsu/config/ssh_config" hosta:~/test/* ./__test/') {
             throw new \Exception('ERROR');
         }
-        if ($this->database($database) !== 'ssh -F ./.phpsu/config/ssh_config hostc -C "mysqldump -hdatabase -P3306 -uroot -proot sequelmovie" | mysql -h127.0.0.1 -P2206 -uroot -proot sequelmovie2') {
+        if ($database->generate() !== 'ssh -F ./.phpsu/config/ssh_config hostc -C "mysqldump -hdatabase -P3306 -uroot -proot sequelmovie" | mysql -h127.0.0.1 -P2206 -uroot -proot sequelmovie2') {
             throw new \Exception('ERROR');
         }
-    }
-
-    private function rsync(RsyncCmd $rsync): string
-    {
-        file_put_contents('.phpsu/config/ssh_config', $rsync->getSshConfig()->toFileString());
-        return 'rsync ' . $rsync->getOptions() . ' -e "ssh -F ./.phpsu/config/ssh_config" ' . $rsync->getFrom() . ' ' . $rsync->getTo();
-    }
-
-    private function ssh(SshCmd $ssh): string
-    {
-        file_put_contents('.phpsu/config/ssh_config', $ssh->getSshConfig()->toFileString());
-        return 'ssh -F ./.phpsu/config/ssh_config ' . $ssh->getInto();
-    }
-
-    private function database(DatabaseCmd $database)
-    {
-        file_put_contents('.phpsu/config/ssh_config', $database->getSshConfig()->toFileString());
-        $from = $this->parseDatabaseUrl($database->getFromUrl());
-        $to = $this->parseDatabaseUrl($database->getToUrl());
-
-        $dumpCmd = "mysqldump -h{$from['host']} -P{$from['port']} -u{$from['user']} -p{$from['pass']} {$from['path']}";
-        if ($database->getFromHost()) {
-            $dumpCmd = 'ssh -F ./.phpsu/config/ssh_config ' . $database->getFromHost() . ' -C "' . $dumpCmd . '"';
-        }
-        $importCmd = "mysql -h{$to['host']} -P{$to['port']} -u{$to['user']} -p{$to['pass']} {$to['path']}";
-        if ($database->getToHost()) {
-            $importCmd = 'ssh -F ./.phpsu/config/ssh_config ' . $database->getToHost() . ' -C "' . $importCmd . '"';
-        }
-        return $dumpCmd . ' | ' . $importCmd;
-    }
-
-    private function parseDatabaseUrl(string $url): array
-    {
-        $parsedUrl = parse_url($url);
-        $parsedUrl = [
-            'scheme' => $parsedUrl['scheme'] ?? 'mysql',
-            'host' => $parsedUrl['host'] ?? die('host Not Set'),
-            'port' => $parsedUrl['port'] ?? 3306,
-            'user' => $parsedUrl['user'] ?? die('username Not Set'),
-            'pass' => $parsedUrl['pass'] ?? die('password Not Set'),
-            'path' => $parsedUrl['path'] ?? die('database Not Set'),
-            'query' => $parsedUrl['query'] ?? '',
-            'fragment' => $parsedUrl['fragment'] ?? '',
-        ];
-        $parsedUrl['path'] = str_replace('/', '', $parsedUrl['path']);
-        return $parsedUrl;
     }
 }

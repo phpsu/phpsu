@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Alpha;
 
-final class RsyncCmd
+final class RsyncCmd implements CommandInterface
 {
     /** @var SshConfig */
     private $sshConfig;
@@ -56,5 +56,11 @@ final class RsyncCmd
     {
         $this->to = $to;
         return $this;
+    }
+
+    public function generate(): string
+    {
+        $this->sshConfig->writeConfig();
+        return 'rsync ' . $this->options . ' -e "ssh -F ./.phpsu/config/ssh_config" ' . $this->from . ' ' . $this->to;
     }
 }

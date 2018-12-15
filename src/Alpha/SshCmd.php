@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Alpha;
 
-final class SshCmd
+final class SshCmd implements CommandInterface
 {
     /** @var SshConfig */
     private $sshConfig;
@@ -30,5 +30,11 @@ final class SshCmd
     {
         $this->into = $into;
         return $this;
+    }
+
+    public function generate(): string
+    {
+        $this->sshConfig->writeConfig();
+        return 'ssh -F ./.phpsu/config/ssh_config ' . $this->into;
     }
 }
