@@ -7,91 +7,83 @@ final class Run
 {
     public function __construct()
     {
-        $sshConfig = new \stdClass();
-        $sshConfig->hostc = new \stdClass();
+        $sshConfig = new SshConfig();
+        $sshConfig->hostc = new SshConfigHost();
         $sshConfig->hostc->User = 'user';
         $sshConfig->hostc->HostName = 'host_c';
         $sshConfig->hostc->ProxyJump = 'hostb';
 
-        $sshConfig->hostb = new \stdClass();
+        $sshConfig->hostb = new SshConfigHost();
         $sshConfig->hostb->User = 'user';
         $sshConfig->hostb->HostName = 'host_b';
         $sshConfig->hostb->ProxyJump = 'hosta';
 
-        $sshConfig->hosta = new \stdClass();
+        $sshConfig->hosta = new SshConfigHost();
         $sshConfig->hosta->User = 'user';
         $sshConfig->hosta->HostName = 'localhost';
         $sshConfig->hosta->Port = '2208';
 
-        $sshConfig->{'*'} = new \stdClass();
+        $sshConfig->{'*'} = new SshConfigHost();
         $sshConfig->{'*'}->StrictHostKeyChecking = 'no';
         $sshConfig->{'*'}->UserKnownHostsFile = '/dev/null';
         $sshConfig->{'*'}->IdentityFile = './docker/testCaseD/id_rsa';
 
-        $ssh = new \stdClass();
-        $ssh->into = 'hosta';
-        $ssh->sshConfig = $sshConfig;
+        $ssh = new SshCmd();
+        $ssh->setSshConfig($sshConfig)
+            ->setInto('hosta');
 
-        $rsync = new \stdClass();
-        $rsync->from = 'hosta:~/test/*';
-        $rsync->to = './__test/';
-        $rsync->options = '-avz';
-        $rsync->sshConfig = $sshConfig;
+        $rsync = new RsyncCmd();
+        $rsync->setSshConfig($sshConfig)
+            ->setOptions('-avz')
+            ->setFrom('hosta:~/test/*')
+            ->setTo('./__test/');
 
-        $database = new \stdClass();
-        $database->fromHost = 'hostc';
-        $database->from = 'mysql://root:root@database/sequelmovie';
-        $database->toHost = '';
-        $database->to = 'mysql://root:root@127.0.0.1:2206/sequelmovie2';
-        $database->sshConfig = $sshConfig;
+        $database = new DatabaseCmd();
+        $database->setSshConfig($sshConfig)
+            ->setFromUrl('mysql://root:root@database/sequelmovie')
+            ->setFromHost('hostc')
+            ->setToUrl('mysql://root:root@127.0.0.1:2206/sequelmovie2')
+            ->setToHost('');
 
-//        passthru($this->ssh($ssh));
-//        passthru($this->rsync($rsync));
-//        passthru($this->database($database));
+
+        if ($this->ssh($ssh) !== 'ssh -F ./.phpsu/config/ssh_config hosta') {
+            throw new \Exception('ERROR');
+        }
+        if ($this->rsync($rsync) !== 'rsync -avz -e "ssh -F ./.phpsu/config/ssh_config" hosta:~/test/* ./__test/') {
+            throw new \Exception('ERROR');
+        }
+        if ($this->database($database) !== 'ssh -F ./.phpsu/config/ssh_config hostc -C "mysqldump -hdatabase -P3306 -uroot -proot sequelmovie" | mysql -h127.0.0.1 -P2206 -uroot -proot sequelmovie2') {
+            throw new \Exception('ERROR');
+        }
     }
 
-    private function rsync(\stdClass $rsync): string
+    private function rsync(RsyncCmd $rsync): string
     {
-        file_put_contents('.phpsu/config/ssh_config', $this->sshConfig($rsync->sshConfig));
-        return 'rsync ' . $rsync->options . ' -e "ssh -F ./.phpsu/config/ssh_config" ' . $rsync->from . ' ' . $rsync->to;
+        file_put_contents('.phpsu/config/ssh_config', $rsync->getSshConfig()->toFileString());
+        return 'rsync ' . $rsync->getOptions() . ' -e "ssh -F ./.phpsu/config/ssh_config" ' . $rsync->getFrom() . ' ' . $rsync->getTo();
     }
 
-    private function ssh(\stdClass $ssh): string
+    private function ssh(SshCmd $ssh): string
     {
-        file_put_contents('.phpsu/config/ssh_config', $this->sshConfig($ssh->sshConfig));
-        return 'ssh -F ./.phpsu/config/ssh_config ' . $ssh->into;
+        file_put_contents('.phpsu/config/ssh_config', $ssh->getSshConfig()->toFileString());
+        return 'ssh -F ./.phpsu/config/ssh_config ' . $ssh->getInto();
     }
 
-    private function database(\stdClass $database)
+    private function database(DatabaseCmd $database)
     {
-        file_put_contents('.phpsu/config/ssh_config', $this->sshConfig($database->sshConfig));
-        $from = $this->parseDatabaseUrl($database->from);
-        $to = $this->parseDatabaseUrl($database->to);
+        file_put_contents('.phpsu/config/ssh_config', $database->getSshConfig()->toFileString());
+        $from = $this->parseDatabaseUrl($database->getFromUrl());
+        $to = $this->parseDatabaseUrl($database->getToUrl());
 
         $dumpCmd = "mysqldump -h{$from['host']} -P{$from['port']} -u{$from['user']} -p{$from['pass']} {$from['path']}";
-        if ($database->fromHost) {
-            $dumpCmd = 'ssh -F ./.phpsu/config/ssh_config ' . $database->fromHost . ' -C "' . $dumpCmd . '"';
+        if ($database->getFromHost()) {
+            $dumpCmd = 'ssh -F ./.phpsu/config/ssh_config ' . $database->getFromHost() . ' -C "' . $dumpCmd . '"';
         }
         $importCmd = "mysql -h{$to['host']} -P{$to['port']} -u{$to['user']} -p{$to['pass']} {$to['path']}";
-        if ($database->toHost) {
-            $importCmd = 'ssh -F ./.phpsu/config/ssh_config ' . $database->toHost . ' -C "' . $importCmd . '"';
+        if ($database->getToHost()) {
+            $importCmd = 'ssh -F ./.phpsu/config/ssh_config ' . $database->getToHost() . ' -C "' . $importCmd . '"';
         }
         return $dumpCmd . ' | ' . $importCmd;
-    }
-
-    private function sshConfig(\stdClass $sshConfig): string
-    {
-        $result = '';
-        foreach ($sshConfig as $host => $config) {
-            $config = (array)$config;
-            $result .= 'Host ' . $host . PHP_EOL;
-            ksort($config);
-            foreach ($config as $key => $value) {
-                $result .= '  ' . $key . ' ' . $value . PHP_EOL;
-            }
-            $result .= PHP_EOL;
-        }
-        return $result;
     }
 
     private function parseDatabaseUrl(string $url): array
