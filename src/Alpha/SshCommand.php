@@ -34,7 +34,7 @@ final class SshCommand implements CommandInterface
 
     public function generate(): string
     {
-        $this->sshConfig->writeConfig($file = new \SplFileObject('.phpsu/config/ssh_config', 'rw+'));
+        $this->sshConfig->writeConfig($file = new TempSshConfigFile());
         return 'ssh -F ' . $file->getPathname() . ' ' . $this->into;
     }
 }

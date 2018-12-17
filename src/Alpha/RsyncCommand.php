@@ -68,7 +68,7 @@ final class RsyncCommand implements CommandInterface
 
     public function generate(): string
     {
-        $this->sshConfig->writeConfig($file = new \SplFileObject('.phpsu/config/ssh_config', 'rw+'));
+        $this->sshConfig->writeConfig($file = new TempSshConfigFile());
         return 'rsync ' . $this->options . ' -e "ssh -F ' . $file->getPathname() . '" ' . $this->from . ' ' . $this->to;
     }
 }
