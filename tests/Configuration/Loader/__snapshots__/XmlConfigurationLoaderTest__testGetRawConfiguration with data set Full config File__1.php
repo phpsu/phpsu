@@ -1,15 +1,15 @@
 <?php return PHPSu\Configuration\RawConfiguration\RawConfigurationDto::__set_state(array(
-   'hosts' => 
+   'hosts' =>
   PHPSu\Configuration\RawConfiguration\RawHostBag::__set_state(array(
-     'bagContent' => 
+     'bagContent' =>
     array (
-      'Production' => 
+      'Production' =>
       PHPSu\Configuration\RawConfiguration\RawHostDto::__set_state(array(
-         'console' => 
+         'console' =>
         PHPSu\Configuration\RawConfiguration\RawConsoleDto::__set_state(array(
-           'options' => 
+           'options' =>
           PHPSu\Configuration\RawConfiguration\RawOptionBag::__set_state(array(
-             'optionValues' => 
+             'optionValues' =>
             array (
               'host' => 'example.com',
               'user' => 'example',
@@ -20,29 +20,29 @@
            'type' => 'ssh',
            'name' => '',
         )),
-         'filesystems' => 
+         'filesystems' =>
         PHPSu\Configuration\RawConfiguration\RawFilesystemBag::__set_state(array(
-           'bagContent' => 
+           'bagContent' =>
           array (
           ),
            'itemClass' => 'PHPSu\\Configuration\\RawConfiguration\\RawFilesystemDto',
         )),
-         'databases' => 
+         'databases' =>
         PHPSu\Configuration\RawConfiguration\RawDatabaseBag::__set_state(array(
-           'bagContent' => 
+           'bagContent' =>
           array (
           ),
            'itemClass' => 'PHPSu\\Configuration\\RawConfiguration\\RawDatabaseDto',
         )),
          'name' => 'Production',
       )),
-      'Testing' => 
+      'Testing' =>
       PHPSu\Configuration\RawConfiguration\RawHostDto::__set_state(array(
-         'console' => 
+         'console' =>
         PHPSu\Configuration\RawConfiguration\RawConsoleDto::__set_state(array(
-           'options' => 
+           'options' =>
           PHPSu\Configuration\RawConfiguration\RawOptionBag::__set_state(array(
-             'optionValues' => 
+             'optionValues' =>
             array (
               'host' => 'example.com',
               'user' => 'example',
@@ -53,29 +53,29 @@
            'type' => 'ssh',
            'name' => '',
         )),
-         'filesystems' => 
+         'filesystems' =>
         PHPSu\Configuration\RawConfiguration\RawFilesystemBag::__set_state(array(
-           'bagContent' => 
+           'bagContent' =>
           array (
           ),
            'itemClass' => 'PHPSu\\Configuration\\RawConfiguration\\RawFilesystemDto',
         )),
-         'databases' => 
+         'databases' =>
         PHPSu\Configuration\RawConfiguration\RawDatabaseBag::__set_state(array(
-           'bagContent' => 
+           'bagContent' =>
           array (
           ),
            'itemClass' => 'PHPSu\\Configuration\\RawConfiguration\\RawDatabaseDto',
         )),
          'name' => 'Testing',
       )),
-      'vogel' => 
+      'vogel' =>
       PHPSu\Configuration\RawConfiguration\RawHostDto::__set_state(array(
-         'console' => 
+         'console' =>
         PHPSu\Configuration\RawConfiguration\RawConsoleDto::__set_state(array(
-           'options' => 
+           'options' =>
           PHPSu\Configuration\RawConfiguration\RawOptionBag::__set_state(array(
-             'optionValues' => 
+             'optionValues' =>
             array (
               'host' => '10.50.1.223',
               'user' => 'user',
@@ -85,15 +85,15 @@
            'type' => 'ssh',
            'name' => '',
         )),
-         'filesystems' => 
+         'filesystems' =>
         PHPSu\Configuration\RawConfiguration\RawFilesystemBag::__set_state(array(
-           'bagContent' => 
+           'bagContent' =>
           array (
-            'fileadmin' => 
+            'fileadmin' =>
             PHPSu\Configuration\RawConfiguration\RawFilesystemDto::__set_state(array(
-               'options' => 
+               'options' =>
               PHPSu\Configuration\RawConfiguration\RawOptionBag::__set_state(array(
-                 'optionValues' => 
+                 'optionValues' =>
                 array (
                   'directory' => 'public/fileadmin/',
                 ),
@@ -104,15 +104,15 @@
           ),
            'itemClass' => 'PHPSu\\Configuration\\RawConfiguration\\RawFilesystemDto',
         )),
-         'databases' => 
+         'databases' =>
         PHPSu\Configuration\RawConfiguration\RawDatabaseBag::__set_state(array(
-           'bagContent' => 
+           'bagContent' =>
           array (
-            '' => 
+            '' =>
             PHPSu\Configuration\RawConfiguration\RawDatabaseDto::__set_state(array(
-               'options' => 
+               'options' =>
               PHPSu\Configuration\RawConfiguration\RawOptionBag::__set_state(array(
-                 'optionValues' => 
+                 'optionValues' =>
                 array (
                   'host' => 'db',
                 ),
@@ -128,15 +128,15 @@
     ),
      'itemClass' => 'PHPSu\\Configuration\\RawConfiguration\\RawHostDto',
   )),
-   'filesystems' => 
+   'filesystems' =>
   PHPSu\Configuration\RawConfiguration\RawFilesystemBag::__set_state(array(
-     'bagContent' => 
+     'bagContent' =>
     array (
-      'fileadmin' => 
+      'fileadmin' =>
       PHPSu\Configuration\RawConfiguration\RawFilesystemDto::__set_state(array(
-         'options' => 
+         'options' =>
         PHPSu\Configuration\RawConfiguration\RawOptionBag::__set_state(array(
-           'optionValues' => 
+           'optionValues' =>
           array (
             'directory' => 'fileadmin/',
           ),
@@ -147,9 +147,9 @@
     ),
      'itemClass' => 'PHPSu\\Configuration\\RawConfiguration\\RawFilesystemDto',
   )),
-   'databases' => 
+   'databases' =>
   PHPSu\Configuration\RawConfiguration\RawDatabaseBag::__set_state(array(
-     'bagContent' => 
+     'bagContent' =>
     array (
     ),
      'itemClass' => 'PHPSu\\Configuration\\RawConfiguration\\RawDatabaseDto',

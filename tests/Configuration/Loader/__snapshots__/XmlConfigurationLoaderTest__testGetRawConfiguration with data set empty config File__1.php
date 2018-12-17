@@ -1,21 +1,21 @@
 <?php return PHPSu\Configuration\RawConfiguration\RawConfigurationDto::__set_state(array(
-   'hosts' => 
+   'hosts' =>
   PHPSu\Configuration\RawConfiguration\RawHostBag::__set_state(array(
-     'bagContent' => 
+     'bagContent' =>
     array (
     ),
      'itemClass' => 'PHPSu\\Configuration\\RawConfiguration\\RawHostDto',
   )),
-   'filesystems' => 
+   'filesystems' =>
   PHPSu\Configuration\RawConfiguration\RawFilesystemBag::__set_state(array(
-     'bagContent' => 
+     'bagContent' =>
     array (
     ),
      'itemClass' => 'PHPSu\\Configuration\\RawConfiguration\\RawFilesystemDto',
   )),
-   'databases' => 
+   'databases' =>
   PHPSu\Configuration\RawConfiguration\RawDatabaseBag::__set_state(array(
-     'bagContent' => 
+     'bagContent' =>
     array (
     ),
      'itemClass' => 'PHPSu\\Configuration\\RawConfiguration\\RawDatabaseDto',
