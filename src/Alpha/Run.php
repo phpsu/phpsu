@@ -7,6 +7,33 @@ final class Run
 {
     public function __construct()
     {
+        $hostC = new SshConnection();
+        $hostC->setHost('hostc')
+            ->setUrl('user@host_c')
+            ->setFrom(['hostb']);
+
+        $hostB = new SshConnection();
+        $hostB->setHost('hostb')
+            ->setUrl('user@host_b')
+            ->setFrom(['hosta']);
+
+        $hostA = new SshConnection();
+        $hostA->setHost('hosta')
+            ->setUrl('user@localhost:2208');
+
+        $instanceA = new AppInstance();
+        $instanceA->setName('prod')
+            ->setHost('hostc')
+            ->setPath('/var/www/prod');
+
+        $instanceB = new  AppInstance();
+        $instanceB->setName('testing')
+            ->setHost('hostc')
+            ->setPath('/var/www/testing');
+    }
+
+    public function testA()
+    {
         $sshConfig = new SshConfig();
         $sshConfig->hostc = new SshConfigHost();
         $sshConfig->hostc->User = 'user';

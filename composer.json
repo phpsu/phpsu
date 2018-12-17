@@ -23,7 +23,8 @@
     "phpsu"
   ],
   "scripts": {
-    "test": "vendor/bin/phpunit -c tests/phpunit.xml --colors=always",
+    "test": "vendor/bin/phpunit -c tests/phpunit.xml",
+    "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox",
     "test:update": "vendor/bin/phpunit -c tests/phpunit.xml --colors=always -d --update-snapshots",
     "codecept" : "vendor/bin/codecept run",
     "su:sync": "./phpsu sync",
@@ -48,11 +49,12 @@
     "ext-libxml": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "^6.5",
+    "phpunit/phpunit": "7.*",
     "codeception/codeception": "^2.4",
     "spatie/phpunit-snapshot-assertions": "^1.3",
     "pluswerk/grumphp-config": "^2.7",
-    "roave/security-advisories": "dev-master"
+    "roave/security-advisories": "dev-master",
+    "spatie/phpunit-watcher": "^1.8"
   },
   "extra": {
     "pluswerk/grumphp-config": {

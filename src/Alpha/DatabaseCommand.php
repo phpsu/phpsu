@@ -75,17 +75,17 @@ final class DatabaseCommand implements CommandInterface
 
     public function generate():string
     {
-        $this->sshConfig->writeConfig();
+        $this->sshConfig->writeConfig($file = new \SplFileObject('.phpsu/config/ssh_config', 'rw+'));
         $from = $this->parseDatabaseUrl($this->fromUrl);
         $to = $this->parseDatabaseUrl($this->toUrl);
 
         $dumpCmd = "mysqldump -h{$from['host']} -P{$from['port']} -u{$from['user']} -p{$from['pass']} {$from['path']}";
         if ($this->fromHost) {
-            $dumpCmd = 'ssh -F ./.phpsu/config/ssh_config ' . $this->fromHost . ' -C "' . $dumpCmd . '"';
+            $dumpCmd = 'ssh -F ' . $file->getPathname() . ' ' . $this->fromHost . ' -C "' . $dumpCmd . '"';
         }
         $importCmd = "mysql -h{$to['host']} -P{$to['port']} -u{$to['user']} -p{$to['pass']} {$to['path']}";
         if ($this->toHost) {
-            $importCmd = 'ssh -F ./.phpsu/config/ssh_config ' . $this->toHost . ' -C "' . $importCmd . '"';
+            $importCmd = 'ssh -F ' . $file->getPathname() . ' ' . $this->toHost . ' -C "' . $importCmd . '"';
         }
         return $dumpCmd . ' | ' . $importCmd;
     }
