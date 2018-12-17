@@ -6,3 +6,7 @@ php:
 
 install: composer i
 script: composer test
+
+cache:
+  directories:
+    - $HOME/.composer/cache
