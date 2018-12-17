@@ -28,17 +28,17 @@ final class Run
         $sshConfig->{'*'}->UserKnownHostsFile = '/dev/null';
         $sshConfig->{'*'}->IdentityFile = './docker/testCaseD/id_rsa';
 
-        $ssh = new SshCmd();
+        $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta');
 
-        $rsync = new RsyncCmd();
+        $rsync = new RsyncCommand();
         $rsync->setSshConfig($sshConfig)
             ->setOptions('-avz')
             ->setFrom('hosta:~/test/*')
             ->setTo('./__test/');
 
-        $database = new DatabaseCmd();
+        $database = new DatabaseCommand();
         $database->setSshConfig($sshConfig)
             ->setFromUrl('mysql://root:root@database/sequelmovie')
             ->setFromHost('hostc')

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Alpha;
 
-final class RsyncCmd implements CommandInterface
+final class RsyncCommand implements CommandInterface
 {
     /** @var SshConfig */
     private $sshConfig;
@@ -19,7 +19,7 @@ final class RsyncCmd implements CommandInterface
         return $this->sshConfig;
     }
 
-    public function setSshConfig(SshConfig $sshConfig): RsyncCmd
+    public function setSshConfig(SshConfig $sshConfig): RsyncCommand
     {
         $this->sshConfig = $sshConfig;
         return $this;
@@ -30,7 +30,7 @@ final class RsyncCmd implements CommandInterface
         return $this->options;
     }
 
-    public function setOptions(string $options): RsyncCmd
+    public function setOptions(string $options): RsyncCommand
     {
         $this->options = $options;
         return $this;
@@ -41,7 +41,7 @@ final class RsyncCmd implements CommandInterface
         return $this->from;
     }
 
-    public function setFrom(string $from): RsyncCmd
+    public function setFrom(string $from): RsyncCommand
     {
         $this->from = $from;
         return $this;
@@ -52,7 +52,7 @@ final class RsyncCmd implements CommandInterface
         return $this->to;
     }
 
-    public function setTo(string $to): RsyncCmd
+    public function setTo(string $to): RsyncCommand
     {
         $this->to = $to;
         return $this;

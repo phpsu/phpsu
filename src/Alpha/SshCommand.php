@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Alpha;
 
-final class SshCmd implements CommandInterface
+final class SshCommand implements CommandInterface
 {
     /** @var SshConfig */
     private $sshConfig;
@@ -15,7 +15,7 @@ final class SshCmd implements CommandInterface
         return $this->sshConfig;
     }
 
-    public function setSshConfig(SshConfig $sshConfig): SshCmd
+    public function setSshConfig(SshConfig $sshConfig): SshCommand
     {
         $this->sshConfig = $sshConfig;
         return $this;
@@ -26,7 +26,7 @@ final class SshCmd implements CommandInterface
         return $this->into;
     }
 
-    public function setInto(string $into): SshCmd
+    public function setInto(string $into): SshCommand
     {
         $this->into = $into;
         return $this;

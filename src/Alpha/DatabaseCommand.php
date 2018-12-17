@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Alpha;
 
-final class DatabaseCmd implements CommandInterface
+final class DatabaseCommand implements CommandInterface
 {
     /** @var SshConfig */
     private $sshConfig;
@@ -23,7 +23,7 @@ final class DatabaseCmd implements CommandInterface
         return $this->sshConfig;
     }
 
-    public function setSshConfig(SshConfig $sshConfig): DatabaseCmd
+    public function setSshConfig(SshConfig $sshConfig): DatabaseCommand
     {
         $this->sshConfig = $sshConfig;
         return $this;
@@ -34,7 +34,7 @@ final class DatabaseCmd implements CommandInterface
         return $this->fromUrl;
     }
 
-    public function setFromUrl(string $fromUrl): DatabaseCmd
+    public function setFromUrl(string $fromUrl): DatabaseCommand
     {
         $this->fromUrl = $fromUrl;
         return $this;
@@ -45,7 +45,7 @@ final class DatabaseCmd implements CommandInterface
         return $this->fromHost;
     }
 
-    public function setFromHost(string $fromHost): DatabaseCmd
+    public function setFromHost(string $fromHost): DatabaseCommand
     {
         $this->fromHost = $fromHost;
         return $this;
@@ -56,7 +56,7 @@ final class DatabaseCmd implements CommandInterface
         return $this->toUrl;
     }
 
-    public function setToUrl(string $toUrl): DatabaseCmd
+    public function setToUrl(string $toUrl): DatabaseCommand
     {
         $this->toUrl = $toUrl;
         return $this;
@@ -67,7 +67,7 @@ final class DatabaseCmd implements CommandInterface
         return $this->toHost;
     }
 
-    public function setToHost(string $toHost): DatabaseCmd
+    public function setToHost(string $toHost): DatabaseCommand
     {
         $this->toHost = $toHost;
         return $this;
@@ -92,6 +92,7 @@ final class DatabaseCmd implements CommandInterface
 
     private function parseDatabaseUrl(string $url): array
     {
+        //TODO: make compatible with PDO_MYSQL DSN: http://php.net/manual/de/ref.pdo-mysql.connection.php
         $parsedUrl = parse_url($url);
         $parsedUrl = [
             'scheme' => $parsedUrl['scheme'] ?? 'mysql',
