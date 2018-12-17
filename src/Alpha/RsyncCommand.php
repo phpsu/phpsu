@@ -47,6 +47,10 @@ final class RsyncCommand implements CommandInterface
         }
         $result->from = $fromHostPart . rtrim($from->getPath(), '/*') . $relPath . '/*';
         $result->to = $toHostPart . rtrim($to->getPath(), '/') . $relPath . '/';
+        /**
+         * TODO if both source and destination are on the same system. than the data should flow between them and not through currentHost
+         * aka: ssh host -C rsync $fromPath/$relPath/* $toPath/$relPath/*
+         */
         return $result;
     }
 

@@ -6,6 +6,16 @@ namespace PHPSu\Alpha;
 class TheInterface
 {
     /**
+     * TODO:
+     **can:
+     * filesystems from global config
+     *
+     **can't:
+     * filesystems from appInstance
+     *
+     * database from global config
+     * database from appInstance
+     *
      * @param \stdClass $globalConfig
      * @param string $from
      * @param string $to
