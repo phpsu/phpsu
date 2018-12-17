@@ -53,7 +53,7 @@ final class SshCommand implements CommandInterface
 
     public function generate(): string
     {
-        $this->sshConfig->writeConfig($file = new TempSshConfigFile());
+        $file = $this->sshConfig->getFile();
         return 'ssh -F ' . $file->getPathname() . ' ' . $this->into;
     }
 }

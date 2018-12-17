@@ -5,7 +5,15 @@ namespace PHPSu\Alpha;
 
 final class SshConfig
 {
+    /** @var SshConfigHost[] */
     private $hosts = [];
+    /** @var \SplFileObject */
+    private $file;
+
+    public static function fromGlobal(\stdClass $global, string $currentHost): SshConfig
+    {
+        return (new SshConfigGenerator())->generate($global->sshConnections, $currentHost);
+    }
 
     public function __isset(string $name): bool
     {
@@ -22,10 +30,20 @@ final class SshConfig
         $this->hosts[$name] = $host;
     }
 
-    public function writeConfig(\SplFileObject $file): void
+    public function getFile(): \SplFileObject
     {
-        $file->ftruncate(0);
-        $file->fwrite($this->toFileString());
+        return $this->file;
+    }
+
+    public function setFile(\SplFileObject $file): void
+    {
+        $this->file = $file;
+    }
+
+    public function writeConfig(): void
+    {
+        $this->file->ftruncate(0);
+        $this->file->fwrite($this->toFileString());
     }
 
     private function toFileString(): string

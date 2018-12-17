@@ -75,7 +75,7 @@ final class DatabaseCommand implements CommandInterface
 
     public function generate():string
     {
-        $this->sshConfig->writeConfig($file = new TempSshConfigFile());
+        $file = $this->sshConfig->getFile();
         $from = $this->parseDatabaseUrl($this->fromUrl);
         $to = $this->parseDatabaseUrl($this->toUrl);
 

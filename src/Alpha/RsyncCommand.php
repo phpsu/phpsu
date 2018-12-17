@@ -15,26 +15,38 @@ final class RsyncCommand implements CommandInterface
     private $to;
 
     /**
+     * @param \stdClass $global
+     * @param string $fromInstanceName
+     * @param string $toInstanceName
+     * @param string $currentHost
      * @return RsyncCommand[]
      */
-    public static function fromGlobal(\stdClass $global, string $fromInstanceName, string $toInstanceName): array
+    public static function fromGlobal(\stdClass $global, string $fromInstanceName, string $toInstanceName, string $currentHost): array
     {
         $fromInstance = $global->appInstances->{$fromInstanceName};
         $toInstance = $global->appInstances->{$toInstanceName};
         $result = [];
         foreach ($global->fileSystems as $fileSystemName => $fileSystem) {
-            $result[] = static::fromAppInstances($fromInstance, $toInstance, $fileSystem);
+            $result[] = static::fromAppInstances($fromInstance, $toInstance, $fileSystem, $currentHost);
         }
         return $result;
     }
 
-    public static function fromAppInstances(AppInstance $from, AppInstance $to, string $filesystem): RsyncCommand
+    public static function fromAppInstances(AppInstance $from, AppInstance $to, string $filesystem, string $currentHost): RsyncCommand
     {
         $relPath = ($filesystem ? '/' : '') . $filesystem;
 
         $result = new static();
-        $result->from = $from->getHost() . ':' . rtrim($from->getPath(), '/*') . $relPath . '/*';
-        $result->to = $to->getHost() . ':' . rtrim($to->getPath(), '/') . $relPath . '/';
+        $fromHostPart = '';
+        if ($from->getHost() !== $currentHost) {
+            $fromHostPart = $from->getHost() . ':';
+        }
+        $toHostPart = '';
+        if ($to->getHost() !== $currentHost) {
+            $toHostPart = $to->getHost() . ':';
+        }
+        $result->from = $fromHostPart . rtrim($from->getPath(), '/*') . $relPath . '/*';
+        $result->to = $toHostPart . rtrim($to->getPath(), '/') . $relPath . '/';
         return $result;
     }
 
@@ -84,7 +96,7 @@ final class RsyncCommand implements CommandInterface
 
     public function generate(): string
     {
-        $this->sshConfig->writeConfig($file = new TempSshConfigFile());
+        $file = $this->sshConfig->getFile();
         return 'rsync ' . $this->options . ' -e "ssh -F ' . $file->getPathname() . '" ' . $this->from . ' ' . $this->to;
     }
 }

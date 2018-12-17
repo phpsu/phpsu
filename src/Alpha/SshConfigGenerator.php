@@ -87,9 +87,4 @@ final class SshConfigGenerator
         }
         return $sshConfig;
     }
-
-    private function getAllSshConnectionFromPath(string $path, SshConnections $sshConnections)
-    {
-        $array = explode('->', $path);
-    }
 }
