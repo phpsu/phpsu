@@ -46,44 +46,6 @@ final class RunTest extends TestCase
         $this->assertSame('rsync  -e "ssh -F .phpsu/config/ssh_config" hosta:/var/www/prod/* hostc:/var/www/testing/', $generated);
     }
 
-    public function testSshConnection(): void
-    {
-        $hostC = new SshConnection();
-        $hostC->setHost('hostc')
-            ->setUrl('user@host_c')
-            ->setFrom(['hostb']);
-
-        $hostB = new SshConnection();
-        $hostB->setHost('hostb')
-            ->setUrl('user@host_b')
-            ->setFrom(['hosta']);
-
-        $hostA = new SshConnection();
-        $hostA->setHost('hosta')
-            ->setUrl('user@localhost:2208');
-
-        $sshConfigGenerator = new \PHPSu\Alpha\SshConfigGenerator();
-        $sshConfig = $sshConfigGenerator->generate([$hostA, $hostB, $hostC], 'local');
-
-        $sshConfigExpected = new SshConfig();
-        $sshConfigExpected->hostc = new SshConfigHost();
-        $sshConfigExpected->hostc->User = 'user';
-        $sshConfigExpected->hostc->HostName = 'host_c';
-        $sshConfigExpected->hostc->ProxyJump = 'hostb';
-
-        $sshConfigExpected->hostb = new SshConfigHost();
-        $sshConfigExpected->hostb->User = 'user';
-        $sshConfigExpected->hostb->HostName = 'host_b';
-        $sshConfigExpected->hostb->ProxyJump = 'hosta';
-
-        $sshConfigExpected->hosta = new SshConfigHost();
-        $sshConfigExpected->hosta->User = 'user';
-        $sshConfigExpected->hosta->HostName = 'localhost';
-        $sshConfigExpected->hosta->Port = '2208';
-        $this->assertEquals($sshConfigExpected, $sshConfig);
-    }
-
-
     public function testSshConfig(): void
     {
         $sshConfig = new SshConfig();

@@ -10,6 +10,25 @@ final class SshCommand implements CommandInterface
     /** @var string */
     private $into;
 
+    public static function fromGlobal(\stdClass $global, string $connectionName, string $currentHost): SshCommand
+    {
+        $host = '';
+        if (isset($global->appInstances->{$connectionName})) {
+            /** @var AppInstance $app */
+            $app = $global->appInstances->{$connectionName};
+            $host = $app->getHost();
+        }
+        if ($host === '') {
+            $host = $connectionName;
+        }
+        if ($currentHost === $host) {
+            throw new \Exception(sprintf('the found host and the current Host are the same: %s', $host));
+        }
+        $result = new static();
+        $result->setInto($host);
+        return $result;
+    }
+
     public function getSshConfig(): SshConfig
     {
         return $this->sshConfig;
