@@ -14,6 +14,14 @@ final class RsyncCommand implements CommandInterface
     /** @var string */
     private $to;
 
+    public static function fromAppInstances(AppInstance $from, AppInstance $to)
+    {
+        $result = new static();
+        $result->from = $from->getHost() . ':' . rtrim($from->getPath(), '/*') . '/*';
+        $result->to = $to->getHost() . ':' . $to->getPath();
+        return $result;
+    }
+
     public function getSshConfig(): SshConfig
     {
         return $this->sshConfig;

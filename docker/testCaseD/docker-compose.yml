@@ -20,6 +20,8 @@ services:
     build: .
     volumes:
       - "./authorized_keys:/home/user/.ssh/authorized_keys"
+      - "./testApp:/var/www/prod"
+      - "./testApp:/var/www/testing"
     networks:
       - hostBC
       - database
