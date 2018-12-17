@@ -93,6 +93,7 @@ final class DatabaseCommand implements CommandInterface
     private function parseDatabaseUrl(string $url): array
     {
         //TODO: make compatible with PDO_MYSQL DSN: http://php.net/manual/de/ref.pdo-mysql.connection.php
+        //TODO: use DSN Class
         $parsedUrl = parse_url($url);
         $parsedUrl = [
             'scheme' => $parsedUrl['scheme'] ?? 'mysql',

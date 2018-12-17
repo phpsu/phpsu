@@ -14,11 +14,13 @@ final class RsyncCommand implements CommandInterface
     /** @var string */
     private $to;
 
-    public static function fromAppInstances(AppInstance $from, AppInstance $to)
+    public static function fromAppInstances(AppInstance $from, AppInstance $to, string $filesystem)
     {
+        $relPath = ($filesystem ? '/' : '') . $filesystem;
+
         $result = new static();
-        $result->from = $from->getHost() . ':' . rtrim($from->getPath(), '/*') . '/*';
-        $result->to = $to->getHost() . ':' . $to->getPath();
+        $result->from = $from->getHost() . ':' . rtrim($from->getPath(), '/*') . $relPath . '/*';
+        $result->to = $to->getHost() . ':' . rtrim($to->getPath(), '/') . $relPath . '/';
         return $result;
     }
 
