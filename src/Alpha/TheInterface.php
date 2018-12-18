@@ -47,8 +47,7 @@ class TheInterface
             throw new \Exception(sprintf('From and To are Identical: %s', $from));
         }
         if ($currentHost !== '') {
-            //for validation:
-            $globalConfig->sshConnections->getPossibilities($currentHost);
+            $globalConfig->validateConnectionToHost($currentHost);
         }
         $sshConfig = SshConfig::fromGlobal($globalConfig, $currentHost);
         $sshConfig->setFile($this->file);

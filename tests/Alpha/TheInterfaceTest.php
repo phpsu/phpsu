@@ -4,19 +4,37 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Alpha;
 
 use PHPSu\Alpha\AppInstance;
+use PHPSu\Alpha\Database;
+use PHPSu\Alpha\FileSystem;
 use PHPSu\Alpha\GlobalConfig;
 use PHPSu\Alpha\SshConnection;
-use PHPSu\Alpha\SshConnections;
 use PHPSu\Alpha\TheInterface;
 use PHPUnit\Framework\TestCase;
 
 class TheInterfaceTest extends TestCase
 {
+
+    private static function getGlobalConfig(): GlobalConfig
+    {
+        $global = new GlobalConfig();
+        $global->addFilesystem((new FileSystem())->setName('fileadmin')->setPath('fileadmin'));
+        $global->addFilesystem((new FileSystem())->setName('uploads')->setPath('uploads'));
+        $global->addDatabase((new Database())->setName('app')->setUrl('mysql://user:pw@host:3307/database'));
+        $global->addSshConnection((new SshConnection())->setHost('serverEu')->setUrl('user@server.eu')->setIdentityFile('docker/testCaseD/id_rsa'));
+        $global->addSshConnection((new SshConnection())->setHost('stagingServer')->setUrl('staging@stagingServer.server.eu')->setIdentityFile('docker/testCaseD/id_rsa'));
+        $global->addAppInstance((new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production'));
+        $global->addAppInstance((new AppInstance())->setName('staging')->setHost('stagingServer')->setPath('/var/www/staging'));
+        $global->addAppInstance((new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing'));
+        $global->addAppInstance((new AppInstance())->setName('local')->setHost('')->setPath('./'));
+        $global->addAppInstance((new AppInstance())->setName('local2')->setHost('')->setPath('../local2'));
+        return $global;
+    }
+
     public function testProductionToLocalFromAnyThere(): void
     {
         $interface = new TheInterface();
         $interface->setFile($file = new \SplTempFileObject());
-        $global = $this->getGlobalConfig();
+        $global = static::getGlobalConfig();
 
         $result = $interface->getCommands($global, 'production', 'local', '');
         $this->assertSame([
@@ -44,7 +62,7 @@ SSH_CONFIG;
     {
         $interface = new TheInterface();
         $interface->setFile($file = new \SplTempFileObject());
-        $global = $this->getGlobalConfig();
+        $global = static::getGlobalConfig();
 
         $result = $interface->getCommands($global, 'production', 'testing', '');
         $this->assertSame([
@@ -72,7 +90,7 @@ SSH_CONFIG;
     {
         $interface = new TheInterface();
         $interface->setFile($file = new \SplTempFileObject());
-        $global = $this->getGlobalConfig();
+        $global = static::getGlobalConfig();
 
         $result = $interface->getCommands($global, 'local', 'local2', '');
         $this->assertSame([
@@ -100,7 +118,7 @@ SSH_CONFIG;
     {
         $interface = new TheInterface();
         $interface->setFile($file = new \SplTempFileObject());
-        $global = $this->getGlobalConfig();
+        $global = static::getGlobalConfig();
 
         $result = $interface->getCommands($global, 'production', 'staging', '');
         $this->assertSame([
@@ -128,7 +146,7 @@ SSH_CONFIG;
     {
         $interface = new TheInterface();
         $interface->setFile($file = new \SplTempFileObject());
-        $global = $this->getGlobalConfig();
+        $global = static::getGlobalConfig();
 
         $result = $interface->getCommands($global, 'production', 'staging', 'stagingServer');
         $this->assertSame([
@@ -145,28 +163,5 @@ Host serverEu
 
 SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
-    }
-
-    /**
-     * @return GlobalConfig
-     */
-    private function getGlobalConfig(): GlobalConfig
-    {
-        $global = new GlobalConfig();
-        $global->fileSystems = new \stdClass();
-        $global->fileSystems->fileadmin = 'fileadmin';
-        $global->fileSystems->uploads = 'uploads';
-        $global->databases = new \stdClass();
-        $global->databases->main = 'mysql://user:pw@host:3307/database';
-        $global->sshConnections = new SshConnections();
-        $global->sshConnections->addConnection((new SshConnection())->setHost('serverEu')->setUrl('user@server.eu')->setIdentityFile('docker/testCaseD/id_rsa'));
-        $global->sshConnections->addConnection((new SshConnection())->setHost('stagingServer')->setUrl('staging@stagingServer.server.eu')->setIdentityFile('docker/testCaseD/id_rsa'));
-        $global->appInstances = new \stdClass();
-        $global->appInstances->production = (new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production');
-        $global->appInstances->staging = (new AppInstance())->setName('staging')->setHost('stagingServer')->setPath('/var/www/staging');
-        $global->appInstances->testing = (new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing');
-        $global->appInstances->local = (new AppInstance())->setName('local')->setHost('')->setPath('./');
-        $global->appInstances->local2 = (new AppInstance())->setName('local2')->setHost('')->setPath('../local2');
-        return $global;
     }
 }

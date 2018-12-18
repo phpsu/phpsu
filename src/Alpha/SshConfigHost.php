@@ -5,6 +5,7 @@ namespace PHPSu\Alpha;
 
 final class SshConfigHost
 {
+    /** @var string[] */
     private $options = [];
 
     public function __isset(string $name): bool

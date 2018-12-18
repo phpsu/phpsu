@@ -10,11 +10,11 @@ final class SshConnections
     public function addConnections(SshConnection ...$sshConnections): void
     {
         foreach ($sshConnections as $sshConnection) {
-            $this->addConnection($sshConnection);
+            $this->add($sshConnection);
         }
     }
 
-    public function addConnection(SshConnection $sshConnection): void
+    public function add(SshConnection $sshConnection): void
     {
         if (count($sshConnection->getFrom()) === 0) {
             $this->addSingleConnection('', $sshConnection);

@@ -27,22 +27,22 @@ final class DatabaseCommand implements CommandInterface
      */
     public static function fromGlobal(GlobalConfig $global, string $fromInstanceName, string $toInstanceName, string $currentHost): array
     {
-        $fromInstance = $global->appInstances->{$fromInstanceName};
-        $toInstance = $global->appInstances->{$toInstanceName};
+        $fromInstance = $global->getAppInstance($fromInstanceName);
+        $toInstance = $global->getAppInstance($toInstanceName);
         $result = [];
-        foreach ($global->databases as $databaseName => $databaseDSN) {
+        foreach ($global->getDatabases() as $databaseName => $databaseDSN) {
             $result[] = static::fromAppInstances($fromInstance, $toInstance, $databaseDSN, $currentHost);
         }
         return $result;
     }
 
-    public static function fromAppInstances(AppInstance $from, AppInstance $to, string $databaseDSN, string $currentHost): DatabaseCommand
+    public static function fromAppInstances(AppInstance $from, AppInstance $to, Database $database, string $currentHost): DatabaseCommand
     {
         $result = new static();
         $result->fromHost = $from->getHost() === $currentHost ? '' : $from->getHost();
         $result->toHost = $to->getHost() === $currentHost ? '' : $to->getHost();
-        $result->fromUrl = $databaseDSN;
-        $result->toUrl = $databaseDSN;
+        $result->fromUrl = $database->getUrl();
+        $result->toUrl = $database->getUrl();
         return $result;
     }
 

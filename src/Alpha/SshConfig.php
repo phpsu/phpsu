@@ -7,12 +7,13 @@ final class SshConfig
 {
     /** @var SshConfigHost[] */
     private $hosts = [];
+
     /** @var \SplFileObject */
     private $file;
 
     public static function fromGlobal(GlobalConfig $global, string $currentHost): SshConfig
     {
-        return (new SshConfigGenerator())->generate($global->sshConnections, $currentHost);
+        return (new SshConfigGenerator())->generate($global->getSshConnections(), $currentHost);
     }
 
     public function __isset(string $name): bool

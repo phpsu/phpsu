@@ -5,6 +5,7 @@ namespace PHPSu\Tests\Alpha;
 
 use PHPSu\Alpha\AppInstance;
 use PHPSu\Alpha\DatabaseCommand;
+use PHPSu\Alpha\FileSystem;
 use PHPSu\Alpha\RsyncCommand;
 use PHPSu\Alpha\SshCommand;
 use PHPSu\Alpha\SshConfig;
@@ -17,21 +18,7 @@ final class RunTest extends TestCase
     public function testRsyncWithAppInstance(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new TempSshConfigFile());
-        $sshConfig->hostc = new SshConfigHost();
-        $sshConfig->hostc->User = 'user';
-        $sshConfig->hostc->HostName = 'host_c';
-        $sshConfig->hostc->ProxyJump = 'hostb';
-
-        $sshConfig->hostb = new SshConfigHost();
-        $sshConfig->hostb->User = 'user';
-        $sshConfig->hostb->HostName = 'host_b';
-        $sshConfig->hostb->ProxyJump = 'hosta';
-
-        $sshConfig->hosta = new SshConfigHost();
-        $sshConfig->hosta->User = 'user';
-        $sshConfig->hosta->HostName = 'localhost';
-        $sshConfig->hosta->Port = '2208';
+        $sshConfig->setFile(new \SplTempFileObject());
 
         $instanceA = new AppInstance();
         $instanceA->setName('prod')
@@ -43,8 +30,8 @@ final class RunTest extends TestCase
             ->setHost('hostc')
             ->setPath('/var/www/testing');
 
-        $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, '', 'local')->setSshConfig($sshConfig)->generate();
-        $this->assertSame('rsync -e "ssh -F .phpsu/config/ssh_config" hosta:/var/www/prod/* hostc:/var/www/testing/', $generated);
+        $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, (new FileSystem())->setName('app')->setPath(''), 'local')->setSshConfig($sshConfig)->generate();
+        $this->assertSame('rsync -e "ssh -F php://temp" hosta:/var/www/prod/* hostc:/var/www/testing/', $generated);
     }
 
     public function testSshConfig(): void
@@ -101,17 +88,17 @@ SSH_CONFIG;
     public function testSshCommand(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new TempSshConfigFile());
+        $sshConfig->setFile(new \SplTempFileObject());
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta');
-        $this->assertSame('ssh -F .phpsu/config/ssh_config hosta', $ssh->generate());
+        $this->assertSame('ssh -F php://temp hosta', $ssh->generate());
     }
 
     public function testRsyncCommand(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new TempSshConfigFile());
+        $sshConfig->setFile(new \SplTempFileObject());
         $rsync = new RsyncCommand();
         $rsync->setSshConfig($sshConfig)
             ->setOptions('-avz')
@@ -119,13 +106,13 @@ SSH_CONFIG;
             ->setFromPath('~/test/*')
             ->setToPath('./__test/');
 
-        $this->assertSame('rsync -avz -e "ssh -F .phpsu/config/ssh_config" hosta:~/test/* ./__test/', $rsync->generate());
+        $this->assertSame('rsync -avz -e "ssh -F php://temp" hosta:~/test/* ./__test/', $rsync->generate());
     }
 
     public function testDatabaseCommand(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new TempSshConfigFile());
+        $sshConfig->setFile(new \SplTempFileObject());
         $database = new DatabaseCommand();
         $database->setSshConfig($sshConfig)
             ->setFromUrl('mysql://root:root@database/sequelmovie')
@@ -133,6 +120,6 @@ SSH_CONFIG;
             ->setToUrl('mysql://root:root@127.0.0.1:2206/sequelmovie2')
             ->setToHost('');
 
-        $this->assertSame('ssh -F .phpsu/config/ssh_config hostc -C "mysqldump -hdatabase -P3306 -uroot -proot sequelmovie" | mysql -h127.0.0.1 -P2206 -uroot -proot sequelmovie2', $database->generate());
+        $this->assertSame('ssh -F php://temp hostc -C "mysqldump -hdatabase -P3306 -uroot -proot sequelmovie" | mysql -h127.0.0.1 -P2206 -uroot -proot sequelmovie2', $database->generate());
     }
 }

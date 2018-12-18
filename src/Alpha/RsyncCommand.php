@@ -29,18 +29,18 @@ final class RsyncCommand implements CommandInterface
      */
     public static function fromGlobal(GlobalConfig $global, string $fromInstanceName, string $toInstanceName, string $currentHost): array
     {
-        $fromInstance = $global->appInstances->{$fromInstanceName};
-        $toInstance = $global->appInstances->{$toInstanceName};
+        $fromInstance = $global->getAppInstance($fromInstanceName);
+        $toInstance = $global->getAppInstance($toInstanceName);
         $result = [];
-        foreach ($global->fileSystems as $fileSystemName => $fileSystem) {
+        foreach ($global->getFileSystems() as $fileSystemName => $fileSystem) {
             $result[] = static::fromAppInstances($fromInstance, $toInstance, $fileSystem, $currentHost);
         }
         return $result;
     }
 
-    public static function fromAppInstances(AppInstance $from, AppInstance $to, string $filesystem, string $currentHost): RsyncCommand
+    public static function fromAppInstances(AppInstance $from, AppInstance $to, FileSystem $filesystem, string $currentHost): RsyncCommand
     {
-        $relPath = ($filesystem ? '/' : '') . $filesystem;
+        $relPath = ($filesystem->getPath() ? '/' : '') . $filesystem->getPath();
 
         $result = new static();
         $result->fromHost = $from->getHost() === $currentHost ? '' : $from->getHost();

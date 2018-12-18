@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Alpha;
 
 use PHPSu\Alpha\AppInstance;
+use PHPSu\Alpha\Database;
+use PHPSu\Alpha\DatabaseCommand;
+use PHPSu\Alpha\FileSystem;
 use PHPSu\Alpha\GlobalConfig;
 use PHPSu\Alpha\RsyncCommand;
 use PHPSu\Alpha\SshCommand;
@@ -27,6 +30,16 @@ final class GlobalConfigTest extends TestCase
 
         $sshCommand = SshCommand::fromGlobal($global, 'serverEu', 'local');
         $this->assertEquals((new SshCommand())->setInto('serverEu'), $sshCommand);
+    }
+
+    public function testDatabaseFromGlobalConfig(): void
+    {
+        $global = static::getGlobalConfig();
+
+        $rsyncCommands = DatabaseCommand::fromGlobal($global, 'production', 'testing', 'local');
+        $this->assertEquals([
+            (new DatabaseCommand())->setFromHost('serverEu')->setFromUrl('mysql://user:pw@host:3307/database')->setToHost('serverEu')->setToUrl('mysql://user:pw@host:3307/database'),
+        ], $rsyncCommands);
     }
 
     public function testRsyncFromGlobalConfig(): void
@@ -56,15 +69,13 @@ final class GlobalConfigTest extends TestCase
     public static function getGlobalConfig(): GlobalConfig
     {
         $global = new GlobalConfig();
-        $global->fileSystems = new \stdClass();
-        $global->fileSystems->fileadmin = 'fileadmin';
-        $global->fileSystems->uploads = 'uploads';
-        $global->sshConnections = new SshConnections();
-        $global->sshConnections->addConnection((new SshConnection())->setHost('serverEu')->setUrl('user@server.eu')->setIdentityFile('docker/testCaseD/id_rsa'));
-        $global->appInstances = new \stdClass();
-        $global->appInstances->production = (new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production');
-        $global->appInstances->testing = (new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing');
-        $global->appInstances->local = (new AppInstance())->setName('local')->setHost('local')->setPath(getcwd());
+        $global->addFilesystem((new FileSystem())->setName('fileadmin')->setPath('fileadmin'));
+        $global->addFilesystem((new FileSystem())->setName('uploads')->setPath('uploads'));
+        $global->addDatabase((new Database())->setName('app')->setUrl('mysql://user:pw@host:3307/database'));
+        $global->addSshConnection((new SshConnection())->setHost('serverEu')->setUrl('user@server.eu')->setIdentityFile('docker/testCaseD/id_rsa'));
+        $global->addAppInstance((new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production'));
+        $global->addAppInstance((new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing'));
+        $global->addAppInstance((new AppInstance())->setName('local')->setHost('local')->setPath(getcwd()));
         return $global;
     }
 }
