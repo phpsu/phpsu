@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Alpha;
 
-final class RsyncCommand implements CommandInterface
+final class RsyncCommand
 {
     /** @var SshConfig */
     private $sshConfig;

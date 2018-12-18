@@ -13,7 +13,6 @@ use PHPUnit\Framework\TestCase;
 
 class TheInterfaceTest extends TestCase
 {
-
     private static function getGlobalConfig(): GlobalConfig
     {
         $global = new GlobalConfig();

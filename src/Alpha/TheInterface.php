@@ -25,12 +25,6 @@ class TheInterface
     }
 
     /**
-     **can:
-     * filesystems from global config
-     * database from global config
-     * filesystems from app config
-     * database from app config
-     *
      * TODO:
      **can't:
      * directly from server to server:

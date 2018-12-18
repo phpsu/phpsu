@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Alpha;
 
-final class SshCommand implements CommandInterface
+final class SshCommand
 {
     /** @var SshConfig */
     private $sshConfig;
