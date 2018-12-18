@@ -47,6 +47,9 @@ final class SshConnections
      */
     public function getPossibilities(string $to): array
     {
+        if (!isset($this->connections[$to])) {
+            throw new \Exception(sprintf('Host %s not found in SshConnections', $to));
+        }
         return $this->connections[$to];
     }
 }

@@ -44,7 +44,7 @@ final class RsyncCommand implements CommandInterface
 
         $result = new static();
         $result->fromHost = $from->getHost() === $currentHost ? '' : $from->getHost();
-        $result->toHost = $from->getHost() === $currentHost ? '' : $to->getHost();
+        $result->toHost = $to->getHost() === $currentHost ? '' : $to->getHost();
         $result->fromPath = rtrim($from->getPath(), '/*') . $relPath . '/*';
         $result->toPath = rtrim($to->getPath(), '/') . $relPath . '/';
         return $result;

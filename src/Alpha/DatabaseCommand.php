@@ -40,7 +40,7 @@ final class DatabaseCommand implements CommandInterface
     {
         $result = new static();
         $result->fromHost = $from->getHost() === $currentHost ? '' : $from->getHost();
-        $result->toHost = $from->getHost() === $currentHost ? '' : $to->getHost();
+        $result->toHost = $to->getHost() === $currentHost ? '' : $to->getHost();
         $result->fromUrl = $databaseDSN;
         $result->toUrl = $databaseDSN;
         return $result;

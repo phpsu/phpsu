@@ -6,15 +6,15 @@ namespace PHPSu\Alpha;
 class TheInterface
 {
     /**
-     * TODO:
      **can:
      * filesystems from global config
+     * database from global config
      *
+     * TODO:
      **can't:
      * filesystems from app config
-     *
-     * database from global config
      * database from app config
+     * directly from server to server: rsync dose that automatically: https://unix.stackexchange.com/questions/183504/how-to-rsync-files-between-two-remotes/183516#183516
      *
      * @param GlobalConfig $globalConfig
      * @param string $from
@@ -26,6 +26,10 @@ class TheInterface
     {
         if ($from === $to) {
             throw new \Exception(sprintf('From and To are Identical: %s', $from));
+        }
+        if ($currentHost !== '') {
+            //for validation:
+            $globalConfig->sshConnections->getPossibilities($currentHost);
         }
         $sshConfig = SshConfig::fromGlobal($globalConfig, $currentHost);
         $sshConfig->setFile(new TempSshConfigFile());

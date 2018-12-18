@@ -55,5 +55,11 @@ class TheInterfaceTest extends TestCase
             'rsync -e "ssh -F .phpsu/config/ssh_config" serverEu:/var/www/production/uploads/* stagingServer:/var/www/staging/uploads/',
             'ssh -F .phpsu/config/ssh_config serverEu -C "mysqldump -hhost -P3307 -uuser -ppw database" | ssh -F .phpsu/config/ssh_config stagingServer -C "mysql -hhost -P3307 -uuser -ppw database"',
         ], $result);
+        $result = $interface->getCommands($global, 'production', 'staging', 'stagingServer');
+        $this->assertSame([
+            'rsync -e "ssh -F .phpsu/config/ssh_config" serverEu:/var/www/production/fileadmin/* /var/www/staging/fileadmin/',
+            'rsync -e "ssh -F .phpsu/config/ssh_config" serverEu:/var/www/production/uploads/* /var/www/staging/uploads/',
+            'ssh -F .phpsu/config/ssh_config serverEu -C "mysqldump -hhost -P3307 -uuser -ppw database" | mysql -hhost -P3307 -uuser -ppw database',
+        ], $result);
     }
 }
