@@ -33,20 +33,29 @@ final class RsyncCommand implements CommandInterface
         $toInstance = $global->getAppInstance($toInstanceName);
         $result = [];
         foreach ($global->getFileSystems() as $fileSystemName => $fileSystem) {
-            $result[] = static::fromAppInstances($fromInstance, $toInstance, $fileSystem, $currentHost);
+            $fromFilesystem = $fileSystem;
+            if ($fromInstance->hasFilesystem($fileSystemName)) {
+                $fromFilesystem = $fromInstance->getFilesystem($fileSystemName);
+            }
+            $toFilesystem = $fileSystem;
+            if ($toInstance->hasFilesystem($fileSystemName)) {
+                $toFilesystem = $toInstance->getFilesystem($fileSystemName);
+            }
+            $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromFilesystem, $toFilesystem, $currentHost);
         }
         return $result;
     }
 
-    public static function fromAppInstances(AppInstance $from, AppInstance $to, FileSystem $filesystem, string $currentHost): RsyncCommand
+    public static function fromAppInstances(AppInstance $from, AppInstance $to, FileSystem $fromFilesystem, FileSystem $toFilesystem, string $currentHost): RsyncCommand
     {
-        $relPath = ($filesystem->getPath() ? '/' : '') . $filesystem->getPath();
+        $fromRelPath = ($fromFilesystem->getPath() ? '/' : '') . $fromFilesystem->getPath();
+        $toRelPath = ($toFilesystem->getPath() ? '/' : '') . $toFilesystem->getPath();
 
         $result = new static();
         $result->fromHost = $from->getHost() === $currentHost ? '' : $from->getHost();
         $result->toHost = $to->getHost() === $currentHost ? '' : $to->getHost();
-        $result->fromPath = rtrim($from->getPath(), '/*') . $relPath . '/*';
-        $result->toPath = rtrim($to->getPath(), '/') . $relPath . '/';
+        $result->fromPath = rtrim($from->getPath(), '/*') . $fromRelPath . '/*';
+        $result->toPath = rtrim($to->getPath(), '/') . $toRelPath . '/';
         return $result;
     }
 

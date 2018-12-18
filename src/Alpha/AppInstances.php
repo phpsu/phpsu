@@ -14,17 +14,15 @@ final class AppInstances
         return $this;
     }
 
-    /**
-     * @param string $name
-     * @return AppInstance
-     * @throws AppInstanceNotFoundException
-     */
+    public function has(string $name): bool
+    {
+        return isset($this->instances[$name]);
+    }
+
     public function get(string $name): AppInstance
     {
         if (!isset($this->instances[$name])) {
-            throw new class(sprintf('App Instance with name %s not found', $name)) extends \Exception implements AppInstanceNotFoundException
-            {
-            };
+            throw new \Exception(sprintf('App Instance with name %s not found', $name));
         }
         return $this->instances[$name];
     }

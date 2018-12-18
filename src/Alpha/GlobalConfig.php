@@ -79,11 +79,6 @@ final class GlobalConfig
         return $this->sshConnections;
     }
 
-    /**
-     * @param string $appName
-     * @return AppInstance
-     * @throws AppInstanceNotFoundException
-     */
     public function getAppInstance(string $appName): AppInstance
     {
         return $this->appInstances->get($appName);
@@ -91,10 +86,9 @@ final class GlobalConfig
 
     public function getHostName(string $connectionName): string
     {
-        try {
+        if ($this->appInstances->has($connectionName)) {
             return $this->getAppInstance($connectionName)->getHost();
-        } catch (AppInstanceNotFoundException $exception) {
-            return $connectionName;
         }
+        return $connectionName;
     }
 }

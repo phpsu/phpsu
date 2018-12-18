@@ -28,12 +28,14 @@ class TheInterface
      **can:
      * filesystems from global config
      * database from global config
+     * filesystems from app config
+     * database from app config
      *
      * TODO:
      **can't:
-     * filesystems from app config
-     * database from app config
-     * directly from server to server: rsync dose that automatically: https://unix.stackexchange.com/questions/183504/how-to-rsync-files-between-two-remotes/183516#183516
+     * directly from server to server:
+     * - rsync dose that automatically: https://unix.stackexchange.com/questions/183504/how-to-rsync-files-between-two-remotes/183516#183516
+     * - mysql needs this from us
      *
      * @param GlobalConfig $globalConfig
      * @param string $from

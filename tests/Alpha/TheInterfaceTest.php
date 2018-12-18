@@ -22,7 +22,11 @@ class TheInterfaceTest extends TestCase
         $global->addDatabase((new Database())->setName('app')->setUrl('mysql://user:pw@host:3307/database'));
         $global->addSshConnection((new SshConnection())->setHost('serverEu')->setUrl('user@server.eu')->setIdentityFile('docker/testCaseD/id_rsa'));
         $global->addSshConnection((new SshConnection())->setHost('stagingServer')->setUrl('staging@stagingServer.server.eu')->setIdentityFile('docker/testCaseD/id_rsa'));
-        $global->addAppInstance((new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production'));
+        $global->addAppInstance((new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production')->addFilesystem(
+            (new FileSystem())->setName('fileadmin')->setPath('fileadmin2')
+        )->addDatabase(
+            (new Database())->setName('app')->setUrl('mysql://root:root@appHost/appDatabase')
+        ));
         $global->addAppInstance((new AppInstance())->setName('staging')->setHost('stagingServer')->setPath('/var/www/staging'));
         $global->addAppInstance((new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing'));
         $global->addAppInstance((new AppInstance())->setName('local')->setHost('')->setPath('./'));
@@ -38,9 +42,9 @@ class TheInterfaceTest extends TestCase
 
         $result = $interface->getCommands($global, 'production', 'local', '');
         $this->assertSame([
-            'rsync -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin/* ./fileadmin/',
+            'rsync -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin2/* ./fileadmin/',
             'rsync -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* ./uploads/',
-            'ssh -F php://temp serverEu -C "mysqldump -hhost -P3307 -uuser -ppw database" | mysql -hhost -P3307 -uuser -ppw database',
+            'ssh -F php://temp serverEu -C "mysqldump -happHost -P3306 -uroot -proot appDatabase" | mysql -hhost -P3307 -uuser -ppw database',
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -66,9 +70,9 @@ SSH_CONFIG;
 
         $result = $interface->getCommands($global, 'production', 'testing', '');
         $this->assertSame([
-            'ssh -F php://temp serverEu -C "rsync /var/www/production/fileadmin/* /var/www/testing/fileadmin/"',
+            'ssh -F php://temp serverEu -C "rsync /var/www/production/fileadmin2/* /var/www/testing/fileadmin/"',
             'ssh -F php://temp serverEu -C "rsync /var/www/production/uploads/* /var/www/testing/uploads/"',
-            'ssh -F php://temp serverEu -C "mysqldump -hhost -P3307 -uuser -ppw database | mysql -hhost -P3307 -uuser -ppw database"',
+            'ssh -F php://temp serverEu -C "mysqldump -happHost -P3306 -uroot -proot appDatabase | mysql -hhost -P3307 -uuser -ppw database"',
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -122,9 +126,9 @@ SSH_CONFIG;
 
         $result = $interface->getCommands($global, 'production', 'staging', '');
         $this->assertSame([
-            'rsync -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin/* stagingServer:/var/www/staging/fileadmin/',
+            'rsync -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin2/* stagingServer:/var/www/staging/fileadmin/',
             'rsync -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* stagingServer:/var/www/staging/uploads/',
-            'ssh -F php://temp serverEu -C "mysqldump -hhost -P3307 -uuser -ppw database" | ssh -F php://temp stagingServer -C "mysql -hhost -P3307 -uuser -ppw database"',
+            'ssh -F php://temp serverEu -C "mysqldump -happHost -P3306 -uroot -proot appDatabase" | ssh -F php://temp stagingServer -C "mysql -hhost -P3307 -uuser -ppw database"',
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -150,9 +154,32 @@ SSH_CONFIG;
 
         $result = $interface->getCommands($global, 'production', 'staging', 'stagingServer');
         $this->assertSame([
-            'rsync -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin/* /var/www/staging/fileadmin/',
+            'rsync -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin2/* /var/www/staging/fileadmin/',
             'rsync -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* /var/www/staging/uploads/',
-            'ssh -F php://temp serverEu -C "mysqldump -hhost -P3307 -uuser -ppw database" | mysql -hhost -P3307 -uuser -ppw database',
+            'ssh -F php://temp serverEu -C "mysqldump -happHost -P3306 -uroot -proot appDatabase" | mysql -hhost -P3307 -uuser -ppw database',
+        ], $result);
+        $expectedSshConfigString = <<<'SSH_CONFIG'
+Host serverEu
+  HostName server.eu
+  IdentityFile docker/testCaseD/id_rsa
+  User user
+
+
+SSH_CONFIG;
+        $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+    }
+
+    public function testStagingToProductionFromStaging(): void
+    {
+        $interface = new TheInterface();
+        $interface->setFile($file = new \SplTempFileObject());
+        $global = static::getGlobalConfig();
+
+        $result = $interface->getCommands($global, 'staging', 'production', 'stagingServer');
+        $this->assertSame([
+            'rsync -e "ssh -F php://temp" /var/www/staging/fileadmin/* serverEu:/var/www/production/fileadmin2/',
+            'rsync -e "ssh -F php://temp" /var/www/staging/uploads/* serverEu:/var/www/production/uploads/',
+            'mysqldump -hhost -P3307 -uuser -ppw database | ssh -F php://temp serverEu -C "mysql -happHost -P3306 -uroot -proot appDatabase"',
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu

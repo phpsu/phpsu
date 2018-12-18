@@ -30,19 +30,27 @@ final class DatabaseCommand implements CommandInterface
         $fromInstance = $global->getAppInstance($fromInstanceName);
         $toInstance = $global->getAppInstance($toInstanceName);
         $result = [];
-        foreach ($global->getDatabases() as $databaseName => $databaseDSN) {
-            $result[] = static::fromAppInstances($fromInstance, $toInstance, $databaseDSN, $currentHost);
+        foreach ($global->getDatabases() as $databaseName => $database) {
+            $fromDatabase = $database;
+            if ($fromInstance->hasDatabase($databaseName)) {
+                $fromDatabase = $fromInstance->getDatabase($databaseName);
+            }
+            $toDatabase = $database;
+            if ($toInstance->hasDatabase($databaseName)) {
+                $toDatabase = $toInstance->getDatabase($databaseName);
+            }
+            $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost);
         }
         return $result;
     }
 
-    public static function fromAppInstances(AppInstance $from, AppInstance $to, Database $database, string $currentHost): DatabaseCommand
+    public static function fromAppInstances(AppInstance $from, AppInstance $to, Database $fromDatabase, Database $toDatabase, string $currentHost): DatabaseCommand
     {
         $result = new static();
         $result->fromHost = $from->getHost() === $currentHost ? '' : $from->getHost();
         $result->toHost = $to->getHost() === $currentHost ? '' : $to->getHost();
-        $result->fromUrl = $database->getUrl();
-        $result->toUrl = $database->getUrl();
+        $result->fromUrl = $fromDatabase->getUrl();
+        $result->toUrl = $toDatabase->getUrl();
         return $result;
     }
 

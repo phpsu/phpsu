@@ -10,7 +10,6 @@ use PHPSu\Alpha\RsyncCommand;
 use PHPSu\Alpha\SshCommand;
 use PHPSu\Alpha\SshConfig;
 use PHPSu\Alpha\SshConfigHost;
-use PHPSu\Alpha\TempSshConfigFile;
 use PHPUnit\Framework\TestCase;
 
 final class RunTest extends TestCase
@@ -30,7 +29,8 @@ final class RunTest extends TestCase
             ->setHost('hostc')
             ->setPath('/var/www/testing');
 
-        $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, (new FileSystem())->setName('app')->setPath(''), 'local')->setSshConfig($sshConfig)->generate();
+        $fileSystem = (new FileSystem())->setName('app')->setPath('');
+        $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local')->setSshConfig($sshConfig)->generate();
         $this->assertSame('rsync -e "ssh -F php://temp" hosta:/var/www/prod/* hostc:/var/www/testing/', $generated);
     }
 

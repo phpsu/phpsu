@@ -13,7 +13,6 @@ use PHPSu\Alpha\SshCommand;
 use PHPSu\Alpha\SshConfig;
 use PHPSu\Alpha\SshConfigHost;
 use PHPSu\Alpha\SshConnection;
-use PHPSu\Alpha\SshConnections;
 use PHPUnit\Framework\TestCase;
 
 final class GlobalConfigTest extends TestCase

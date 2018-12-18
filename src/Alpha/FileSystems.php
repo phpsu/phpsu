@@ -20,4 +20,17 @@ final class FileSystems
     {
         return $this->fileSystems;
     }
+
+    public function has(string $name): bool
+    {
+        return isset($this->fileSystems[$name]);
+    }
+
+    public function get(string $name): FileSystem
+    {
+        if (!isset($this->fileSystems[$name])) {
+            throw new \Exception(sprintf('Filesystem %s not found', $name));
+        }
+        return $this->fileSystems[$name];
+    }
 }
