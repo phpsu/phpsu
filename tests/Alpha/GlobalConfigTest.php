@@ -49,6 +49,7 @@ final class GlobalConfigTest extends TestCase
         $sshConfigExpected->serverEu = new SshConfigHost();
         $sshConfigExpected->serverEu->User = 'user';
         $sshConfigExpected->serverEu->HostName = 'server.eu';
+        $sshConfigExpected->serverEu->IdentityFile = 'docker/testCaseD/id_rsa';
         $this->assertEquals($sshConfigExpected, $sshConfig);
     }
 

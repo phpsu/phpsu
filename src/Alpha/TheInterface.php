@@ -5,6 +5,25 @@ namespace PHPSu\Alpha;
 
 class TheInterface
 {
+    /** @var \SplFileObject */
+    private $file;
+
+    public function __construct()
+    {
+        $this->file = new TempSshConfigFile();
+    }
+
+    public function getFile(): \SplFileObject
+    {
+        return $this->file;
+    }
+
+    public function setFile(\SplFileObject $file): TheInterface
+    {
+        $this->file = $file;
+        return $this;
+    }
+
     /**
      **can:
      * filesystems from global config
@@ -32,7 +51,7 @@ class TheInterface
             $globalConfig->sshConnections->getPossibilities($currentHost);
         }
         $sshConfig = SshConfig::fromGlobal($globalConfig, $currentHost);
-        $sshConfig->setFile(new TempSshConfigFile());
+        $sshConfig->setFile($this->file);
 
         $result = [];
         $rsyncCommands = RsyncCommand::fromGlobal($globalConfig, $from, $to, $currentHost);

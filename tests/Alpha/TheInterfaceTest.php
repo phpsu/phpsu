@@ -12,10 +12,146 @@ use PHPUnit\Framework\TestCase;
 
 class TheInterfaceTest extends TestCase
 {
-
-    public function testGetCommands(): void
+    public function testProductionToLocalFromAnyThere(): void
     {
         $interface = new TheInterface();
+        $interface->setFile($file = new \SplTempFileObject());
+        $global = $this->getGlobalConfig();
+
+        $result = $interface->getCommands($global, 'production', 'local', '');
+        $this->assertSame([
+            'rsync -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin/* ./fileadmin/',
+            'rsync -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* ./uploads/',
+            'ssh -F php://temp serverEu -C "mysqldump -hhost -P3307 -uuser -ppw database" | mysql -hhost -P3307 -uuser -ppw database',
+        ], $result);
+        $expectedSshConfigString = <<<'SSH_CONFIG'
+Host serverEu
+  HostName server.eu
+  IdentityFile docker/testCaseD/id_rsa
+  User user
+
+Host stagingServer
+  HostName stagingServer.server.eu
+  IdentityFile docker/testCaseD/id_rsa
+  User staging
+
+
+SSH_CONFIG;
+        $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+    }
+
+    public function testProductionToTestingFromAnyThere(): void
+    {
+        $interface = new TheInterface();
+        $interface->setFile($file = new \SplTempFileObject());
+        $global = $this->getGlobalConfig();
+
+        $result = $interface->getCommands($global, 'production', 'testing', '');
+        $this->assertSame([
+            'ssh -F php://temp serverEu -C "rsync /var/www/production/fileadmin/* /var/www/testing/fileadmin/"',
+            'ssh -F php://temp serverEu -C "rsync /var/www/production/uploads/* /var/www/testing/uploads/"',
+            'ssh -F php://temp serverEu -C "mysqldump -hhost -P3307 -uuser -ppw database | mysql -hhost -P3307 -uuser -ppw database"',
+        ], $result);
+        $expectedSshConfigString = <<<'SSH_CONFIG'
+Host serverEu
+  HostName server.eu
+  IdentityFile docker/testCaseD/id_rsa
+  User user
+
+Host stagingServer
+  HostName stagingServer.server.eu
+  IdentityFile docker/testCaseD/id_rsa
+  User staging
+
+
+SSH_CONFIG;
+        $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+    }
+
+    public function testLocalToLocal2FromAnyThere(): void
+    {
+        $interface = new TheInterface();
+        $interface->setFile($file = new \SplTempFileObject());
+        $global = $this->getGlobalConfig();
+
+        $result = $interface->getCommands($global, 'local', 'local2', '');
+        $this->assertSame([
+            'rsync ./fileadmin/* ../local2/fileadmin/',
+            'rsync ./uploads/* ../local2/uploads/',
+            'mysqldump -hhost -P3307 -uuser -ppw database | mysql -hhost -P3307 -uuser -ppw database',
+        ], $result);
+        $expectedSshConfigString = <<<'SSH_CONFIG'
+Host serverEu
+  HostName server.eu
+  IdentityFile docker/testCaseD/id_rsa
+  User user
+
+Host stagingServer
+  HostName stagingServer.server.eu
+  IdentityFile docker/testCaseD/id_rsa
+  User staging
+
+
+SSH_CONFIG;
+        $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+    }
+
+    public function testProductionToStagingFromAnyThere(): void
+    {
+        $interface = new TheInterface();
+        $interface->setFile($file = new \SplTempFileObject());
+        $global = $this->getGlobalConfig();
+
+        $result = $interface->getCommands($global, 'production', 'staging', '');
+        $this->assertSame([
+            'rsync -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin/* stagingServer:/var/www/staging/fileadmin/',
+            'rsync -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* stagingServer:/var/www/staging/uploads/',
+            'ssh -F php://temp serverEu -C "mysqldump -hhost -P3307 -uuser -ppw database" | ssh -F php://temp stagingServer -C "mysql -hhost -P3307 -uuser -ppw database"',
+        ], $result);
+        $expectedSshConfigString = <<<'SSH_CONFIG'
+Host serverEu
+  HostName server.eu
+  IdentityFile docker/testCaseD/id_rsa
+  User user
+
+Host stagingServer
+  HostName stagingServer.server.eu
+  IdentityFile docker/testCaseD/id_rsa
+  User staging
+
+
+SSH_CONFIG;
+        $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+    }
+
+    public function testProductionToStagingFromStaging(): void
+    {
+        $interface = new TheInterface();
+        $interface->setFile($file = new \SplTempFileObject());
+        $global = $this->getGlobalConfig();
+
+        $result = $interface->getCommands($global, 'production', 'staging', 'stagingServer');
+        $this->assertSame([
+            'rsync -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin/* /var/www/staging/fileadmin/',
+            'rsync -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* /var/www/staging/uploads/',
+            'ssh -F php://temp serverEu -C "mysqldump -hhost -P3307 -uuser -ppw database" | mysql -hhost -P3307 -uuser -ppw database',
+        ], $result);
+        $expectedSshConfigString = <<<'SSH_CONFIG'
+Host serverEu
+  HostName server.eu
+  IdentityFile docker/testCaseD/id_rsa
+  User user
+
+
+SSH_CONFIG;
+        $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+    }
+
+    /**
+     * @return GlobalConfig
+     */
+    private function getGlobalConfig(): GlobalConfig
+    {
         $global = new GlobalConfig();
         $global->fileSystems = new \stdClass();
         $global->fileSystems->fileadmin = 'fileadmin';
@@ -31,35 +167,6 @@ class TheInterfaceTest extends TestCase
         $global->appInstances->testing = (new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing');
         $global->appInstances->local = (new AppInstance())->setName('local')->setHost('')->setPath('./');
         $global->appInstances->local2 = (new AppInstance())->setName('local2')->setHost('')->setPath('../local2');
-        $result = $interface->getCommands($global, 'production', 'local', '');
-        $this->assertSame([
-            'rsync -e "ssh -F .phpsu/config/ssh_config" serverEu:/var/www/production/fileadmin/* ./fileadmin/',
-            'rsync -e "ssh -F .phpsu/config/ssh_config" serverEu:/var/www/production/uploads/* ./uploads/',
-            'ssh -F .phpsu/config/ssh_config serverEu -C "mysqldump -hhost -P3307 -uuser -ppw database" | mysql -hhost -P3307 -uuser -ppw database',
-        ], $result);
-        $result = $interface->getCommands($global, 'production', 'testing', '');
-        $this->assertSame([
-            'ssh -F .phpsu/config/ssh_config serverEu -C "rsync /var/www/production/fileadmin/* /var/www/testing/fileadmin/"',
-            'ssh -F .phpsu/config/ssh_config serverEu -C "rsync /var/www/production/uploads/* /var/www/testing/uploads/"',
-            'ssh -F .phpsu/config/ssh_config serverEu -C "mysqldump -hhost -P3307 -uuser -ppw database | mysql -hhost -P3307 -uuser -ppw database"',
-        ], $result);
-        $result = $interface->getCommands($global, 'local', 'local2', '');
-        $this->assertSame([
-            'rsync ./fileadmin/* ../local2/fileadmin/',
-            'rsync ./uploads/* ../local2/uploads/',
-            'mysqldump -hhost -P3307 -uuser -ppw database | mysql -hhost -P3307 -uuser -ppw database',
-        ], $result);
-        $result = $interface->getCommands($global, 'production', 'staging', '');
-        $this->assertSame([
-            'rsync -e "ssh -F .phpsu/config/ssh_config" serverEu:/var/www/production/fileadmin/* stagingServer:/var/www/staging/fileadmin/',
-            'rsync -e "ssh -F .phpsu/config/ssh_config" serverEu:/var/www/production/uploads/* stagingServer:/var/www/staging/uploads/',
-            'ssh -F .phpsu/config/ssh_config serverEu -C "mysqldump -hhost -P3307 -uuser -ppw database" | ssh -F .phpsu/config/ssh_config stagingServer -C "mysql -hhost -P3307 -uuser -ppw database"',
-        ], $result);
-        $result = $interface->getCommands($global, 'production', 'staging', 'stagingServer');
-        $this->assertSame([
-            'rsync -e "ssh -F .phpsu/config/ssh_config" serverEu:/var/www/production/fileadmin/* /var/www/staging/fileadmin/',
-            'rsync -e "ssh -F .phpsu/config/ssh_config" serverEu:/var/www/production/uploads/* /var/www/staging/uploads/',
-            'ssh -F .phpsu/config/ssh_config serverEu -C "mysqldump -hhost -P3307 -uuser -ppw database" | mysql -hhost -P3307 -uuser -ppw database',
-        ], $result);
+        return $global;
     }
 }
