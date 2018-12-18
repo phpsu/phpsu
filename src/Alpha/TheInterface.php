@@ -24,13 +24,22 @@ class TheInterface
      */
     public function getCommands(GlobalConfig $globalConfig, string $from, string $to, string $currentHost): array
     {
+        if ($from === $to) {
+            throw new \Exception(sprintf('From and To are Identical: %s', $from));
+        }
         $sshConfig = SshConfig::fromGlobal($globalConfig, $currentHost);
+        $sshConfig->setFile(new TempSshConfigFile());
+
         $result = [];
         $rsyncCommands = RsyncCommand::fromGlobal($globalConfig, $from, $to, $currentHost);
-        $sshConfig->setFile(new TempSshConfigFile());
         foreach ($rsyncCommands as $rsyncCommand) {
             $rsyncCommand->setSshConfig($sshConfig);
             $result[] = $rsyncCommand->generate();
+        }
+        $databaseCommands = DatabaseCommand::fromGlobal($globalConfig, $from, $to, $currentHost);
+        foreach ($databaseCommands as $databaseCommand) {
+            $databaseCommand->setSshConfig($sshConfig);
+            $result[] = $databaseCommand->generate();
         }
         $sshConfig->writeConfig();
         return $result;

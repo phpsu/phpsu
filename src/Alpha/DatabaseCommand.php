@@ -18,6 +18,34 @@ final class DatabaseCommand implements CommandInterface
     /** @var string */
     private $toHost;
 
+    /**
+     * @param GlobalConfig $global
+     * @param string $fromInstanceName
+     * @param string $toInstanceName
+     * @param string $currentHost
+     * @return DatabaseCommand[]
+     */
+    public static function fromGlobal(GlobalConfig $global, string $fromInstanceName, string $toInstanceName, string $currentHost): array
+    {
+        $fromInstance = $global->appInstances->{$fromInstanceName};
+        $toInstance = $global->appInstances->{$toInstanceName};
+        $result = [];
+        foreach ($global->databases as $databaseName => $databaseDSN) {
+            $result[] = static::fromAppInstances($fromInstance, $toInstance, $databaseDSN, $currentHost);
+        }
+        return $result;
+    }
+
+    public static function fromAppInstances(AppInstance $from, AppInstance $to, string $databaseDSN, string $currentHost): DatabaseCommand
+    {
+        $result = new static();
+        $result->fromHost = $from->getHost() === $currentHost ? '' : $from->getHost();
+        $result->toHost = $from->getHost() === $currentHost ? '' : $to->getHost();
+        $result->fromUrl = $databaseDSN;
+        $result->toUrl = $databaseDSN;
+        return $result;
+    }
+
     public function getSshConfig(): SshConfig
     {
         return $this->sshConfig;
@@ -73,21 +101,33 @@ final class DatabaseCommand implements CommandInterface
         return $this;
     }
 
-    public function generate():string
+    public function generate(): string
     {
-        $file = $this->sshConfig->getFile();
+        $hostsDifferentiate = $this->fromHost !== $this->toHost;
         $from = $this->parseDatabaseUrl($this->fromUrl);
         $to = $this->parseDatabaseUrl($this->toUrl);
 
         $dumpCmd = "mysqldump -h{$from['host']} -P{$from['port']} -u{$from['user']} -p{$from['pass']} {$from['path']}";
-        if ($this->fromHost) {
-            $dumpCmd = 'ssh -F ' . $file->getPathname() . ' ' . $this->fromHost . ' -C "' . $dumpCmd . '"';
-        }
         $importCmd = "mysql -h{$to['host']} -P{$to['port']} -u{$to['user']} -p{$to['pass']} {$to['path']}";
-        if ($this->toHost) {
-            $importCmd = 'ssh -F ' . $file->getPathname() . ' ' . $this->toHost . ' -C "' . $importCmd . '"';
+        if ($hostsDifferentiate) {
+            if ($this->fromHost) {
+                $sshCommand = new SshCommand();
+                $sshCommand->setSshConfig($this->sshConfig);
+                $sshCommand->setInto($this->fromHost);
+                $dumpCmd = $sshCommand->generate($dumpCmd);
+            }
+            if ($this->toHost) {
+                $sshCommand = new SshCommand();
+                $sshCommand->setSshConfig($this->sshConfig);
+                $sshCommand->setInto($this->toHost);
+                $importCmd = $sshCommand->generate($importCmd);
+            }
+            return $dumpCmd . ' | ' . $importCmd;
         }
-        return $dumpCmd . ' | ' . $importCmd;
+        $sshCommand = new SshCommand();
+        $sshCommand->setSshConfig($this->sshConfig);
+        $sshCommand->setInto($this->fromHost);
+        return $sshCommand->generate($dumpCmd . ' | ' . $importCmd);
     }
 
     private function parseDatabaseUrl(string $url): array

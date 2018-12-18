@@ -44,7 +44,7 @@ final class RunTest extends TestCase
             ->setPath('/var/www/testing');
 
         $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, '', 'local')->setSshConfig($sshConfig)->generate();
-        $this->assertSame('rsync  -e "ssh -F .phpsu/config/ssh_config" hosta:/var/www/prod/* hostc:/var/www/testing/', $generated);
+        $this->assertSame('rsync -e "ssh -F .phpsu/config/ssh_config" hosta:/var/www/prod/* hostc:/var/www/testing/', $generated);
     }
 
     public function testSshConfig(): void
@@ -115,8 +115,9 @@ SSH_CONFIG;
         $rsync = new RsyncCommand();
         $rsync->setSshConfig($sshConfig)
             ->setOptions('-avz')
-            ->setFrom('hosta:~/test/*')
-            ->setTo('./__test/');
+            ->setFromHost('hosta')
+            ->setFromPath('~/test/*')
+            ->setToPath('./__test/');
 
         $this->assertSame('rsync -avz -e "ssh -F .phpsu/config/ssh_config" hosta:~/test/* ./__test/', $rsync->generate());
     }

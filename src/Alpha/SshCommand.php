@@ -51,9 +51,12 @@ final class SshCommand implements CommandInterface
         return $this;
     }
 
-    public function generate(): string
+    public function generate(string $command = ''): string
     {
         $file = $this->sshConfig->getFile();
-        return 'ssh -F ' . $file->getPathname() . ' ' . $this->into;
+        if ($this->into === '') {
+            return $command;
+        }
+        return 'ssh -F ' . $file->getPathname() . ' ' . $this->into . ($command ? ' -C "' . addslashes($command) . '"' : '');
     }
 }

@@ -9,10 +9,16 @@ final class RsyncCommand implements CommandInterface
     private $sshConfig;
     /** @var string */
     private $options;
+
     /** @var string */
-    private $from;
+    private $fromHost = '';
     /** @var string */
-    private $to;
+    private $fromPath;
+
+    /** @var string */
+    private $toHost = '';
+    /** @var string */
+    private $toPath;
 
     /**
      * @param GlobalConfig $global
@@ -37,20 +43,10 @@ final class RsyncCommand implements CommandInterface
         $relPath = ($filesystem ? '/' : '') . $filesystem;
 
         $result = new static();
-        $fromHostPart = '';
-        if ($from->getHost() !== $currentHost) {
-            $fromHostPart = $from->getHost() . ':';
-        }
-        $toHostPart = '';
-        if ($to->getHost() !== $currentHost) {
-            $toHostPart = $to->getHost() . ':';
-        }
-        $result->from = $fromHostPart . rtrim($from->getPath(), '/*') . $relPath . '/*';
-        $result->to = $toHostPart . rtrim($to->getPath(), '/') . $relPath . '/';
-        /**
-         * TODO if both source and destination are on the same system. than the data should flow between them and not through currentHost
-         * aka: ssh host -C rsync $fromPath/$relPath/* $toPath/$relPath/*
-         */
+        $result->fromHost = $from->getHost() === $currentHost ? '' : $from->getHost();
+        $result->toHost = $from->getHost() === $currentHost ? '' : $to->getHost();
+        $result->fromPath = rtrim($from->getPath(), '/*') . $relPath . '/*';
+        $result->toPath = rtrim($to->getPath(), '/') . $relPath . '/';
         return $result;
     }
 
@@ -76,31 +72,76 @@ final class RsyncCommand implements CommandInterface
         return $this;
     }
 
-    public function getFrom(): string
+    public function getFromHost(): string
     {
-        return $this->from;
+        return $this->fromHost;
     }
 
-    public function setFrom(string $from): RsyncCommand
+    public function setFromHost(string $fromHost): RsyncCommand
     {
-        $this->from = $from;
+        $this->fromHost = $fromHost;
         return $this;
     }
 
-    public function getTo(): string
+    public function getFromPath(): string
     {
-        return $this->to;
+        return $this->fromPath;
     }
 
-    public function setTo(string $to): RsyncCommand
+    public function setFromPath(string $fromPath): RsyncCommand
     {
-        $this->to = $to;
+        $this->fromPath = $fromPath;
+        return $this;
+    }
+
+    public function getToHost(): string
+    {
+        return $this->toHost;
+    }
+
+    public function setToHost(string $toHost): RsyncCommand
+    {
+        $this->toHost = $toHost;
+        return $this;
+    }
+
+    public function getToPath(): string
+    {
+        return $this->toPath;
+    }
+
+    public function setToPath(string $toPath): RsyncCommand
+    {
+        $this->toPath = $toPath;
         return $this;
     }
 
     public function generate(): string
     {
-        $file = $this->sshConfig->getFile();
-        return 'rsync ' . $this->options . ' -e "ssh -F ' . $file->getPathname() . '" ' . $this->from . ' ' . $this->to;
+        $hostsDifferentiate = $this->fromHost !== $this->toHost;
+        $fromHostPart = '';
+        $toHostPart = '';
+
+        $command = 'rsync';
+        if ($this->options) {
+            $command .= ' ' . $this->options;
+        }
+        if ($hostsDifferentiate) {
+            $file = $this->sshConfig->getFile();
+            $command .= ' -e "ssh -F ' . $file->getPathname() . '"';
+            $fromHostPart = $this->fromHost ? $this->fromHost . ':' : '';
+            $toHostPart = $this->toHost ? $this->toHost . ':' : '';
+        }
+        $from = $fromHostPart . $this->fromPath;
+        $to = $toHostPart . $this->toPath;
+        $command .= ' ' . $from . ' ' . $to;
+
+        if (!$hostsDifferentiate) {
+            $sshCommand = new SshCommand();
+            $sshCommand->setSshConfig($this->sshConfig);
+            $sshCommand->setInto($this->fromHost);
+            return $sshCommand->generate($command);
+        }
+        return $command;
     }
 }
