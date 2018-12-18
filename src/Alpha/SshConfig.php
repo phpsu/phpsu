@@ -10,7 +10,7 @@ final class SshConfig
     /** @var \SplFileObject */
     private $file;
 
-    public static function fromGlobal(\stdClass $global, string $currentHost): SshConfig
+    public static function fromGlobal(GlobalConfig $global, string $currentHost): SshConfig
     {
         return (new SshConfigGenerator())->generate($global->sshConnections, $currentHost);
     }

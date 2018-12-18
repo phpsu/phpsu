@@ -11,18 +11,18 @@ class TheInterface
      * filesystems from global config
      *
      **can't:
-     * filesystems from appInstance
+     * filesystems from app config
      *
      * database from global config
-     * database from appInstance
+     * database from app config
      *
-     * @param \stdClass $globalConfig
+     * @param GlobalConfig $globalConfig
      * @param string $from
      * @param string $to
      * @param string $currentHost
      * @return string[]
      */
-    public function getCommands(\stdClass $globalConfig, string $from, string $to, string $currentHost): array
+    public function getCommands(GlobalConfig $globalConfig, string $from, string $to, string $currentHost): array
     {
         $sshConfig = SshConfig::fromGlobal($globalConfig, $currentHost);
         $result = [];

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Alpha;
 
 use PHPSu\Alpha\AppInstance;
+use PHPSu\Alpha\GlobalConfig;
 use PHPSu\Alpha\SshConnection;
 use PHPSu\Alpha\SshConnections;
 use PHPSu\Alpha\TheInterface;
@@ -15,7 +16,7 @@ class TheInterfaceTest extends TestCase
     public function testGetCommands(): void
     {
         $interface = new TheInterface();
-        $global = new \stdClass();
+        $global = new GlobalConfig();
         $global->fileSystems = new \stdClass();
         $global->fileSystems->fileadmin = 'fileadmin';
         $global->fileSystems->uploads = 'uploads';

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Alpha;
 
 use PHPSu\Alpha\AppInstance;
+use PHPSu\Alpha\GlobalConfig;
 use PHPSu\Alpha\RsyncCommand;
 use PHPSu\Alpha\SshCommand;
 use PHPSu\Alpha\SshConfig;
@@ -51,9 +52,9 @@ final class GlobalConfigTest extends TestCase
         $this->assertEquals($sshConfigExpected, $sshConfig);
     }
 
-    public static function getGlobalConfig(): \stdClass
+    public static function getGlobalConfig(): GlobalConfig
     {
-        $global = new \stdClass();
+        $global = new GlobalConfig();
         $global->fileSystems = new \stdClass();
         $global->fileSystems->fileadmin = 'fileadmin';
         $global->fileSystems->uploads = 'uploads';

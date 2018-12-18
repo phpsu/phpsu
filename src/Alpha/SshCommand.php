@@ -10,7 +10,7 @@ final class SshCommand implements CommandInterface
     /** @var string */
     private $into;
 
-    public static function fromGlobal(\stdClass $global, string $connectionName, string $currentHost): SshCommand
+    public static function fromGlobal(GlobalConfig $global, string $connectionName, string $currentHost): SshCommand
     {
         $host = '';
         if (isset($global->appInstances->{$connectionName})) {

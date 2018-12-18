@@ -15,13 +15,13 @@ final class RsyncCommand implements CommandInterface
     private $to;
 
     /**
-     * @param \stdClass $global
+     * @param GlobalConfig $global
      * @param string $fromInstanceName
      * @param string $toInstanceName
      * @param string $currentHost
      * @return RsyncCommand[]
      */
-    public static function fromGlobal(\stdClass $global, string $fromInstanceName, string $toInstanceName, string $currentHost): array
+    public static function fromGlobal(GlobalConfig $global, string $fromInstanceName, string $toInstanceName, string $currentHost): array
     {
         $fromInstance = $global->appInstances->{$fromInstanceName};
         $toInstance = $global->appInstances->{$toInstanceName};
