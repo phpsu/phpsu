@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace PHPSu\Alpha;
 
-final class RsyncCommand
+final class RsyncCommand implements CommandInterface
 {
+    /** @var string */
+    private $name;
     /** @var SshConfig */
     private $sshConfig;
     /** @var string */
@@ -52,11 +54,23 @@ final class RsyncCommand
         $toRelPath = ($toFilesystem->getPath() ? '/' : '') . $toFilesystem->getPath();
 
         $result = new static();
+        $result->name = 'filesystem:' . $fromFilesystem->getName();
         $result->fromHost = $from->getHost() === $currentHost ? '' : $from->getHost();
         $result->toHost = $to->getHost() === $currentHost ? '' : $to->getHost();
         $result->fromPath = rtrim($from->getPath(), '/*') . $fromRelPath . '/*';
         $result->toPath = rtrim($to->getPath(), '/') . $toRelPath . '/';
         return $result;
+    }
+
+    public function setName(string $name): RsyncCommand
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     public function getSshConfig(): SshConfig

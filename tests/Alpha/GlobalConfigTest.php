@@ -37,7 +37,7 @@ final class GlobalConfigTest extends TestCase
 
         $rsyncCommands = DatabaseCommand::fromGlobal($global, 'production', 'testing', 'local');
         $this->assertEquals([
-            (new DatabaseCommand())->setFromHost('serverEu')->setFromUrl('mysql://user:pw@host:3307/database')->setToHost('serverEu')->setToUrl('mysql://user:pw@host:3307/database'),
+            (new DatabaseCommand())->setName('database:app')->setFromHost('serverEu')->setFromUrl('mysql://user:pw@host:3307/database')->setToHost('serverEu')->setToUrl('mysql://user:pw@host:3307/database'),
         ], $rsyncCommands);
     }
 
@@ -47,8 +47,8 @@ final class GlobalConfigTest extends TestCase
 
         $rsyncCommands = RsyncCommand::fromGlobal($global, 'production', 'testing', 'local');
         $this->assertEquals([
-            (new RsyncCommand())->setFromHost('serverEu')->setFromPath('/var/www/production/fileadmin/*')->setToHost('serverEu')->setToPath('/var/www/testing/fileadmin/'),
-            (new RsyncCommand())->setFromHost('serverEu')->setFromPath('/var/www/production/uploads/*')->setToHost('serverEu')->setToPath('/var/www/testing/uploads/'),
+            (new RsyncCommand())->setName('filesystem:fileadmin')->setFromHost('serverEu')->setFromPath('/var/www/production/fileadmin/*')->setToHost('serverEu')->setToPath('/var/www/testing/fileadmin/'),
+            (new RsyncCommand())->setName('filesystem:uploads')->setFromHost('serverEu')->setFromPath('/var/www/production/uploads/*')->setToHost('serverEu')->setToPath('/var/www/testing/uploads/'),
         ], $rsyncCommands);
     }
 

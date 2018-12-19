@@ -52,12 +52,12 @@ class TheInterface
         $rsyncCommands = RsyncCommand::fromGlobal($globalConfig, $from, $to, $currentHost);
         foreach ($rsyncCommands as $rsyncCommand) {
             $rsyncCommand->setSshConfig($sshConfig);
-            $result[] = $rsyncCommand->generate();
+            $result[$rsyncCommand->getName()] = $rsyncCommand->generate();
         }
         $databaseCommands = DatabaseCommand::fromGlobal($globalConfig, $from, $to, $currentHost);
         foreach ($databaseCommands as $databaseCommand) {
             $databaseCommand->setSshConfig($sshConfig);
-            $result[] = $databaseCommand->generate();
+            $result[$databaseCommand->getName()] = $databaseCommand->generate();
         }
         $sshConfig->writeConfig();
         return $result;

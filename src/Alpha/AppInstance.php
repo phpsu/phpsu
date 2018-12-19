@@ -8,9 +8,9 @@ final class AppInstance
     /** @var string */
     private $name;
     /** @var string */
-    private $host;
+    private $host = '';
     /** @var string */
-    private $path;
+    private $path = '';
     /** @var FileSystems */
     private $filesystems;
     /** @var Databases */

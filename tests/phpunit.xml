@@ -9,6 +9,9 @@
     <testsuite name="Alpha">
       <directory suffix="Test.php">../tests/Alpha/</directory>
     </testsuite>
+    <testsuite name="Beta">
+      <directory suffix="Test.php">../tests/Beta/</directory>
+    </testsuite>
   </testsuites>
   <!--<filter>-->
     <!--<whitelist>-->

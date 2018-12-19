@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace PHPSu\Alpha;
 
-final class DatabaseCommand
+final class DatabaseCommand implements CommandInterface
 {
+    /** @var string */
+    private $name;
     /** @var SshConfig */
     private $sshConfig;
 
@@ -47,11 +49,24 @@ final class DatabaseCommand
     public static function fromAppInstances(AppInstance $from, AppInstance $to, Database $fromDatabase, Database $toDatabase, string $currentHost): DatabaseCommand
     {
         $result = new static();
+        $result->name = 'database:' . $fromDatabase->getName();
         $result->fromHost = $from->getHost() === $currentHost ? '' : $from->getHost();
         $result->toHost = $to->getHost() === $currentHost ? '' : $to->getHost();
         $result->fromUrl = $fromDatabase->getUrl();
         $result->toUrl = $toDatabase->getUrl();
         return $result;
+    }
+
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): DatabaseCommand
+    {
+        $this->name = $name;
+        return $this;
     }
 
     public function getSshConfig(): SshConfig
