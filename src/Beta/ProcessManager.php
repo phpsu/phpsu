@@ -8,12 +8,24 @@ final class ProcessManager
     /** @var Process[] */
     private $processes = [];
 
+    /** @var string[] */
+    private $processStates = [];
+
     /** @var \Closure[] */
-    private $callbacks = [];
+    private $outputCallbacks = [];
+
+    /** @var \Closure[] */
+    private $stateChangeCallbacks = [];
 
     public function addOutputCallback(callable $callback): ProcessManager
     {
-        $this->callbacks[] = \Closure::fromCallable($callback);
+        $this->outputCallbacks[] = \Closure::fromCallable($callback);
+        return $this;
+    }
+
+    public function addStateChangeCallback(callable $callback): ProcessManager
+    {
+        $this->stateChangeCallbacks[] = \Closure::fromCallable($callback);
         return $this;
     }
 
@@ -21,12 +33,14 @@ final class ProcessManager
     {
         $this->start();
         $this->wait();
+        $this->validateProcesses();
         return $this;
     }
 
     public function start(): ProcessManager
     {
-        foreach ($this->processes as $process) {
+        foreach ($this->processes as $processId => $process) {
+            $this->notifyStateChangeCallbacks($process, $this->processStates[$processId], $this);
             $process->start(function (string $type, string $data) use ($process): void {
                 $this->notifyOutputCallbacks($process, $type, $data);
             });
@@ -37,15 +51,29 @@ final class ProcessManager
     public function addProcess(Process $process): ProcessManager
     {
         $this->processes[] = $process;
+        $this->processStates[count($this->processes) - 1] = $process->getState();
         return $this;
     }
 
-    public function wait(): void
+    /**
+     * @return Process[]
+     */
+    public function getProcesses(): array
+    {
+        return $this->processes;
+    }
+
+    public function wait(): ProcessManager
     {
         $count = 0;
         do {
             $running = false;
-            foreach ($this->processes as $process) {
+            foreach ($this->processes as $processId => $process) {
+                $newState = $process->getState();
+                if ($this->processStates[$processId] !== $newState) {
+                    $this->processStates[$processId] = $newState;
+                    $this->notifyStateChangeCallbacks($process, $newState, $this);
+                }
                 if ($process->isRunning()) {
                     $running = true;
                     continue;
@@ -53,13 +81,20 @@ final class ProcessManager
             }
             usleep(min(100 * 1000, $count += 100));
         } while ($running);
-        $this->validateProcesses();
+        return $this;
     }
 
     private function notifyOutputCallbacks(Process $process, string $type, string $data): void
     {
-        foreach ($this->callbacks as $callback) {
+        foreach ($this->outputCallbacks as $callback) {
             $callback($process, $type, $data);
+        }
+    }
+
+    private function notifyStateChangeCallbacks(Process $process, string $newState, ProcessManager $manager): void
+    {
+        foreach ($this->stateChangeCallbacks as $callback) {
+            $callback($process, $newState, $manager);
         }
     }
 
@@ -74,7 +109,7 @@ final class ProcessManager
         return $errors;
     }
 
-    private function validateProcesses(): void
+    public function validateProcesses(): void
     {
         $errors = [];
         foreach ($this->processes as $process) {
@@ -90,5 +125,13 @@ final class ProcessManager
         if ($errors) {
             throw new \Exception(sprintf('Error in Process%s %s', count($errors) > 1 ? 'es' : '', json_encode($errors)));
         }
+    }
+
+    public function getState(int $processId): string
+    {
+        if (isset($this->processStates[$processId])) {
+            return $this->processStates[$processId];
+        }
+        throw new \InvalidArgumentException(sprintf('No Process found with id: %d', $processId));
     }
 }

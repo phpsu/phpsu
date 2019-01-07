@@ -32,7 +32,8 @@ class ProcessManagerTest extends TestCase
         (new ProcessManager())
             ->addProcess($pError = Process::fromShellCommandline('error')->setName('error' . md5(random_bytes(100))))
             ->start()
-            ->wait();
+            ->wait()
+            ->validateProcesses();
     }
 
     public function testRunGetErrorOutput(): void
@@ -43,7 +44,7 @@ class ProcessManagerTest extends TestCase
         $processManager->addProcess($pList1 = Process::fromShellCommandline('echo "Testing List1"')->setName('list1'));
         $processManager->start();
         try {
-            $processManager->wait();
+            $processManager->wait()->validateProcesses();
         } catch (\Exception $exception) {
             $this->assertSame([$name => $pError->getErrorOutput()], $processManager->getErrorOutputs());
             return;
