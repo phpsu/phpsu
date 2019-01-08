@@ -26,4 +26,12 @@ final class AppInstances
         }
         return $this->instances[$name];
     }
+
+    /**
+     * @return AppInstance[]
+     */
+    public function getAll(): array
+    {
+        return $this->instances;
+    }
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
-if (version_compare('7.0.0', PHP_VERSION, '>')) {
-    fwrite(STDERR, 'phpsu works only with php version >=7.0 your version is: ' . PHP_VERSION . PHP_EOL);
+if (version_compare('7.1.0', PHP_VERSION, '>')) {
+    fwrite(STDERR, 'phpsu works only with php version >=7.1 your version is: ' . PHP_VERSION . PHP_EOL);
     die();
 }
 
@@ -27,5 +27,5 @@ call_user_func(function () {
         die();
     }
     require $firstFileExisting;
-    \PHPSu\CommandController::command();
+    \PHPSu\Delta\PhpsuApplication::command();
 });

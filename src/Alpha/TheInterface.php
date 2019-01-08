@@ -8,13 +8,11 @@ class TheInterface
     /** @var \SplFileObject */
     private $file;
 
-    public function __construct()
-    {
-        $this->file = new TempSshConfigFile();
-    }
-
     public function getFile(): \SplFileObject
     {
+        if (!$this->file instanceof \SplFileObject) {
+            $this->file = new TempSshConfigFile();
+        }
         return $this->file;
     }
 

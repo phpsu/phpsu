@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu\Chi;
+namespace PHPSu\Charlie;
 
 use Codeception\Lib\Console\Output;
 use PHPSu\Alpha\GlobalConfig;

@@ -91,4 +91,9 @@ final class GlobalConfig
         }
         return $connectionName;
     }
+
+    public function getAppInstances()
+    {
+        return $this->appInstances;
+    }
 }
