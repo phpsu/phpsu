@@ -3,7 +3,7 @@
 [![Latest Version](https://img.shields.io/github/release/phpsu/phpsu.svg?style=flat-square)](https://github.com/phpsu/phpsu/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Build Status](https://img.shields.io/travis/phpsu/phpsu/master.svg?style=flat-square)](https://travis-ci.org/phpsu/phpsu)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/phpsu/phpsu.svg?style=flat-square)](https://scrutinizer-ci.com/g/phpsu/phpsu/code-structure)
+[![Coverage Status](https://img.shields.io/codecov/c/g/phpsu/phpsu.svg?style=flat-square)](https://codecov.io/gh/phpsu/phpsu)
 [![Quality Score](https://img.shields.io/scrutinizer/g/phpsu/phpsu.svg?style=flat-square)](https://scrutinizer-ci.com/g/phpsu/phpsu)
 [![Total Downloads](https://img.shields.io/packagist/dt/league/container.svg?style=flat-square)](https://packagist.org/packages/phpsu/phpsu)
 

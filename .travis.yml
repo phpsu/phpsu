@@ -9,11 +9,8 @@ cache:
   directories:
     - $HOME/.composer/cache
 
-
-install: composer i
+install: composer i --no-suggest
 
 script: vendor/bin/grumphp run && composer test
 
-after_success:
-  #- wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover tests/test-results/coverage.xml
-  - bash <(curl -s https://codecov.io/bash)
+after_success: bash <(curl -s https://codecov.io/bash)
