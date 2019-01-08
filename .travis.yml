@@ -1,12 +1,19 @@
 language: php
+
 php:
   - 7.1
   - 7.2
   - 7.3
 
-install: composer i
-script: vendor/bin/grumphp run && composer test
-
 cache:
   directories:
     - $HOME/.composer/cache
+
+
+install: composer i
+
+script: vendor/bin/grumphp run && composer test
+
+after_success:
+  #- wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover tests/test-results/coverage.xml
+  - bash <(curl -s https://codecov.io/bash)
