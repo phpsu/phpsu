@@ -17,6 +17,9 @@ final class ProcessManager
     /** @var \Closure[] */
     private $stateChangeCallbacks = [];
 
+    /** @var \Closure[] */
+    private $tickCallbacks = [];
+
     public function addOutputCallback(callable $callback): ProcessManager
     {
         $this->outputCallbacks[] = \Closure::fromCallable($callback);
@@ -26,6 +29,12 @@ final class ProcessManager
     public function addStateChangeCallback(callable $callback): ProcessManager
     {
         $this->stateChangeCallbacks[] = \Closure::fromCallable($callback);
+        return $this;
+    }
+
+    public function addTickCallback(callable $callback): ProcessManager
+    {
+        $this->tickCallbacks[] = \Closure::fromCallable($callback);
         return $this;
     }
 
@@ -40,7 +49,7 @@ final class ProcessManager
     public function start(): ProcessManager
     {
         foreach ($this->processes as $processId => $process) {
-            $this->notifyStateChangeCallbacks($process, $this->processStates[$processId], $this);
+            $this->notifyStateChangeCallbacks($processId, $process, $this->processStates[$processId], $this);
             $process->start(function (string $type, string $data) use ($process): void {
                 $this->notifyOutputCallbacks($process, $type, $data);
             });
@@ -72,8 +81,9 @@ final class ProcessManager
                 $newState = $process->getState();
                 if ($this->processStates[$processId] !== $newState) {
                     $this->processStates[$processId] = $newState;
-                    $this->notifyStateChangeCallbacks($process, $newState, $this);
+                    $this->notifyStateChangeCallbacks($processId, $process, $this->processStates[$processId], $this);
                 }
+                $this->notifyTickCallbacks($this);
                 if ($process->isRunning()) {
                     $running = true;
                     continue;
@@ -91,10 +101,16 @@ final class ProcessManager
         }
     }
 
-    private function notifyStateChangeCallbacks(Process $process, string $newState, ProcessManager $manager): void
+    private function notifyStateChangeCallbacks(int $processId, Process $process, string $newState, ProcessManager $manager): void
     {
         foreach ($this->stateChangeCallbacks as $callback) {
-            $callback($process, $newState, $manager);
+            $callback($processId, $process, $newState, $manager);
+        }
+    }
+    private function notifyTickCallbacks(ProcessManager $manager)
+    {
+        foreach ($this->tickCallbacks as $callback) {
+            $callback($manager);
         }
     }
 

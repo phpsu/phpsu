@@ -9,6 +9,7 @@ use PHPSu\Alpha\FileSystem;
 use PHPSu\Alpha\GlobalConfig;
 use PHPSu\Alpha\SshConnection;
 use PHPSu\Beta\TheInterface;
+use PHPSu\Chi\Runner;
 use Symfony\Component\Console\Output\OutputInterface;
 
 require_once 'vendor/autoload.php';
@@ -28,10 +29,10 @@ $sectionMiddle = $output->section();
 $sectionMiddle->writeln(str_repeat('-', 20), OutputInterface::OUTPUT_RAW);
 $sectionBottom = $output->section();
 $commands = [
-    'sleep1' => 'sleep 1',
-    'sleep2' => 'sleep 2',
-    'sleep2_' => 'sleep 2 && Dbwaid biwaj',
-    'sleep3' => 'sleep 3',
+    'sleep_' => 'sleep 1',
+    'sleep ' => 'sleep 2.5 && Dbwaid biwaj',
+    'sleep-' => 'sleep 2.1',
+    'sleep~' => 'sleep 3',
 ];
 (new TheInterface())->execute($commands, $sectionTop, $sectionBottom);
 //(new TheInterface())->execute($commands, $output, $output);

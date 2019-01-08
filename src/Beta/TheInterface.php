@@ -23,7 +23,9 @@ final class TheInterface
             $process->setName($name);
             $manager->addProcess($process);
         }
-        $manager->addStateChangeCallback(new StateChangeCallback($statusOutput));
+        $callback = new StateChangeCallback($statusOutput);
+        $manager->addStateChangeCallback($callback);
+        $manager->addTickCallback($callback->getTickCallback());
         $manager->addOutputCallback(new OutputCallback($logOutput));
         $manager->mustRun();
     }

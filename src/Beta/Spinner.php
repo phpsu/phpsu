@@ -21,10 +21,9 @@ final class Spinner
 
     public function spin(): string
     {
-        $this->state++;
         if ($this->state >= count(static::PONG)) {
             $this->state = 0;
         }
-        return static::PONG[$this->state];
+        return static::PONG[$this->state++];
     }
 }

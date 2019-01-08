@@ -19,7 +19,7 @@ class StateChangeCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $manager = new ProcessManager();
         $callback = new StateChangeCallback($output);
-        $callback->__invoke((new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_READY, $manager);
+        $callback->__invoke(0, (new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_READY, $manager);
         $this->assertSame("\033[37msleepProcess:\033[39m  \n", $output->fetch());
     }
 
@@ -28,8 +28,8 @@ class StateChangeCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $manager = new ProcessManager();
         $callback = new StateChangeCallback($output);
-        $callback->__invoke((new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_RUNNING, $manager);
-        $this->assertSame("\033[33msleepProcess:\033[39m >\n", $output->fetch());
+        $callback->__invoke(0, (new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_RUNNING, $manager);
+        $this->assertSame("\033[33msleepProcess:\033[39m (      )\n", $output->fetch());
     }
 
     public function testNormalSucceeded()
@@ -37,7 +37,7 @@ class StateChangeCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $manager = new ProcessManager();
         $callback = new StateChangeCallback($output);
-        $callback->__invoke((new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_SUCCEEDED, $manager);
+        $callback->__invoke(0, (new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_SUCCEEDED, $manager);
         $this->assertSame("\033[32msleepProcess:\033[39m ✔\n", $output->fetch());
     }
 
@@ -46,7 +46,7 @@ class StateChangeCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $manager = new ProcessManager();
         $callback = new StateChangeCallback($output);
-        $callback->__invoke((new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_ERRORED, $manager);
+        $callback->__invoke(0, (new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_ERRORED, $manager);
         $this->assertSame("\033[31msleepProcess:\033[39m ✘\n", $output->fetch());
     }
 
@@ -57,7 +57,7 @@ class StateChangeCallbackTest extends TestCase
         $output = new ConsoleSectionOutput($outputStream, $sections, OutputInterface::VERBOSITY_NORMAL, true, new OutputFormatter());
         $manager = new ProcessManager();
         $callback = new StateChangeCallback($output);
-        $callback->__invoke((new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_READY, $manager);
+        $callback->__invoke(0, (new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_READY, $manager);
         rewind($outputStream);
         $this->assertSame("\n", stream_get_contents($outputStream));
     }
@@ -71,7 +71,7 @@ class StateChangeCallbackTest extends TestCase
         $process = (new Process(['sleep', '1']))->setName('sleepProcess');
         $manager->addProcess($process);
         $callback = new StateChangeCallback($output);
-        $callback->__invoke($process, Process::STATE_READY, $manager);
+        $callback->__invoke(0, $process, Process::STATE_READY, $manager);
         rewind($outputStream);
         $this->assertSame("\033[37msleepProcess:\033[39m  \n", stream_get_contents($outputStream));
     }
@@ -85,14 +85,60 @@ class StateChangeCallbackTest extends TestCase
         $process = (new Process(['sleep', '1']))->setName('sleepProcess');
         $manager->addProcess($process);
         $callback = new StateChangeCallback($output);
-        $callback->__invoke($process, Process::STATE_READY, $manager);
+        $callback->__invoke(0, $process, Process::STATE_READY, $manager);
         rewind($outputStream);
         $this->assertSame("\033[37msleepProcess:\033[39m  \n", stream_get_contents($outputStream));
-        $callback->__invoke($process, Process::STATE_READY, $manager);
+
+        $this->setPrivateProperty($manager, 'processStates', [0 => Process::STATE_RUNNING]);
+
+        $callback->__invoke(0, $process, Process::STATE_RUNNING, $manager);
         rewind($outputStream);
         $this->assertSame(
-            "\033[37msleepProcess:\033[39m  \n\033[1A\033[0J\033[37msleepProcess:\033[39m  \n",
+            "\033[37msleepProcess:\033[39m  \n\033[1A\033[0J\033[33msleepProcess:\033[39m (      )\n",
             stream_get_contents($outputStream)
         );
+    }
+
+    public function testSectionRunningWithProcessSpinner()
+    {
+        $sections = [];
+        $outputStream = fopen('php://memory', 'rwb');
+        $output = new ConsoleSectionOutput($outputStream, $sections, OutputInterface::VERBOSITY_NORMAL, true, new OutputFormatter());
+        $manager = new ProcessManager();
+        $process = (new Process(['sleep', '1']))->setName('sleepProcess');
+        $manager->addProcess($process);
+        $callback = new StateChangeCallback($output);
+        $callback->__invoke(0, $process, Process::STATE_READY, $manager);
+        rewind($outputStream);
+        $this->assertSame("\033[37msleepProcess:\033[39m  \n", stream_get_contents($outputStream));
+        $tickCallback = $callback->getTickCallback();
+        $tickCallback($manager);
+
+        $this->setPrivateProperty($manager, 'processStates', [0 => Process::STATE_RUNNING]);
+        $callback->__invoke(0, $process, Process::STATE_RUNNING, $manager);
+        rewind($outputStream);
+        $this->assertSame(
+            "\033[37msleepProcess:\033[39m  \n\033[1A\033[0J\033[33msleepProcess:\033[39m (      )\n",
+            stream_get_contents($outputStream)
+        );
+        $callback->__invoke(0, $process, Process::STATE_RUNNING, $manager);
+        rewind($outputStream);
+        $this->assertSame(
+            "\033[37msleepProcess:\033[39m  \n\033[1A\033[0J\033[33msleepProcess:\033[39m (      )\n\033[1A\033[0J\033[33msleepProcess:\033[39m (●     )\n",
+            stream_get_contents($outputStream)
+        );
+        $callback->__invoke(0, $process, Process::STATE_RUNNING, $manager);
+        rewind($outputStream);
+        $this->assertSame(
+            "\033[37msleepProcess:\033[39m  \n\033[1A\033[0J\033[33msleepProcess:\033[39m (      )\n\033[1A\033[0J\033[33msleepProcess:\033[39m (●     )\n\033[1A\033[0J\033[33msleepProcess:\033[39m ( ●    )\n",
+            stream_get_contents($outputStream)
+        );
+    }
+
+    public function setPrivateProperty($object, string $propertyName, $value): void
+    {
+        $property = (new \ReflectionClass($object))->getProperty($propertyName);
+        $property->setAccessible(true);
+        $property->setValue($object, $value);
     }
 }
