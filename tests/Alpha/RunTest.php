@@ -31,7 +31,7 @@ final class RunTest extends TestCase
 
         $fileSystem = (new FileSystem())->setName('app')->setPath('');
         $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local')->setSshConfig($sshConfig)->generate();
-        $this->assertSame('rsync -e "ssh -F php://temp" hosta:/var/www/prod/* hostc:/var/www/testing/', $generated);
+        $this->assertSame('rsync -avz -e "ssh -F php://temp" hosta:/var/www/prod/* hostc:/var/www/testing/', $generated);
     }
 
     public function testSshConfig(): void
@@ -101,12 +101,12 @@ SSH_CONFIG;
         $sshConfig->setFile(new \SplTempFileObject());
         $rsync = new RsyncCommand();
         $rsync->setSshConfig($sshConfig)
-            ->setOptions('-avz')
+            ->setOptions('-r')
             ->setFromHost('hosta')
             ->setFromPath('~/test/*')
             ->setToPath('./__test/');
 
-        $this->assertSame('rsync -avz -e "ssh -F php://temp" hosta:~/test/* ./__test/', $rsync->generate());
+        $this->assertSame('rsync -r -e "ssh -F php://temp" hosta:~/test/* ./__test/', $rsync->generate());
     }
 
     public function testDatabaseCommand(): void

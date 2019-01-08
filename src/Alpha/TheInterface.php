@@ -44,7 +44,7 @@ class TheInterface
             $globalConfig->validateConnectionToHost($currentHost);
         }
         $sshConfig = SshConfig::fromGlobal($globalConfig, $currentHost);
-        $sshConfig->setFile($this->file);
+        $sshConfig->setFile($this->getFile());
 
         $result = [];
         $rsyncCommands = RsyncCommand::fromGlobal($globalConfig, $from, $to, $currentHost);

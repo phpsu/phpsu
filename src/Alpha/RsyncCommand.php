@@ -10,7 +10,7 @@ final class RsyncCommand implements CommandInterface
     /** @var SshConfig */
     private $sshConfig;
     /** @var string */
-    private $options;
+    private $options = '-avz';
 
     /** @var string */
     private $fromHost = '';
