@@ -12,14 +12,14 @@ class ProcessManagerTest extends TestCase
     public function testRun(): void
     {
         $processManager = new ProcessManager();
-        $processManager->addProcess($pList1 = Process::fromShellCommandline('echo "Testing List1" && sleep 0.001')->setName('list1'));
-        $processManager->addProcess($pList2 = Process::fromShellCommandline('echo "Testing List2" && sleep 0.001')->setName('list2'));
+        $processManager->addProcess($pList1 = Process::fromShellCommandline('echo "Testing List1" && sleep 0.01')->setName('list1'));
+        $processManager->addProcess($pList2 = Process::fromShellCommandline('echo "Testing List2" && sleep 0.01')->setName('list2'));
         $processManager->start();
-        $this->assertTrue($pList1->isRunning(), 'Process should be running');
-        $this->assertTrue($pList2->isRunning(), 'Process should be running');
+        $this->assertTrue($pList1->isRunning(), 'Process1 should be running');
+        $this->assertTrue($pList2->isRunning(), 'Process2 should be running');
         $processManager->wait();
-        $this->assertNotTrue($pList1->isRunning(), 'Process shouldn\'t be running');
-        $this->assertNotTrue($pList2->isRunning(), 'Process shouldn\'t be running');
+        $this->assertNotTrue($pList1->isRunning(), 'Process1 shouldn\'t be running');
+        $this->assertNotTrue($pList2->isRunning(), 'Process2 shouldn\'t be running');
         $this->assertSame('Testing List1' . PHP_EOL, $pList1->getOutput());
         $this->assertSame('Testing List2' . PHP_EOL, $pList2->getOutput());
     }

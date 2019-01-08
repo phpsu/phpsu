@@ -4,14 +4,14 @@ declare(strict_types=1);
 namespace PHPSu\Delta;
 
 use PHPSu\Charlie\Runner;
-use PHPSu\Console\AbstractCommand;
 use PHPSu\Foxtrot\ConfigurationLoader;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-final class SyncCommand extends AbstractCommand
+final class SyncCommand extends Command
 {
     protected function configure(): void
     {
