@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Alpha;
 
 use PHPSu\Alpha\AppInstance;
-use PHPSu\Alpha\Database;
 use PHPSu\Alpha\DatabaseCommand;
 use PHPSu\Alpha\FileSystem;
 use PHPSu\Alpha\GlobalConfig;
@@ -67,13 +66,13 @@ final class GlobalConfigTest extends TestCase
     public static function getGlobalConfig(): GlobalConfig
     {
         $global = new GlobalConfig();
-        $global->addFilesystemObject((new FileSystem())->setName('fileadmin')->setPath('fileadmin'));
+        $global->addFilesystem('fileadmin', 'fileadmin');
         $global->addFilesystemObject((new FileSystem())->setName('uploads')->setPath('uploads'));
-        $global->addDatabaseObject((new Database())->setName('app')->setUrl('mysql://user:pw@host:3307/database'));
+        $global->addDatabase('app', 'mysql://user:pw@host:3307/database');
         $global->addSshConnectionObject((new SshConnection())->setHost('serverEu')->setUrl('user@server.eu'));
         $global->addAppInstanceObject((new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production'));
         $global->addAppInstanceObject((new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing'));
-        $global->addAppInstanceObject((new AppInstance())->setName('local')->setHost('local')->setPath(getcwd()));
+        $global->addAppInstance('local', 'local', getcwd());
         return $global;
     }
 }
