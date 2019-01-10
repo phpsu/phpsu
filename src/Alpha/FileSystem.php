@@ -7,7 +7,6 @@ final class FileSystem
 {
     /** @var string */
     private $name;
-
     /** @var string */
     private $path;
 

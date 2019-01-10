@@ -130,7 +130,7 @@ final class DatabaseCommand implements CommandInterface
         $from = $this->parseDatabaseUrl($this->fromUrl);
         $to = $this->parseDatabaseUrl($this->toUrl);
 
-        $dumpCmd = "mysqldump -h{$from['host']} -P{$from['port']} -u{$from['user']} -p{$from['pass']} {$from['path']}";
+        $dumpCmd = "mysqldump --skip-comments --extended-insert -h{$from['host']} -P{$from['port']} -u{$from['user']} -p{$from['pass']} {$from['path']}";
         $importCmd = "mysql -h{$to['host']} -P{$to['port']} -u{$to['user']} -p{$to['pass']} {$to['path']}";
         if ($hostsDifferentiate) {
             if ($this->fromHost) {

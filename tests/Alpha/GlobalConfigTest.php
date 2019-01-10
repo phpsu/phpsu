@@ -61,20 +61,19 @@ final class GlobalConfigTest extends TestCase
         $sshConfigExpected->serverEu = new SshConfigHost();
         $sshConfigExpected->serverEu->User = 'user';
         $sshConfigExpected->serverEu->HostName = 'server.eu';
-        $sshConfigExpected->serverEu->IdentityFile = 'docker/testCaseD/id_rsa';
         $this->assertEquals($sshConfigExpected, $sshConfig);
     }
 
     public static function getGlobalConfig(): GlobalConfig
     {
         $global = new GlobalConfig();
-        $global->addFilesystem((new FileSystem())->setName('fileadmin')->setPath('fileadmin'));
-        $global->addFilesystem((new FileSystem())->setName('uploads')->setPath('uploads'));
-        $global->addDatabase((new Database())->setName('app')->setUrl('mysql://user:pw@host:3307/database'));
-        $global->addSshConnection((new SshConnection())->setHost('serverEu')->setUrl('user@server.eu')->setIdentityFile('docker/testCaseD/id_rsa'));
-        $global->addAppInstance((new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production'));
-        $global->addAppInstance((new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing'));
-        $global->addAppInstance((new AppInstance())->setName('local')->setHost('local')->setPath(getcwd()));
+        $global->addFilesystemObject((new FileSystem())->setName('fileadmin')->setPath('fileadmin'));
+        $global->addFilesystemObject((new FileSystem())->setName('uploads')->setPath('uploads'));
+        $global->addDatabaseObject((new Database())->setName('app')->setUrl('mysql://user:pw@host:3307/database'));
+        $global->addSshConnectionObject((new SshConnection())->setHost('serverEu')->setUrl('user@server.eu'));
+        $global->addAppInstanceObject((new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production'));
+        $global->addAppInstanceObject((new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing'));
+        $global->addAppInstanceObject((new AppInstance())->setName('local')->setHost('local')->setPath(getcwd()));
         return $global;
     }
 }

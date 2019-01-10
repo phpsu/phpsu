@@ -9,8 +9,6 @@ final class SshConnection
     private $host;
     /** @var string */
     private $url;
-    /** @var string */
-    private $identityFile = '';
     /** @var string[] */
     private $options = [];
     /** @var string[] */
@@ -23,6 +21,9 @@ final class SshConnection
 
     public function setHost(string $host): SshConnection
     {
+        if (strpos($host, '/') !== false) {
+            throw new \InvalidArgumentException(sprintf('host %s has invalid character', $host));
+        }
         $this->host = $host;
         return $this;
     }
@@ -35,17 +36,6 @@ final class SshConnection
     public function setUrl(string $url): SshConnection
     {
         $this->url = $url;
-        return $this;
-    }
-
-    public function getIdentityFile(): string
-    {
-        return $this->identityFile;
-    }
-
-    public function setIdentityFile(string $identityFile): SshConnection
-    {
-        $this->identityFile = $identityFile;
         return $this;
     }
 

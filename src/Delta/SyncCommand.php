@@ -27,8 +27,7 @@ final class SyncCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $globalConfig = (new ConfigurationLoader())->getConfig();
-        (new Runner($output))->runCli(
-            $globalConfig,
+        (new Runner($output, $globalConfig))->sync(
             $input->getArgument('source'),
             $input->getArgument('destination'),
             $input->getOption('from'),

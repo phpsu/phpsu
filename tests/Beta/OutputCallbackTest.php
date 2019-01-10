@@ -16,7 +16,7 @@ class OutputCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $callback = new OutputCallback($output);
         $callback->__invoke((new Process(['sleep', '1']))->setName('testName'), Process::OUT, 'message');
-        $this->assertSame("", $output->fetch());
+        $this->assertSame('', $output->fetch());
     }
 
     public function testProcessColorStdVerbose(): void

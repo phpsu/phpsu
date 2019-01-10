@@ -8,7 +8,6 @@ use PHPSu\Alpha\TheInterface as TheAlphaInterface;
 use PHPSu\Beta\TheInterface as TheBetaInterface;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class Runner
@@ -17,27 +16,21 @@ final class Runner
      * @var OutputInterface
      */
     private $output;
-
     /**
-     * @param OutputInterface $output
+     * @var GlobalConfig
      */
-    public function __construct(OutputInterface $output)
+    private $config;
+
+    public function __construct(OutputInterface $output, GlobalConfig $config)
     {
         $this->output = $output;
+        $this->config = $config;
     }
 
-    public function run(GlobalConfig $config, string $form, string $to, string $currentHost): void
+    public function sync(string $form, string $to, string $currentHost, bool $dryRun): void
     {
         $alpha = new TheAlphaInterface();
-        $commands = $alpha->getCommands($config, $form, $to, $currentHost);
-        $beta = new TheBetaInterface();
-        $beta->execute($commands, new NullOutput(), new NullOutput());
-    }
-
-    public function runCli(GlobalConfig $config, string $form, string $to, string $currentHost, bool $dryRun): void
-    {
-        $alpha = new TheAlphaInterface();
-        $commands = $alpha->getCommands($config, $form, $to, $currentHost);
+        $commands = $alpha->getCommands($this->config, $form, $to, $currentHost);
 
         if ($dryRun) {
             $table = new Table($this->output);

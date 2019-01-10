@@ -5,17 +5,14 @@ namespace PHPSu\Alpha;
 
 final class GlobalConfig
 {
+    use AddFilesystemTrait;
+    use AddDatabaseTrait;
+
     /** @var SshConnections */
     private $sshConnections;
 
     /** @var AppInstances */
     private $appInstances;
-
-    /** @var FileSystems */
-    private $fileSystems;
-
-    /** @var Databases */
-    private $databases;
 
     public function __construct()
     {
@@ -25,28 +22,37 @@ final class GlobalConfig
         $this->databases = new Databases();
     }
 
-    public function addSshConnection(SshConnection $sshConnection): GlobalConfig
+    public function addSshConnectionObject(SshConnection $sshConnection): GlobalConfig
     {
         $this->sshConnections->add($sshConnection);
         return $this;
     }
 
-    public function addAppInstance(AppInstance $appInstance): GlobalConfig
+    public function addSshConnection(string $host, string $url, array $options = []): SshConnection
+    {
+        $sshConnection = new SshConnection();
+        $sshConnection->setHost($host)->setUrl($url)->setOptions($options);
+        $this->sshConnections->add($sshConnection);
+        return $sshConnection;
+    }
+
+    public function addAppInstanceObject(AppInstance $appInstance): GlobalConfig
     {
         $this->appInstances->add($appInstance);
         return $this;
     }
 
-    public function addFilesystem(FileSystem $fileSystem): GlobalConfig
+    public function addAppInstance(string $name, string $host = '', string $path = ''): AppInstance
     {
-        $this->fileSystems->add($fileSystem);
-        return $this;
+        $appInstance = new AppInstance();
+        $appInstance->setName($name)->setHost($host)->setPath($path);
+        $this->appInstances->add($appInstance);
+        return $appInstance;
     }
 
-    public function addDatabase(Database $database): GlobalConfig
+    public function getSshConnections(): SshConnections
     {
-        $this->databases->add($database);
-        return $this;
+        return $this->sshConnections;
     }
 
     /**
@@ -66,17 +72,20 @@ final class GlobalConfig
     }
 
     /**
+     * @return AppInstance[]
+     */
+    public function getAppInstances(): array
+    {
+        return $this->appInstances->getAll();
+    }
+
+    /**
      * @param string $host
      * @throws \Exception
      */
     public function validateConnectionToHost(string $host): void
     {
         $this->sshConnections->getPossibilities($host);
-    }
-
-    public function getSshConnections(): SshConnections
-    {
-        return $this->sshConnections;
     }
 
     public function getAppInstance(string $appName): AppInstance
@@ -90,10 +99,5 @@ final class GlobalConfig
             return $this->getAppInstance($connectionName)->getHost();
         }
         return $connectionName;
-    }
-
-    public function getAppInstances()
-    {
-        return $this->appInstances;
     }
 }

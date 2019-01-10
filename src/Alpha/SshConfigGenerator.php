@@ -82,8 +82,8 @@ final class SshConfigGenerator
                 if (isset($fromHosts[0]) && $fromHosts[0] !== $currentHost) {
                     $host->ProxyJump = $fromHosts[0];
                 }
-                if ($sshConnection->getIdentityFile()) {
-                    $host->IdentityFile = $sshConnection->getIdentityFile();
+                foreach ($sshConnection->getOptions() as $key => $value) {
+                    $host->{$key} = $value;
                 }
                 $sshConfig->{$sshConnection->getHost()} = $host;
             }

@@ -5,20 +5,19 @@ namespace PHPSu\Alpha;
 
 final class AppInstance
 {
+    use AddFilesystemTrait;
+    use AddDatabaseTrait;
+
     /** @var string */
     private $name;
     /** @var string */
     private $host = '';
     /** @var string */
     private $path = '';
-    /** @var FileSystems */
-    private $filesystems;
-    /** @var Databases */
-    private $databases;
 
     public function __construct()
     {
-        $this->filesystems = new FileSystems();
+        $this->fileSystems = new FileSystems();
         $this->databases = new Databases();
     }
 
@@ -40,6 +39,9 @@ final class AppInstance
 
     public function setHost(string $host): AppInstance
     {
+        if (strpos($host, '/') !== false) {
+            throw new \InvalidArgumentException(sprintf('host %s has invalid character', $host));
+        }
         $this->host = $host;
         return $this;
     }
@@ -55,13 +57,7 @@ final class AppInstance
         return $this;
     }
 
-    public function addFilesystem(FileSystem $fileSystem): AppInstance
-    {
-        $this->filesystems->add($fileSystem);
-        return $this;
-    }
-
-    public function addDatabase(Database $database): AppInstance
+    public function addDatabaseObject(Database $database): AppInstance
     {
         $this->databases->add($database);
         return $this;
@@ -69,12 +65,12 @@ final class AppInstance
 
     public function hasFilesystem(string $name): bool
     {
-        return $this->filesystems->has($name);
+        return $this->fileSystems->has($name);
     }
 
     public function getFilesystem(string $name): FileSystem
     {
-        return $this->filesystems->get($name);
+        return $this->fileSystems->get($name);
     }
 
     public function hasDatabase(string $name): bool

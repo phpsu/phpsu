@@ -36,7 +36,7 @@ final class SshCommand extends Command
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         $configuration = (new \PHPSu\Foxtrot\ConfigurationLoader())->getConfig();
-        $appInstances = $configuration->getAppInstances()->getAll();
+        $appInstances = $configuration->getAppInstances();
         $appInstances = array_filter($appInstances, function (AppInstance $instance) {
             return $instance->getHost() !== '';
         });

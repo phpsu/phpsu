@@ -28,7 +28,16 @@ final class OutputCallback
                 $output = $output->getErrorOutput();
             }
         }
-        $prefix = $output->getFormatter()->format(sprintf('<fg=%s>%s:</> ', $color, $process->getName()));
-        $output->writeln($prefix . str_replace(PHP_EOL, PHP_EOL . $prefix, trim($data)), $verbosity | OutputInterface::OUTPUT_RAW);
+        $formatter = $output->getFormatter();
+        $prefix = $formatter->format(sprintf('<fg=%s>%s:</> ', $color, $process->getName()));
+        $outputString = '';
+        $dataLines = explode(PHP_EOL, trim($data));
+        foreach ($dataLines as $line) {
+            if (strlen($line) > 80) {
+                $line = substr($line, 0, 80) . $formatter->format('<fg=yellow>...</> ');
+            }
+            $outputString .= $prefix . $line . PHP_EOL;
+        }
+        $output->write($outputString, false, $verbosity | OutputInterface::OUTPUT_RAW);
     }
 }
