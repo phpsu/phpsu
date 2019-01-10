@@ -7,10 +7,10 @@ use PHPSu\Config\SshConfig;
 use PHPSu\Config\SshConfigHost;
 use PHPUnit\Framework\TestCase;
 
-class SshConfigTest extends TestCase
+final class SshConfigTest extends TestCase
 {
 
-    public function testWriteConfig()
+    public function testWriteConfig(): void
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile($file = new \SplTempFileObject());

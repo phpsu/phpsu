@@ -6,7 +6,7 @@ namespace PHPSu\Config;
 final class AppInstances
 {
     /** @var AppInstance[] */
-    private $instances;
+    private $instances = [];
 
     public function add(AppInstance $appInstance): AppInstances
     {

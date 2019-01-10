@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 final class RsyncCommandTest extends TestCase
 {
 
-    public function testRsyncWithAppInstance()
+    public function testRsyncWithAppInstance(): void
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -32,7 +32,7 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame('rsync -avz -e "ssh -F php://temp" hosta:/var/www/prod/* hostc:/var/www/testing/', $generated);
     }
 
-    public function testGenerate()
+    public function testGenerate(): void
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());

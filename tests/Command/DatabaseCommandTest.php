@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 final class DatabaseCommandTest extends TestCase
 {
 
-    public function testGenerate()
+    public function testGenerate(): void
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());

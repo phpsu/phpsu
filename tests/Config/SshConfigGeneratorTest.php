@@ -33,7 +33,7 @@ final class SshConfigGeneratorTest extends TestCase
         $this->assertEquals([$toA, $toCFromA], $path);
     }
 
-    public function testGenerate()
+    public function testGenerate(): void
     {
         $sshConnections = new SshConnections();
         $sshConnections->add((new SshConnection())->setHost('hostc')

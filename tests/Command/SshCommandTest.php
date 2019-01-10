@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 final class SshCommandTest extends TestCase
 {
-    public function testGenerate()
+    public function testGenerate(): void
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -24,7 +24,7 @@ final class SshCommandTest extends TestCase
      * @expectedException \Exception
      * @expectedExceptionMessage  the found host and the current Host are the same: same
      */
-    public function testSameException()
+    public function testSameException(): void
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
