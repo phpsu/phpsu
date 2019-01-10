@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu\Tests\Charlie;
+namespace PHPSu\Tests\Main;
 
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Main\Controller;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-class RunnerTest extends TestCase
+final class ControllerTest extends TestCase
 {
     public function testSync(): void
     {

@@ -48,7 +48,7 @@ final class SshCommand
 
     public function generate(string $command = ''): string
     {
-        $file = $this->sshConfig->getFile();
+        $file = $this->getSshConfig()->getFile();
         if ($this->into === '') {
             return $command;
         }

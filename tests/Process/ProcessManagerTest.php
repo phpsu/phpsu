@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu\Tests\Beta;
+namespace PHPSu\Tests\Process;
 
 use PHPSu\Process\Process;
 use PHPSu\Process\ProcessManager;
 use PHPUnit\Framework\TestCase;
 
-class ProcessManagerTest extends TestCase
+final class ProcessManagerTest extends TestCase
 {
     public function testRun(): void
     {

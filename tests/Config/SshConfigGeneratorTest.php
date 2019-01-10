@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu\Tests\Alpha;
+namespace PHPSu\Tests\Config;
 
 use PHPSu\Config\SshConfig;
 use PHPSu\Config\SshConfigGenerator;
@@ -10,7 +10,7 @@ use PHPSu\Config\SshConnection;
 use PHPSu\Config\SshConnections;
 use PHPUnit\Framework\TestCase;
 
-class SshConfigGeneratorTest extends TestCase
+final class SshConfigGeneratorTest extends TestCase
 {
     public function testConnectionProblem(): void
     {

@@ -27,15 +27,15 @@ final class Controller
         $this->config = $config;
     }
 
-    public function ssh(string $destination, string $currentHost): void
+    public function ssh(string $destination, string $currentHost): int
     {
-        throw new \Exception('TODO Implement');
+        $command = (new CommandGenerator($this->config))->sshCommand($destination, $currentHost);
+        return (new CommandExecutor())->passthru($command, $this->output);
     }
 
     public function sync(string $form, string $to, string $currentHost, bool $dryRun): void
     {
-        $alpha = new CommandGenerator();
-        $commands = $alpha->syncCommands($this->config, $form, $to, $currentHost);
+        $commands = (new CommandGenerator($this->config))->syncCommands($form, $to, $currentHost);
 
         if ($dryRun) {
             $table = new Table($this->output);
@@ -47,7 +47,6 @@ final class Controller
             return;
         }
 
-        $beta = new CommandExecutor();
         if ($this->output instanceof ConsoleOutputInterface) {
             $sectionTop = $this->output->section();
             $sectionMiddle = $this->output->section();
@@ -57,6 +56,6 @@ final class Controller
             $sectionTop = $this->output;
             $sectionBottom = $this->output;
         }
-        $beta->executeParallel($commands, $sectionTop, $sectionBottom);
+        (new CommandExecutor())->executeParallel($commands, $sectionTop, $sectionBottom);
     }
 }

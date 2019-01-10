@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu\Tests\Alpha;
+namespace PHPSu\Tests\Command;
 
 use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\AppInstance;
@@ -11,35 +11,35 @@ use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConnection;
 use PHPUnit\Framework\TestCase;
 
-class TheInterfaceTest extends TestCase
+final class CommandGeneratorTest extends TestCase
 {
     private static function getGlobalConfig(): GlobalConfig
     {
-        $global = new GlobalConfig();
-        $global->addFilesystemObject((new FileSystem())->setName('fileadmin')->setPath('fileadmin'));
-        $global->addFilesystemObject((new FileSystem())->setName('uploads')->setPath('uploads'));
-        $global->addDatabaseObject((new Database())->setName('app')->setUrl('mysql://user:pw@host:3307/database'));
-        $global->addSshConnectionObject((new SshConnection())->setHost('serverEu')->setUrl('user@server.eu'));
-        $global->addSshConnectionObject((new SshConnection())->setHost('stagingServer')->setUrl('staging@stagingServer.server.eu'));
-        $global->addAppInstanceObject((new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production')->addFilesystemObject(
+        $globalConfig = new GlobalConfig();
+        $globalConfig->addFilesystemObject((new FileSystem())->setName('fileadmin')->setPath('fileadmin'));
+        $globalConfig->addFilesystemObject((new FileSystem())->setName('uploads')->setPath('uploads'));
+        $globalConfig->addDatabaseObject((new Database())->setName('app')->setUrl('mysql://user:pw@host:3307/database'));
+        $globalConfig->addSshConnection('serverEu', 'user@server.eu');
+        $globalConfig->addSshConnectionObject((new SshConnection())->setHost('stagingServer')->setUrl('staging@stagingServer.server.eu'));
+        $globalConfig->addAppInstanceObject((new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production')->addFilesystemObject(
             (new FileSystem())->setName('fileadmin')->setPath('fileadmin2')
         )->addDatabaseObject(
             (new Database())->setName('app')->setUrl('mysql://root:root@appHost/appDatabase')
         ));
-        $global->addAppInstanceObject((new AppInstance())->setName('staging')->setHost('stagingServer')->setPath('/var/www/staging'));
-        $global->addAppInstanceObject((new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing'));
-        $global->addAppInstanceObject((new AppInstance())->setName('local')->setHost('')->setPath('./'));
-        $global->addAppInstanceObject((new AppInstance())->setName('local2')->setHost('')->setPath('../local2'));
-        return $global;
+        $globalConfig->addAppInstanceObject((new AppInstance())->setName('staging')->setHost('stagingServer')->setPath('/var/www/staging'));
+        $globalConfig->addAppInstanceObject((new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing'));
+        $globalConfig->addAppInstanceObject((new AppInstance())->setName('local')->setHost('')->setPath('./'));
+        $globalConfig->addAppInstanceObject((new AppInstance())->setName('local2')->setHost('')->setPath('../local2'));
+        return $globalConfig;
     }
 
     public function testProductionToLocalFromAnyThere(): void
     {
-        $interface = new CommandGenerator();
+        $globalConfig = static::getGlobalConfig();
+        $interface = new CommandGenerator($globalConfig);
         $interface->setFile($file = new \SplTempFileObject());
-        $global = static::getGlobalConfig();
 
-        $result = $interface->syncCommands($global, 'production', 'local', '');
+        $result = $interface->syncCommands('production', 'local', '');
         $this->assertSame([
             'filesystem:fileadmin' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin2/* ./fileadmin/',
             'filesystem:uploads' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* ./uploads/',
@@ -61,11 +61,11 @@ SSH_CONFIG;
 
     public function testProductionToTestingFromAnyThere(): void
     {
-        $interface = new CommandGenerator();
+        $globalConfig = static::getGlobalConfig();
+        $interface = new CommandGenerator($globalConfig);
         $interface->setFile($file = new \SplTempFileObject());
-        $global = static::getGlobalConfig();
 
-        $result = $interface->syncCommands($global, 'production', 'testing', '');
+        $result = $interface->syncCommands('production', 'testing', '');
         $this->assertSame([
             'filesystem:fileadmin' => 'ssh -F php://temp serverEu -C "rsync -avz /var/www/production/fileadmin2/* /var/www/testing/fileadmin/"',
             'filesystem:uploads' => 'ssh -F php://temp serverEu -C "rsync -avz /var/www/production/uploads/* /var/www/testing/uploads/"',
@@ -87,11 +87,11 @@ SSH_CONFIG;
 
     public function testLocalToLocal2FromAnyThere(): void
     {
-        $interface = new CommandGenerator();
+        $globalConfig = static::getGlobalConfig();
+        $interface = new CommandGenerator($globalConfig);
         $interface->setFile($file = new \SplTempFileObject());
-        $global = static::getGlobalConfig();
 
-        $result = $interface->syncCommands($global, 'local', 'local2', '');
+        $result = $interface->syncCommands('local', 'local2', '');
         $this->assertSame([
             'filesystem:fileadmin' => 'rsync -avz ./fileadmin/* ../local2/fileadmin/',
             'filesystem:uploads' => 'rsync -avz ./uploads/* ../local2/uploads/',
@@ -113,11 +113,11 @@ SSH_CONFIG;
 
     public function testProductionToStagingFromAnyThere(): void
     {
-        $interface = new CommandGenerator();
+        $globalConfig = static::getGlobalConfig();
+        $interface = new CommandGenerator($globalConfig);
         $interface->setFile($file = new \SplTempFileObject());
-        $global = static::getGlobalConfig();
 
-        $result = $interface->syncCommands($global, 'production', 'staging', '');
+        $result = $interface->syncCommands('production', 'staging', '');
         $this->assertSame([
             'filesystem:fileadmin' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin2/* stagingServer:/var/www/staging/fileadmin/',
             'filesystem:uploads' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* stagingServer:/var/www/staging/uploads/',
@@ -139,11 +139,11 @@ SSH_CONFIG;
 
     public function testProductionToStagingFromStaging(): void
     {
-        $interface = new CommandGenerator();
+        $globalConfig = static::getGlobalConfig();
+        $interface = new CommandGenerator($globalConfig);
         $interface->setFile($file = new \SplTempFileObject());
-        $global = static::getGlobalConfig();
 
-        $result = $interface->syncCommands($global, 'production', 'staging', 'stagingServer');
+        $result = $interface->syncCommands('production', 'staging', 'stagingServer');
         $this->assertSame([
             'filesystem:fileadmin' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin2/* /var/www/staging/fileadmin/',
             'filesystem:uploads' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* /var/www/staging/uploads/',
@@ -161,11 +161,11 @@ SSH_CONFIG;
 
     public function testStagingToProductionFromStaging(): void
     {
-        $interface = new CommandGenerator();
+        $globalConfig = static::getGlobalConfig();
+        $interface = new CommandGenerator($globalConfig);
         $interface->setFile($file = new \SplTempFileObject());
-        $global = static::getGlobalConfig();
 
-        $result = $interface->syncCommands($global, 'staging', 'production', 'stagingServer');
+        $result = $interface->syncCommands('staging', 'production', 'stagingServer');
         $this->assertSame([
             'filesystem:fileadmin' => 'rsync -avz -e "ssh -F php://temp" /var/www/staging/fileadmin/* serverEu:/var/www/production/fileadmin2/',
             'filesystem:uploads' => 'rsync -avz -e "ssh -F php://temp" /var/www/staging/uploads/* serverEu:/var/www/production/uploads/',

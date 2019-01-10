@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu\Tests\Beta;
+namespace PHPSu\Tests\Process;
 
 use PHPSu\Process\Process;
 use PHPSu\Process\ProcessManager;
@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class StateChangeCallbackTest extends TestCase
+final class StateChangeCallbackTest extends TestCase
 {
     public function testNormalReady()
     {

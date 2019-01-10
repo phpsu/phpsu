@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu\Tests\Alpha;
+namespace PHPSu\Tests\Config;
 
 use PHPSu\Command\DatabaseCommand;
 use PHPSu\Command\RsyncCommand;

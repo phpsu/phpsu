@@ -28,4 +28,14 @@ final class CommandExecutor
         $manager->addOutputCallback(new OutputCallback($logOutput));
         $manager->mustRun();
     }
+
+    public function passthru(string $command, OutputInterface $output): int
+    {
+        $process = Process::fromShellCommandline($command, null, null, null, null);
+        $process->setTty(true);
+        $process->run(function ($type, $buffer) use ($output) {
+            $output->write($buffer);
+        });
+        return $process->getExitCode();
+    }
 }

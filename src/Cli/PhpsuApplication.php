@@ -5,7 +5,7 @@ namespace PHPSu\Cli;
 
 use Symfony\Component\Console\Application;
 
-class PhpsuApplication
+final class PhpsuApplication
 {
     public static function command(): void
     {

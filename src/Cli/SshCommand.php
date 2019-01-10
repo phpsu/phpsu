@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace PHPSu\Cli;
 
 use PHPSu\Config\AppInstance;
+use PHPSu\Config\ConfigurationLoader;
+use PHPSu\Main\Controller;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,7 +37,7 @@ final class SshCommand extends Command
      */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
-        $configuration = (new \PHPSu\Config\ConfigurationLoader())->getConfig();
+        $configuration = (new ConfigurationLoader())->getConfig();
         $appInstances = $configuration->getAppInstances();
         $appInstances = array_filter($appInstances, function (AppInstance $instance) {
             return $instance->getHost() !== '';
@@ -60,7 +62,7 @@ final class SshCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln('TODO IMPLEMENT ' . json_encode($input->getArguments(), JSON_PRETTY_PRINT));
-        return 0;
+        $controller = new Controller($output, (new ConfigurationLoader())->getConfig());
+        return $controller->ssh($input->getArgument('destination'), $input->getOption('from'));
     }
 }

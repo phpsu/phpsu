@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu\Tests\Alpha;
+namespace PHPSu\Tests\Config;
 
 use PHPSu\Config\DSN;
 use PHPUnit\Framework\TestCase;
 
-class DSNTest extends TestCase
+final class DSNTest extends TestCase
 {
     public function testSshWithoutSchema(): void
     {

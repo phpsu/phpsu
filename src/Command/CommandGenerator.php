@@ -7,10 +7,17 @@ use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Config\TempSshConfigFile;
 
-class CommandGenerator
+final class CommandGenerator
 {
     /** @var \SplFileObject */
     private $file;
+    /** @var GlobalConfig */
+    private $globalConfig;
+
+    public function __construct(GlobalConfig $globalConfig)
+    {
+        $this->globalConfig = $globalConfig;
+    }
 
     public function getFile(): \SplFileObject
     {
@@ -27,35 +34,44 @@ class CommandGenerator
     }
 
     /**
-     * @param GlobalConfig $globalConfig
      * @param string $from
      * @param string $to
      * @param string $currentHost
      * @return string[]
      */
-    public function syncCommands(GlobalConfig $globalConfig, string $from, string $to, string $currentHost): array
+    public function syncCommands(string $from, string $to, string $currentHost): array
     {
         if ($from === $to) {
             throw new \Exception(sprintf('From and To are Identical: %s', $from));
         }
         if ($currentHost !== '') {
-            $globalConfig->validateConnectionToHost($currentHost);
+            $this->globalConfig->validateConnectionToHost($currentHost);
         }
-        $sshConfig = SshConfig::fromGlobal($globalConfig, $currentHost);
+        $sshConfig = SshConfig::fromGlobal($this->globalConfig, $currentHost);
         $sshConfig->setFile($this->getFile());
 
         $result = [];
-        $rsyncCommands = RsyncCommand::fromGlobal($globalConfig, $from, $to, $currentHost);
+        $rsyncCommands = RsyncCommand::fromGlobal($this->globalConfig, $from, $to, $currentHost);
         foreach ($rsyncCommands as $rsyncCommand) {
             $rsyncCommand->setSshConfig($sshConfig);
             $result[$rsyncCommand->getName()] = $rsyncCommand->generate();
         }
-        $databaseCommands = DatabaseCommand::fromGlobal($globalConfig, $from, $to, $currentHost);
+        $databaseCommands = DatabaseCommand::fromGlobal($this->globalConfig, $from, $to, $currentHost);
         foreach ($databaseCommands as $databaseCommand) {
             $databaseCommand->setSshConfig($sshConfig);
             $result[$databaseCommand->getName()] = $databaseCommand->generate();
         }
         $sshConfig->writeConfig();
         return $result;
+    }
+
+    public function sshCommand(string $destination, string $currentHost): string
+    {
+        $sshConfig = SshConfig::fromGlobal($this->globalConfig, $currentHost);
+        $sshConfig->setFile($this->getFile());
+        $sshCommand = SshCommand::fromGlobal($this->globalConfig, $destination, $currentHost);
+        $sshCommand->setSshConfig($sshConfig);
+        $sshConfig->writeConfig();
+        return $sshCommand->generate();
     }
 }
