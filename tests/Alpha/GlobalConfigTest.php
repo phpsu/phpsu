@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Alpha;
 
-use PHPSu\Alpha\AppInstance;
-use PHPSu\Alpha\DatabaseCommand;
-use PHPSu\Alpha\FileSystem;
-use PHPSu\Alpha\GlobalConfig;
-use PHPSu\Alpha\RsyncCommand;
-use PHPSu\Alpha\SshCommand;
-use PHPSu\Alpha\SshConfig;
-use PHPSu\Alpha\SshConfigHost;
-use PHPSu\Alpha\SshConnection;
+use PHPSu\Command\DatabaseCommand;
+use PHPSu\Command\RsyncCommand;
+use PHPSu\Command\SshCommand;
+use PHPSu\Config\AppInstance;
+use PHPSu\Config\FileSystem;
+use PHPSu\Config\GlobalConfig;
+use PHPSu\Config\SshConfig;
+use PHPSu\Config\SshConfigHost;
+use PHPSu\Config\SshConnection;
 use PHPUnit\Framework\TestCase;
 
 final class GlobalConfigTest extends TestCase

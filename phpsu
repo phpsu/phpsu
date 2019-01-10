@@ -27,5 +27,5 @@ call_user_func(function () {
         die();
     }
     require $firstFileExisting;
-    \PHPSu\Delta\PhpsuApplication::command();
+    \PHPSu\Cli\PhpsuApplication::command();
 });

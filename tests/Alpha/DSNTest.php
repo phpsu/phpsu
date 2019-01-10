@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Alpha;
 
-use PHPSu\Alpha\DSN;
+use PHPSu\Config\DSN;
 use PHPUnit\Framework\TestCase;
 
 class DSNTest extends TestCase

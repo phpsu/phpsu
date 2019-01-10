@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Beta;
 
-use PHPSu\Beta\Process;
-use PHPSu\Beta\ProcessManager;
+use PHPSu\Process\Process;
+use PHPSu\Process\ProcessManager;
 use PHPUnit\Framework\TestCase;
 
 class ProcessManagerTest extends TestCase

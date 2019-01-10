@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Beta;
 
-use PHPSu\Beta\OutputCallback;
-use PHPSu\Beta\Process;
+use PHPSu\Process\OutputCallback;
+use PHPSu\Process\Process;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;

@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Alpha;
 
-use PHPSu\Alpha\AppInstance;
-use PHPSu\Alpha\DatabaseCommand;
-use PHPSu\Alpha\FileSystem;
-use PHPSu\Alpha\RsyncCommand;
-use PHPSu\Alpha\SshCommand;
-use PHPSu\Alpha\SshConfig;
-use PHPSu\Alpha\SshConfigHost;
+use PHPSu\Command\DatabaseCommand;
+use PHPSu\Command\RsyncCommand;
+use PHPSu\Command\SshCommand;
+use PHPSu\Config\AppInstance;
+use PHPSu\Config\FileSystem;
+use PHPSu\Config\SshConfig;
+use PHPSu\Config\SshConfigHost;
 use PHPUnit\Framework\TestCase;
 
 final class RunTest extends TestCase
@@ -51,7 +51,7 @@ final class RunTest extends TestCase
         $sshConfig->hosta = new SshConfigHost();
         $sshConfig->hosta->User = 'user';
         $sshConfig->hosta->HostName = 'localhost';
-        $sshConfig->hosta->Port = '2208';
+        $sshConfig->hosta->Port = 2208;
 
         $sshConfig->{'*'} = new SshConfigHost();
         $sshConfig->{'*'}->StrictHostKeyChecking = 'no';

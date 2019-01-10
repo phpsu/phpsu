@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Alpha;
 
-use PHPSu\Alpha\SshConfig;
-use PHPSu\Alpha\SshConfigGenerator;
-use PHPSu\Alpha\SshConfigHost;
-use PHPSu\Alpha\SshConnection;
-use PHPSu\Alpha\SshConnections;
+use PHPSu\Config\SshConfig;
+use PHPSu\Config\SshConfigGenerator;
+use PHPSu\Config\SshConfigHost;
+use PHPSu\Config\SshConnection;
+use PHPSu\Config\SshConnections;
 use PHPUnit\Framework\TestCase;
 
 class SshConfigGeneratorTest extends TestCase
@@ -64,7 +64,7 @@ class SshConfigGeneratorTest extends TestCase
         $sshConfigExpected->hosta = new SshConfigHost();
         $sshConfigExpected->hosta->User = 'user';
         $sshConfigExpected->hosta->HostName = 'localhost';
-        $sshConfigExpected->hosta->Port = '2208';
+        $sshConfigExpected->hosta->Port = 2208;
         $this->assertEquals($sshConfigExpected, $sshConfig);
     }
 }
