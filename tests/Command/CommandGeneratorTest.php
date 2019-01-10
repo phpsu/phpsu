@@ -33,13 +33,44 @@ final class CommandGeneratorTest extends TestCase
         return $globalConfig;
     }
 
+    public function testSshGeneration(): void
+    {
+        $globalConfig = static::getGlobalConfig();
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile($file = new \SplTempFileObject());
+        $result = $commandGenerator->sshCommand('production', '', '');
+        $this->assertSame('ssh -F php://temp serverEu', $result);
+    }
+
+    public function testSshWithCommand(): void
+    {
+        $globalConfig = static::getGlobalConfig();
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile($file = new \SplTempFileObject());
+        $result = $commandGenerator->sshCommand('production', '', 'ls -alh --color');
+        $this->assertSame('ssh -F php://temp serverEu -C "ls -alh --color"', $result);
+        $result = $commandGenerator->sshCommand('production', '', 'echo "test"');
+        $this->assertSame('ssh -F php://temp serverEu -C "echo \"test\""', $result);
+    }
+
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessage From and To are Identical: same
+     */
+    public function testFromAndToSameDisallowed(): void
+    {
+        $globalConfig = static::getGlobalConfig();
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->syncCommands('same', 'same', '');
+    }
+
     public function testProductionToLocalFromAnyThere(): void
     {
         $globalConfig = static::getGlobalConfig();
-        $interface = new CommandGenerator($globalConfig);
-        $interface->setFile($file = new \SplTempFileObject());
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $interface->syncCommands('production', 'local', '');
+        $result = $commandGenerator->syncCommands('production', 'local', '');
         $this->assertSame([
             'filesystem:fileadmin' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin2/* ./fileadmin/',
             'filesystem:uploads' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* ./uploads/',
@@ -62,10 +93,10 @@ SSH_CONFIG;
     public function testProductionToTestingFromAnyThere(): void
     {
         $globalConfig = static::getGlobalConfig();
-        $interface = new CommandGenerator($globalConfig);
-        $interface->setFile($file = new \SplTempFileObject());
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $interface->syncCommands('production', 'testing', '');
+        $result = $commandGenerator->syncCommands('production', 'testing', '');
         $this->assertSame([
             'filesystem:fileadmin' => 'ssh -F php://temp serverEu -C "rsync -avz /var/www/production/fileadmin2/* /var/www/testing/fileadmin/"',
             'filesystem:uploads' => 'ssh -F php://temp serverEu -C "rsync -avz /var/www/production/uploads/* /var/www/testing/uploads/"',
@@ -88,10 +119,10 @@ SSH_CONFIG;
     public function testLocalToLocal2FromAnyThere(): void
     {
         $globalConfig = static::getGlobalConfig();
-        $interface = new CommandGenerator($globalConfig);
-        $interface->setFile($file = new \SplTempFileObject());
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $interface->syncCommands('local', 'local2', '');
+        $result = $commandGenerator->syncCommands('local', 'local2', '');
         $this->assertSame([
             'filesystem:fileadmin' => 'rsync -avz ./fileadmin/* ../local2/fileadmin/',
             'filesystem:uploads' => 'rsync -avz ./uploads/* ../local2/uploads/',
@@ -114,10 +145,10 @@ SSH_CONFIG;
     public function testProductionToStagingFromAnyThere(): void
     {
         $globalConfig = static::getGlobalConfig();
-        $interface = new CommandGenerator($globalConfig);
-        $interface->setFile($file = new \SplTempFileObject());
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $interface->syncCommands('production', 'staging', '');
+        $result = $commandGenerator->syncCommands('production', 'staging', '');
         $this->assertSame([
             'filesystem:fileadmin' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin2/* stagingServer:/var/www/staging/fileadmin/',
             'filesystem:uploads' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* stagingServer:/var/www/staging/uploads/',
@@ -140,10 +171,10 @@ SSH_CONFIG;
     public function testProductionToStagingFromStaging(): void
     {
         $globalConfig = static::getGlobalConfig();
-        $interface = new CommandGenerator($globalConfig);
-        $interface->setFile($file = new \SplTempFileObject());
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $interface->syncCommands('production', 'staging', 'stagingServer');
+        $result = $commandGenerator->syncCommands('production', 'staging', 'stagingServer');
         $this->assertSame([
             'filesystem:fileadmin' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin2/* /var/www/staging/fileadmin/',
             'filesystem:uploads' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* /var/www/staging/uploads/',
@@ -162,10 +193,10 @@ SSH_CONFIG;
     public function testStagingToProductionFromStaging(): void
     {
         $globalConfig = static::getGlobalConfig();
-        $interface = new CommandGenerator($globalConfig);
-        $interface->setFile($file = new \SplTempFileObject());
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $interface->syncCommands('staging', 'production', 'stagingServer');
+        $result = $commandGenerator->syncCommands('staging', 'production', 'stagingServer');
         $this->assertSame([
             'filesystem:fileadmin' => 'rsync -avz -e "ssh -F php://temp" /var/www/staging/fileadmin/* serverEu:/var/www/production/fileadmin2/',
             'filesystem:uploads' => 'rsync -avz -e "ssh -F php://temp" /var/www/staging/uploads/* serverEu:/var/www/production/uploads/',

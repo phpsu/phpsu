@@ -27,10 +27,10 @@ final class Controller
         $this->config = $config;
     }
 
-    public function ssh(string $destination, string $currentHost): int
+    public function ssh(string $destination, string $currentHost, string $command): int
     {
-        $command = (new CommandGenerator($this->config))->sshCommand($destination, $currentHost);
-        return (new CommandExecutor())->passthru($command, $this->output);
+        $sshCommand = (new CommandGenerator($this->config))->sshCommand($destination, $currentHost, $command);
+        return (new CommandExecutor())->passthru($sshCommand, $this->output);
     }
 
     public function sync(string $form, string $to, string $currentHost, bool $dryRun): void

@@ -59,11 +59,11 @@ final class RsyncCommand implements CommandInterface
         $toRelPath = ($toFilesystem->getPath() ? '/' : '') . $toFilesystem->getPath();
 
         $result = new static();
-        $result->name = 'filesystem:' . $fromFilesystem->getName();
-        $result->fromHost = $from->getHost() === $currentHost ? '' : $from->getHost();
-        $result->toHost = $to->getHost() === $currentHost ? '' : $to->getHost();
-        $result->fromPath = rtrim($from->getPath(), '/*') . $fromRelPath . '/*';
-        $result->toPath = rtrim($to->getPath(), '/') . $toRelPath . '/';
+        $result->setName('filesystem:' . $fromFilesystem->getName());
+        $result->setFromHost($from->getHost() === $currentHost ? '' : $from->getHost());
+        $result->setToHost($to->getHost() === $currentHost ? '' : $to->getHost());
+        $result->setFromPath(rtrim($from->getPath(), '/*') . $fromRelPath . '/*');
+        $result->setToPath(rtrim($to->getPath(), '/') . $toRelPath . '/');
         return $result;
     }
 
@@ -146,28 +146,28 @@ final class RsyncCommand implements CommandInterface
 
     public function generate(): string
     {
-        $hostsDifferentiate = $this->fromHost !== $this->toHost;
+        $hostsDifferentiate = $this->getFromHost() !== $this->getToHost();
         $fromHostPart = '';
         $toHostPart = '';
 
         $command = 'rsync';
-        if ($this->options) {
-            $command .= ' ' . $this->options;
+        if ($this->getOptions()) {
+            $command .= ' ' . $this->getOptions();
         }
         if ($hostsDifferentiate) {
             $file = $this->sshConfig->getFile();
             $command .= ' -e "ssh -F ' . $file->getPathname() . '"';
-            $fromHostPart = $this->fromHost ? $this->fromHost . ':' : '';
-            $toHostPart = $this->toHost ? $this->toHost . ':' : '';
+            $fromHostPart = $this->getFromHost() ? $this->getFromHost() . ':' : '';
+            $toHostPart = $this->getToHost() ? $this->getToHost() . ':' : '';
         }
-        $from = $fromHostPart . $this->fromPath;
-        $to = $toHostPart . $this->toPath;
+        $from = $fromHostPart . $this->getFromPath();
+        $to = $toHostPart . $this->getToPath();
         $command .= ' ' . $from . ' ' . $to;
 
         if (!$hostsDifferentiate) {
             $sshCommand = new SshCommand();
-            $sshCommand->setSshConfig($this->sshConfig);
-            $sshCommand->setInto($this->fromHost);
+            $sshCommand->setSshConfig($this->getSshConfig());
+            $sshCommand->setInto($this->getFromHost());
             return $sshCommand->generate($command);
         }
         return $command;

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class CommandExecutor
@@ -34,6 +35,9 @@ final class CommandExecutor
         $process = Process::fromShellCommandline($command, null, null, null, null);
         $process->setTty(true);
         $process->run(function ($type, $buffer) use ($output) {
+            if ($type === Process::ERR && $output instanceof ConsoleOutputInterface) {
+                $output = $output->getErrorOutput();
+            }
             $output->write($buffer);
         });
         return $process->getExitCode();

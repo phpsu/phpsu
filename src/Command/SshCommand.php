@@ -49,9 +49,9 @@ final class SshCommand
     public function generate(string $command = ''): string
     {
         $file = $this->getSshConfig()->getFile();
-        if ($this->into === '') {
+        if ($this->getInto() === '') {
             return $command;
         }
-        return 'ssh -F ' . $file->getPathname() . ' ' . $this->into . ($command ? ' -C "' . addslashes($command) . '"' : '');
+        return 'ssh -F ' . $file->getPathname() . ' ' . $this->getInto() . ($command ? ' -C "' . addslashes($command) . '"' : '');
     }
 }

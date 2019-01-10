@@ -22,7 +22,8 @@ final class SshCommand extends Command
             ->setHelp('Connect to AppInstance via SSH.')
             ->addOption('dry-run', 'd', InputOption::VALUE_NONE, 'Only show commands that would be run.')
             ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'Only show commands that would be run.', 'local')
-            ->addArgument('destination', InputArgument::REQUIRED, 'The Destination AppInstance.');
+            ->addArgument('destination', InputArgument::REQUIRED, 'The Destination AppInstance.')
+            ->addArgument('commands', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'The Destination AppInstance.', []);
     }
 
     /**
@@ -63,6 +64,10 @@ final class SshCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $controller = new Controller($output, (new ConfigurationLoader())->getConfig());
-        return $controller->ssh($input->getArgument('destination'), $input->getOption('from'));
+        return $controller->ssh(
+            $input->getArgument('destination'),
+            $input->getOption('from'),
+            implode(' ', $input->getArgument('commands'))
+        );
     }
 }

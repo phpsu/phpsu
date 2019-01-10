@@ -33,6 +33,16 @@ final class CommandGenerator
         return $this;
     }
 
+    public function sshCommand(string $destination, string $currentHost, string $command): string
+    {
+        $sshConfig = SshConfig::fromGlobal($this->globalConfig, $currentHost);
+        $sshConfig->setFile($this->getFile());
+        $sshCommand = SshCommand::fromGlobal($this->globalConfig, $destination, $currentHost);
+        $sshCommand->setSshConfig($sshConfig);
+        $sshConfig->writeConfig();
+        return $sshCommand->generate($command);
+    }
+
     /**
      * @param string $from
      * @param string $to
@@ -63,15 +73,5 @@ final class CommandGenerator
         }
         $sshConfig->writeConfig();
         return $result;
-    }
-
-    public function sshCommand(string $destination, string $currentHost): string
-    {
-        $sshConfig = SshConfig::fromGlobal($this->globalConfig, $currentHost);
-        $sshConfig->setFile($this->getFile());
-        $sshCommand = SshCommand::fromGlobal($this->globalConfig, $destination, $currentHost);
-        $sshCommand->setSshConfig($sshConfig);
-        $sshConfig->writeConfig();
-        return $sshCommand->generate();
     }
 }

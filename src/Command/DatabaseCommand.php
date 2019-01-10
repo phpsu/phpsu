@@ -54,11 +54,11 @@ final class DatabaseCommand implements CommandInterface
     public static function fromAppInstances(AppInstance $from, AppInstance $to, Database $fromDatabase, Database $toDatabase, string $currentHost): DatabaseCommand
     {
         $result = new static();
-        $result->name = 'database:' . $fromDatabase->getName();
-        $result->fromHost = $from->getHost() === $currentHost ? '' : $from->getHost();
-        $result->toHost = $to->getHost() === $currentHost ? '' : $to->getHost();
-        $result->fromUrl = $fromDatabase->getUrl();
-        $result->toUrl = $toDatabase->getUrl();
+        $result->setName('database:' . $fromDatabase->getName());
+        $result->setFromHost($from->getHost() === $currentHost ? '' : $from->getHost());
+        $result->setToHost($to->getHost() === $currentHost ? '' : $to->getHost());
+        $result->setFromUrl($fromDatabase->getUrl());
+        $result->setToUrl($toDatabase->getUrl());
         return $result;
     }
 
@@ -131,30 +131,30 @@ final class DatabaseCommand implements CommandInterface
 
     public function generate(): string
     {
-        $hostsDifferentiate = $this->fromHost !== $this->toHost;
-        $from = $this->parseDatabaseUrl($this->fromUrl);
-        $to = $this->parseDatabaseUrl($this->toUrl);
+        $hostsDifferentiate = $this->getFromHost() !== $this->getToHost();
+        $from = $this->parseDatabaseUrl($this->getFromUrl());
+        $to = $this->parseDatabaseUrl($this->getToUrl());
 
         $dumpCmd = "mysqldump --skip-comments --extended-insert -h{$from['host']} -P{$from['port']} -u{$from['user']} -p{$from['pass']} {$from['path']}";
         $importCmd = "mysql -h{$to['host']} -P{$to['port']} -u{$to['user']} -p{$to['pass']} {$to['path']}";
         if ($hostsDifferentiate) {
-            if ($this->fromHost) {
+            if ($this->getFromHost()) {
                 $sshCommand = new SshCommand();
-                $sshCommand->setSshConfig($this->sshConfig);
-                $sshCommand->setInto($this->fromHost);
+                $sshCommand->setSshConfig($this->getSshConfig());
+                $sshCommand->setInto($this->getFromHost());
                 $dumpCmd = $sshCommand->generate($dumpCmd);
             }
-            if ($this->toHost) {
+            if ($this->getToHost()) {
                 $sshCommand = new SshCommand();
-                $sshCommand->setSshConfig($this->sshConfig);
-                $sshCommand->setInto($this->toHost);
+                $sshCommand->setSshConfig($this->getSshConfig());
+                $sshCommand->setInto($this->getToHost());
                 $importCmd = $sshCommand->generate($importCmd);
             }
             return $dumpCmd . ' | ' . $importCmd;
         }
         $sshCommand = new SshCommand();
-        $sshCommand->setSshConfig($this->sshConfig);
-        $sshCommand->setInto($this->fromHost);
+        $sshCommand->setSshConfig($this->getSshConfig());
+        $sshCommand->setInto($this->getFromHost());
         return $sshCommand->generate($dumpCmd . ' | ' . $importCmd);
     }
 
