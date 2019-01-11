@@ -7,7 +7,7 @@ final class TempSshConfigFile extends \SplFileObject
 {
     public function __construct()
     {
-        $fileName = '.phpsu/config/ssh_config';
+        $fileName = getcwd() . '/.phpsu/config/ssh_config';
         $directory = dirname($fileName);
         if (!file_exists($directory)) {
             if (!mkdir($directory, 0777, true) && !is_dir($directory)) {
