@@ -26,14 +26,13 @@ final class Process extends \Symfony\Component\Process\Process
 
     public function getState(): string
     {
-        if ($this->getStatus() === self::STATUS_READY) {
-            return self::STATE_READY;
-        }
-        if ($this->getStatus() === self::STATUS_STARTED) {
-            return self::STATE_RUNNING;
-        }
-        if ($this->getStatus() === self::STATUS_TERMINATED) {
-            return $this->getExitCode() === 0 ? self::STATE_SUCCEEDED : self::STATE_ERRORED;
+        switch ($this->getStatus()) {
+            case self::STATUS_READY:
+                return self::STATE_READY;
+            case self::STATUS_STARTED:
+                return self::STATE_RUNNING;
+            case self::STATUS_TERMINATED:
+                return $this->getExitCode() === 0 ? self::STATE_SUCCEEDED : self::STATE_ERRORED;
         }
         throw new \LogicException('This should never happen');
     }
