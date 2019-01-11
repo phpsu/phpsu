@@ -17,9 +17,9 @@ This package is compliant with [PSR-1], [PSR-2] and [PSR-4]. If you notice compl
 
 Via Composer
 
-`` bash
+````bash
 composer require phpsu/phpsu
-``
+````
 
 ## Requirements
 
