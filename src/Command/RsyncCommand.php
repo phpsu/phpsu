@@ -55,8 +55,8 @@ final class RsyncCommand implements CommandInterface
 
     public static function fromAppInstances(AppInstance $from, AppInstance $to, FileSystem $fromFilesystem, FileSystem $toFilesystem, string $currentHost): RsyncCommand
     {
-        $fromRelPath = ($fromFilesystem->getPath() ? '/' : '') . $fromFilesystem->getPath();
-        $toRelPath = ($toFilesystem->getPath() ? '/' : '') . $toFilesystem->getPath();
+        $fromRelPath = ($fromFilesystem->getPath() ? './' : '') . $fromFilesystem->getPath();
+        $toRelPath = ($toFilesystem->getPath() ? './' : '') . $toFilesystem->getPath();
 
         $result = new static();
         $result->setName('filesystem:' . $fromFilesystem->getName());
