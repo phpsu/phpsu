@@ -16,4 +16,4 @@
 ### TODO
 
 Sorry, we haven't gotten around to implement this Feature yet.  
-If you have the knowledge, could you implement it? for the benefit of us all?
+Do you want to help us and contribute? Why not implement one of the missing features and push a pull request!
