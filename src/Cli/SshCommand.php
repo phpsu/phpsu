@@ -56,7 +56,7 @@ final class SshCommand extends Command
             );
             $question->setErrorMessage('AppInstance %s not found in Config.');
             $destination = $helper->ask($input, $output, $question);
-            $output->writeln('You have selected: ' . $destination);
+            $output->writeln('You selected: ' . $destination);
             $input->setArgument('destination', $destination);
         }
     }
