@@ -5,7 +5,7 @@ namespace PHPSu\Cli;
 
 use PHPSu\Config\AppInstance;
 use PHPSu\Config\ConfigurationLoader;
-use PHPSu\Main\Controller;
+use PHPSu\Controller;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

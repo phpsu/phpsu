@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu\Tests\Main;
+namespace PHPSu\Tests;
 
 use PHPSu\Config\GlobalConfig;
-use PHPSu\Main\Controller;
+use PHPSu\Controller;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 
