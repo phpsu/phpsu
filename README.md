@@ -36,7 +36,8 @@ The following versions of PHP are supported by this version.
 Required for synchronisation are:
 * ``ssh`` on execution System
 * ``rsync`` on executing System
-* ``mysqldump`` and ``mysql`` on source and destination Systems
+* ``mysqldump`` on source System
+* ``mysql`` on destination Systems
 
 Unfortunately we do not support Windows yet.
 
