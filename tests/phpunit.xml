@@ -4,11 +4,10 @@
     convertErrorsToExceptions="true"
     convertNoticesToExceptions="true"
     convertWarningsToExceptions="true"
-    strict="true"
     colors="true">
   <testsuites>
-    <testsuite name="Configuration">
-      <directory>../tests/Configuration</directory>
+    <testsuite name="All">
+      <directory suffix="Test.php">../tests/</directory>
     </testsuite>
   </testsuites>
   <filter>
@@ -17,11 +16,11 @@
     </whitelist>
   </filter>
   <logging>
-    <log type="coverage-html" target="_output/report" lowUpperBound="49" highLowerBound="89"/>
-    <log type="coverage-clover" target="_output/coverage.xml"/>
-    <log type="coverage-text" target="_output/report.txt" showUncoveredFiles="false"/>
-    <log type="junit" target="_output/logfile.xml"/>
-    <log type="testdox-html" target="_output/testdox.html"/>
-    <log type="testdox-text" target="_output/testdox.txt"/>
+    <log type="coverage-html" target="test-results/report" lowUpperBound="49" highLowerBound="89"/>
+    <log type="coverage-clover" target="test-results/coverage.xml"/>
+    <log type="coverage-text" target="test-results/report.txt" showUncoveredFiles="false"/>
+    <log type="junit" target="test-results/logfile.xml"/>
+    <log type="testdox-html" target="test-results/testdox.html"/>
+    <log type="testdox-text" target="test-results/testdox.txt"/>
   </logging>
 </phpunit>

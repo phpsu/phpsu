@@ -1,0 +1,16 @@
+language: php
+
+php:
+  - 7.1
+  - 7.2
+  - 7.3
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+install: composer i --no-suggest
+
+script: vendor/bin/grumphp run && composer test
+
+after_success: bash <(curl -s https://codecov.io/bash)
