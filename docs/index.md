@@ -1,63 +1,28 @@
-# Docs
+# Table of contents
 
-## Example Config
+1. [Installation](../README.md#Install)
+1. [Requirements](../README.md#Requirements)
+1. [Writing the Configuration](index.md#TODO)
+   - [Config for single Server and Local](index.md#TODO)
+   - [Config for multi Server Setup](index.md#TODO)
+   - [Config for Server with Proxy](index.md#TODO)
+   - [Example Config for complex Server Structure](index.md#TODO)
+1. [The Command Line of Phpsu](index.md#TODO)
+   - [The Option --dry-run](index.md#TODO)
+   - [The Verbosity Option](index.md#TODO)
+   - [Sync From Production to Local](index.md#TODO)
+   - [Sync From Production to Testing](index.md#TODO)
+   - [Being on Production and Syncing to Testing](index.md#TODO)
+   - [The Ssh Command](index.md#TODO)
+1. [Understand the concepts](index.md#TODO)
+   - [Filesystem](index.md#TODO)
+   - [Database](index.md#TODO)
+   - [SshConnection](index.md#TODO)
+   - [AppInstance](index.md#TODO)
+   - [Connecting to a Server over Proxies](index.md#TODO)
+   - [Connecting to a Server over Proxies](index.md#TODO)
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<phpsu xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:noNamespaceSchemaLocation="http://schema.phpsu.de/1.0/phpsu.xsd">
-  <config>
-    <filesystem type="directory">
-      <option name="directory" value="data"/>
-    </filesystem>
-    <database type="mysql">
-      <option name="user" value="dbuser01"/>
-      <option name="password" value="dbpassword01"/>
-      <option name="database" value="db01"/>
-    </database>
-  </config>
-  <hosts>
-    <host name="Production">
-      <console type="ssh">
-        <option name="host" value="example.com"/>
-        <option name="user" value="user"/>
-        <option name="rootDir" value="/srv/www/project"/>
-      </console>
-    </host>
-    <host name="Testing">
-      <console type="ssh">
-        <option name="host" value="example.com"/>
-        <option name="user" value="testuser"/>
-        <option name="port" value="2222"/>
-        <option name="rootDir" value="/srv/www/projectTest"/>
-      </console>
-    </host>
-  </hosts>
-</phpsu>
-```
+### TODO
 
-## Elements
-
-This is the Complete list of all Elements that can bee used:
-
-- [phpsu](./Elements/Phpsu.md)
-- [config](./Elements/Config.md)
-- [hosts](./Elements/Hosts.md)
-- [host](./Elements/Host.md)
-- [filesystem](./ConfigElements/Filesystem.md)
-- [database](./ConfigElements/Database.md)
-- [option](./Elements/Option.md)
-
-### Config Elements
-
-For more detail about database and files see the [Config Elements](./ConfigElements.md) section.
-
-#TODO:
-Document:
-- exclude
-- excludePattern
-- include
-- includePattern
-- cli interface
-- dry-run
-- extensibility
+Sorry, we haven't gotten around to writing this part of the documentation yet.  
+If you have the knowledge, could you complement the documentation? for the benefit of us all?

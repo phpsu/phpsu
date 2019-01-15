@@ -1,8 +1,15 @@
 {
   "name": "phpsu/phpsu",
-  "license": "LGPL-2.0-or-later",
-  "description": "php sync utility",
-  "type": "project",
+  "license": "MIT",
+  "description": "Synchronisation Utility: File and Database",
+  "type": "library",
+  "keywords": [
+    "phpsu",
+    "rsync",
+    "mysql",
+    "mysqldump"
+  ],
+  "homepage": "https://phpsu.de/",
   "config": {
     "platform": {
       "php": "7.1.3"
@@ -13,11 +20,13 @@
   "authors": [
     {
       "name": "Matthias Vogel",
-      "email": "git@kanti.de"
+      "email": "git@kanti.de",
+      "role": "Developer"
     },
     {
       "name": "Christian Benthake",
-      "email": "git@cben.co"
+      "email": "git@cben.co",
+      "role": "Developer"
     }
   ],
   "bin": [
@@ -25,11 +34,7 @@
   ],
   "scripts": {
     "test": "vendor/bin/phpunit -c tests/phpunit.xml --testdox --color=always",
-    "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox",
-    "test:update": "vendor/bin/phpunit -c tests/phpunit.xml --colors=always -d --update-snapshots",
-    "codecept": "vendor/bin/codecept run",
-    "su:sync": "./phpsu sync",
-    "su:sync:dry": "./phpsu sync --dry-run"
+    "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox"
   },
   "autoload": {
     "psr-4": {
@@ -43,19 +48,14 @@
   },
   "minimum-stability": "stable",
   "require": {
-    "symfony/console": "4.*",
-    "league/container": "3.*",
-    "php": ">=7.1.3 <7.4",
-    "ext-simplexml": "*",
-    "ext-libxml": "*"
+    "symfony/console": "^4.2.0",
+    "symfony/process": "^4.2.0",
+    "php": ">=7.1.3 <7.4"
   },
   "require-dev": {
     "phpunit/phpunit": "7.*",
-    "codeception/codeception": "^2.4",
-    "spatie/phpunit-snapshot-assertions": "^1.3",
-    "pluswerk/grumphp-config": "^2.7",
-    "roave/security-advisories": "dev-master",
-    "spatie/phpunit-watcher": "^1.8"
+    "pluswerk/grumphp-config": "2.*",
+    "spatie/phpunit-watcher": "1.*"
   },
   "extra": {
     "pluswerk/grumphp-config": {
