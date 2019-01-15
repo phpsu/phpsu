@@ -15,8 +15,7 @@ class TempSshConfigFileTest extends TestCase
     {
         $this->oldCwd = getcwd();
         chdir(__DIR__ . '/../fixtures');
-        $dir = __DIR__ . '/../fixtures/.phpsu/';
-        exec(sprintf('rm -rf %s', escapeshellarg($dir)));
+        exec(sprintf('rm -rf %s', escapeshellarg(__DIR__ . '/../fixtures/.phpsu/')));
     }
 
     public function testConstruct(): void
@@ -28,6 +27,7 @@ class TempSshConfigFileTest extends TestCase
 
     public function tearDown()
     {
+        exec(sprintf('rm -rf %s', escapeshellarg(__DIR__ . '/../fixtures/.phpsu/')));
         chdir($this->oldCwd);
     }
 }

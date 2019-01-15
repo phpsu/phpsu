@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu\Main;
+namespace PHPSu;
 
 use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\GlobalConfig;

@@ -1,11 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use PHPSu\Config\GlobalConfig;
-
-$config = new GlobalConfig();
-$config->addFilesystem('A', 'A');
-$config->addSshConnection('hosta', 'ssh://user:user@localhost:2208');
-$config->addAppInstance('production', '~/', 'hosta');
+$config = new \PHPSu\Config\GlobalConfig();
+$config->addFilesystem('Image Uploads', 'var/storage');
+$config->addSshConnection('hostA', 'ssh://user@localhost:2208');
+$config->addAppInstance('production', 'hostA', '/var/www/');
 $config->addAppInstance('local');
 return $config;

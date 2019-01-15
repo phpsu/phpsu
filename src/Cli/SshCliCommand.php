@@ -5,7 +5,7 @@ namespace PHPSu\Cli;
 
 use PHPSu\Config\AppInstance;
 use PHPSu\Config\ConfigurationLoader;
-use PHPSu\Main\Controller;
+use PHPSu\Controller;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
-final class SshCommand extends Command
+final class SshCliCommand extends Command
 {
     protected function configure(): void
     {
@@ -56,7 +56,7 @@ final class SshCommand extends Command
             );
             $question->setErrorMessage('AppInstance %s not found in Config.');
             $destination = $helper->ask($input, $output, $question);
-            $output->writeln('You have just selected: ' . $destination);
+            $output->writeln('You selected: ' . $destination);
             $input->setArgument('destination', $destination);
         }
     }
