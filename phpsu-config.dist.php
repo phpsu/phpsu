@@ -1,14 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use PHPSu\Alpha\AppInstance;
-use PHPSu\Alpha\FileSystem;
-use PHPSu\Alpha\GlobalConfig;
-use PHPSu\Alpha\SshConnection;
-
-$config = new GlobalConfig();
-$config->addFilesystem((new FileSystem())->setName('A')->setPath('A'));
-$config->addSshConnection((new SshConnection())->setHost('hosta')->setUrl('ssh://user:user@localhost:2208')->setIdentityFile('docker/testCaseD/id_rsa'));
-$config->addAppInstance((new AppInstance())->setName('production')->setHost('hosta')->setPath('~/'));
-$config->addAppInstance((new AppInstance())->setName('local'));
+$config = new \PHPSu\Config\GlobalConfig();
+$config->addFilesystem('Image Uploads', 'var/storage');
+$config->addSshConnection('hostA', 'ssh://user@localhost:2208');
+$config->addAppInstance('production', 'hostA', '/var/www/');
+$config->addAppInstance('local');
 return $config;
