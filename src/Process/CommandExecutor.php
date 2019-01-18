@@ -42,4 +42,22 @@ final class CommandExecutor
         });
         return $process->getExitCode();
     }
+
+    public function executeDirectly(string $command): array
+    {
+        $process = Process::fromShellCommandline($command, null, null, null, null);
+        $result = [];
+        $process->run(function ($type, $buffer) use (&$result) {
+            $result = [$type, $buffer];
+        });
+        return $result;
+    }
+
+    public function getCommandReturnBuffer(array $executedCommandArray, bool $getBufferType = false): string
+    {
+        if (empty($executedCommandArray)) {
+            throw new \RuntimeException('executed command returned nothing');
+        }
+        return $executedCommandArray[$getBufferType === false ? 1 : 0];
+    }
 }

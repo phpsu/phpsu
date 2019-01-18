@@ -12,6 +12,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class Controller
 {
+
+    public const PHPSU_ROOT_PATH = __DIR__ . '/../';
+
     /**
      * @var OutputInterface
      */
