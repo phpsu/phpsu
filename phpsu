@@ -7,7 +7,7 @@ if (version_compare('7.1.0', PHP_VERSION, '>')) {
 
 call_user_func(function () {
     $possibleAutoloadFiles = [
-        getcwd() . '/vendor/autoload.php',
+        getcwd() . '/vendor/autoload.php', // removes ability to install globally  via composer
         __DIR__ . '/../../autoload.php',
         __DIR__ . '/../vendor/autoload.php',
         __DIR__ . '/vendor/autoload.php',
