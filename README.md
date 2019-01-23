@@ -77,6 +77,11 @@ cp phpsu-config.dist.php phpsu-config.php
 composer test
 ````
 
+You can also check, whether any changes you made are affecting your tests immediatly on save:
+````bash
+composer test:watch
+````
+
 ## Security
 
 If you discover any security related issues, please email git@kanti.de instead of using the issue tracker.
