@@ -64,6 +64,13 @@ final class RsyncCommand implements CommandInterface
         $result->setToHost($to->getHost() === $currentHost ? '' : $to->getHost());
         $result->setFromPath(rtrim($from->getPath() === '' ? '.' : $from->getPath(), '/*') . $fromRelPath . '/*');
         $result->setToPath(rtrim($to->getPath() === '' ? '.' : $to->getPath(), '/') . $toRelPath . '/');
+        $excludeOptions = '';
+        foreach (array_unique(array_merge($fromFilesystem->getExcludes(), $toFilesystem->getExcludes())) as $exclude) {
+            $excludeOptions .= '--exclude=' . escapeshellarg($exclude) . ' ';
+        }
+        if ($excludeOptions) {
+            $result->setOptions($result->getOptions() . ' ' . $excludeOptions);
+        }
         return $result;
     }
 
@@ -152,17 +159,17 @@ final class RsyncCommand implements CommandInterface
 
         $command = 'rsync';
         if ($this->getOptions()) {
-            $command .= ' ' . $this->getOptions();
+            $command .= ' ' . trim($this->getOptions());
         }
         if ($hostsDifferentiate) {
             $file = $this->sshConfig->getFile();
-            $command .= ' -e "ssh -F ' . $file->getPathname() . '"';
+            $command .= ' -e ' . escapeshellarg('ssh -F ' . escapeshellarg($file->getPathname()));
             $fromHostPart = $this->getFromHost() ? $this->getFromHost() . ':' : '';
             $toHostPart = $this->getToHost() ? $this->getToHost() . ':' : '';
         }
         $from = $fromHostPart . $this->getFromPath();
         $to = $toHostPart . $this->getToPath();
-        $command .= ' ' . $from . ' ' . $to;
+        $command .= ' ' . escapeshellarg($from) . ' ' . escapeshellarg($to);
 
         if (!$hostsDifferentiate) {
             $sshCommand = new SshCommand();

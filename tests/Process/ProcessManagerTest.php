@@ -9,11 +9,11 @@ use PHPUnit\Framework\TestCase;
 
 final class ProcessManagerTest extends TestCase
 {
-    public function testRun(): void
+    public function testProcessesShouldBeRunning(): void
     {
         $processManager = new ProcessManager();
-        $processManager->addProcess($pList1 = Process::fromShellCommandline('echo "Testing List1" && sleep 0.01')->setName('list1'));
-        $processManager->addProcess($pList2 = Process::fromShellCommandline('echo "Testing List2" && sleep 0.01')->setName('list2'));
+        $processManager->addProcess($pList1 = Process::fromShellCommandline('echo "Testing List1" && sleep 0.1')->setName('list1'));
+        $processManager->addProcess($pList2 = Process::fromShellCommandline('echo "Testing List2" && sleep 0.1')->setName('list2'));
         $processManager->start();
         $this->assertTrue($pList1->isRunning(), 'Process1 should be running');
         $this->assertTrue($pList2->isRunning(), 'Process2 should be running');
