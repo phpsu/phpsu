@@ -17,7 +17,7 @@ final class ControllerTest extends TestCase
         $config->addAppInstance('production', 'serverEu', '/var/www/prod');
         $config->addAppInstance('local');
         $runner = new Controller($output, $config);
-        $runner->sync('production', 'local', '', true);
+        $runner->sync('production', 'local', '', true, false);
         $this->assertSame('', $output->fetch());
     }
 }

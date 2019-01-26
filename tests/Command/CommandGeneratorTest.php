@@ -61,7 +61,7 @@ final class CommandGeneratorTest extends TestCase
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
-        $commandGenerator->syncCommands('same', 'same', '');
+        $commandGenerator->syncCommands('same', 'same', '', false);
     }
 
     public function testProductionToLocalFromAnyThere(): void
@@ -70,7 +70,7 @@ final class CommandGeneratorTest extends TestCase
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $commandGenerator->syncCommands('production', 'local', '');
+        $result = $commandGenerator->syncCommands('production', 'local', '', false);
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/*' './fileadmin/'",
             'filesystem:uploads' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/*' './uploads/'",
@@ -96,7 +96,7 @@ SSH_CONFIG;
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $commandGenerator->syncCommands('production', 'testing', '');
+        $result = $commandGenerator->syncCommands('production', 'testing', '', false);
         $this->assertSame([
             'filesystem:fileadmin' => "ssh -F 'php://temp' 'serverEu' -C 'rsync -avz '\''/var/www/production/fileadmin2/*'\'' '\''/var/www/testing/fileadmin/'\'''",
             'filesystem:uploads' => "ssh -F 'php://temp' 'serverEu' -C 'rsync -avz '\''/var/www/production/uploads/*'\'' '\''/var/www/testing/uploads/'\'''",
@@ -122,7 +122,7 @@ SSH_CONFIG;
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $commandGenerator->syncCommands('local', 'local2', '');
+        $result = $commandGenerator->syncCommands('local', 'local2', '', false);
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -avz './fileadmin/*' '../local2/fileadmin/'",
             'filesystem:uploads' => "rsync -avz './uploads/*' '../local2/uploads/'",
@@ -148,7 +148,7 @@ SSH_CONFIG;
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $commandGenerator->syncCommands('production', 'staging', '');
+        $result = $commandGenerator->syncCommands('production', 'staging', '', false);
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/*' 'stagingServer:/var/www/staging/fileadmin/'",
             'filesystem:uploads' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/*' 'stagingServer:/var/www/staging/uploads/'",
@@ -174,7 +174,7 @@ SSH_CONFIG;
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $commandGenerator->syncCommands('production', 'staging', 'stagingServer');
+        $result = $commandGenerator->syncCommands('production', 'staging', 'stagingServer', false);
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/*' '/var/www/staging/fileadmin/'",
             'filesystem:uploads' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/*' '/var/www/staging/uploads/'",
@@ -196,7 +196,7 @@ SSH_CONFIG;
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $commandGenerator->syncCommands('staging', 'production', 'stagingServer');
+        $result = $commandGenerator->syncCommands('staging', 'production', 'stagingServer', false);
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -avz -e 'ssh -F '\''php://temp'\''' '/var/www/staging/fileadmin/*' 'serverEu:/var/www/production/fileadmin2/'",
             'filesystem:uploads' => "rsync -avz -e 'ssh -F '\''php://temp'\''' '/var/www/staging/uploads/*' 'serverEu:/var/www/production/uploads/'",

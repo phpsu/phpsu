@@ -36,9 +36,9 @@ final class Controller
         return (new CommandExecutor())->passthru($sshCommand, $this->output);
     }
 
-    public function sync(string $form, string $to, string $currentHost, bool $dryRun): void
+    public function sync(string $form, string $to, string $currentHost, bool $dryRun, bool $all): void
     {
-        $commands = (new CommandGenerator($this->config))->syncCommands($form, $to, $currentHost);
+        $commands = (new CommandGenerator($this->config))->syncCommands($form, $to, $currentHost, $all);
 
         if ($dryRun) {
             foreach ($commands as $commandName => $command) {

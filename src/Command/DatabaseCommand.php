@@ -34,7 +34,7 @@ final class DatabaseCommand implements CommandInterface
      * @param string $currentHost
      * @return DatabaseCommand[]
      */
-    public static function fromGlobal(GlobalConfig $global, string $fromInstanceName, string $toInstanceName, string $currentHost): array
+    public static function fromGlobal(GlobalConfig $global, string $fromInstanceName, string $toInstanceName, string $currentHost, bool $all): array
     {
         $fromInstance = $global->getAppInstance($fromInstanceName);
         $toInstance = $global->getAppInstance($toInstanceName);
@@ -48,12 +48,12 @@ final class DatabaseCommand implements CommandInterface
             if ($toInstance->hasDatabase($databaseName)) {
                 $toDatabase = $toInstance->getDatabase($databaseName);
             }
-            $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost);
+            $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost, $all);
         }
         return $result;
     }
 
-    public static function fromAppInstances(AppInstance $from, AppInstance $to, Database $fromDatabase, Database $toDatabase, string $currentHost): DatabaseCommand
+    public static function fromAppInstances(AppInstance $from, AppInstance $to, Database $fromDatabase, Database $toDatabase, string $currentHost, bool $all): DatabaseCommand
     {
         $result = new static();
         $result->setName('database:' . $fromDatabase->getName());
@@ -61,7 +61,9 @@ final class DatabaseCommand implements CommandInterface
         $result->setToHost($to->getHost() === $currentHost ? '' : $to->getHost());
         $result->setFromUrl($fromDatabase->getUrl());
         $result->setToUrl($toDatabase->getUrl());
-        $result->setExcludes(array_unique(array_merge($fromDatabase->getExcludes(), $toDatabase->getExcludes())));
+        if ($all === false) {
+            $result->setExcludes(array_unique(array_merge($fromDatabase->getExcludes(), $toDatabase->getExcludes())));
+        }
         return $result;
     }
 
