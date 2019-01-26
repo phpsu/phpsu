@@ -6,7 +6,7 @@ namespace PHPSu\Tests\Config;
 use PHPSu\Config\TempSshConfigFile;
 use PHPUnit\Framework\TestCase;
 
-class TempSshConfigFileTest extends TestCase
+final class TempSshConfigFileTest extends TestCase
 {
     /** @var string */
     private $oldCwd;

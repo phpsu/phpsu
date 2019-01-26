@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 final class ControllerTest extends TestCase
 {
-    public function testSync(): void
+    public function testEmptyConfigSyncDryRun(): void
     {
         $output = new BufferedOutput();
         $config = new GlobalConfig();
@@ -18,6 +18,6 @@ final class ControllerTest extends TestCase
         $config->addAppInstance('local');
         $runner = new Controller($output, $config);
         $runner->sync('production', 'local', '', true);
-        $this->assertSame("+------+--------------+\n| Name | Bash Command |\n+------+--------------+\n", $output->fetch());
+        $this->assertSame('', $output->fetch());
     }
 }

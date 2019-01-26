@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
+use PHPSu\Helper\StringHelper;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -33,10 +34,9 @@ final class OutputCallback
         $outputString = '';
         $dataLines = explode(PHP_EOL, trim($data));
         foreach ($dataLines as $line) {
-            if (strlen($line) > 80) {
-                $line = substr($line, 0, 80) . $formatter->format('<fg=yellow>...</> ');
+            foreach (StringHelper::splitString($line, 80) as $extraLine) {
+                $outputString .= $prefix . $extraLine . PHP_EOL;
             }
-            $outputString .= $prefix . $line . PHP_EOL;
         }
         $output->write($outputString, false, $verbosity | OutputInterface::OUTPUT_RAW);
     }
