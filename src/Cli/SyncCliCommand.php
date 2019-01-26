@@ -19,7 +19,9 @@ final class SyncCliCommand extends Command
             ->setDescription('Sync AppInstances')
             ->setHelp('Synchronizes Filesystem and/or Database from one AppInstance to another.')
             ->addOption('dry-run', 'd', InputOption::VALUE_NONE, 'Only show commands that would be run.')
-            ->addOption('all', null, InputOption::VALUE_NONE, 'Ignore all Excludes.')
+            ->addOption('all', 'a', InputOption::VALUE_NONE, 'Ignore all Excludes.')
+            ->addOption('no-file', null, InputOption::VALUE_NONE, 'Do not sync Filesystems.')
+            ->addOption('no-db', null, InputOption::VALUE_NONE, 'Do not sync Databases.')
             ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'Only show commands that would be run.', '')
             ->addArgument('source', InputArgument::REQUIRED, 'The Source AppInstance.')
             ->addArgument('destination', InputArgument::REQUIRED, 'The Destination AppInstance.');
@@ -33,7 +35,9 @@ final class SyncCliCommand extends Command
             $input->getArgument('destination'),
             $input->getOption('from'),
             $input->getOption('dry-run'),
-            $input->getOption('all')
+            $input->getOption('all'),
+            $input->getOption('no-file'),
+            $input->getOption('no-db')
         );
         return 0;
     }
