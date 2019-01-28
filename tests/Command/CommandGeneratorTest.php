@@ -39,7 +39,7 @@ final class CommandGeneratorTest extends TestCase
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
         $result = $commandGenerator->sshCommand('production', '', '');
-        $this->assertSame("ssh -F 'php://temp' 'serverEu'", $result);
+        $this->assertSame("ssh -F 'php://temp' 'serverEu' -t 'cd '\''/var/www/production'\''; bash --login'", $result);
     }
 
     public function testSshWithCommand(): void

@@ -12,6 +12,8 @@ final class SshCommand
     private $sshConfig;
     /** @var string */
     private $into;
+    /** @var string */
+    private $path = '';
 
     public static function fromGlobal(GlobalConfig $global, string $connectionName, string $currentHost): SshCommand
     {
@@ -21,6 +23,10 @@ final class SshCommand
         }
         $result = new static();
         $result->setInto($host);
+        if (isset($global->getAppInstances()[$connectionName])) {
+            $appInstance = $global->getAppInstances()[$connectionName];
+            $result->setPath($appInstance->getPath());
+        }
         return $result;
     }
 
@@ -46,12 +52,29 @@ final class SshCommand
         return $this;
     }
 
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    public function setPath(string $path): SshCommand
+    {
+        $this->path = $path;
+        return $this;
+    }
+
     public function generate(string $command = ''): string
     {
         $file = $this->getSshConfig()->getFile();
         if ($this->getInto() === '') {
             return $command;
         }
-        return 'ssh -F ' . escapeshellarg($file->getPathname()) . ' ' . escapeshellarg($this->getInto()) . ($command ? ' -C ' . escapeshellarg($command) : '');
+        $result = 'ssh -F ' . escapeshellarg($file->getPathname()) . ' ' . escapeshellarg($this->getInto());
+        if ($command) {
+            $result .= ' -C ' . escapeshellarg($command);
+        } elseif ($this->getPath()) {
+            $result .= ' -t ' . escapeshellarg('cd ' . escapeshellarg($this->getPath()) . '; bash --login');
+        }
+        return $result;
     }
 }

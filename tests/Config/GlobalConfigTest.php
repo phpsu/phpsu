@@ -21,10 +21,10 @@ final class GlobalConfigTest extends TestCase
         $global = static::getGlobalConfig();
 
         $sshCommand = SshCommand::fromGlobal($global, 'production', 'local');
-        $this->assertEquals((new SshCommand())->setInto('serverEu'), $sshCommand);
+        $this->assertEquals((new SshCommand())->setInto('serverEu')->setPath('/var/www/production'), $sshCommand);
 
         $sshCommand = SshCommand::fromGlobal($global, 'testing', 'local');
-        $this->assertEquals((new SshCommand())->setInto('serverEu'), $sshCommand);
+        $this->assertEquals((new SshCommand())->setInto('serverEu')->setPath('/var/www/testing'), $sshCommand);
 
         $sshCommand = SshCommand::fromGlobal($global, 'serverEu', 'local');
         $this->assertEquals((new SshCommand())->setInto('serverEu'), $sshCommand);
