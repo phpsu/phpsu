@@ -13,6 +13,8 @@ call_user_func(function () {
         __DIR__ . '/../vendor/autoload.php',
         // php ./phpsu
         __DIR__ . '/vendor/autoload.php',
+        // phpsu from current working directory
+        getcwd() . '/vendor/autoload.php',
     ];
 
     $firstFileExisting = null;
