@@ -9,7 +9,7 @@ final class PhpsuApplication
 {
     public static function command(): void
     {
-        $application = new Application('phpsu', '1.0.0-dev');
+        $application = new Application('phpsu', '1.0.0-alpha2');
         $command = new SyncCliCommand();
         $application->add($command);
         $application->add(new SshCliCommand());
