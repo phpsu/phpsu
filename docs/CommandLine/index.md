@@ -1,6 +1,7 @@
 #The Command Line of Phpsu
 
 - [The Sync Command](Sync.md#phpsu-sync)
+  - [The Arguments source and destination](Sync.md#the-arguments-source-and-destination)
   - [The Option --dry-run](Sync.md#the-option---dry-run)
   - [The Option --all](Sync.md#the-option---all)
   - [The Option --no-file](Sync.md#the-option---no-file)
@@ -12,5 +13,7 @@
     - [Sync From Production to Testing](Sync.md#sync-from-production-to-testing)
     - [Being on Production and Syncing to Testing](Sync.md#being-on-production-and-syncing-to-testing)
 - [The Ssh Command](Ssh.md#phpsu-ssh)
+  - [The Argument destination](Ssh.md#the-argument-destination)
+  - [The Argument commands](Ssh.md#the-argument-commands)
   - [The Option --dry-run](Ssh.md#the-option---dry-run)
   - [The Option --from](Ssh.md#the-option---from)
