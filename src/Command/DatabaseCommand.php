@@ -14,6 +14,8 @@ final class DatabaseCommand implements CommandInterface
     private $name;
     /** @var SshConfig */
     private $sshConfig;
+    /** @var string[] */
+    private $excludes = [];
 
     /** @var string */
     private $fromUrl;
@@ -59,6 +61,7 @@ final class DatabaseCommand implements CommandInterface
         $result->setToHost($to->getHost() === $currentHost ? '' : $to->getHost());
         $result->setFromUrl($fromDatabase->getUrl());
         $result->setToUrl($toDatabase->getUrl());
+        $result->setExcludes(array_unique(array_merge($fromDatabase->getExcludes(), $toDatabase->getExcludes())));
         return $result;
     }
 
@@ -82,6 +85,24 @@ final class DatabaseCommand implements CommandInterface
     public function setSshConfig(SshConfig $sshConfig): DatabaseCommand
     {
         $this->sshConfig = $sshConfig;
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getExcludes(): array
+    {
+        return $this->excludes;
+    }
+
+    /**
+     * @param string[] $excludes
+     * @return DatabaseCommand
+     */
+    public function setExcludes(array $excludes): DatabaseCommand
+    {
+        $this->excludes = $excludes;
         return $this;
     }
 
@@ -135,8 +156,8 @@ final class DatabaseCommand implements CommandInterface
         $from = $this->parseDatabaseUrl($this->getFromUrl());
         $to = $this->parseDatabaseUrl($this->getToUrl());
 
-        $dumpCmd = "mysqldump --opt --skip-comments -h{$from['host']} -P{$from['port']} -u{$from['user']} -p{$from['pass']} {$from['path']}";
-        $importCmd = "mysql -h{$to['host']} -P{$to['port']} -u{$to['user']} -p{$to['pass']} {$to['path']}";
+        $dumpCmd = 'mysqldump --opt --skip-comments ' . $this->generateCliParameters($from) . $this->excludeParts($from['path']);
+        $importCmd = 'mysql ' . $this->generateCliParameters($to);
         if ($hostsDifferentiate) {
             if ($this->getFromHost()) {
                 $sshCommand = new SshCommand();
@@ -175,5 +196,34 @@ final class DatabaseCommand implements CommandInterface
         ];
         $parsedUrl['path'] = str_replace('/', '', $parsedUrl['path']);
         return $parsedUrl;
+    }
+
+    /**
+     * @param array $parameters
+     * @return string
+     */
+    private function generateCliParameters(array $parameters): string
+    {
+        $result = [];
+        $result[] = '-h' . escapeshellarg($parameters['host']);
+        if ((int)$parameters['port'] !== 3306) {
+            $result[] = '-P' . (int)$parameters['port'];
+        }
+        $result[] = '-u' . escapeshellarg($parameters['user']);
+        $result[] = '-p' . escapeshellarg($parameters['pass']);
+        $result[] = '' . escapeshellarg($parameters['path']);
+        return implode(' ', $result);
+    }
+
+    private function excludeParts(string $database): string
+    {
+        $excludeOptions = [];
+        foreach ($this->getExcludes() as $exclude) {
+            $excludeOptions[] = '--ignore-table=' . escapeshellarg($database . '.' . $exclude);
+        }
+        if ($excludeOptions) {
+            return ' ' . implode(' ', $excludeOptions);
+        }
+        return '';
     }
 }

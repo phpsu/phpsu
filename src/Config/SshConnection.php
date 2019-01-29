@@ -7,7 +7,7 @@ final class SshConnection
 {
     /** @var string */
     private $host;
-    /** @var string */
+    /** @var SshUrl */
     private $url;
     /** @var string[] */
     private $options = [];
@@ -28,14 +28,19 @@ final class SshConnection
         return $this;
     }
 
-    public function getUrl(): string
+    public function getUrl(): SshUrl
     {
         return $this->url;
     }
 
+    public function getUrlAsString(): string
+    {
+        return (string)$this->url;
+    }
+
     public function setUrl(string $url): SshConnection
     {
-        $this->url = $url;
+        $this->url = new SshUrl($url);
         return $this;
     }
 

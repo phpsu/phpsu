@@ -21,6 +21,6 @@ final class DatabaseCommandTest extends TestCase
             ->setToUrl('mysql://root:root@127.0.0.1:2206/sequelmovie2')
             ->setToHost('');
 
-        $this->assertSame('ssh -F php://temp hostc -C "mysqldump --opt --skip-comments -hdatabase -P3306 -uroot -proot sequelmovie" | mysql -h127.0.0.1 -P2206 -uroot -proot sequelmovie2', $database->generate());
+        $this->assertSame("ssh -F 'php://temp' 'hostc' -C 'mysqldump --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root' 'sequelmovie2'", $database->generate());
     }
 }

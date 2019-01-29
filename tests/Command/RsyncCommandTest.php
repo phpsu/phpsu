@@ -29,7 +29,7 @@ final class RsyncCommandTest extends TestCase
 
         $fileSystem = (new FileSystem())->setName('app')->setPath('');
         $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local')->setSshConfig($sshConfig)->generate();
-        $this->assertSame('rsync -avz -e "ssh -F php://temp" hosta:/var/www/prod/* hostc:/var/www/testing/', $generated);
+        $this->assertSame("rsync -avz -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/*' 'hostc:/var/www/testing/'", $generated);
     }
 
     public function testGenerate(): void
@@ -43,7 +43,7 @@ final class RsyncCommandTest extends TestCase
             ->setFromPath('~/test/*')
             ->setToPath('./__test/');
 
-        $this->assertSame('rsync -r -e "ssh -F php://temp" hosta:~/test/* ./__test/', $rsync->generate());
+        $this->assertSame("rsync -r -e 'ssh -F '\''php://temp'\''' 'hosta:~/test/*' './__test/'", $rsync->generate());
     }
 
     public function testRsyncWithAppInstanceLocal(): void
@@ -61,7 +61,7 @@ final class RsyncCommandTest extends TestCase
 
         $fileSystem = (new FileSystem())->setName('app')->setPath('');
         $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local')->setSshConfig($sshConfig)->generate();
-        $this->assertSame('rsync -avz -e "ssh -F php://temp" hosta:/var/www/prod/* ./', $generated);
+        $this->assertSame("rsync -avz -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/*' './'", $generated);
     }
 
     public function testLocalAndVarStorage(): void
@@ -79,6 +79,6 @@ final class RsyncCommandTest extends TestCase
 
         $fileSystem = (new FileSystem())->setName('app')->setPath('var/storage');
         $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local')->setSshConfig($sshConfig)->generate();
-        $this->assertSame('rsync -avz -e "ssh -F php://temp" hosta:/var/www/prod/var/storage/* ./var/storage/', $generated);
+        $this->assertSame("rsync -avz -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/*' './var/storage/'", $generated);
     }
 }

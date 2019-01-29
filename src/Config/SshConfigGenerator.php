@@ -67,13 +67,7 @@ final class SshConfigGenerator
                     throw new \Exception('sshConnection Should only have one From at this point!');
                 }
                 $host = new SshConfigHost();
-                $dsn = new DSN($sshConnection->getUrl(), 'ssh');
-                if (!$dsn->getUser()) {
-                    throw new \Exception(sprintf('user must be specified for ssh connection: %s %s', $sshConnection->getHost(), $sshConnection->getUrl()));
-                }
-                if (!$dsn->getHost()) {
-                    throw new \Exception(sprintf('host must be specified for ssh connection: %s %s', $sshConnection->getHost(), $sshConnection->getUrl()));
-                }
+                $dsn = $sshConnection->getUrl();
                 $host->User = $dsn->getUser();
                 $host->HostName = $dsn->getHost();
                 if ($dsn->getPort() !== 22) {

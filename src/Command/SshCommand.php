@@ -52,6 +52,6 @@ final class SshCommand
         if ($this->getInto() === '') {
             return $command;
         }
-        return 'ssh -F ' . $file->getPathname() . ' ' . $this->getInto() . ($command ? ' -C "' . addslashes($command) . '"' : '');
+        return 'ssh -F ' . escapeshellarg($file->getPathname()) . ' ' . escapeshellarg($this->getInto()) . ($command ? ' -C ' . escapeshellarg($command) : '');
     }
 }
