@@ -11,6 +11,9 @@ final class Database
     /** @var string */
     private $url;
 
+    /** @var string[] */
+    private $excludes = [];
+
     public function getName(): string
     {
         return $this->name;
@@ -30,6 +33,17 @@ final class Database
     public function setUrl(string $url): Database
     {
         $this->url = $url;
+        return $this;
+    }
+
+    public function getExcludes(): array
+    {
+        return $this->excludes;
+    }
+
+    public function addExclude(string $exclude): Database
+    {
+        $this->excludes[] = $exclude;
         return $this;
     }
 }

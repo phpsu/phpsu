@@ -39,7 +39,7 @@ final class CommandGeneratorTest extends TestCase
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
         $result = $commandGenerator->sshCommand('production', '', '');
-        $this->assertSame('ssh -F php://temp serverEu', $result);
+        $this->assertSame("ssh -F 'php://temp' 'serverEu'", $result);
     }
 
     public function testSshWithCommand(): void
@@ -48,9 +48,9 @@ final class CommandGeneratorTest extends TestCase
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
         $result = $commandGenerator->sshCommand('production', '', 'ls -alh --color');
-        $this->assertSame('ssh -F php://temp serverEu -C "ls -alh --color"', $result);
+        $this->assertSame("ssh -F 'php://temp' 'serverEu' -C 'ls -alh --color'", $result);
         $result = $commandGenerator->sshCommand('production', '', 'echo "test"');
-        $this->assertSame('ssh -F php://temp serverEu -C "echo \"test\""', $result);
+        $this->assertSame("ssh -F 'php://temp' 'serverEu' -C 'echo \"test\"'", $result);
     }
 
     /**
@@ -72,9 +72,9 @@ final class CommandGeneratorTest extends TestCase
 
         $result = $commandGenerator->syncCommands('production', 'local', '');
         $this->assertSame([
-            'filesystem:fileadmin' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin2/* ./fileadmin/',
-            'filesystem:uploads' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* ./uploads/',
-            'database:app' => 'ssh -F php://temp serverEu -C "mysqldump --opt --skip-comments -happHost -P3306 -uroot -proot appDatabase" | mysql -hhost -P3307 -uuser -ppw database',
+            'filesystem:fileadmin' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/*' './fileadmin/'",
+            'filesystem:uploads' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/*' './uploads/'",
+            'database:app' => "ssh -F 'php://temp' 'serverEu' -C 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\''' | mysql -h'host' -P3307 -u'user' -p'pw' 'database'",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -98,9 +98,9 @@ SSH_CONFIG;
 
         $result = $commandGenerator->syncCommands('production', 'testing', '');
         $this->assertSame([
-            'filesystem:fileadmin' => 'ssh -F php://temp serverEu -C "rsync -avz /var/www/production/fileadmin2/* /var/www/testing/fileadmin/"',
-            'filesystem:uploads' => 'ssh -F php://temp serverEu -C "rsync -avz /var/www/production/uploads/* /var/www/testing/uploads/"',
-            'database:app' => 'ssh -F php://temp serverEu -C "mysqldump --opt --skip-comments -happHost -P3306 -uroot -proot appDatabase | mysql -hhost -P3307 -uuser -ppw database"',
+            'filesystem:fileadmin' => "ssh -F 'php://temp' 'serverEu' -C 'rsync -avz '\''/var/www/production/fileadmin2/*'\'' '\''/var/www/testing/fileadmin/'\'''",
+            'filesystem:uploads' => "ssh -F 'php://temp' 'serverEu' -C 'rsync -avz '\''/var/www/production/uploads/*'\'' '\''/var/www/testing/uploads/'\'''",
+            'database:app' => "ssh -F 'php://temp' 'serverEu' -C 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\'' | mysql -h'\''host'\'' -P3307 -u'\''user'\'' -p'\''pw'\'' '\''database'\'''",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -124,9 +124,9 @@ SSH_CONFIG;
 
         $result = $commandGenerator->syncCommands('local', 'local2', '');
         $this->assertSame([
-            'filesystem:fileadmin' => 'rsync -avz ./fileadmin/* ../local2/fileadmin/',
-            'filesystem:uploads' => 'rsync -avz ./uploads/* ../local2/uploads/',
-            'database:app' => 'mysqldump --opt --skip-comments -hhost -P3307 -uuser -ppw database | mysql -hhost -P3307 -uuser -ppw database',
+            'filesystem:fileadmin' => "rsync -avz './fileadmin/*' '../local2/fileadmin/'",
+            'filesystem:uploads' => "rsync -avz './uploads/*' '../local2/uploads/'",
+            'database:app' => "mysqldump --opt --skip-comments -h'host' -P3307 -u'user' -p'pw' 'database' | mysql -h'host' -P3307 -u'user' -p'pw' 'database'",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -150,9 +150,9 @@ SSH_CONFIG;
 
         $result = $commandGenerator->syncCommands('production', 'staging', '');
         $this->assertSame([
-            'filesystem:fileadmin' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin2/* stagingServer:/var/www/staging/fileadmin/',
-            'filesystem:uploads' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* stagingServer:/var/www/staging/uploads/',
-            'database:app' => 'ssh -F php://temp serverEu -C "mysqldump --opt --skip-comments -happHost -P3306 -uroot -proot appDatabase" | ssh -F php://temp stagingServer -C "mysql -hhost -P3307 -uuser -ppw database"',
+            'filesystem:fileadmin' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/*' 'stagingServer:/var/www/staging/fileadmin/'",
+            'filesystem:uploads' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/*' 'stagingServer:/var/www/staging/uploads/'",
+            'database:app' => "ssh -F 'php://temp' 'serverEu' -C 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\''' | ssh -F 'php://temp' 'stagingServer' -C 'mysql -h'\''host'\'' -P3307 -u'\''user'\'' -p'\''pw'\'' '\''database'\'''",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -176,9 +176,9 @@ SSH_CONFIG;
 
         $result = $commandGenerator->syncCommands('production', 'staging', 'stagingServer');
         $this->assertSame([
-            'filesystem:fileadmin' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/fileadmin2/* /var/www/staging/fileadmin/',
-            'filesystem:uploads' => 'rsync -avz -e "ssh -F php://temp" serverEu:/var/www/production/uploads/* /var/www/staging/uploads/',
-            'database:app' => 'ssh -F php://temp serverEu -C "mysqldump --opt --skip-comments -happHost -P3306 -uroot -proot appDatabase" | mysql -hhost -P3307 -uuser -ppw database',
+            'filesystem:fileadmin' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/*' '/var/www/staging/fileadmin/'",
+            'filesystem:uploads' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/*' '/var/www/staging/uploads/'",
+            'database:app' => "ssh -F 'php://temp' 'serverEu' -C 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\''' | mysql -h'host' -P3307 -u'user' -p'pw' 'database'",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -198,9 +198,9 @@ SSH_CONFIG;
 
         $result = $commandGenerator->syncCommands('staging', 'production', 'stagingServer');
         $this->assertSame([
-            'filesystem:fileadmin' => 'rsync -avz -e "ssh -F php://temp" /var/www/staging/fileadmin/* serverEu:/var/www/production/fileadmin2/',
-            'filesystem:uploads' => 'rsync -avz -e "ssh -F php://temp" /var/www/staging/uploads/* serverEu:/var/www/production/uploads/',
-            'database:app' => 'mysqldump --opt --skip-comments -hhost -P3307 -uuser -ppw database | ssh -F php://temp serverEu -C "mysql -happHost -P3306 -uroot -proot appDatabase"',
+            'filesystem:fileadmin' => "rsync -avz -e 'ssh -F '\''php://temp'\''' '/var/www/staging/fileadmin/*' 'serverEu:/var/www/production/fileadmin2/'",
+            'filesystem:uploads' => "rsync -avz -e 'ssh -F '\''php://temp'\''' '/var/www/staging/uploads/*' 'serverEu:/var/www/production/uploads/'",
+            'database:app' => "mysqldump --opt --skip-comments -h'host' -P3307 -u'user' -p'pw' 'database' | ssh -F 'php://temp' 'serverEu' -C 'mysql -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\'''",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
