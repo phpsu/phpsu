@@ -13,7 +13,7 @@ call_user_func(function () {
         __DIR__ . '/../vendor/autoload.php',
         // php ./phpsu
         __DIR__ . '/vendor/autoload.php',
-        // php ./vendor/bin/phpsu symlink to ./vendor/phpsu/phpsu/phpsu
+        // php ./vendor/phpsu/phpsu/phpsu may be symlinked from ./vendor/bin/phpsu
         __DIR__ . '/../../autoload.php',
     ];
 
