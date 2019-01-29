@@ -20,6 +20,7 @@ final class SshCliCommand extends Command
         $this->setName('ssh')
             ->setDescription('create SSH Connection')
             ->setHelp('Connect to AppInstance via SSH.')
+            ->addOption('dry-run', 'd', InputOption::VALUE_NONE, 'Only show commands that would be run.')
             ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'Only show commands that would be run.', 'local')
             ->addArgument('destination', InputArgument::REQUIRED, 'The Destination AppInstance.')
             ->addArgument('commands', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'The Destination AppInstance.', []);
@@ -66,7 +67,8 @@ final class SshCliCommand extends Command
         return $controller->ssh(
             $input->getArgument('destination'),
             $input->getOption('from'),
-            implode(' ', $input->getArgument('commands'))
+            implode(' ', $input->getArgument('commands')),
+            $input->getOption('dry-run')
         );
     }
 }

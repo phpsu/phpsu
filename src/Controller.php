@@ -6,7 +6,6 @@ namespace PHPSu;
 use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Process\CommandExecutor;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -27,23 +26,25 @@ final class Controller
         $this->config = $config;
     }
 
-    public function ssh(string $destination, string $currentHost, string $command): int
+    public function ssh(string $destination, string $currentHost, string $command, bool $dryRun): int
     {
         $sshCommand = (new CommandGenerator($this->config))->sshCommand($destination, $currentHost, $command);
+        if ($dryRun) {
+            $this->output->writeln($sshCommand);
+            return 0;
+        }
         return (new CommandExecutor())->passthru($sshCommand, $this->output);
     }
 
-    public function sync(string $form, string $to, string $currentHost, bool $dryRun): void
+    public function sync(string $form, string $to, string $currentHost, bool $dryRun, bool $all, bool $noFiles, bool $noDatabases): void
     {
-        $commands = (new CommandGenerator($this->config))->syncCommands($form, $to, $currentHost);
+        $commands = (new CommandGenerator($this->config))->syncCommands($form, $to, $currentHost, $all, $noFiles, $noDatabases);
 
         if ($dryRun) {
-            $table = new Table($this->output);
-            $table->setHeaders(['Name', 'Bash Command']);
             foreach ($commands as $commandName => $command) {
-                $table->addRow([$commandName, $command]);
+                $this->output->writeln(sprintf('<info>%s</info>', $commandName));
+                $this->output->writeln($command);
             }
-            $table->render();
             return;
         }
 

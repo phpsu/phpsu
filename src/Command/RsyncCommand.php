@@ -32,9 +32,10 @@ final class RsyncCommand implements CommandInterface
      * @param string $fromInstanceName
      * @param string $toInstanceName
      * @param string $currentHost
+     * @param bool $all
      * @return RsyncCommand[]
      */
-    public static function fromGlobal(GlobalConfig $global, string $fromInstanceName, string $toInstanceName, string $currentHost): array
+    public static function fromGlobal(GlobalConfig $global, string $fromInstanceName, string $toInstanceName, string $currentHost, bool $all): array
     {
         $fromInstance = $global->getAppInstance($fromInstanceName);
         $toInstance = $global->getAppInstance($toInstanceName);
@@ -48,12 +49,12 @@ final class RsyncCommand implements CommandInterface
             if ($toInstance->hasFilesystem($fileSystemName)) {
                 $toFilesystem = $toInstance->getFilesystem($fileSystemName);
             }
-            $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromFilesystem, $toFilesystem, $currentHost);
+            $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromFilesystem, $toFilesystem, $currentHost, $all);
         }
         return $result;
     }
 
-    public static function fromAppInstances(AppInstance $from, AppInstance $to, FileSystem $fromFilesystem, FileSystem $toFilesystem, string $currentHost): RsyncCommand
+    public static function fromAppInstances(AppInstance $from, AppInstance $to, FileSystem $fromFilesystem, FileSystem $toFilesystem, string $currentHost, bool $all): RsyncCommand
     {
         $fromRelPath = ($fromFilesystem->getPath() ? '/' : '') . $fromFilesystem->getPath();
         $toRelPath = ($toFilesystem->getPath() ? '/' : '') . $toFilesystem->getPath();
@@ -64,12 +65,14 @@ final class RsyncCommand implements CommandInterface
         $result->setToHost($to->getHost() === $currentHost ? '' : $to->getHost());
         $result->setFromPath(rtrim($from->getPath() === '' ? '.' : $from->getPath(), '/*') . $fromRelPath . '/*');
         $result->setToPath(rtrim($to->getPath() === '' ? '.' : $to->getPath(), '/') . $toRelPath . '/');
-        $excludeOptions = '';
-        foreach (array_unique(array_merge($fromFilesystem->getExcludes(), $toFilesystem->getExcludes())) as $exclude) {
-            $excludeOptions .= '--exclude=' . escapeshellarg($exclude) . ' ';
-        }
-        if ($excludeOptions) {
-            $result->setOptions($result->getOptions() . ' ' . $excludeOptions);
+        if ($all === false) {
+            $excludeOptions = '';
+            foreach (array_unique(array_merge($fromFilesystem->getExcludes(), $toFilesystem->getExcludes())) as $exclude) {
+                $excludeOptions .= '--exclude=' . escapeshellarg($exclude) . ' ';
+            }
+            if ($excludeOptions) {
+                $result->setOptions($result->getOptions() . ' ' . $excludeOptions);
+            }
         }
         return $result;
     }

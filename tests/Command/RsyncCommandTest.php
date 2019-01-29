@@ -28,7 +28,7 @@ final class RsyncCommandTest extends TestCase
             ->setPath('/var/www/testing');
 
         $fileSystem = (new FileSystem())->setName('app')->setPath('');
-        $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local')->setSshConfig($sshConfig)->generate();
+        $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local', false)->setSshConfig($sshConfig)->generate();
         $this->assertSame("rsync -avz -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/*' 'hostc:/var/www/testing/'", $generated);
     }
 
@@ -60,7 +60,7 @@ final class RsyncCommandTest extends TestCase
         $instanceB->setName('local');
 
         $fileSystem = (new FileSystem())->setName('app')->setPath('');
-        $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local')->setSshConfig($sshConfig)->generate();
+        $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local', false)->setSshConfig($sshConfig)->generate();
         $this->assertSame("rsync -avz -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/*' './'", $generated);
     }
 
@@ -78,7 +78,7 @@ final class RsyncCommandTest extends TestCase
         $instanceB->setName('local');
 
         $fileSystem = (new FileSystem())->setName('app')->setPath('var/storage');
-        $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local')->setSshConfig($sshConfig)->generate();
+        $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local', false)->setSshConfig($sshConfig)->generate();
         $this->assertSame("rsync -avz -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/*' './var/storage/'", $generated);
     }
 }
