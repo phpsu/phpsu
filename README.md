@@ -5,7 +5,7 @@
 [![Build Status](https://img.shields.io/travis/phpsu/phpsu/master.svg?style=flat-square)](https://travis-ci.org/phpsu/phpsu)
 [![Coverage Status](https://img.shields.io/codecov/c/g/phpsu/phpsu.svg?style=flat-square)](https://codecov.io/gh/phpsu/phpsu)
 [![Quality Score](https://img.shields.io/scrutinizer/g/phpsu/phpsu.svg?style=flat-square)](https://scrutinizer-ci.com/g/phpsu/phpsu)
-[![Total Downloads](https://img.shields.io/packagist/dt/league/container.svg?style=flat-square)](https://packagist.org/packages/phpsu/phpsu)
+[![Total Downloads](https://img.shields.io/packagist/dt/phpsu/phpsu.svg?style=flat-square)](https://packagist.org/packages/phpsu/phpsu)
 
 This package is compliant with [PSR-1], [PSR-2] and [PSR-4]. If you notice compliance oversights, please send a patch via pull request.
 
@@ -75,6 +75,11 @@ cp phpsu-config.dist.php phpsu-config.php
 
 ````bash
 composer test
+````
+
+You can also check, whether any changes you made are affecting your tests immediatly on save:
+````bash
+composer test:watch
 ````
 
 ## Security
