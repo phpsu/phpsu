@@ -70,10 +70,14 @@ final class SshCommand
             return $command;
         }
         $result = 'ssh -F ' . escapeshellarg($file->getPathname()) . ' ' . escapeshellarg($this->getInto());
-        if ($command) {
-            $result .= ' -C ' . escapeshellarg($command);
-        } elseif ($this->getPath()) {
-            $result .= ' -t ' . escapeshellarg('cd ' . escapeshellarg($this->getPath()) . '; bash --login');
+        if ($this->getPath()) {
+            if (!$command) {
+                //keep it interactive if no command is specified
+                $command = 'bash --login';
+            }
+            $result .= ' -t ' . escapeshellarg('cd ' . escapeshellarg($this->getPath()) . '; ' . $command);
+        } elseif ($command) {
+            $result .= ' ' . escapeshellarg($command);
         }
         return $result;
     }

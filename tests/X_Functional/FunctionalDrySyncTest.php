@@ -27,7 +27,7 @@ final class FunctionalDrySyncTest extends TestCase
             'filesystem:fileadmin',
             "rsync -avz -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/*' './testInstance/fileadmin/'",
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' -C 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -50,7 +50,7 @@ final class FunctionalDrySyncTest extends TestCase
             'filesystem:fileadmin',
             "rsync -avz --exclude='*.mp4' --exclude='*.mp3' --exclude='*.zip' -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/*' './testInstance/fileadmin/'",
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' -C 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -70,7 +70,7 @@ final class FunctionalDrySyncTest extends TestCase
         $controller->sync('testing', 'local', '', true, false, false, false);
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' -C 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' --ignore-table='\''testdb.table1'\'' --ignore-table='\''testdb.table2'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' --ignore-table='\''testdb.table1'\'' --ignore-table='\''testdb.table2'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -93,7 +93,7 @@ final class FunctionalDrySyncTest extends TestCase
             'filesystem:fileadmin',
             "rsync -avz -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/*' './testInstance/fileadmin/'",
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' -C 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -135,7 +135,7 @@ final class FunctionalDrySyncTest extends TestCase
         $controller->sync('testing', 'local', '', true, true, true, false);
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' -C 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
