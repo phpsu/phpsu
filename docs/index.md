@@ -11,6 +11,7 @@
    - [Example Config for complex Server Structure](index.md#TODO)
 1. [The Command Line of Phpsu](CommandLine/index.md)
    - [The Sync Command](CommandLine/Sync.md#phpsu-sync)
+     - [The Arguments source and destination](CommandLine/Sync.md#the-arguments-source-and-destination)
      - [The Option --dry-run](CommandLine/Sync.md#the-option---dry-run)
      - [The Option --all](CommandLine/Sync.md#the-option---all)
      - [The Option --no-file](CommandLine/Sync.md#the-option---no-file)
@@ -22,6 +23,8 @@
        - [Sync From Production to Testing](CommandLine/Sync.md#sync-from-production-to-testing)
        - [Being on Production and Syncing to Testing](CommandLine/Sync.md#being-on-production-and-syncing-to-testing)
    - [The Ssh Command](CommandLine/Ssh.md#phpsu-ssh)
+     - [The Argument destination](CommandLine/Ssh.md#the-argument-destination)
+     - [The Argument commands](CommandLine/Ssh.md#the-argument-commands)
      - [The Option --dry-run](CommandLine/Ssh.md#the-option---dry-run)
      - [The Option --from](CommandLine/Ssh.md#the-option---from)
 
