@@ -28,7 +28,7 @@ $config->addAppInstance('local', '...');
 ```
 
 The Arguments can be any of the defined AppInstances. 
-They can not be the same AppInstance as than phpsu would be jobless.
+They can not be the same as phpsu would then be jobless.
 
 ### The Option --dry-run
 
@@ -55,8 +55,8 @@ $config->addFilesystem('...')->addExclude('*.mp4');
 // ...
 ```
 
-The `--all` option lets you ignore the excludes of your Configuration. 
-It will sync all Files and all Database Tables.
+The `--all` option lets you ignore the excludes of your configuration. 
+It is going to sync all Files and all Database Tables.
 
 
 ### The Option --no-file
@@ -65,7 +65,7 @@ It will sync all Files and all Database Tables.
 phpsu sync source destination --no-file
 ``` 
 
-With the `--no-file` option phpsu will ignore all `->addFilesystem()` Configurations.
+With the `--no-file` option phpsu will ignore all `->addFilesystem()` configurations.
 
 ### The Option --no-db
 
@@ -73,7 +73,7 @@ With the `--no-file` option phpsu will ignore all `->addFilesystem()` Configurat
 phpsu sync source destination --no-db
 ``` 
 
-With the `--no-db` option phpsu will ignore all `->addDatabase()` Configurations.
+With the `--no-db` option phpsu will ignore all `->addDatabase()` configurations.
 
 ### The Option --verbose
 

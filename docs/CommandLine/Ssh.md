@@ -9,7 +9,7 @@ phpsu ssh --help
 phpsu ssh -h
 ```
 
-This option shows all possible options and arguments and gives hints about the usages of the sub-commands. 
+This option gives you a quick overview on how to use it.
 
 ### The Argument destination
 
@@ -26,10 +26,9 @@ $config->addAppInstance('ThisAppInstance', '...');
 // ...
 ```
 
-The Destination can be a AppInstance Name or a HostName. 
-With the example config from above the destination can ether be ``ThisHost``  or ``ThisAppInstance``.
-If a'n AppInstance is used as destination the connection will be established to the server, 
-resulting in the directory of that AppInstance.
+The keyword destination can either be replaced with an AppInstance Name or a HostName. 
+Keeping that in mind, with the example config from above, the destination can either be ``ThisHost``  or ``ThisAppInstance``.
+If an AppInstance is being used as the destination, the configured path will be the working directory right after connecting
 
 ### The Argument commands
 
@@ -57,4 +56,4 @@ phpsu ssh destination --from=currentSystem
 
 This option can be used to shorten the connection length for ssh connections.
 You need to set this option if the destination system is only accessible by a Proxy
-and you are on one of the Proxy Servers. (more on this see at [Connecting to a Server over Proxies](../index.md#TODO)) 
+and you are on one of the Proxy Servers. (more on this see [Connecting to a Server over Proxies](../index.md#TODO)) 
