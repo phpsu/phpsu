@@ -36,7 +36,7 @@ If an AppInstance is being used as the destination, the configured path will be 
 phpsu ssh destination [...commands]
 ```
 
-The Argument commands can be an arbitrary number of commands that will be executed on the remote server.
+It is possible to provide an arbitrary amount of commands that will be executed on the remote server.
 The program will not hold after the execution of the commands. 
 Keep in mind that the working directory depends on the destination. (see [The Argument destination](Ssh.md#the-argument-destination))
 
