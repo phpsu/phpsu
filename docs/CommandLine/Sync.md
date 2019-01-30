@@ -37,7 +37,7 @@ phpsu sync source destination --dry-run
 ``` 
 
 This option shows how the synchronisation is going to perform without actually synchronising anything.
-It will show you the commands that would run without the `--dry-run` option
+`--dry-run` gives you the exact commands so you can check them.
 
 ### The Option --all
 
