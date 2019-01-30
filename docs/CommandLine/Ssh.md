@@ -1,6 +1,6 @@
 # phpsu ssh
 
-This command is the basic command that provides the ability to connect to a remote system.
+This is the basic command that provides the ability to connect to a remote system.
 
 ## Usage
 
