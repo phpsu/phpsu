@@ -17,7 +17,7 @@ final class SshCommandTest extends TestCase
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta');
-        $this->assertSame('ssh -F php://temp hosta', $ssh->generate());
+        $this->assertSame("ssh -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
     /**

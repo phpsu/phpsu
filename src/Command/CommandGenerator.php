@@ -47,9 +47,12 @@ final class CommandGenerator
      * @param string $from
      * @param string $to
      * @param string $currentHost
+     * @param bool $all
+     * @param bool $noFiles
+     * @param bool $noDatabases
      * @return string[]
      */
-    public function syncCommands(string $from, string $to, string $currentHost): array
+    public function syncCommands(string $from, string $to, string $currentHost, bool $all, bool $noFiles, bool $noDatabases): array
     {
         if ($from === $to) {
             throw new \Exception(sprintf('From and To are Identical: %s', $from));
@@ -61,15 +64,19 @@ final class CommandGenerator
         $sshConfig->setFile($this->getFile());
 
         $result = [];
-        $rsyncCommands = RsyncCommand::fromGlobal($this->globalConfig, $from, $to, $currentHost);
-        foreach ($rsyncCommands as $rsyncCommand) {
-            $rsyncCommand->setSshConfig($sshConfig);
-            $result[$rsyncCommand->getName()] = $rsyncCommand->generate();
+        if ($noFiles === false) {
+            $rsyncCommands = RsyncCommand::fromGlobal($this->globalConfig, $from, $to, $currentHost, $all);
+            foreach ($rsyncCommands as $rsyncCommand) {
+                $rsyncCommand->setSshConfig($sshConfig);
+                $result[$rsyncCommand->getName()] = $rsyncCommand->generate();
+            }
         }
-        $databaseCommands = DatabaseCommand::fromGlobal($this->globalConfig, $from, $to, $currentHost);
-        foreach ($databaseCommands as $databaseCommand) {
-            $databaseCommand->setSshConfig($sshConfig);
-            $result[$databaseCommand->getName()] = $databaseCommand->generate();
+        if ($noDatabases === false) {
+            $databaseCommands = DatabaseCommand::fromGlobal($this->globalConfig, $from, $to, $currentHost, $all);
+            foreach ($databaseCommands as $databaseCommand) {
+                $databaseCommand->setSshConfig($sshConfig);
+                $result[$databaseCommand->getName()] = $databaseCommand->generate();
+            }
         }
         $sshConfig->writeConfig();
         return $result;

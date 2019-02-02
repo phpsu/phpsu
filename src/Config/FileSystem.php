@@ -9,6 +9,8 @@ final class FileSystem
     private $name;
     /** @var string */
     private $path;
+    /** @var string[] */
+    private $excludes = [];
 
     public function getName(): string
     {
@@ -29,6 +31,17 @@ final class FileSystem
     public function setPath(string $path): FileSystem
     {
         $this->path = $path;
+        return $this;
+    }
+
+    public function getExcludes(): array
+    {
+        return $this->excludes;
+    }
+
+    public function addExclude(string $exclude): FileSystem
+    {
+        $this->excludes[] = $exclude;
         return $this;
     }
 }

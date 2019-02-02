@@ -67,7 +67,8 @@ final class SshCliCommand extends Command
         return $controller->ssh(
             $input->getArgument('destination'),
             $input->getOption('from'),
-            implode(' ', $input->getArgument('commands'))
+            implode(' ', $input->getArgument('commands')),
+            $input->getOption('dry-run')
         );
     }
 }
