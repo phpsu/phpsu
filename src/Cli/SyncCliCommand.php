@@ -5,6 +5,7 @@ namespace PHPSu\Cli;
 
 use PHPSu\Config\ConfigurationLoader;
 use PHPSu\Controller;
+use PHPSu\Helper\StringHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,10 +30,14 @@ final class SyncCliCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $globalConfig = (new ConfigurationLoader())->getConfig();
-        (new Controller($output, $globalConfig))->sync(
-            $input->getArgument('source'),
-            $input->getArgument('destination'),
+        $configuration = (new ConfigurationLoader())->getConfig();
+        $instances = $configuration->getAppInstanceNames();
+        $source = StringHelper::findStringInArray($input->getArgument('source'), $instances);
+        $destination = StringHelper::findStringInArray($input->getArgument('destination'), $instances);
+
+        (new Controller($output, $configuration))->sync(
+            $source,
+            $destination,
             $input->getOption('from'),
             $input->getOption('dry-run'),
             $input->getOption('all'),

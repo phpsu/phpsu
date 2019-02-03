@@ -6,7 +6,9 @@ namespace PHPSu\Cli;
 use PHPSu\Config\AppInstance;
 use PHPSu\Config\ConfigurationLoader;
 use PHPSu\Controller;
+use PHPSu\Helper\StringHelper;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -39,26 +41,25 @@ final class SshCliCommand extends Command
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $configuration = (new ConfigurationLoader())->getConfig();
-        $appInstances = $configuration->getAppInstances();
-        $appInstances = array_filter($appInstances, function (AppInstance $instance) {
-            return $instance->getHost() !== '';
-        });
-        $instances = array_keys($appInstances);
+        $instances = $configuration->getAppInstanceNames();
 
+        /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
         $default = $input->hasArgument('destination') ? $input->getArgument('destination') : '';
-        $defaultInt = array_search($default, $instances, true);
-        if (!is_int($defaultInt)) {
-            $question = new ChoiceQuestion(
-                'Please select one of the AppInstances',
-                $instances,
-                0
-            );
-            $question->setErrorMessage('AppInstance %s not found in Config.');
-            $destination = $helper->ask($input, $output, $question);
-            $output->writeln('You selected: ' . $destination);
-            $input->setArgument('destination', $destination);
+        $instanceName = StringHelper::findStringInArray($default, $instances);
+        if ($instanceName) {
+            $input->setArgument('destination', $instanceName);
+            return;
         }
+        $question = new ChoiceQuestion(
+            'Please select one of the AppInstances',
+            $instances,
+            0
+        );
+        $question->setErrorMessage('AppInstance %s not found in Config.');
+        $destination = $helper->ask($input, $output, $question);
+        $output->writeln('You selected: ' . $destination);
+        $input->setArgument('destination', $destination);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
