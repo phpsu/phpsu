@@ -80,13 +80,15 @@ final class GlobalConfig
     }
 
     /**
+     * @param callable|null $filterFunction
      * @return string[]
      */
-    public function getAppInstanceNames(): array
+    public function getAppInstanceNames(callable $filterFunction = null): array
     {
-        $appInstances = array_filter($this->appInstances->getAll(), function (AppInstance $instance) {
-            return $instance->getHost() !== '';
-        });
+        $appInstances = $this->appInstances->getAll();
+        if ($filterFunction) {
+            $appInstances = array_filter($appInstances, $filterFunction);
+        }
         return array_keys($appInstances);
     }
 

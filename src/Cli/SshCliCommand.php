@@ -4,11 +4,10 @@ declare(strict_types=1);
 namespace PHPSu\Cli;
 
 use PHPSu\Config\AppInstance;
-use PHPSu\Config\ConfigurationLoader;
-use PHPSu\Controller;
+use PHPSu\Config\ConfigurationLoaderInterface;
+use PHPSu\ControllerInterface;
 use PHPSu\Helper\StringHelper;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,6 +16,22 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 
 final class SshCliCommand extends Command
 {
+    /** @var ConfigurationLoaderInterface */
+    private $configurationLoader;
+    /** @var ControllerInterface */
+    private $controller;
+
+    /** @var null|string[] */
+    private $instances;
+
+
+    public function __construct(ConfigurationLoaderInterface $configurationLoader, ControllerInterface $controller)
+    {
+        parent::__construct();
+        $this->configurationLoader = $configurationLoader;
+        $this->controller = $controller;
+    }
+
     protected function configure(): void
     {
         $this->setName('ssh')
@@ -28,48 +43,51 @@ final class SshCliCommand extends Command
             ->addArgument('commands', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'The Destination AppInstance.', []);
     }
 
-    /**
-     * Interacts with the user.
-     *
-     * This method is executed before the InputDefinition is validated.
-     * This means that this is the only place where the command can
-     * interactively ask for values of missing required arguments.
-     *
-     * @param InputInterface $input An InputInterface instance
-     * @param OutputInterface $output An OutputInterface instance
-     */
+    protected function initialize(InputInterface $input, OutputInterface $output): void
+    {
+        $default = $input->hasArgument('destination') ? $input->getArgument('destination') : '';
+        if ($default) {
+            $input->setArgument(
+                'destination',
+                StringHelper::findStringInArray($default, $this->getAppInstancesWithHost()) ?: $default
+            );
+        }
+    }
+
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
-        $configuration = (new ConfigurationLoader())->getConfig();
-        $instances = $configuration->getAppInstanceNames();
-
-        /** @var QuestionHelper $helper */
-        $helper = $this->getHelper('question');
         $default = $input->hasArgument('destination') ? $input->getArgument('destination') : '';
-        $instanceName = StringHelper::findStringInArray($default, $instances);
-        if ($instanceName) {
-            $input->setArgument('destination', $instanceName);
-            return;
+        if (!\in_array($default, $this->getAppInstancesWithHost(), true)) {
+            $question = new ChoiceQuestion('Please select one of the AppInstances', $this->getAppInstancesWithHost());
+            $question->setErrorMessage('AppInstance %s not found in Config.');
+            $destination = $this->getHelper('question')->ask($input, $output, $question);
+            $output->writeln('You selected: ' . $destination);
+            $input->setArgument('destination', $destination);
         }
-        $question = new ChoiceQuestion(
-            'Please select one of the AppInstances',
-            $instances,
-            0
-        );
-        $question->setErrorMessage('AppInstance %s not found in Config.');
-        $destination = $helper->ask($input, $output, $question);
-        $output->writeln('You selected: ' . $destination);
-        $input->setArgument('destination', $destination);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $controller = new Controller($output, (new ConfigurationLoader())->getConfig());
-        return $controller->ssh(
+        return $this->controller->ssh(
+            $output,
+            $this->configurationLoader->getConfig(),
             $input->getArgument('destination'),
             $input->getOption('from'),
             implode(' ', $input->getArgument('commands')),
             $input->getOption('dry-run')
         );
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getAppInstancesWithHost(): array
+    {
+        if ($this->instances === null) {
+            $this->instances = $this->configurationLoader->getConfig()->getAppInstanceNames(function (AppInstance $instance) {
+                return $instance->getHost() !== '';
+            });
+        }
+        return $this->instances;
     }
 }

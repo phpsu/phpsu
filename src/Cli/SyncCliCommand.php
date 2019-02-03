@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace PHPSu\Cli;
 
 use PHPSu\Config\ConfigurationLoader;
+use PHPSu\Config\ConfigurationLoaderInterface;
 use PHPSu\Controller;
+use PHPSu\ControllerInterface;
 use PHPSu\Helper\StringHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -14,6 +16,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class SyncCliCommand extends Command
 {
+    /** @var ConfigurationLoaderInterface  */
+    private $configurationLoader;
+    /** @var ControllerInterface */
+    private $controller;
+
+    public function __construct(ConfigurationLoaderInterface $configurationLoader, ControllerInterface $controller)
+    {
+        parent::__construct();
+        $this->configurationLoader = $configurationLoader;
+        $this->controller = $controller;
+    }
+
     protected function configure(): void
     {
         $this->setName('sync')
@@ -30,14 +44,16 @@ final class SyncCliCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $configuration = (new ConfigurationLoader())->getConfig();
+        $configuration = $this->configurationLoader->getConfig();
         $instances = $configuration->getAppInstanceNames();
-        $source = StringHelper::findStringInArray($input->getArgument('source'), $instances);
-        $destination = StringHelper::findStringInArray($input->getArgument('destination'), $instances);
+        $source = $input->getArgument('source');
+        $destination = $input->getArgument('destination');
 
-        (new Controller($output, $configuration))->sync(
-            $source,
-            $destination,
+        $this->controller->sync(
+            $output,
+            $configuration,
+            StringHelper::findStringInArray($source, $instances) ?: $source,
+            StringHelper::findStringInArray($destination, $instances) ?: $destination,
             $input->getOption('from'),
             $input->getOption('dry-run'),
             $input->getOption('all'),
