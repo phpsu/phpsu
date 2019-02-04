@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
+use PHPSu\Exceptions\CommandExecutionException;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -56,7 +57,7 @@ final class CommandExecutor
     public function getCommandReturnBuffer(array $executedCommandArray, bool $getBufferType = false): string
     {
         if (empty($executedCommandArray)) {
-            throw new \RuntimeException('executed command returned nothing');
+            throw new CommandExecutionException('executed command returned nothing');
         }
         return $executedCommandArray[$getBufferType === false ? 1 : 0];
     }

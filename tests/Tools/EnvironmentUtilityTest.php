@@ -9,11 +9,11 @@ class EnvironmentUtilityTest extends TestCase
 {
     public function testCommandIsInstalled(): void
     {
-        $this->assertEquals(true, EnvironmentUtility::isCommandInstalled('echo'));
+        $this->assertEquals(true, (new EnvironmentUtility())->isCommandInstalled('echo'));
     }
 
     public function testCommandIsNotInstalled(): void
     {
-        $this->assertEquals(false, EnvironmentUtility::isCommandInstalled('reiguheruh'));
+        $this->assertEquals(false, (new EnvironmentUtility())->isCommandInstalled('reiguheruh'));
     }
 }

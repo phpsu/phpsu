@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
+use PHPSu\Tools\EnvironmentUtility;
+
 final class Process extends \Symfony\Component\Process\Process
 {
     public const STATE_READY = 'ready';
@@ -35,5 +37,14 @@ final class Process extends \Symfony\Component\Process\Process
                 return $this->getExitCode() === 0 ? self::STATE_SUCCEEDED : self::STATE_ERRORED;
         }
         throw new \LogicException('This should never happen');
+    }
+
+    public static function fromShellCommandline(string $command, string $cwd = null, array $env = null, $input = null, ?float $timeout = 60)
+    {
+        if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', '>')) {
+            return parent::fromShellCommandline($command, $cwd, $env, $input, $timeout);
+        }
+        /** @noinspection PhpParamsInspection In symfony 3.2, passing $command as string was supported */
+        return new \Symfony\Component\Process\Process($command, $cwd, $env, $input, $timeout);
     }
 }

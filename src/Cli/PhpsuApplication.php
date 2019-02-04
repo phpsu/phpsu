@@ -12,11 +12,10 @@ final class PhpsuApplication
 {
     public static function command(): void
     {
-        if (EnvironmentUtility::isWindows()) {
+        if ((new EnvironmentUtility())->isWindows()) {
             throw new EnvironmentException('We currently do not support windows');
         }
-        $version = (new InternalHelpers())->getCurrentPHPSUVersion();
-        $application = new Application('phpsu', $version);
+        $application = new Application('phpsu', (new InternalHelpers())->getCurrentPHPSUVersion());
         $command = new SyncCliCommand();
         $application->add($command);
         $application->add(new SshCliCommand());

@@ -5,31 +5,42 @@ if (version_compare('7.1.0', PHP_VERSION, '>')) {
     die();
 }
 
+const COMPOSER_INSTALLATION = 0;
+const GIT_INSTALLATION = 1;
+
 call_user_func(function () {
-    $possibleAutoloadFiles = [
+
+    define('PHPSU_ROOT_PATH', __DIR__);
+
+    $possibleVendorPaths = [
         // php ./vendor/bin/phpsu
-        __DIR__ . '/../autoload.php',
+        PHPSU_ROOT_PATH . '/..' => COMPOSER_INSTALLATION,
         // php ./bin/phpsu
-        __DIR__ . '/../vendor/autoload.php',
+        PHPSU_ROOT_PATH . '/../vendor'  => COMPOSER_INSTALLATION,
         // php ./phpsu
-        __DIR__ . '/vendor/autoload.php',
+        PHPSU_ROOT_PATH . '/vendor' => GIT_INSTALLATION,
         // php ./vendor/phpsu/phpsu/phpsu may be symlinked from ./vendor/bin/phpsu
-        __DIR__ . '/../../autoload.php',
+        PHPSU_ROOT_PATH . '/../..' => COMPOSER_INSTALLATION,
     ];
 
-    $firstFileExisting = null;
+    $firstVendorAutoloadFile = null;
 
-    foreach ($possibleAutoloadFiles as $file) {
-        if (file_exists($file)) {
-            $firstFileExisting = $file;
+    foreach ($possibleVendorPaths as $vendorPath => $installationType) {
+        if (file_exists($vendorPath . '/autoload.php')) {
+            define('PHPSU_VENDOR_PATH', $vendorPath);
+            if ($installationType === COMPOSER_INSTALLATION) {
+                define('PHPSU_VENDOR_INSTALLATION', true);
+            }
+            $firstVendorAutoloadFile = $vendorPath . '/autoload.php';
             break;
         }
     }
 
-    if (!$firstFileExisting) {
+    if (!$firstVendorAutoloadFile) {
         fwrite(STDERR, 'phpsu could not find any autoload file' . PHP_EOL);
         die();
     }
-    require $firstFileExisting;
+
+    require $firstVendorAutoloadFile;
     \PHPSu\Cli\PhpsuApplication::command();
 });

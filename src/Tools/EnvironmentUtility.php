@@ -8,39 +8,44 @@ use PHPSu\Process\Process;
 
 final class EnvironmentUtility
 {
-    public static function isRsyncInstalled(): bool
+    /** @var CommandExecutor  */
+    private $commandExecutor;
+
+    public function __construct(CommandExecutor $executor = null)
     {
-        return self::isCommandInstalled('rsync');
+        $this->commandExecutor = $executor ?? new CommandExecutor();
     }
 
-    public static function isMysqlDumpInstalled(): bool
+    public function isRsyncInstalled(): bool
     {
-        return self::isCommandInstalled('mysqldump');
+        return $this->isCommandInstalled('rsync');
     }
 
-    public static function isCommandInstalled(string $command): bool
+    public function isMysqlDumpInstalled(): bool
     {
-        $executor = new CommandExecutor();
-        $output = $executor->executeDirectly($command);
-        $result = $executor->getCommandReturnBuffer($output, false);
-        return  $executor->getCommandReturnBuffer($output, true) === Process::OUT
+        return $this->isCommandInstalled('mysqldump');
+    }
+
+    public function isCommandInstalled(string $command): bool
+    {
+        $output = $this->commandExecutor->executeDirectly($command);
+        $result = $this->commandExecutor->getCommandReturnBuffer($output, false);
+        return  $this->commandExecutor->getCommandReturnBuffer($output, true) === Process::OUT
             && stripos(trim($result), 'not found') === false;
     }
 
-    public static function getRsyncVersion(): string
+    public function getRsyncVersion(): string
     {
-        $executor = new CommandExecutor();
-        $command = $executor->executeDirectly("rsync --version | sed -n '1s/^rsync *version \\([0-9.]*\\).*\$/\\1/p'");
-        return trim($executor->getCommandReturnBuffer($command, false));
+        $command = $this->commandExecutor->executeDirectly("rsync --version | sed -n '1s/^rsync *version \\([0-9.]*\\).*\$/\\1/p'");
+        return trim($this->commandExecutor->getCommandReturnBuffer($command, false));
     }
 
-    public static function getMysqlDumpVersion(): array
+    public function getMysqlDumpVersion(): array
     {
-        $executor = new CommandExecutor();
-        $output = $executor->executeDirectly('mysqldump -V');
+        $output = $this->commandExecutor->executeDirectly('mysqldump -V');
         preg_match_all(
             '/(.*Ver (?\'dump\'[\d.a-z]+).*)(.*Distrib (?\'mysql\'[\d.a-z]+).*)/m',
-            trim($executor->getCommandReturnBuffer($output)),
+            trim($this->commandExecutor->getCommandReturnBuffer($output)),
             $matches,
             PREG_SET_ORDER,
             0
@@ -51,12 +56,34 @@ final class EnvironmentUtility
         ];
     }
 
-    public static function isGitInstalled(): bool
+    public function isGitInstalled(): bool
     {
-        return self::isCommandInstalled('git');
+        return $this->isCommandInstalled('git');
     }
 
-    public static function isWindows(): bool
+    public function getInstalledPackageVersion(string $packageName): string
+    {
+        $packageVersion = '';
+        $activeInstallations = json_decode(file_get_contents(PHPSU_VENDOR_PATH . '/composer/installed.json'));
+        foreach ($activeInstallations as $installed) {
+            if ($installed->name === $packageName) {
+                $packageVersion = $installed->version;
+            }
+        }
+        return $packageVersion;
+    }
+
+    public function getSymfonyProcessVersion(): string
+    {
+        return str_replace('v', '', $this->getInstalledPackageVersion('symfony/process'));
+    }
+
+    public function getSymfonyConsoleVersion(): string
+    {
+        return str_replace('v', '', $this->getInstalledPackageVersion('symfony/console'));
+    }
+
+    public function isWindows(): bool
     {
         return stripos(PHP_OS, 'WIN') === 0;
     }
