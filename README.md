@@ -33,7 +33,7 @@ The following versions of PHP are supported by this version.
 * PHP 7.2
 * PHP 7.3
 
-If you installed phpsu via composer, then currently you will need symfony >=4.2
+Additionally we are supporting symfony >=3.2 and <4.3.
 
 Required for synchronisation are:
 * ``ssh`` on execution System
