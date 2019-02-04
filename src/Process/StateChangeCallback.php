@@ -3,8 +3,18 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
-use Symfony\Component\Console\Output\ConsoleSectionOutput;
+use PHPSu\Tools\EnvironmentUtility;
 use Symfony\Component\Console\Output\OutputInterface;
+
+if (!class_exists('ConsoleSectionOutput', false)) {
+    if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', 'gte')) {
+        \class_alias('Symfony\\Component\\Console\\Output\\ConsoleSectionOutput', 'ConsoleSectionOutput');
+    } else {
+        \class_alias('PHPSu\Tools\ConsolePolyfill\ConsoleSectionOutput', 'ConsoleSectionOutput');
+    }
+}
+
+use \ConsoleSectionOutput;
 
 final class StateChangeCallback
 {

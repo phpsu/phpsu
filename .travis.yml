@@ -9,8 +9,13 @@ cache:
   directories:
     - $HOME/.composer/cache
 
+env:
+  matrix:
+    - SYMFOMY_UPDATE="composer update symfony/* --prefer-lowest && "
+    - SYMFONY_UPDATE=""
+
 install: composer i --no-suggest
 
-script: vendor/bin/grumphp run && composer test
+script: $SYMFONY_UPDATE vendor/bin/grumphp run && composer test
 
 after_success: bash <(curl -s https://codecov.io/bash)

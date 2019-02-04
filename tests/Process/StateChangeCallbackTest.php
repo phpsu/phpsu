@@ -6,11 +6,21 @@ namespace PHPSu\Tests\Process;
 use PHPSu\Process\Process;
 use PHPSu\Process\ProcessManager;
 use PHPSu\Process\StateChangeCallback;
+use PHPSu\Tools\EnvironmentUtility;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+
+if (!class_exists('ConsoleSectionOutput', false)) {
+    if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', 'gte')) {
+        \class_alias('Symfony\\Component\\Console\\Output\\ConsoleSectionOutput', 'ConsoleSectionOutput');
+    } else {
+        \class_alias('PHPSu\Tools\ConsolePolyfill\ConsoleSectionOutput', 'ConsoleSectionOutput');
+    }
+}
+
+use \ConsoleSectionOutput;
 
 final class StateChangeCallbackTest extends TestCase
 {
