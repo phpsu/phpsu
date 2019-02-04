@@ -180,7 +180,7 @@ final class ControllerTest extends TestCase
             "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
             '',
         ];
-        $this->assertSame($lines, explode("\n", $output->fetch()));
+        $this->assertSame($lines, explode(PHP_EOL, $output->fetch()));
     }
 
     public function testUseCaseDatabaseOnlyDefinedOnOneEnd(): void
