@@ -22,7 +22,7 @@ final class SshUrlTest extends TestCase
         new SshUrl('test');
     }
 
-    public function testInvalidPor(): void
+    public function testInvalidPort(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessageRegExp('/port must be between 0 and 65535/');
