@@ -50,7 +50,7 @@ final class Process extends \Symfony\Component\Process\Process
      */
     public function __construct($commandline, ?string $cwd = null, ?array $env = null, $input = null, $timeout = 60, array $options = array())
     {
-        if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.2.0', '<')) {
+        if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.2.0', 'gte')) {
             if (\is_array($commandline)) {
                 $commandline = $this->commandToString($commandline);
             }
