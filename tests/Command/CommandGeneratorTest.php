@@ -9,6 +9,7 @@ use PHPSu\Config\Database;
 use PHPSu\Config\FileSystem;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConnection;
+use PHPSu\SyncOptions;
 use PHPUnit\Framework\TestCase;
 
 final class CommandGeneratorTest extends TestCase
@@ -55,13 +56,13 @@ final class CommandGeneratorTest extends TestCase
 
     /**
      * @expectedException \Exception
-     * @expectedExceptionMessage From and To are Identical: same
+     * @expectedExceptionMessage Source and Destination are Identical: same
      */
     public function testFromAndToSameDisallowed(): void
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
-        $commandGenerator->syncCommands('same', 'same', '', false, false, false);
+        $commandGenerator->syncCommands((new SyncOptions('same'))->setDestination('same'));
     }
 
     public function testProductionToLocalFromAnyThere(): void
@@ -70,7 +71,7 @@ final class CommandGeneratorTest extends TestCase
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $commandGenerator->syncCommands('production', 'local', '', false, false, false);
+        $result = $commandGenerator->syncCommands(new SyncOptions('production'));
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/*' './fileadmin/'",
             'filesystem:uploads' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/*' './uploads/'",
@@ -96,7 +97,7 @@ SSH_CONFIG;
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $commandGenerator->syncCommands('production', 'testing', '', false, false, false);
+        $result = $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('testing'));
         $this->assertSame([
             'filesystem:fileadmin' => "ssh -F 'php://temp' 'serverEu' 'rsync -avz '\''/var/www/production/fileadmin2/*'\'' '\''/var/www/testing/fileadmin/'\'''",
             'filesystem:uploads' => "ssh -F 'php://temp' 'serverEu' 'rsync -avz '\''/var/www/production/uploads/*'\'' '\''/var/www/testing/uploads/'\'''",
@@ -122,7 +123,7 @@ SSH_CONFIG;
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $commandGenerator->syncCommands('local', 'local2', '', false, false, false);
+        $result = $commandGenerator->syncCommands((new SyncOptions('local'))->setDestination('local2'));
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -avz './fileadmin/*' '../local2/fileadmin/'",
             'filesystem:uploads' => "rsync -avz './uploads/*' '../local2/uploads/'",
@@ -148,7 +149,7 @@ SSH_CONFIG;
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $commandGenerator->syncCommands('production', 'staging', '', false, false, false);
+        $result = $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('staging'));
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/*' 'stagingServer:/var/www/staging/fileadmin/'",
             'filesystem:uploads' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/*' 'stagingServer:/var/www/staging/uploads/'",
@@ -174,7 +175,7 @@ SSH_CONFIG;
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $commandGenerator->syncCommands('production', 'staging', 'stagingServer', false, false, false);
+        $result = $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('staging')->setCurrentHost('stagingServer'));
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/*' '/var/www/staging/fileadmin/'",
             'filesystem:uploads' => "rsync -avz -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/*' '/var/www/staging/uploads/'",
@@ -196,7 +197,7 @@ SSH_CONFIG;
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $result = $commandGenerator->syncCommands('staging', 'production', 'stagingServer', false, false, false);
+        $result = $commandGenerator->syncCommands((new SyncOptions('staging'))->setDestination('production')->setCurrentHost('stagingServer'));
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -avz -e 'ssh -F '\''php://temp'\''' '/var/www/staging/fileadmin/*' 'serverEu:/var/www/production/fileadmin2/'",
             'filesystem:uploads' => "rsync -avz -e 'ssh -F '\''php://temp'\''' '/var/www/staging/uploads/*' 'serverEu:/var/www/production/uploads/'",

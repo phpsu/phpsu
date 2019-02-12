@@ -3,11 +3,10 @@ declare(strict_types=1);
 
 namespace PHPSu\Cli;
 
-use PHPSu\Config\ConfigurationLoader;
 use PHPSu\Config\ConfigurationLoaderInterface;
-use PHPSu\Controller;
 use PHPSu\ControllerInterface;
 use PHPSu\Helper\StringHelper;
+use PHPSu\SyncOptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class SyncCliCommand extends Command
 {
-    /** @var ConfigurationLoaderInterface  */
+    /** @var ConfigurationLoaderInterface */
     private $configurationLoader;
     /** @var ControllerInterface */
     private $controller;
@@ -39,7 +38,7 @@ final class SyncCliCommand extends Command
             ->addOption('no-db', null, InputOption::VALUE_NONE, 'Do not sync Databases.')
             ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'Only show commands that would be run.', '')
             ->addArgument('source', InputArgument::REQUIRED, 'The Source AppInstance.')
-            ->addArgument('destination', InputArgument::REQUIRED, 'The Destination AppInstance.');
+            ->addArgument('destination', InputArgument::OPTIONAL, 'The Destination AppInstance.', 'local');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -52,13 +51,13 @@ final class SyncCliCommand extends Command
         $this->controller->sync(
             $output,
             $configuration,
-            StringHelper::findStringInArray($source, $instances) ?: $source,
-            StringHelper::findStringInArray($destination, $instances) ?: $destination,
-            $input->getOption('from'),
-            $input->getOption('dry-run'),
-            $input->getOption('all'),
-            $input->getOption('no-file'),
-            $input->getOption('no-db')
+            (new SyncOptions(StringHelper::findStringInArray($source, $instances) ?: $source))
+                ->setDestination(StringHelper::findStringInArray($destination, $instances) ?: $destination)
+                ->setCurrentHost($input->getOption('from'))
+                ->setDryRun($input->getOption('dry-run'))
+                ->setAll($input->getOption('all'))
+                ->setNoFiles($input->getOption('no-file'))
+                ->setNoDatabases($input->getOption('no-db'))
         );
         return 0;
     }

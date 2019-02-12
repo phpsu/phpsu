@@ -12,21 +12,21 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class Controller implements ControllerInterface
 {
 
-    public function ssh(OutputInterface $output, GlobalConfig $config, string $destination, string $currentHost, string $command, bool $dryRun): int
+    public function ssh(OutputInterface $output, GlobalConfig $config, SshOptions $options): int
     {
-        $sshCommand = (new CommandGenerator($config))->sshCommand($destination, $currentHost, $command);
-        if ($dryRun) {
+        $sshCommand = (new CommandGenerator($config))->sshCommand($options->getDestination(), $options->getCurrentHost(), $options->getCommand());
+        if ($options->isDryRun()) {
             $output->writeln($sshCommand);
             return 0;
         }
         return (new CommandExecutor())->passthru($sshCommand, $output);
     }
 
-    public function sync(OutputInterface $output, GlobalConfig $config, string $form, string $to, string $currentHost, bool $dryRun, bool $all, bool $noFiles, bool $noDatabases): void
+    public function sync(OutputInterface $output, GlobalConfig $config, SyncOptions $options): void
     {
-        $commands = (new CommandGenerator($config))->syncCommands($form, $to, $currentHost, $all, $noFiles, $noDatabases);
+        $commands = (new CommandGenerator($config))->syncCommands($options);
 
-        if ($dryRun) {
+        if ($options->isDryRun()) {
             foreach ($commands as $commandName => $command) {
                 $output->writeln(sprintf('<info>%s</info>', $commandName));
                 $output->writeln($command);

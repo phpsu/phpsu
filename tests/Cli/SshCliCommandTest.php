@@ -8,6 +8,7 @@ use PHPSu\Config\ConfigurationLoaderInterface;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
 use PHPSu\ControllerInterface;
+use PHPSu\SshOptions;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\HelperSet;
@@ -18,7 +19,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 class SshCliCommandTest extends TestCase
 {
 
-    public function testDryRun(): void
+    public function testSshCliCommandDryRun(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
 
@@ -38,7 +39,7 @@ class SshCliCommandTest extends TestCase
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
-    public function testDryRunInteractive(): void
+    public function testSshCliCommandDryRunInteractive(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
 
@@ -60,7 +61,7 @@ class SshCliCommandTest extends TestCase
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
-    public function testExecute(): void
+    public function testSshCliCommandExecute(): void
     {
         $globalConfig = $this->createConfig();
         $mockConfigurationLoader = $this->createMockConfigurationLoader($globalConfig);
@@ -72,10 +73,7 @@ class SshCliCommandTest extends TestCase
             ->with(
                 $this->isInstanceOf(OutputInterface::class),
                 $this->equalTo($globalConfig),
-                $this->equalTo('production'),
-                $this->equalTo('local'),
-                $this->equalTo(''),
-                $this->equalTo(false)
+                $this->equalTo(new SshOptions('production'))
             )
             ->willReturn(208);
 

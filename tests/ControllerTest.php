@@ -5,6 +5,8 @@ namespace PHPSu\Tests;
 
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
+use PHPSu\SshOptions;
+use PHPSu\SyncOptions;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -17,7 +19,7 @@ final class ControllerTest extends TestCase
         $config->addAppInstance('production', 'serverEu', '/var/www/prod');
         $config->addAppInstance('local');
         $controller = new Controller();
-        $controller->ssh($output, $config, 'production', '', '', true);
+        $controller->ssh($output, $config, (new SshOptions('production'))->setDryRun(true));
         $this->assertSame("ssh -F '.phpsu/config/ssh_config' 'serverEu' -t 'cd '\''/var/www/prod'\''; bash --login'\n", $output->fetch());
     }
 
@@ -28,7 +30,7 @@ final class ControllerTest extends TestCase
         $config->addAppInstance('production', 'serverEu', '/var/www/prod');
         $config->addAppInstance('local');
         $controller = new Controller();
-        $controller->sync($output, $config, 'production', 'local', '', true, false, false, false);
+        $controller->sync($output, $config, (new SyncOptions('production'))->setDryRun(true)->setAll(true));
         $this->assertSame('', $output->fetch());
     }
 
@@ -44,7 +46,7 @@ final class ControllerTest extends TestCase
 
         $output = new BufferedOutput();
         $controller = new Controller();
-        $controller->sync($output, $config, 'testing', 'local', '', true, false, false, false);
+        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'filesystem:fileadmin',
             "rsync -avz -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/*' './testInstance/fileadmin/'",
@@ -67,7 +69,7 @@ final class ControllerTest extends TestCase
 
         $output = new BufferedOutput();
         $controller = new Controller();
-        $controller->sync($output, $config, 'testing', 'local', '', true, false, false, false);
+        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'filesystem:fileadmin',
             "rsync -avz --exclude='*.mp4' --exclude='*.mp3' --exclude='*.zip' -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/*' './testInstance/fileadmin/'",
@@ -89,7 +91,7 @@ final class ControllerTest extends TestCase
 
         $output = new BufferedOutput();
         $controller = new Controller();
-        $controller->sync($output, $config, 'testing', 'local', '', true, false, false, false);
+        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'database:database',
             "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' --ignore-table='\''testdb.table1'\'' --ignore-table='\''testdb.table2'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
@@ -110,7 +112,7 @@ final class ControllerTest extends TestCase
 
         $output = new BufferedOutput();
         $controller = new Controller();
-        $controller->sync($output, $config, 'testing', 'local', '', true, true, false, false);
+        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true));
         $lines = [
             'filesystem:fileadmin',
             "rsync -avz -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/*' './testInstance/fileadmin/'",
@@ -133,7 +135,7 @@ final class ControllerTest extends TestCase
 
         $output = new BufferedOutput();
         $controller = new Controller();
-        $controller->sync($output, $config, 'testing', 'local', '', true, true, false, true);
+        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoDatabases(true));
         $lines = [
             'filesystem:fileadmin',
             "rsync -avz -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/*' './testInstance/fileadmin/'",
@@ -154,7 +156,7 @@ final class ControllerTest extends TestCase
 
         $output = new BufferedOutput();
         $controller = new Controller();
-        $controller->sync($output, $config, 'testing', 'local', '', true, true, true, false);
+        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
         $lines = [
             'database:database',
             "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
@@ -174,7 +176,7 @@ final class ControllerTest extends TestCase
 
         $output = new BufferedOutput();
         $controller = new Controller();
-        $controller->sync($output, $config, 'testing', 'local', '', true, true, true, false);
+        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
         $lines = [
             'database:database',
             "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
@@ -196,7 +198,7 @@ final class ControllerTest extends TestCase
 
         $output = new BufferedOutput();
         $controller = new Controller();
-        $controller->sync($output, $config, 'testing', 'local', '', true, true, true, false);
+        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
         $lines = [
             'database:database',
             "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",

@@ -6,6 +6,7 @@ namespace PHPSu\Command;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Config\TempSshConfigFile;
+use PHPSu\SyncOptions;
 
 final class CommandGenerator
 {
@@ -44,35 +45,31 @@ final class CommandGenerator
     }
 
     /**
-     * @param string $from
-     * @param string $to
-     * @param string $currentHost
-     * @param bool $all
-     * @param bool $noFiles
-     * @param bool $noDatabases
+     * @param SyncOptions $options
      * @return string[]
+     * @throws \Exception
      */
-    public function syncCommands(string $from, string $to, string $currentHost, bool $all, bool $noFiles, bool $noDatabases): array
+    public function syncCommands(SyncOptions $options): array
     {
-        if ($from === $to) {
-            throw new \Exception(sprintf('From and To are Identical: %s', $from));
+        if ($options->getSource() === $options->getDestination()) {
+            throw new \Exception(sprintf('Source and Destination are Identical: %s', $options->getSource()));
         }
-        if ($currentHost !== '') {
-            $this->globalConfig->validateConnectionToHost($currentHost);
+        if (!\in_array($options->getCurrentHost(), ['', 'local'], true)) {
+            $this->globalConfig->validateConnectionToHost($options->getCurrentHost());
         }
-        $sshConfig = SshConfig::fromGlobal($this->globalConfig, $currentHost);
+        $sshConfig = SshConfig::fromGlobal($this->globalConfig, $options->getCurrentHost());
         $sshConfig->setFile($this->getFile());
 
         $result = [];
-        if ($noFiles === false) {
-            $rsyncCommands = RsyncCommand::fromGlobal($this->globalConfig, $from, $to, $currentHost, $all);
+        if ($options->isNoFiles() === false) {
+            $rsyncCommands = RsyncCommand::fromGlobal($this->globalConfig, $options->getSource(), $options->getDestination(), $options->getCurrentHost(), $options->isAll());
             foreach ($rsyncCommands as $rsyncCommand) {
                 $rsyncCommand->setSshConfig($sshConfig);
                 $result[$rsyncCommand->getName()] = $rsyncCommand->generate();
             }
         }
-        if ($noDatabases === false) {
-            $databaseCommands = DatabaseCommand::fromGlobal($this->globalConfig, $from, $to, $currentHost, $all);
+        if ($options->isNoDatabases() === false) {
+            $databaseCommands = DatabaseCommand::fromGlobal($this->globalConfig, $options->getSource(), $options->getDestination(), $options->getCurrentHost(), $options->isAll());
             foreach ($databaseCommands as $databaseCommand) {
                 $databaseCommand->setSshConfig($sshConfig);
                 $result[$databaseCommand->getName()] = $databaseCommand->generate();

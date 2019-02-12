@@ -7,6 +7,7 @@ use PHPSu\Config\AppInstance;
 use PHPSu\Config\ConfigurationLoaderInterface;
 use PHPSu\ControllerInterface;
 use PHPSu\Helper\StringHelper;
+use PHPSu\SshOptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -71,10 +72,10 @@ final class SshCliCommand extends Command
         return $this->controller->ssh(
             $output,
             $this->configurationLoader->getConfig(),
-            $input->getArgument('destination'),
-            $input->getOption('from'),
-            implode(' ', $input->getArgument('commands')),
-            $input->getOption('dry-run')
+            (new SshOptions($input->getArgument('destination')))
+                ->setCurrentHost($input->getOption('from'))
+                ->setCommand(implode(' ', $input->getArgument('commands')))
+                ->setDryRun($input->getOption('dry-run'))
         );
     }
 
