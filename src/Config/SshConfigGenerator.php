@@ -56,7 +56,7 @@ final class SshConfigGenerator
         return $result;
     }
 
-    public function generate(SshConnections $sshConnections, string $currentHost): SshConfig
+    public function generate(SshConnections $sshConnections, array $defaultSshConfig, string $currentHost): SshConfig
     {
         $sshConfig = new SshConfig();
         foreach ($sshConnections->getAllHosts() as $host) {
@@ -81,6 +81,13 @@ final class SshConfigGenerator
                 }
                 $sshConfig->{$sshConnection->getHost()} = $host;
             }
+        }
+        if (!empty($defaultSshConfig)) {
+            $host = new SshConfigHost();
+            foreach ($defaultSshConfig as $key => $value) {
+                $host->{$key} = $value;
+            }
+            $sshConfig->{'*'} = $host;
         }
         return $sshConfig;
     }

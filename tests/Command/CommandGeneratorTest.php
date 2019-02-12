@@ -86,6 +86,9 @@ Host stagingServer
   HostName stagingServer.server.eu
   User staging
 
+Host *
+  ForwardAgent yes
+
 
 SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
@@ -111,6 +114,9 @@ Host serverEu
 Host stagingServer
   HostName stagingServer.server.eu
   User staging
+
+Host *
+  ForwardAgent yes
 
 
 SSH_CONFIG;
@@ -138,6 +144,9 @@ Host stagingServer
   HostName stagingServer.server.eu
   User staging
 
+Host *
+  ForwardAgent yes
+
 
 SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
@@ -164,6 +173,9 @@ Host stagingServer
   HostName stagingServer.server.eu
   User staging
 
+Host *
+  ForwardAgent yes
+
 
 SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
@@ -186,6 +198,9 @@ Host serverEu
   HostName server.eu
   User user
 
+Host *
+  ForwardAgent yes
+
 
 SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
@@ -207,6 +222,9 @@ SSH_CONFIG;
 Host serverEu
   HostName server.eu
   User user
+
+Host *
+  ForwardAgent yes
 
 
 SSH_CONFIG;
