@@ -13,10 +13,6 @@ This package is compliant with [PSR-1], [PSR-2] and [PSR-4]. If you notice compl
 [PSR-2]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
 [PSR-4]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md
 
-## Features
-
-- 
-
 ## Install
 
 Via Composer:
