@@ -9,53 +9,39 @@ use PHPSu\Process\CommandExecutor;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-final class Controller
+final class Controller implements ControllerInterface
 {
-    /**
-     * @var OutputInterface
-     */
-    private $output;
-    /**
-     * @var GlobalConfig
-     */
-    private $config;
 
-    public function __construct(OutputInterface $output, GlobalConfig $config)
+    public function ssh(OutputInterface $output, GlobalConfig $config, SshOptions $options): int
     {
-        $this->output = $output;
-        $this->config = $config;
-    }
-
-    public function ssh(string $destination, string $currentHost, string $command, bool $dryRun): int
-    {
-        $sshCommand = (new CommandGenerator($this->config))->sshCommand($destination, $currentHost, $command);
-        if ($dryRun) {
-            $this->output->writeln($sshCommand);
+        $sshCommand = (new CommandGenerator($config))->sshCommand($options->getDestination(), $options->getCurrentHost(), $options->getCommand());
+        if ($options->isDryRun()) {
+            $output->writeln($sshCommand);
             return 0;
         }
-        return (new CommandExecutor())->passthru($sshCommand, $this->output);
+        return (new CommandExecutor())->passthru($sshCommand, $output);
     }
 
-    public function sync(string $form, string $to, string $currentHost, bool $dryRun, bool $all, bool $noFiles, bool $noDatabases): void
+    public function sync(OutputInterface $output, GlobalConfig $config, SyncOptions $options): void
     {
-        $commands = (new CommandGenerator($this->config))->syncCommands($form, $to, $currentHost, $all, $noFiles, $noDatabases);
+        $commands = (new CommandGenerator($config))->syncCommands($options);
 
-        if ($dryRun) {
+        if ($options->isDryRun()) {
             foreach ($commands as $commandName => $command) {
-                $this->output->writeln(sprintf('<info>%s</info>', $commandName));
-                $this->output->writeln($command);
+                $output->writeln(sprintf('<info>%s</info>', $commandName));
+                $output->writeln($command);
             }
             return;
         }
 
-        if ($this->output instanceof ConsoleOutputInterface) {
-            $sectionTop = $this->output->section();
-            $sectionMiddle = $this->output->section();
+        if ($output instanceof ConsoleOutputInterface) {
+            $sectionTop = $output->section();
+            $sectionMiddle = $output->section();
             $sectionMiddle->writeln(str_repeat('-', 20), OutputInterface::OUTPUT_RAW);
-            $sectionBottom = $this->output->section();
+            $sectionBottom = $output->section();
         } else {
-            $sectionTop = $this->output;
-            $sectionBottom = $this->output;
+            $sectionTop = $output;
+            $sectionBottom = $output;
         }
         (new CommandExecutor())->executeParallel($commands, $sectionTop, $sectionBottom);
     }

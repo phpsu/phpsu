@@ -39,8 +39,8 @@ final class RsyncCommandTest extends TestCase
         $rsync = new RsyncCommand();
         $rsync->setSshConfig($sshConfig)
             ->setOptions('-r')
-            ->setFromHost('hosta')
-            ->setFromPath('~/test/*')
+            ->setSourceHost('hosta')
+            ->setSourcePath('~/test/*')
             ->setToPath('./__test/');
 
         $this->assertSame("rsync -r -e 'ssh -F '\''php://temp'\''' 'hosta:~/test/*' './__test/'", $rsync->generate());

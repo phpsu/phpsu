@@ -33,11 +33,6 @@ final class SshConnection
         return $this->url;
     }
 
-    public function getUrlAsString(): string
-    {
-        return (string)$this->url;
-    }
-
     public function setUrl(string $url): SshConnection
     {
         $this->url = new SshUrl($url);

@@ -46,8 +46,8 @@ final class GlobalConfigTest extends TestCase
 
         $rsyncCommands = RsyncCommand::fromGlobal($global, 'production', 'testing', 'local', false);
         $this->assertEquals([
-            (new RsyncCommand())->setName('filesystem:fileadmin')->setFromHost('serverEu')->setFromPath('/var/www/production/fileadmin/*')->setToHost('serverEu')->setToPath('/var/www/testing/fileadmin/'),
-            (new RsyncCommand())->setName('filesystem:uploads')->setFromHost('serverEu')->setFromPath('/var/www/production/uploads/*')->setToHost('serverEu')->setToPath('/var/www/testing/uploads/'),
+            (new RsyncCommand())->setName('filesystem:fileadmin')->setSourceHost('serverEu')->setSourcePath('/var/www/production/fileadmin/*')->setDestinationHost('serverEu')->setToPath('/var/www/testing/fileadmin/'),
+            (new RsyncCommand())->setName('filesystem:uploads')->setSourceHost('serverEu')->setSourcePath('/var/www/production/uploads/*')->setDestinationHost('serverEu')->setToPath('/var/www/testing/uploads/'),
         ], $rsyncCommands);
     }
 

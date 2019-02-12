@@ -25,4 +25,15 @@ class StringHelperTest extends TestCase
         $result = StringHelper::splitString('test test_test_test_test_test_test_test_test_test', 30);
         $this->assertSame(['test', 'test_test_test_test_test_test_test_test_test'], $result);
     }
+
+    public function testFindStringInArray(): void
+    {
+        $this->assertSame('production', StringHelper::findStringInArray('production', ['production']), 'perfect match');
+        $this->assertSame('production', StringHelper::findStringInArray('p', ['production']), 'only first letter');
+        $this->assertSame('PrOduction', StringHelper::findStringInArray('p', ['PrOduction']), 'case insensitive');
+        $this->assertSame('production', StringHelper::findStringInArray('p', ['production', 'local']), 'with another element in list');
+        $this->assertSame('local', StringHelper::findStringInArray('l', ['production', 'local']), 'different letter');
+        $this->assertSame('', StringHelper::findStringInArray('l', ['london', 'local']), 'if inconclusive');
+        $this->assertSame('', StringHelper::findStringInArray('', ['london', 'local']), 'empty input');
+    }
 }
