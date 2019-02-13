@@ -60,6 +60,23 @@ final class GlobalConfigTest extends TestCase
         $sshConfigExpected->serverEu = new SshConfigHost();
         $sshConfigExpected->serverEu->User = 'user';
         $sshConfigExpected->serverEu->HostName = 'server.eu';
+        $sshConfigExpected->{'*'} = new SshConfigHost();
+        $sshConfigExpected->{'*'}->ForwardAgent = 'yes';
+        $this->assertEquals($sshConfigExpected, $sshConfig);
+    }
+
+    public function testOverwriteDefaultSshConfig(): void
+    {
+        $global = static::getGlobalConfig();
+        $global->setDefaultSshConfig(['ForwardAgent' => 'no']);
+
+        $sshConfig = SshConfig::fromGlobal($global, 'local');
+        $sshConfigExpected = new SshConfig();
+        $sshConfigExpected->serverEu = new SshConfigHost();
+        $sshConfigExpected->serverEu->User = 'user';
+        $sshConfigExpected->serverEu->HostName = 'server.eu';
+        $sshConfigExpected->{'*'} = new SshConfigHost();
+        $sshConfigExpected->{'*'}->ForwardAgent = 'no';
         $this->assertEquals($sshConfigExpected, $sshConfig);
     }
 

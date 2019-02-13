@@ -14,6 +14,11 @@ final class GlobalConfig
     /** @var AppInstances */
     private $appInstances;
 
+    /** @var string[] */
+    private $defaultSshConfig = [
+        'ForwardAgent' => 'yes'
+    ];
+
     public function __construct()
     {
         $this->sshConnections = new SshConnections();
@@ -48,6 +53,12 @@ final class GlobalConfig
         $appInstance->setName($name)->setHost($host)->setPath($path);
         $this->appInstances->add($appInstance);
         return $appInstance;
+    }
+
+    public function setDefaultSshConfig(array $options = []): GlobalConfig
+    {
+        $this->defaultSshConfig = $options;
+        return $this;
     }
 
     public function getSshConnections(): SshConnections
@@ -112,5 +123,13 @@ final class GlobalConfig
             return $this->getAppInstance($connectionName)->getHost();
         }
         return $connectionName;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDefaultSshConfig(): array
+    {
+        return $this->defaultSshConfig;
     }
 }

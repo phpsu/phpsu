@@ -33,7 +33,7 @@ final class SshConfigGeneratorTest extends TestCase
         $this->assertEquals([$toA, $toCFromA], $path);
     }
 
-    public function testGenerate(): void
+    public function testSshConfigGeneratorGenerate(): void
     {
         $sshConnections = new SshConnections();
         $sshConnections->add((new SshConnection())->setHost('hostc')
@@ -48,7 +48,7 @@ final class SshConfigGeneratorTest extends TestCase
             ->setUrl('user@localhost:2208'));
 
         $sshConfigGenerator = new SshConfigGenerator();
-        $sshConfig = $sshConfigGenerator->generate($sshConnections, 'local');
+        $sshConfig = $sshConfigGenerator->generate($sshConnections, [], 'local');
 
         $sshConfigExpected = new SshConfig();
         $sshConfigExpected->hostc = new SshConfigHost();
