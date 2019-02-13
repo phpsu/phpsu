@@ -7,6 +7,7 @@ use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Config\TempSshConfigFile;
 use PHPSu\SyncOptions;
+use Symfony\Component\Console\Output\OutputInterface;
 
 final class CommandGenerator
 {
@@ -14,10 +15,13 @@ final class CommandGenerator
     private $file;
     /** @var GlobalConfig */
     private $globalConfig;
+    /** @var int */
+    private $verbosity;
 
-    public function __construct(GlobalConfig $globalConfig)
+    public function __construct(GlobalConfig $globalConfig, int $verbosity = OutputInterface::VERBOSITY_NORMAL)
     {
         $this->globalConfig = $globalConfig;
+        $this->verbosity = $verbosity;
     }
 
     public function getFile(): \SplFileObject
@@ -38,7 +42,7 @@ final class CommandGenerator
     {
         $sshConfig = SshConfig::fromGlobal($this->globalConfig, $currentHost);
         $sshConfig->setFile($this->getFile());
-        $sshCommand = SshCommand::fromGlobal($this->globalConfig, $destination, $currentHost);
+        $sshCommand = SshCommand::fromGlobal($this->globalConfig, $destination, $currentHost, $this->verbosity);
         $sshCommand->setSshConfig($sshConfig);
         $sshConfig->writeConfig();
         return $sshCommand->generate($command);
@@ -62,14 +66,14 @@ final class CommandGenerator
 
         $result = [];
         if ($options->isNoFiles() === false) {
-            $rsyncCommands = RsyncCommand::fromGlobal($this->globalConfig, $options->getSource(), $options->getDestination(), $options->getCurrentHost(), $options->isAll());
+            $rsyncCommands = RsyncCommand::fromGlobal($this->globalConfig, $options->getSource(), $options->getDestination(), $options->getCurrentHost(), $options->isAll(), $this->verbosity);
             foreach ($rsyncCommands as $rsyncCommand) {
                 $rsyncCommand->setSshConfig($sshConfig);
                 $result[$rsyncCommand->getName()] = $rsyncCommand->generate();
             }
         }
         if ($options->isNoDatabases() === false) {
-            $databaseCommands = DatabaseCommand::fromGlobal($this->globalConfig, $options->getSource(), $options->getDestination(), $options->getCurrentHost(), $options->isAll());
+            $databaseCommands = DatabaseCommand::fromGlobal($this->globalConfig, $options->getSource(), $options->getDestination(), $options->getCurrentHost(), $options->isAll(), $this->verbosity);
             foreach ($databaseCommands as $databaseCommand) {
                 $databaseCommand->setSshConfig($sshConfig);
                 $result[$databaseCommand->getName()] = $databaseCommand->generate();

@@ -13,6 +13,7 @@ use PHPSu\Config\SshConfig;
 use PHPSu\Config\SshConfigHost;
 use PHPSu\Config\SshConnection;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Output\OutputInterface;
 
 final class GlobalConfigTest extends TestCase
 {
@@ -20,13 +21,13 @@ final class GlobalConfigTest extends TestCase
     {
         $global = static::getGlobalConfig();
 
-        $sshCommand = SshCommand::fromGlobal($global, 'production', 'local');
+        $sshCommand = SshCommand::fromGlobal($global, 'production', 'local', OutputInterface::VERBOSITY_NORMAL);
         $this->assertEquals((new SshCommand())->setInto('serverEu')->setPath('/var/www/production'), $sshCommand);
 
-        $sshCommand = SshCommand::fromGlobal($global, 'testing', 'local');
+        $sshCommand = SshCommand::fromGlobal($global, 'testing', 'local', OutputInterface::VERBOSITY_NORMAL);
         $this->assertEquals((new SshCommand())->setInto('serverEu')->setPath('/var/www/testing'), $sshCommand);
 
-        $sshCommand = SshCommand::fromGlobal($global, 'serverEu', 'local');
+        $sshCommand = SshCommand::fromGlobal($global, 'serverEu', 'local', OutputInterface::VERBOSITY_NORMAL);
         $this->assertEquals((new SshCommand())->setInto('serverEu'), $sshCommand);
     }
 
@@ -34,7 +35,7 @@ final class GlobalConfigTest extends TestCase
     {
         $global = static::getGlobalConfig();
 
-        $rsyncCommands = DatabaseCommand::fromGlobal($global, 'production', 'testing', 'local', false);
+        $rsyncCommands = DatabaseCommand::fromGlobal($global, 'production', 'testing', 'local', false, OutputInterface::VERBOSITY_NORMAL);
         $this->assertEquals([
             (new DatabaseCommand())->setName('database:app')->setFromHost('serverEu')->setFromUrl('mysql://user:pw@host:3307/database')->setToHost('serverEu')->setToUrl('mysql://user:pw@host:3307/database'),
         ], $rsyncCommands);
@@ -44,7 +45,7 @@ final class GlobalConfigTest extends TestCase
     {
         $global = static::getGlobalConfig();
 
-        $rsyncCommands = RsyncCommand::fromGlobal($global, 'production', 'testing', 'local', false);
+        $rsyncCommands = RsyncCommand::fromGlobal($global, 'production', 'testing', 'local', false, OutputInterface::VERBOSITY_NORMAL);
         $this->assertEquals([
             (new RsyncCommand())->setName('filesystem:fileadmin')->setSourceHost('serverEu')->setSourcePath('/var/www/production/fileadmin/*')->setDestinationHost('serverEu')->setToPath('/var/www/testing/fileadmin/'),
             (new RsyncCommand())->setName('filesystem:uploads')->setSourceHost('serverEu')->setSourcePath('/var/www/production/uploads/*')->setDestinationHost('serverEu')->setToPath('/var/www/testing/uploads/'),
@@ -60,6 +61,23 @@ final class GlobalConfigTest extends TestCase
         $sshConfigExpected->serverEu = new SshConfigHost();
         $sshConfigExpected->serverEu->User = 'user';
         $sshConfigExpected->serverEu->HostName = 'server.eu';
+        $sshConfigExpected->{'*'} = new SshConfigHost();
+        $sshConfigExpected->{'*'}->ForwardAgent = 'yes';
+        $this->assertEquals($sshConfigExpected, $sshConfig);
+    }
+
+    public function testOverwriteDefaultSshConfig(): void
+    {
+        $global = static::getGlobalConfig();
+        $global->setDefaultSshConfig(['ForwardAgent' => 'no']);
+
+        $sshConfig = SshConfig::fromGlobal($global, 'local');
+        $sshConfigExpected = new SshConfig();
+        $sshConfigExpected->serverEu = new SshConfigHost();
+        $sshConfigExpected->serverEu->User = 'user';
+        $sshConfigExpected->serverEu->HostName = 'server.eu';
+        $sshConfigExpected->{'*'} = new SshConfigHost();
+        $sshConfigExpected->{'*'}->ForwardAgent = 'no';
         $this->assertEquals($sshConfigExpected, $sshConfig);
     }
 
