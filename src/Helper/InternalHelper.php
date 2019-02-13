@@ -49,7 +49,7 @@ final class InternalHelper
     private function getPhpSuVersionFromGitCommand(): string
     {
         $executor = new CommandExecutor();
-        $gitCommand = $executor->executeDirectly('git symbolic-ref --short HEAD');
+        $gitCommand = $executor->executeDirectly('git rev-parse --abbrev-ref HEAD');
         if (!empty($gitCommand[1]) || $gitCommand[2] !== 0) {
             throw new CommandExecutionException(sprintf('The git command resulted in an error despite git being installed - did you set it up correctly? %s', $gitCommand[1]));
         }
