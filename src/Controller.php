@@ -27,7 +27,7 @@ final class Controller implements ControllerInterface
 
     public function ssh(OutputInterface $output, GlobalConfig $config, SshOptions $options): int
     {
-        $sshCommand = (new CommandGenerator($config))->sshCommand($options->getDestination(), $options->getCurrentHost(), $options->getCommand());
+        $sshCommand = (new CommandGenerator($config, $output->getVerbosity()))->sshCommand($options->getDestination(), $options->getCurrentHost(), $options->getCommand());
         if ($options->isDryRun()) {
             $output->writeln($sshCommand);
             return 0;
@@ -37,7 +37,7 @@ final class Controller implements ControllerInterface
 
     public function sync(OutputInterface $output, GlobalConfig $config, SyncOptions $options): void
     {
-        $commands = (new CommandGenerator($config))->syncCommands($options);
+        $commands = (new CommandGenerator($config, $output->getVerbosity()))->syncCommands($options);
 
         if ($options->isDryRun()) {
             foreach ($commands as $commandName => $command) {

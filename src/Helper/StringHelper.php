@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Helper;
 
+use Symfony\Component\Console\Output\OutputInterface;
+
 final class StringHelper
 {
     /**
@@ -36,5 +38,22 @@ final class StringHelper
             return array_shift($remaining);
         }
         return '';
+    }
+
+    public static function optionStringForVerbosity(int $verbosity): string
+    {
+        switch ($verbosity) {
+            case OutputInterface::VERBOSITY_QUIET:
+                return '-q ';
+            case OutputInterface::VERBOSITY_NORMAL:
+                return '';
+            case OutputInterface::VERBOSITY_VERBOSE:
+                return '-v ';
+            case OutputInterface::VERBOSITY_VERY_VERBOSE:
+                return '-vv ';
+            case OutputInterface::VERBOSITY_DEBUG:
+                return '-vvv ';
+        }
+        throw new \Exception(sprintf('Verbosity %d is not defined', $verbosity));
     }
 }

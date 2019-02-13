@@ -5,6 +5,8 @@ namespace PHPSu\Command;
 
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
+use PHPSu\Helper\StringHelper;
+use Symfony\Component\Console\Output\OutputInterface;
 
 final class SshCommand
 {
@@ -14,8 +16,10 @@ final class SshCommand
     private $into;
     /** @var string */
     private $path = '';
+    /** @var int */
+    private $verbosity = OutputInterface::VERBOSITY_NORMAL;
 
-    public static function fromGlobal(GlobalConfig $global, string $connectionName, string $currentHost): SshCommand
+    public static function fromGlobal(GlobalConfig $global, string $connectionName, string $currentHost, int $verbosity): SshCommand
     {
         $host = $global->getHostName($connectionName);
         if ($currentHost === $host) {
@@ -23,6 +27,7 @@ final class SshCommand
         }
         $result = new static();
         $result->setInto($host);
+        $result->setVerbosity($verbosity);
         if (isset($global->getAppInstances()[$connectionName])) {
             $appInstance = $global->getAppInstances()[$connectionName];
             $result->setPath($appInstance->getPath());
@@ -63,13 +68,24 @@ final class SshCommand
         return $this;
     }
 
+    public function getVerbosity(): int
+    {
+        return $this->verbosity;
+    }
+
+    public function setVerbosity(int $verbosity): SshCommand
+    {
+        $this->verbosity = $verbosity;
+        return $this;
+    }
+
     public function generate(string $command = ''): string
     {
         $file = $this->getSshConfig()->getFile();
         if ($this->getInto() === '') {
             return $command;
         }
-        $result = 'ssh -F ' . escapeshellarg($file->getPathname()) . ' ' . escapeshellarg($this->getInto());
+        $result = 'ssh ' . StringHelper::optionStringForVerbosity($this->getVerbosity()) . '-F ' . escapeshellarg($file->getPathname()) . ' ' . escapeshellarg($this->getInto());
         if ($this->getPath()) {
             if (!$command) {
                 //keep it interactive if no command is specified
