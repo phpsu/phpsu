@@ -51,4 +51,37 @@ final class ProcessManagerTest extends TestCase
         }
         $this->assertTrue(false, 'Exception should be thrown');
     }
+
+    public function testAddOutputCallback(): void
+    {
+        $processManager = new ProcessManager();
+        $processManager->addOutputCallback(function () {return true;});
+        $property = (new \ReflectionClass($processManager))->getProperty('outputCallbacks');
+        $property->setAccessible(true);
+        foreach ($property->getValue($processManager) as $callback) {
+            $this->assertTrue($callback());
+        }
+    }
+
+    public function testAddStateChangeCallback(): void
+    {
+        $processManager = new ProcessManager();
+        $processManager->addStateChangeCallback(function () {return true;});
+        $property = (new \ReflectionClass($processManager))->getProperty('stateChangeCallbacks');
+        $property->setAccessible(true);
+        foreach ($property->getValue($processManager) as $callback) {
+            $this->assertTrue($callback());
+        }
+    }
+
+    public function testAddTickCallback(): void
+    {
+        $processManager = new ProcessManager();
+        $processManager->addTickCallback(function () {return true;});
+        $property = (new \ReflectionClass($processManager))->getProperty('tickCallbacks');
+        $property->setAccessible(true);
+        foreach ($property->getValue($processManager) as $callback) {
+            $this->assertTrue($callback());
+        }
+    }
 }
