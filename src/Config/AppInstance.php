@@ -82,4 +82,12 @@ final class AppInstance
     {
         return $this->databases->get($name);
     }
+
+    /**
+     * @return Database[]
+     */
+    public function getDatabases(): array
+    {
+        return $this->databases->getAll();
+    }
 }

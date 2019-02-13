@@ -21,63 +21,45 @@ if (!class_exists('ConsoleSectionOutput', false)) {
 
 use \ConsoleSectionOutput;
 
-final class Controller
+final class Controller implements ControllerInterface
 {
+    public const PHPSU_ROOT_PATH = __DIR__ . '/../';
 
-    /**
-     * @var OutputInterface
-     */
-    private $output;
-    /**
-     * @var GlobalConfig
-     */
-    private $config;
-
-    public function __construct(OutputInterface $output, GlobalConfig $config)
+    public function ssh(OutputInterface $output, GlobalConfig $config, SshOptions $options): int
     {
-        $this->output = $output;
-        $this->config = $config;
-    }
-
-    public function ssh(string $destination, string $currentHost, string $command, bool $dryRun): int
-    {
-        $sshCommand = (new CommandGenerator($this->config))->sshCommand($destination, $currentHost, $command);
-        if ($dryRun) {
-            $this->output->writeln($sshCommand);
+        $sshCommand = (new CommandGenerator($config))->sshCommand($options->getDestination(), $options->getCurrentHost(), $options->getCommand());
+        if ($options->isDryRun()) {
+            $output->writeln($sshCommand);
             return 0;
         }
-        return (new CommandExecutor())->passthru($sshCommand, $this->output);
+        return (new CommandExecutor())->passthru($sshCommand, $output);
     }
 
-    public function sync(string $form, string $to, string $currentHost, bool $dryRun, bool $all, bool $noFiles, bool $noDatabases): void
+    public function sync(OutputInterface $output, GlobalConfig $config, SyncOptions $options): void
     {
-        $commands = (new CommandGenerator($this->config))->syncCommands($form, $to, $currentHost, $all, $noFiles, $noDatabases);
+        $commands = (new CommandGenerator($config))->syncCommands($options);
 
-        if ($dryRun) {
+        if ($options->isDryRun()) {
             foreach ($commands as $commandName => $command) {
-                $this->output->writeln(sprintf('<info>%s</info>', $commandName));
-                $this->output->writeln($command);
+                $output->writeln(sprintf('<info>%s</info>', $commandName));
+                $output->writeln($command);
             }
             return;
         }
 
-
-        if ($this->output instanceof ConsoleOutputInterface) {
-            if (method_exists($this->output, 'section')) {
-                $sectionTop = $this->output->section();
-                $sectionMiddle = $this->output->section();
+        if ($output instanceof ConsoleOutputInterface) {
+            if (method_exists($output, 'section')) {
+                $sectionTop = $output->section();
+                $sectionMiddle = $output->section();
                 $sectionMiddle->writeln(str_repeat('-', 20), OutputInterface::OUTPUT_RAW);
-                $sectionBottom = $this->output->section();
+                $sectionBottom = $output->section();
             } else {
                 $sectionOutput = [];
-                $sectionTop = $this->getNewSection($sectionOutput);
-                $sectionMiddle = $this->getNewSection($sectionOutput);
+                $sectionTop = $this->getNewSection($sectionOutput, $output);
+                $sectionMiddle = $this->getNewSection($sectionOutput, $output);
                 $sectionMiddle->writeln(str_repeat('-', 20), OutputInterface::OUTPUT_RAW);
-                $sectionBottom = $this->getNewSection($sectionOutput);
+                $sectionBottom = $this->getNewSection($sectionOutput, $output);
             }
-        } else {
-            $sectionTop = $this->output;
-            $sectionBottom = $this->output;
         }
         (new CommandExecutor())->executeParallel($commands, $sectionTop, $sectionBottom);
     }
@@ -85,16 +67,17 @@ final class Controller
     /**
      * @deprecated the usage of symfony 3.x is discouraged. With the next version we will remove support for that again
      * @param array $sectionOutputs
+     * @param OutputInterface $output
      * @return ConsoleSectionOutput
      */
-    private function getNewSection(array &$sectionOutputs): ConsoleSectionOutput
+    private function getNewSection(array &$sectionOutputs, OutputInterface $output): ConsoleSectionOutput
     {
         return new ConsoleSectionOutput(
-            $this->output->getStream(),
+            $output->getStream(),
             $sectionOutputs,
-            $this->output->getVerbosity(),
-            $this->output->isDecorated(),
-            $this->output->getFormatter()
+            $output->getVerbosity(),
+            $output->isDecorated(),
+            $output->getFormatter()
         );
     }
 }

@@ -50,6 +50,12 @@ final class DatabaseCommand implements CommandInterface
             }
             $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost, $all);
         }
+        foreach ($fromInstance->getDatabases() as $databaseName => $fromDatabase) {
+            if ($toInstance->hasDatabase($databaseName)) {
+                $toDatabase = $toInstance->getDatabase($databaseName);
+                $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost, $all);
+            }
+        }
         return $result;
     }
 

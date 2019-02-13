@@ -18,56 +18,56 @@ final class RsyncCommand implements CommandInterface
     private $options = '-avz';
 
     /** @var string */
-    private $fromHost = '';
+    private $sourceHost = '';
     /** @var string */
-    private $fromPath;
+    private $sourcePath;
 
     /** @var string */
-    private $toHost = '';
+    private $destinationHost = '';
     /** @var string */
     private $toPath;
 
     /**
      * @param GlobalConfig $global
-     * @param string $fromInstanceName
-     * @param string $toInstanceName
+     * @param string $sourceInstanceName
+     * @param string $destinationInstanceName
      * @param string $currentHost
      * @param bool $all
      * @return RsyncCommand[]
      */
-    public static function fromGlobal(GlobalConfig $global, string $fromInstanceName, string $toInstanceName, string $currentHost, bool $all): array
+    public static function fromGlobal(GlobalConfig $global, string $sourceInstanceName, string $destinationInstanceName, string $currentHost, bool $all): array
     {
-        $fromInstance = $global->getAppInstance($fromInstanceName);
-        $toInstance = $global->getAppInstance($toInstanceName);
+        $sourceInstance = $global->getAppInstance($sourceInstanceName);
+        $destinationInstance = $global->getAppInstance($destinationInstanceName);
         $result = [];
         foreach ($global->getFileSystems() as $fileSystemName => $fileSystem) {
             $fromFilesystem = $fileSystem;
-            if ($fromInstance->hasFilesystem($fileSystemName)) {
-                $fromFilesystem = $fromInstance->getFilesystem($fileSystemName);
+            if ($sourceInstance->hasFilesystem($fileSystemName)) {
+                $fromFilesystem = $sourceInstance->getFilesystem($fileSystemName);
             }
             $toFilesystem = $fileSystem;
-            if ($toInstance->hasFilesystem($fileSystemName)) {
-                $toFilesystem = $toInstance->getFilesystem($fileSystemName);
+            if ($destinationInstance->hasFilesystem($fileSystemName)) {
+                $toFilesystem = $destinationInstance->getFilesystem($fileSystemName);
             }
-            $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromFilesystem, $toFilesystem, $currentHost, $all);
+            $result[] = static::fromAppInstances($sourceInstance, $destinationInstance, $fromFilesystem, $toFilesystem, $currentHost, $all);
         }
         return $result;
     }
 
-    public static function fromAppInstances(AppInstance $from, AppInstance $to, FileSystem $fromFilesystem, FileSystem $toFilesystem, string $currentHost, bool $all): RsyncCommand
+    public static function fromAppInstances(AppInstance $source, AppInstance $destination, FileSystem $sourceFilesystem, FileSystem $destinationFilesystem, string $currentHost, bool $all): RsyncCommand
     {
-        $fromRelPath = ($fromFilesystem->getPath() ? '/' : '') . $fromFilesystem->getPath();
-        $toRelPath = ($toFilesystem->getPath() ? '/' : '') . $toFilesystem->getPath();
+        $fromRelPath = ($sourceFilesystem->getPath() ? '/' : '') . $sourceFilesystem->getPath();
+        $toRelPath = ($destinationFilesystem->getPath() ? '/' : '') . $destinationFilesystem->getPath();
 
         $result = new static();
-        $result->setName('filesystem:' . $fromFilesystem->getName());
-        $result->setFromHost($from->getHost() === $currentHost ? '' : $from->getHost());
-        $result->setToHost($to->getHost() === $currentHost ? '' : $to->getHost());
-        $result->setFromPath(rtrim($from->getPath() === '' ? '.' : $from->getPath(), '/*') . $fromRelPath . '/*');
-        $result->setToPath(rtrim($to->getPath() === '' ? '.' : $to->getPath(), '/') . $toRelPath . '/');
+        $result->setName('filesystem:' . $sourceFilesystem->getName());
+        $result->setSourceHost($source->getHost() === $currentHost ? '' : $source->getHost());
+        $result->setDestinationHost($destination->getHost() === $currentHost ? '' : $destination->getHost());
+        $result->setSourcePath(rtrim($source->getPath() === '' ? '.' : $source->getPath(), '/*') . $fromRelPath . '/*');
+        $result->setToPath(rtrim($destination->getPath() === '' ? '.' : $destination->getPath(), '/') . $toRelPath . '/');
         if ($all === false) {
             $excludeOptions = '';
-            foreach (array_unique(array_merge($fromFilesystem->getExcludes(), $toFilesystem->getExcludes())) as $exclude) {
+            foreach (array_unique(array_merge($sourceFilesystem->getExcludes(), $destinationFilesystem->getExcludes())) as $exclude) {
                 $excludeOptions .= '--exclude=' . escapeshellarg($exclude) . ' ';
             }
             if ($excludeOptions) {
@@ -110,36 +110,36 @@ final class RsyncCommand implements CommandInterface
         return $this;
     }
 
-    public function getFromHost(): string
+    public function getSourceHost(): string
     {
-        return $this->fromHost;
+        return $this->sourceHost;
     }
 
-    public function setFromHost(string $fromHost): RsyncCommand
+    public function setSourceHost(string $sourceHost): RsyncCommand
     {
-        $this->fromHost = $fromHost;
+        $this->sourceHost = $sourceHost;
         return $this;
     }
 
-    public function getFromPath(): string
+    public function getSourcePath(): string
     {
-        return $this->fromPath;
+        return $this->sourcePath;
     }
 
-    public function setFromPath(string $fromPath): RsyncCommand
+    public function setSourcePath(string $sourcePath): RsyncCommand
     {
-        $this->fromPath = $fromPath;
+        $this->sourcePath = $sourcePath;
         return $this;
     }
 
-    public function getToHost(): string
+    public function getDestinationHost(): string
     {
-        return $this->toHost;
+        return $this->destinationHost;
     }
 
-    public function setToHost(string $toHost): RsyncCommand
+    public function setDestinationHost(string $destinationHost): RsyncCommand
     {
-        $this->toHost = $toHost;
+        $this->destinationHost = $destinationHost;
         return $this;
     }
 
@@ -156,7 +156,7 @@ final class RsyncCommand implements CommandInterface
 
     public function generate(): string
     {
-        $hostsDifferentiate = $this->getFromHost() !== $this->getToHost();
+        $hostsDifferentiate = $this->getSourceHost() !== $this->getDestinationHost();
         $fromHostPart = '';
         $toHostPart = '';
 
@@ -167,17 +167,17 @@ final class RsyncCommand implements CommandInterface
         if ($hostsDifferentiate) {
             $file = $this->sshConfig->getFile();
             $command .= ' -e ' . escapeshellarg('ssh -F ' . escapeshellarg($file->getPathname()));
-            $fromHostPart = $this->getFromHost() ? $this->getFromHost() . ':' : '';
-            $toHostPart = $this->getToHost() ? $this->getToHost() . ':' : '';
+            $fromHostPart = $this->getSourceHost() ? $this->getSourceHost() . ':' : '';
+            $toHostPart = $this->getDestinationHost() ? $this->getDestinationHost() . ':' : '';
         }
-        $from = $fromHostPart . $this->getFromPath();
+        $from = $fromHostPart . $this->getSourcePath();
         $to = $toHostPart . $this->getToPath();
         $command .= ' ' . escapeshellarg($from) . ' ' . escapeshellarg($to);
 
         if (!$hostsDifferentiate) {
             $sshCommand = new SshCommand();
             $sshCommand->setSshConfig($this->getSshConfig());
-            $sshCommand->setInto($this->getFromHost());
+            $sshCommand->setInto($this->getSourceHost());
             return $sshCommand->generate($command);
         }
         return $command;

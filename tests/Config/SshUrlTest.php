@@ -8,6 +8,28 @@ use PHPUnit\Framework\TestCase;
 
 final class SshUrlTest extends TestCase
 {
+    public function testInvalidUrl(): void
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessageRegExp('/SshUrl could not been parsed/');
+        new SshUrl('://:/:/:/:/');
+    }
+
+    public function testInvalidUser(): void
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessageRegExp('/User must be set/');
+        new SshUrl('test');
+    }
+
+    public function testInvalidPort(): void
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessageRegExp('/port must be between 0 and 65535/');
+        $dsn = new SshUrl('user@test');
+        $dsn->setPort(1234567);
+    }
+
     public function testSshWithoutSchema(): void
     {
         $dsn = new SshUrl('user@host');

@@ -26,4 +26,15 @@ final class StringHelper
         }
         return [$full];
     }
+
+    public static function findStringInArray(string $needle, array $haystack): ?string
+    {
+        $remaining = array_filter($haystack, function ($el) use ($needle) {
+            return stripos($el, $needle) === 0;
+        });
+        if (count($remaining) === 1) {
+            return array_shift($remaining);
+        }
+        return '';
+    }
 }
