@@ -10,17 +10,15 @@ const GIT_INSTALLATION = 1;
 
 call_user_func(function () {
 
-    define('PHPSU_ROOT_PATH', __DIR__);
-
     $possibleVendorPaths = [
         // php ./vendor/bin/phpsu
-        PHPSU_ROOT_PATH . '/..' => COMPOSER_INSTALLATION,
+        __DIR__ . '/..' => COMPOSER_INSTALLATION,
         // php ./bin/phpsu
-        PHPSU_ROOT_PATH . '/../vendor'  => COMPOSER_INSTALLATION,
+        __DIR__ . '/../vendor'  => COMPOSER_INSTALLATION,
         // php ./phpsu
-        PHPSU_ROOT_PATH . '/vendor' => GIT_INSTALLATION,
+        __DIR__ . '/vendor' => GIT_INSTALLATION,
         // php ./vendor/phpsu/phpsu/phpsu may be symlinked from ./vendor/bin/phpsu
-        PHPSU_ROOT_PATH . '/../..' => COMPOSER_INSTALLATION,
+        __DIR__ . '/../..' => COMPOSER_INSTALLATION,
     ];
 
     $firstVendorAutoloadFile = null;

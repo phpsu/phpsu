@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
+use PHPSu\Exceptions\CommandExecutionException;
 use PHPSu\Tools\EnvironmentUtility;
 
 final class Process extends \Symfony\Component\Process\Process
@@ -39,53 +40,17 @@ final class Process extends \Symfony\Component\Process\Process
         throw new \LogicException('This should never happen');
     }
 
-    /**
-     * Process constructor.
-     * @param array|string $commandline
-     * @param string|null $cwd
-     * @param array|null $env
-     * @param mixed|null $input
-     * @param int $timeout
-     * @param array $options
-     */
-    public function __construct($commandline, ?string $cwd = null, ?array $env = null, $input = null, $timeout = 60, array $options = array())
+    public function __construct($commandline, ?string $cwd = null, ?array $env = null, $input = null, $timeout = 60, array $options = [])
     {
-        if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.2.0', 'gte')) {
-            if (\is_array($commandline)) {
-                $commandline = $this->commandToString($commandline);
-            }
-            parent::__construct($commandline, $cwd, $env, $input, $timeout, $options);
-            return;
+        if (\is_array($commandline) && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '3.4.0', 'lt')) {
+            throw new CommandExecutionException('Support for arrays as commandline-argument is not supported in symfony < 3.4.0');
+        }
+        if (\is_string($commandline) && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '3.4.0', 'gte')) {
+            throw new CommandExecutionException('Support for strings as commandline-argument is not supported in symfony >= 3.4.0');
         }
         parent::__construct($commandline, $cwd, $env, $input, $timeout, $options);
     }
 
-    private function commandToString(array $commandline): string
-    {
-        $command = implode(' ', array_map(function ($argument) {
-            if ('' === $argument || null === $argument) {
-                return '""';
-            }
-            if ('\\' !== \DIRECTORY_SEPARATOR) {
-                return "'".str_replace("'", "'\\''", $argument)."'";
-            }
-            if (false !== strpos($argument, "\0")) {
-                $argument = str_replace("\0", '?', $argument);
-            }
-            if (!preg_match('/[\/()%!^"<>&|\s]/', $argument)) {
-                return $argument;
-            }
-            $argument = preg_replace('/(\\\\+)$/', '$1$1', $argument);
-            return '"'.str_replace(['"', '^', '%', '!', "\n"], ['""', '"^^"', '"^%"', '"^!"', '!LF!'], $argument).'"';
-        }, $commandline));
-
-        if ('\\' !== \DIRECTORY_SEPARATOR) {
-            // exec is mandatory to deal with sending a signal to the process
-            $command = 'exec '.$command;
-        }
-
-        return $command;
-    }
 
     /**
      * This methods wraps the symfony behaviour of fromShellCommandline to make it possible to use phpsu for symfony 3 and 4 projects.

@@ -29,7 +29,7 @@ final class StateChangeCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $manager = new ProcessManager();
         $callback = new StateChangeCallback($output);
-        $callback->__invoke(0, (new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_READY, $manager);
+        $callback->__invoke(0, Process::fromShellCommandline('sleep 1')->setName('sleepProcess'), Process::STATE_READY, $manager);
         $this->assertSame("\033[37msleepProcess:\033[39m  \n", $output->fetch());
     }
 
@@ -38,7 +38,7 @@ final class StateChangeCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $manager = new ProcessManager();
         $callback = new StateChangeCallback($output);
-        $callback->__invoke(0, (new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_RUNNING, $manager);
+        $callback->__invoke(0, Process::fromShellCommandline('sleep 1')->setName('sleepProcess'), Process::STATE_RUNNING, $manager);
         $this->assertSame("\033[33msleepProcess:\033[39m (      )\n", $output->fetch());
     }
 
@@ -47,7 +47,7 @@ final class StateChangeCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $manager = new ProcessManager();
         $callback = new StateChangeCallback($output);
-        $callback->__invoke(0, (new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_SUCCEEDED, $manager);
+        $callback->__invoke(0, Process::fromShellCommandline('sleep 1')->setName('sleepProcess'), Process::STATE_SUCCEEDED, $manager);
         $this->assertSame("\033[32msleepProcess:\033[39m ✔\n", $output->fetch());
     }
 
@@ -56,7 +56,7 @@ final class StateChangeCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $manager = new ProcessManager();
         $callback = new StateChangeCallback($output);
-        $callback->__invoke(0, (new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_ERRORED, $manager);
+        $callback->__invoke(0, Process::fromShellCommandline('sleep 1')->setName('sleepProcess'), Process::STATE_ERRORED, $manager);
         $this->assertSame("\033[31msleepProcess:\033[39m ✘\n", $output->fetch());
     }
 
@@ -67,7 +67,7 @@ final class StateChangeCallbackTest extends TestCase
         $output = new ConsoleSectionOutput($outputStream, $sections, OutputInterface::VERBOSITY_NORMAL, true, new OutputFormatter());
         $manager = new ProcessManager();
         $callback = new StateChangeCallback($output);
-        $callback->__invoke(0, (new Process(['sleep', '1']))->setName('sleepProcess'), Process::STATE_READY, $manager);
+        $callback->__invoke(0, Process::fromShellCommandline('sleep 1')->setName('sleepProcess'), Process::STATE_READY, $manager);
         rewind($outputStream);
         $this->assertSame("\n", stream_get_contents($outputStream));
     }
@@ -78,7 +78,7 @@ final class StateChangeCallbackTest extends TestCase
         $outputStream = fopen('php://memory', 'rwb');
         $output = new ConsoleSectionOutput($outputStream, $sections, OutputInterface::VERBOSITY_NORMAL, true, new OutputFormatter());
         $manager = new ProcessManager();
-        $process = (new Process(['sleep', '1']))->setName('sleepProcess');
+        $process = Process::fromShellCommandline('sleep 1')->setName('sleepProcess');
         $manager->addProcess($process);
         $callback = new StateChangeCallback($output);
         $callback->__invoke(0, $process, Process::STATE_READY, $manager);
@@ -92,7 +92,7 @@ final class StateChangeCallbackTest extends TestCase
         $outputStream = fopen('php://memory', 'rwb');
         $output = new ConsoleSectionOutput($outputStream, $sections, OutputInterface::VERBOSITY_NORMAL, true, new OutputFormatter());
         $manager = new ProcessManager();
-        $process = (new Process(['sleep', '1']))->setName('sleepProcess');
+        $process = Process::fromShellCommandline('sleep 1')->setName('sleepProcess');
         $manager->addProcess($process);
         $callback = new StateChangeCallback($output);
         $callback->__invoke(0, $process, Process::STATE_READY, $manager);
@@ -115,7 +115,7 @@ final class StateChangeCallbackTest extends TestCase
         $outputStream = fopen('php://memory', 'rwb');
         $output = new ConsoleSectionOutput($outputStream, $sections, OutputInterface::VERBOSITY_NORMAL, true, new OutputFormatter());
         $manager = new ProcessManager();
-        $process = (new Process(['sleep', '1']))->setName('sleepProcess');
+        $process = Process::fromShellCommandline('sleep 1')->setName('sleepProcess');
         $manager->addProcess($process);
         $callback = new StateChangeCallback($output);
         $callback->__invoke(0, $process, Process::STATE_READY, $manager);

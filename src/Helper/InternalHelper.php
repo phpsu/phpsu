@@ -1,13 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu\Tools;
+namespace PHPSu\Helper;
 
 use PHPSu\Exceptions\EnvironmentException;
 use PHPSu\Process\CommandExecutor;
 use PHPSu\Process\Process;
+use PHPSu\Tools\EnvironmentUtility;
 
-final class InternalHelpers
+final class InternalHelper
 {
 
     public function getCurrentPHPSUVersion(): string

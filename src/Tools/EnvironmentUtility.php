@@ -29,15 +29,17 @@ final class EnvironmentUtility
     public function isCommandInstalled(string $command): bool
     {
         $output = $this->commandExecutor->executeDirectly($command);
-        $result = $this->commandExecutor->getCommandReturnBuffer($output, false);
-        return  $this->commandExecutor->getCommandReturnBuffer($output, true) === Process::OUT
-            && stripos(trim($result), 'not found') === false;
+        if ($output[2] === 127) {
+            return false;
+        }
+        return stripos(trim($output[1]), 'not found') === false;
     }
 
     public function getRsyncVersion(): string
     {
-        $command = $this->commandExecutor->executeDirectly("rsync --version | sed -n '1s/^rsync *version \\([0-9.]*\\).*\$/\\1/p'");
-        return trim($this->commandExecutor->getCommandReturnBuffer($command, false));
+        $command = $this->commandExecutor->executeDirectly('rsync --version');
+        preg_match('rsync *version ([0-9.]*).*$', $command[0], $result);
+        return trim($result[1]);
     }
 
     public function getMysqlDumpVersion(): array
@@ -45,7 +47,7 @@ final class EnvironmentUtility
         $output = $this->commandExecutor->executeDirectly('mysqldump -V');
         preg_match_all(
             '/(.*Ver (?\'dump\'[\d.a-z]+).*)(.*Distrib (?\'mysql\'[\d.a-z]+).*)/m',
-            trim($this->commandExecutor->getCommandReturnBuffer($output)),
+            trim($output[0]),
             $matches,
             PREG_SET_ORDER,
             0

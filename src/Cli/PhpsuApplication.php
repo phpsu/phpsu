@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace PHPSu\Cli;
 
 use PHPSu\Exceptions\EnvironmentException;
+use PHPSu\Helper\InternalHelper;
 use PHPSu\Tools\EnvironmentUtility;
-use PHPSu\Tools\InternalHelpers;
 use Symfony\Component\Console\Application;
 
 final class PhpsuApplication
@@ -15,7 +15,7 @@ final class PhpsuApplication
         if ((new EnvironmentUtility())->isWindows()) {
             throw new EnvironmentException('We currently do not support windows');
         }
-        $application = new Application('phpsu', (new InternalHelpers())->getCurrentPHPSUVersion());
+        $application = new Application('phpsu', (new InternalHelper())->getCurrentPHPSUVersion());
         $command = new SyncCliCommand();
         $application->add($command);
         $application->add(new SshCliCommand());

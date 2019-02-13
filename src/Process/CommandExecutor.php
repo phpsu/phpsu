@@ -44,21 +44,13 @@ final class CommandExecutor
         return $process->getExitCode();
     }
 
-    public function executeDirectly(string $command): array
+    public function executeDirectly(string $command, bool $throwOnError = false): array
     {
         $process = Process::fromShellCommandline($command, null, null, null, null);
-        $result = [];
-        $process->run(function ($type, $buffer) use (&$result) {
-            $result = [$type, $buffer];
-        });
-        return $result;
-    }
-
-    public function getCommandReturnBuffer(array $executedCommandArray, bool $getBufferType = false): string
-    {
-        if (empty($executedCommandArray)) {
-            throw new CommandExecutionException('executed command returned nothing');
+        $process->run();
+        if ($throwOnError && (!empty($process->getErrorOutput()) || $process->getExitCode() !== 0)) {
+            throw new CommandExecutionException('Command execution failed - ' . $process->getErrorOutput(), $process->getExitCode());
         }
-        return $executedCommandArray[$getBufferType === false ? 1 : 0];
+        return [$process->getOutput(), $process->getErrorOutput(), $process->getExitCode()];
     }
 }

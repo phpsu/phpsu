@@ -15,7 +15,7 @@ final class OutputCallbackTest extends TestCase
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $callback = new OutputCallback($output);
-        $callback->__invoke((new Process(['sleep', '1']))->setName('testName'), Process::OUT, 'message');
+        $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::OUT, 'message');
         $this->assertSame('', $output->fetch());
     }
 
@@ -23,7 +23,7 @@ final class OutputCallbackTest extends TestCase
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE, true);
         $callback = new OutputCallback($output);
-        $callback->__invoke((new Process(['sleep', '1']))->setName('testName'), Process::OUT, 'message');
+        $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::OUT, 'message');
         $this->assertSame("\033[33mtestName:\033[39m message\n", $output->fetch());
     }
 
@@ -31,7 +31,7 @@ final class OutputCallbackTest extends TestCase
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $callback = new OutputCallback($output);
-        $callback->__invoke((new Process(['sleep', '1']))->setName('testName'), Process::ERR, 'message');
+        $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::ERR, 'message');
         $this->assertSame("\033[31mtestName:\033[39m message\n", $output->fetch());
     }
 
@@ -39,7 +39,7 @@ final class OutputCallbackTest extends TestCase
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $callback = new OutputCallback($output);
-        $callback->__invoke((new Process(['sleep', '1']))->setName('testName'), Process::ERR, 'message' . PHP_EOL . 'message2');
+        $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::ERR, 'message' . PHP_EOL . 'message2');
         $this->assertSame("\033[31mtestName:\033[39m message\n" . "\033[31mtestName:\033[39m message2\n", $output->fetch());
     }
 
@@ -47,7 +47,7 @@ final class OutputCallbackTest extends TestCase
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE, true);
         $callback = new OutputCallback($output);
-        $callback->__invoke((new Process(['sleep', '1']))->setName('testName'), Process::OUT, 'message' . PHP_EOL . 'message2');
+        $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::OUT, 'message' . PHP_EOL . 'message2');
         $this->assertSame("\033[33mtestName:\033[39m message\n" . "\033[33mtestName:\033[39m message2\n", $output->fetch());
     }
 
@@ -55,7 +55,7 @@ final class OutputCallbackTest extends TestCase
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_QUIET, true);
         $callback = new OutputCallback($output);
-        $callback->__invoke((new Process(['sleep', '1']))->setName('testName'), Process::ERR, 'message');
+        $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::ERR, 'message');
         $this->assertSame("\033[31mtestName:\033[39m message\n", $output->fetch());
     }
 
@@ -63,15 +63,15 @@ final class OutputCallbackTest extends TestCase
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, false);
         $callback = new OutputCallback($output);
-        $callback->__invoke((new Process(['sleep', '1']))->setName('testName'), Process::ERR, 'message');
+        $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::ERR, 'message');
         $this->assertSame("testName: message\n", $output->fetch());
     }
 
-    public function testProcessStdVerose(): void
+    public function testProcessStdVerbose(): void
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE, false);
         $callback = new OutputCallback($output);
-        $callback->__invoke((new Process(['sleep', '1']))->setName('testName'), Process::OUT, 'message');
+        $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::OUT, 'message');
         $this->assertSame("testName: message\n", $output->fetch());
     }
 
@@ -79,8 +79,8 @@ final class OutputCallbackTest extends TestCase
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE, true);
         $callback = new OutputCallback($output);
-        $callback->__invoke((new Process(['sleep', '1']))->setName('testName'), Process::ERR, 'message');
-        $callback->__invoke((new Process(['sleep', '2']))->setName('testName2'), Process::OUT, 'message2');
+        $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::ERR, 'message');
+        $callback->__invoke(Process::fromShellCommandline('sleep 2')->setName('testName2'), Process::OUT, 'message2');
         $this->assertSame("\033[31mtestName:\033[39m message\n" . "\033[33mtestName2:\033[39m message2\n", $output->fetch());
     }
 }
