@@ -37,6 +37,7 @@ final class CommandExecutor
         $process->run(function ($type, $buffer) use ($output) {
             if ($type === Process::ERR && $output instanceof ConsoleOutputInterface) {
                 $output = $output->getErrorOutput();
+                $output->setVerbosity(OutputInterface::VERBOSITY_QUIET);
             }
             $output->write($buffer);
         });

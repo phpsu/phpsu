@@ -7,6 +7,7 @@ use PHPSu\Config\AppInstance;
 use PHPSu\Config\FileSystem;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
+use PHPSu\Helper\StringHelper;
 
 final class RsyncCommand implements CommandInterface
 {
@@ -15,7 +16,7 @@ final class RsyncCommand implements CommandInterface
     /** @var SshConfig */
     private $sshConfig;
     /** @var string */
-    private $options = '-avz';
+    private $options = '-az';
 
     /** @var string */
     private $sourceHost = '';
@@ -33,9 +34,10 @@ final class RsyncCommand implements CommandInterface
      * @param string $destinationInstanceName
      * @param string $currentHost
      * @param bool $all
+     * @param int $verbosity
      * @return RsyncCommand[]
      */
-    public static function fromGlobal(GlobalConfig $global, string $sourceInstanceName, string $destinationInstanceName, string $currentHost, bool $all): array
+    public static function fromGlobal(GlobalConfig $global, string $sourceInstanceName, string $destinationInstanceName, string $currentHost, bool $all, int $verbosity): array
     {
         $sourceInstance = $global->getAppInstance($sourceInstanceName);
         $destinationInstance = $global->getAppInstance($destinationInstanceName);
@@ -49,12 +51,12 @@ final class RsyncCommand implements CommandInterface
             if ($destinationInstance->hasFilesystem($fileSystemName)) {
                 $toFilesystem = $destinationInstance->getFilesystem($fileSystemName);
             }
-            $result[] = static::fromAppInstances($sourceInstance, $destinationInstance, $fromFilesystem, $toFilesystem, $currentHost, $all);
+            $result[] = static::fromAppInstances($sourceInstance, $destinationInstance, $fromFilesystem, $toFilesystem, $currentHost, $all, $verbosity);
         }
         return $result;
     }
 
-    public static function fromAppInstances(AppInstance $source, AppInstance $destination, FileSystem $sourceFilesystem, FileSystem $destinationFilesystem, string $currentHost, bool $all): RsyncCommand
+    public static function fromAppInstances(AppInstance $source, AppInstance $destination, FileSystem $sourceFilesystem, FileSystem $destinationFilesystem, string $currentHost, bool $all, int $verbosity): RsyncCommand
     {
         $fromRelPath = ($sourceFilesystem->getPath() ? '/' : '') . $sourceFilesystem->getPath();
         $toRelPath = ($destinationFilesystem->getPath() ? '/' : '') . $destinationFilesystem->getPath();
@@ -65,6 +67,7 @@ final class RsyncCommand implements CommandInterface
         $result->setDestinationHost($destination->getHost() === $currentHost ? '' : $destination->getHost());
         $result->setSourcePath(rtrim($source->getPath() === '' ? '.' : $source->getPath(), '/*') . $fromRelPath . '/*');
         $result->setToPath(rtrim($destination->getPath() === '' ? '.' : $destination->getPath(), '/') . $toRelPath . '/');
+        $result->setOptions(StringHelper::optionStringForVerbosity($verbosity) . $result->getOptions());
         if ($all === false) {
             $excludeOptions = '';
             foreach (array_unique(array_merge($sourceFilesystem->getExcludes(), $destinationFilesystem->getExcludes())) as $exclude) {
@@ -74,6 +77,7 @@ final class RsyncCommand implements CommandInterface
                 $result->setOptions($result->getOptions() . ' ' . $excludeOptions);
             }
         }
+
         return $result;
     }
 
