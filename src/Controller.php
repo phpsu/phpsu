@@ -97,5 +97,4 @@ final class Controller
             $this->output->getFormatter()
         );
     }
-
 }

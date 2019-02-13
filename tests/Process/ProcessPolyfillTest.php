@@ -9,7 +9,6 @@ use PHPSu\Process\Process;
 use PHPSu\Tools\EnvironmentUtility;
 use PHPUnit\Framework\TestCase;
 
-
 class ProcessPolyfillTest extends TestCase
 {
 
@@ -27,7 +26,7 @@ class ProcessPolyfillTest extends TestCase
         $result = (new CommandExecutor())->executeDirectly('oijewfoijwfj');
         $this->assertIsArray($result, 'command executor returned array successfully');
         $this->assertCount(3, $result, 'result contains the correct amount of items');
-        $this->assertEmpty($result[0],'Executor output was correctly empty');
+        $this->assertEmpty($result[0], 'Executor output was correctly empty');
         $this->assertNotEmpty($result[1], 'Executor error output was correctly not empty');
     }
 
@@ -54,5 +53,4 @@ class ProcessPolyfillTest extends TestCase
             $this->assertInstanceOf(Process::class, $process, 'Successfully created Process');
         }
     }
-
 }
