@@ -9,6 +9,7 @@ use PHPSu\SshOptions;
 use PHPSu\SyncOptions;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 final class ControllerTest extends TestCase
 {
@@ -207,5 +208,32 @@ final class ControllerTest extends TestCase
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
+    }
+
+    public function testSyncOutputHasSectionsWithEmptyConfigAndConsoleOutput(): void
+    {
+        $config = new GlobalConfig();
+        $config->addAppInstance('production', 'localhost', __DIR__);
+        $config->addAppInstance('local');
+        $controller = new Controller();
+        $syncOptions = new SyncOptions('production');
+        $syncOptions->setNoDatabases(true);
+        $syncOptions->setNoFiles(true);
+        $output = new ConsoleOutput();
+        $controller->sync($output, $config, $syncOptions);
+        $this->assertEmpty(stream_get_contents($output->getStream()), 'Asserting result empty since config is empty as well');
+    }
+
+    public function testSyncOutputHasSectionsWithEmptyConfigAndBufferedOutput(): void
+    {
+        $config = new GlobalConfig();
+        $config->addAppInstance('production', 'localhost', __DIR__);
+        $config->addAppInstance('local');
+        $controller = new Controller();
+        $syncOptions = new SyncOptions('production');
+        $syncOptions->setNoDatabases(true);
+        $syncOptions->setNoFiles(true);
+        $this->expectExceptionMessage('The output is not an instance of ConsoleOutputInterface therefore the sections are null');
+        $controller->sync(new BufferedOutput(), $config, $syncOptions);
     }
 }

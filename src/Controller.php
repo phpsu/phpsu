@@ -7,17 +7,18 @@ use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Process\CommandExecutor;
 use PHPSu\Tools\EnvironmentUtility;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+// @codeCoverageIgnoreStart
 if (!class_exists('ConsoleSectionOutput', false)) {
     if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', 'gte')) {
         \class_alias(Symfony\Component\Console\Output\ConsoleSectionOutput::class, 'ConsoleSectionOutput');
     } else {
-        \class_alias(PHPSu\Tools\ConsolePolyfill\ConsoleSectionOutput::class, 'ConsoleSectionOutput');
+        \class_alias(Tools\ConsolePolyfill\ConsoleSectionOutput::class, 'ConsoleSectionOutput');
     }
 }
+// @codeCoverageIgnoreEnd
 
 use \ConsoleSectionOutput;
 
@@ -47,6 +48,9 @@ final class Controller implements ControllerInterface
             return;
         }
 
+        $sectionTop = null;
+        $sectionBottom = null;
+
         if ($output instanceof ConsoleOutputInterface) {
             if (method_exists($output, 'section')) {
                 $sectionTop = $output->section();
@@ -61,10 +65,14 @@ final class Controller implements ControllerInterface
                 $sectionBottom = $this->getNewSection($sectionOutput, $output);
             }
         }
+        if ($sectionTop === null || $sectionBottom === null) {
+            throw new \Exception('The output is not an instance of ConsoleOutputInterface therefore the sections are null');
+        }
         (new CommandExecutor())->executeParallel($commands, $sectionTop, $sectionBottom);
     }
 
     /**
+     * @codeCoverageIgnoreStart ignored for code coverage as this feature is going to be removed in the next version
      * @deprecated the usage of symfony 3.x is discouraged. With the next version we will remove support for that again
      * @param array $sectionOutputs
      * @param OutputInterface $output
@@ -80,4 +88,5 @@ final class Controller implements ControllerInterface
             $output->getFormatter()
         );
     }
+    // @codeCoverageIgnoreEnd
 }

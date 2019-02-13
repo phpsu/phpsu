@@ -11,7 +11,7 @@ if (!class_exists('ConsoleSectionOutput', false)) {
     if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', 'gte')) {
         \class_alias(Symfony\Component\Console\Output\ConsoleSectionOutput::class, 'ConsoleSectionOutput');
     } else {
-        \class_alias(PHPSu\Tools\ConsolePolyfill\ConsoleSectionOutput::class, 'ConsoleSectionOutput');
+        \class_alias(\PHPSu\Tools\ConsolePolyfill\ConsoleSectionOutput::class, 'ConsoleSectionOutput');
     }
 }
 // @codeCoverageIgnoreEnd
