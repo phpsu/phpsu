@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Tools;
 
+use PHPSu\Exceptions\CommandExecutionException;
 use PHPSu\Process\CommandExecutor;
 use PHPSu\Process\Process;
 
@@ -38,13 +39,19 @@ final class EnvironmentUtility
     public function getRsyncVersion(): string
     {
         $command = $this->commandExecutor->executeDirectly('rsync --version');
-        preg_match('rsync *version ([0-9.]*).*$', $command[0], $result);
+        if (empty($command[0])) {
+            throw new CommandExecutionException('Result of rsync --version was empty');
+        }
+        preg_match('/rsync *version ([0-9.]*).*/', $command[0], $result);
         return trim($result[1]);
     }
 
     public function getMysqlDumpVersion(): array
     {
         $output = $this->commandExecutor->executeDirectly('mysqldump -V');
+        if (empty($output[0])) {
+            throw new CommandExecutionException('Result of mysqldump -V was empty');
+        }
         preg_match_all(
             '/(.*Ver (?\'dump\'[\d.a-z]+).*)(.*Distrib (?\'mysql\'[\d.a-z]+).*)/m',
             trim($output[0]),
