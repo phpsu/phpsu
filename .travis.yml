@@ -14,7 +14,7 @@ env:
     - SYMFOMY_UPDATE="composer update symfony/* --prefer-lowest && "
     - SYMFONY_UPDATE=""
 
-install: composer i --no-suggest
+install: composer install --no-suggest
 
 script: $SYMFONY_UPDATE vendor/bin/grumphp run && composer test
 
