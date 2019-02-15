@@ -45,7 +45,7 @@ final class CommandExecutor
         return $process->getExitCode();
     }
 
-    public function executeDirectly(string $command, bool $throwOnError = false): array
+    public function executeDirectly(string $command, bool $throwOnError = false): Process
     {
         $process = Process::fromShellCommandline($command, null, null, null, null);
         $process->run();

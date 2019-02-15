@@ -14,6 +14,9 @@ final class InternalHelper
 
     public function getCurrentPHPSUVersion(): string
     {
+      return $this->getPhpSuVersionFromVendor() ?? $this->getPhpSuVersionFromGit() ?? 'development';
+    }
+    {
         if ($this->isVendorPackage()) {
             return $this->getPhpSuVersionFromVendor();
         }

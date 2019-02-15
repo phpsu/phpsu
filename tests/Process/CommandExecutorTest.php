@@ -26,7 +26,7 @@ class CommandExecutorTest extends TestCase
         $output = new ConsoleOutput();
         $exitCode = $commandExecutor->passthru('ewj', $output);
         $this->assertNotEquals(0, $exitCode);
-        $this->assertEquals(127, $exitCode, 'command obviously not installed');
+        $this->assertEquals(127, $exitCode, 'command shouldn't be installed');
     }
 
     public function testExecuteCommandsParallel(): void
@@ -34,7 +34,7 @@ class CommandExecutorTest extends TestCase
         $commandExecutor = new CommandExecutor();
         $outputLog = new BufferedOutput();
         $outputStatus = new BufferedOutput();
-        $commandExecutor->executeParallel(['A' => 'echo hi','B' => 'echo world'], $outputLog, $outputStatus);
+        $commandExecutor->executeParallel(['A' => 'echo hi', 'B' => 'echo world'], $outputLog, $outputStatus);
         $fetch = $outputStatus->fetch();
         $this->assertContains('A: ✔', $fetch);
         $this->assertContains('B: ✔', $fetch);

@@ -29,7 +29,7 @@ The following versions of PHP are supported by this version.
 * PHP 7.2
 * PHP 7.3
 
-Additionally we are supporting symfony >=3.2 and <5.0
+Compatible with symfony >=3.2 <5.0
 
 Required for synchronisation are:
 * ``ssh`` on execution System

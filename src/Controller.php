@@ -73,7 +73,7 @@ final class Controller implements ControllerInterface
 
     /**
      * @codeCoverageIgnoreStart ignored for code coverage as this feature is going to be removed in the next version
-     * @deprecated the usage of symfony 3.x is discouraged. With the next version we will remove support for that again
+     * @deprecated the usage of symfony 3.x is discouraged. With the next version we will remove support
      * @param array $sectionOutputs
      * @param OutputInterface $output
      * @return ConsoleSectionOutput

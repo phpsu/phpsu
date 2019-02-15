@@ -10,7 +10,6 @@ use PHPUnit\Framework\TestCase;
 
 class InternalHelperTest extends TestCase
 {
-
     private const GIT_PATH = __DIR__ . '/../../.git';
 
     public function testGetPhpsuVersionFromVendor(): void
