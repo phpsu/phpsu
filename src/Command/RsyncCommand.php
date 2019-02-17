@@ -65,7 +65,7 @@ final class RsyncCommand implements CommandInterface
         $result->setName('filesystem:' . $sourceFilesystem->getName());
         $result->setSourceHost($source->getHost() === $currentHost ? '' : $source->getHost());
         $result->setDestinationHost($destination->getHost() === $currentHost ? '' : $destination->getHost());
-        $result->setSourcePath(rtrim($source->getPath() === '' ? '.' : $source->getPath(), '/*') . $fromRelPath . '/*');
+        $result->setSourcePath(rtrim($source->getPath() === '' ? '.' : $source->getPath(), '/*') . $fromRelPath . '/');
         $result->setToPath(rtrim($destination->getPath() === '' ? '.' : $destination->getPath(), '/') . $toRelPath . '/');
         $result->setOptions(StringHelper::optionStringForVerbosity($verbosity) . $result->getOptions());
         if ($all === false) {
