@@ -30,7 +30,7 @@ final class RsyncCommandTest extends TestCase
 
         $fileSystem = (new FileSystem())->setName('app')->setPath('');
         $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local', false, OutputInterface::VERBOSITY_NORMAL)->setSshConfig($sshConfig)->generate();
-        $this->assertSame("rsync -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/*' 'hostc:/var/www/testing/'", $generated);
+        $this->assertSame("rsync -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/' 'hostc:/var/www/testing/'", $generated);
     }
 
     public function testGenerate(): void
@@ -62,7 +62,7 @@ final class RsyncCommandTest extends TestCase
 
         $fileSystem = (new FileSystem())->setName('app')->setPath('');
         $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local', false, OutputInterface::VERBOSITY_NORMAL)->setSshConfig($sshConfig)->generate();
-        $this->assertSame("rsync -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/*' './'", $generated);
+        $this->assertSame("rsync -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/' './'", $generated);
     }
 
     public function testLocalAndVarStorage(): void
@@ -80,7 +80,7 @@ final class RsyncCommandTest extends TestCase
 
         $fileSystem = (new FileSystem())->setName('app')->setPath('var/storage');
         $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local', false, OutputInterface::VERBOSITY_NORMAL)->setSshConfig($sshConfig)->generate();
-        $this->assertSame("rsync -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/*' './var/storage/'", $generated);
+        $this->assertSame("rsync -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 
     public function testRsyncQuiet(): void
@@ -98,7 +98,7 @@ final class RsyncCommandTest extends TestCase
 
         $fileSystem = (new FileSystem())->setName('app')->setPath('var/storage');
         $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local', false, OutputInterface::VERBOSITY_QUIET)->setSshConfig($sshConfig)->generate();
-        $this->assertSame("rsync -q -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/*' './var/storage/'", $generated);
+        $this->assertSame("rsync -q -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 
     public function testRsyncVerbose(): void
@@ -116,7 +116,7 @@ final class RsyncCommandTest extends TestCase
 
         $fileSystem = (new FileSystem())->setName('app')->setPath('var/storage');
         $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local', false, OutputInterface::VERBOSITY_VERBOSE)->setSshConfig($sshConfig)->generate();
-        $this->assertSame("rsync -v -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/*' './var/storage/'", $generated);
+        $this->assertSame("rsync -v -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 
     public function testRsyncVeryVerbose(): void
@@ -134,7 +134,7 @@ final class RsyncCommandTest extends TestCase
 
         $fileSystem = (new FileSystem())->setName('app')->setPath('var/storage');
         $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local', false, OutputInterface::VERBOSITY_VERY_VERBOSE)->setSshConfig($sshConfig)->generate();
-        $this->assertSame("rsync -vv -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/*' './var/storage/'", $generated);
+        $this->assertSame("rsync -vv -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 
     public function testRsyncDebug(): void
@@ -152,6 +152,6 @@ final class RsyncCommandTest extends TestCase
 
         $fileSystem = (new FileSystem())->setName('app')->setPath('var/storage');
         $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local', false, OutputInterface::VERBOSITY_DEBUG)->setSshConfig($sshConfig)->generate();
-        $this->assertSame("rsync -vvv -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/*' './var/storage/'", $generated);
+        $this->assertSame("rsync -vvv -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 }
