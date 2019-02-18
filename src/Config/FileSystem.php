@@ -39,6 +39,14 @@ final class FileSystem
         return $this->excludes;
     }
 
+    public function addExcludes(array $excludes): FileSystem
+    {
+        foreach ($excludes as $exclude) {
+            $this->addExclude($exclude);
+        }
+        return $this;
+    }
+
     public function addExclude(string $exclude): FileSystem
     {
         $this->excludes[] = $exclude;

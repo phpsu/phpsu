@@ -41,6 +41,14 @@ final class Database
         return $this->excludes;
     }
 
+    public function addExcludes(array $excludes): Database
+    {
+        foreach ($excludes as $exclude) {
+            $this->addExclude($exclude);
+        }
+        return $this;
+    }
+
     public function addExclude(string $exclude): Database
     {
         $this->excludes[] = $exclude;
