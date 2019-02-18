@@ -73,8 +73,8 @@ final class CommandGeneratorTest extends TestCase
 
         $result = $commandGenerator->syncCommands(new SyncOptions('production'));
         $this->assertSame([
-            'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/*' './fileadmin/'",
-            'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/*' './uploads/'",
+            'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/' './fileadmin/'",
+            'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/' './uploads/'",
             'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\''' | mysql -h'host' -P3307 -u'user' -p'pw' 'database'",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
@@ -102,8 +102,8 @@ SSH_CONFIG;
 
         $result = $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('testing'));
         $this->assertSame([
-            'filesystem:fileadmin' => "ssh -F 'php://temp' 'serverEu' 'rsync -az '\''/var/www/production/fileadmin2/*'\'' '\''/var/www/testing/fileadmin/'\'''",
-            'filesystem:uploads' => "ssh -F 'php://temp' 'serverEu' 'rsync -az '\''/var/www/production/uploads/*'\'' '\''/var/www/testing/uploads/'\'''",
+            'filesystem:fileadmin' => "ssh -F 'php://temp' 'serverEu' 'rsync -az '\''/var/www/production/fileadmin2/'\'' '\''/var/www/testing/fileadmin/'\'''",
+            'filesystem:uploads' => "ssh -F 'php://temp' 'serverEu' 'rsync -az '\''/var/www/production/uploads/'\'' '\''/var/www/testing/uploads/'\'''",
             'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\'' | mysql -h'\''host'\'' -P3307 -u'\''user'\'' -p'\''pw'\'' '\''database'\'''",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
@@ -131,8 +131,8 @@ SSH_CONFIG;
 
         $result = $commandGenerator->syncCommands((new SyncOptions('local'))->setDestination('local2'));
         $this->assertSame([
-            'filesystem:fileadmin' => "rsync -az './fileadmin/*' '../local2/fileadmin/'",
-            'filesystem:uploads' => "rsync -az './uploads/*' '../local2/uploads/'",
+            'filesystem:fileadmin' => "rsync -az './fileadmin/' '../local2/fileadmin/'",
+            'filesystem:uploads' => "rsync -az './uploads/' '../local2/uploads/'",
             'database:app' => "mysqldump --opt --skip-comments -h'host' -P3307 -u'user' -p'pw' 'database' | mysql -h'host' -P3307 -u'user' -p'pw' 'database'",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
@@ -160,8 +160,8 @@ SSH_CONFIG;
 
         $result = $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('staging'));
         $this->assertSame([
-            'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/*' 'stagingServer:/var/www/staging/fileadmin/'",
-            'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/*' 'stagingServer:/var/www/staging/uploads/'",
+            'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/' 'stagingServer:/var/www/staging/fileadmin/'",
+            'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/' 'stagingServer:/var/www/staging/uploads/'",
             'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\''' | ssh -F 'php://temp' 'stagingServer' 'mysql -h'\''host'\'' -P3307 -u'\''user'\'' -p'\''pw'\'' '\''database'\'''",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
@@ -189,8 +189,8 @@ SSH_CONFIG;
 
         $result = $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('staging')->setCurrentHost('stagingServer'));
         $this->assertSame([
-            'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/*' '/var/www/staging/fileadmin/'",
-            'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/*' '/var/www/staging/uploads/'",
+            'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/' '/var/www/staging/fileadmin/'",
+            'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/' '/var/www/staging/uploads/'",
             'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\''' | mysql -h'host' -P3307 -u'user' -p'pw' 'database'",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
@@ -214,8 +214,8 @@ SSH_CONFIG;
 
         $result = $commandGenerator->syncCommands((new SyncOptions('staging'))->setDestination('production')->setCurrentHost('stagingServer'));
         $this->assertSame([
-            'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' '/var/www/staging/fileadmin/*' 'serverEu:/var/www/production/fileadmin2/'",
-            'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' '/var/www/staging/uploads/*' 'serverEu:/var/www/production/uploads/'",
+            'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' '/var/www/staging/fileadmin/' 'serverEu:/var/www/production/fileadmin2/'",
+            'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' '/var/www/staging/uploads/' 'serverEu:/var/www/production/uploads/'",
             'database:app' => "mysqldump --opt --skip-comments -h'host' -P3307 -u'user' -p'pw' 'database' | ssh -F 'php://temp' 'serverEu' 'mysql -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\'''",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
