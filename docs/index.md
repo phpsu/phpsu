@@ -14,7 +14,7 @@
      - [The Arguments source and destination](CommandLine/Sync.md#the-arguments-source-and-destination)
      - [The Option --dry-run](CommandLine/Sync.md#the-option---dry-run)
      - [The Option --all](CommandLine/Sync.md#the-option---all)
-     - [The Option --no-file](CommandLine/Sync.md#the-option---no-file)
+     - [The Option --no-fs](CommandLine/Sync.md#the-option---no-fs)
      - [The Option --no-db](CommandLine/Sync.md#the-option---no-db)
      - [The Option --verbose](CommandLine/Sync.md#the-option---verbose)
      - [The Option --from](CommandLine/Sync.md#the-option---from)
