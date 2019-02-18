@@ -64,6 +64,28 @@ $config->addAppInstance('local')
 return $config;
 ````
 
+## CLI Examples
+
+````bash
+phpsu sync production --dry-run
+phpsu sync p --no-db
+phpsu sync p --no-fs
+phpsu sync production testing --all
+````
+
+### PHP API Examples
+
+````php
+<?php
+declare(strict_types=1);
+
+$log = new \Symfony\Component\Console\Output\BufferedOutput();
+$configurationLoader = new \PHPSu\Config\ConfigurationLoader();
+$syncOptions = new \PHPSu\SyncOptions('production');
+$phpsu = new \PHPSu\Controller();
+$phpsu->sync($log, $configurationLoader->getConfig(), $syncOptions);
+````
+
 ## Contributing
 
 install for Contribution

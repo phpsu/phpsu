@@ -18,10 +18,14 @@ final class ConfigurationLoaderTest extends TestCase
         chdir(__DIR__ . '/../fixtures');
     }
 
-    public function testGetConfig(): void
+    public function testGetConfigViaConfigurationLoader(): void
     {
         $configurationLoader = new ConfigurationLoader();
-        $this->assertEquals(new GlobalConfig(), $configurationLoader->getConfig());
+        $expectedConfig = new GlobalConfig();
+        $expectedConfig->addFilesystem('var/storage', 'var/storage');
+        $expectedConfig->addAppInstance('production', '', 'testProduction');
+        $expectedConfig->addAppInstance('local', '', 'testLocal');
+        $this->assertEquals($expectedConfig, $configurationLoader->getConfig());
     }
 
     public function tearDown()

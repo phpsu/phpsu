@@ -208,4 +208,20 @@ final class ControllerTest extends TestCase
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
     }
+
+    public function testPhpApiReadmeExample()
+    {
+        $oldCwd = getcwd();
+        chdir(__DIR__ . '/fixtures');
+        $config = (new \PHPSu\Config\ConfigurationLoader())->getConfig();
+        chdir($oldCwd);
+
+        $log = new BufferedOutput();
+        $syncOptions = new \PHPSu\SyncOptions('production');
+        $syncOptions->setDryRun(true);
+        $phpsu = new \PHPSu\Controller();
+        $phpsu->sync($log, $config, $syncOptions);
+
+        $this->assertSame('filesystem:var/storage' . PHP_EOL . 'rsync -az \'testProduction/var/storage/\' \'testLocal/var/storage/\'' . PHP_EOL, $log->fetch());
+    }
 }

@@ -82,7 +82,10 @@ phpsu sync source destination --verbose
 phpsu sync source destination -v
 ``` 
 
-[//] todo add description  
+With the `--verbose` option you can see the output of the commands run by phpsu.
+The level of verbosity can be change by applying more `-v` to the command.
+Phpsu will gave the verbosity option to the underling commands as specified.
+`-v`, `-vv`, `-vvv` and `-q` are possible. `-q` will remove all output that isn't error output.
 
 ### The Option --from
 
@@ -90,8 +93,11 @@ phpsu sync source destination -v
 phpsu sync source destination --from=currentSystem
 ``` 
 
-[//] todo add description  
-
+Phpsu tries to find out the shortest ssh connection.  
+If we give phpsu the information on which system we are currently on,
+it can shorten the connections and speed up syncing.
+``--from`` accepts any sshConnection Host.  
+> !! It is not recommended to install phpsu on a production system.
 
 
 ## Examples
@@ -100,9 +106,10 @@ phpsu sync source destination --from=currentSystem
 
 ```bash
 phpsu sync production local
+phpsu sync production
 ``` 
 
-[//] todo add description  
+You can skip local as it is the default for destination
 
 ### Sync From Production to Testing
 
@@ -110,7 +117,7 @@ phpsu sync production local
 phpsu sync production testing
 ``` 
 
-[//] todo add description  
+This will sync the Production System to the Testing System.
 
 ### Being on Production and Syncing to Testing
 
@@ -118,4 +125,5 @@ phpsu sync production testing
 phpsu sync production testing --from=production
 ``` 
 
-[//] todo add description  
+If you are on the Production System and would like to sync to the Testing,
+you can use the ``--from`` option to get the Ssh Configuration right.  
