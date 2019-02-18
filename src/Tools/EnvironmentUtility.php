@@ -44,7 +44,7 @@ final class EnvironmentUtility
     public function getRsyncVersion(): string
     {
         $command = $this->commandExecutor->executeDirectly('rsync --version');
-        if (empty($command->getOutput())) {
+        if (empty($command->getOutput()) && $this->isRsyncInstalled()) {
             throw new CommandExecutionException('Result of rsync --version was empty');
         }
         preg_match('/rsync *version ([0-9.]*).*/', $command->getOutput(), $result);
@@ -66,7 +66,7 @@ final class EnvironmentUtility
     public function getMysqlDumpVersion(): array
     {
         $output = $this->commandExecutor->executeDirectly('mysqldump -V')->getOutput();
-        if (empty($output)) {
+        if (empty($output) && $this->isMysqlDumpInstalled()) {
             throw new CommandExecutionException('Result of mysqldump -V was empty');
         }
         preg_match_all(
