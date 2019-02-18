@@ -40,5 +40,5 @@ call_user_func(function () {
     }
 
     require $firstVendorAutoloadFile;
-    \PHPSu\Cli\PhpsuApplication::command();
+    \PHPSu\Cli\PhpsuApplication::createApplication()->run();
 });

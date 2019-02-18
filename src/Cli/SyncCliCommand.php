@@ -3,29 +3,15 @@ declare(strict_types=1);
 
 namespace PHPSu\Cli;
 
-use PHPSu\Config\ConfigurationLoaderInterface;
-use PHPSu\ControllerInterface;
 use PHPSu\Helper\StringHelper;
-use PHPSu\SyncOptions;
-use Symfony\Component\Console\Command\Command;
+use PHPSu\Options\SyncOptions;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-final class SyncCliCommand extends Command
+final class SyncCliCommand extends AbstractCliCommand
 {
-    /** @var ConfigurationLoaderInterface */
-    private $configurationLoader;
-    /** @var ControllerInterface */
-    private $controller;
-
-    public function __construct(ConfigurationLoaderInterface $configurationLoader, ControllerInterface $controller)
-    {
-        parent::__construct();
-        $this->configurationLoader = $configurationLoader;
-        $this->controller = $controller;
-    }
 
     protected function configure(): void
     {

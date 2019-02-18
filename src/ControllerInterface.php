@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace PHPSu;
 
 use PHPSu\Config\GlobalConfig;
+use PHPSu\Options\SshOptions;
+use PHPSu\Options\SyncOptions;
 use Symfony\Component\Console\Output\OutputInterface;
 
 interface ControllerInterface

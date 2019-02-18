@@ -29,6 +29,17 @@ class EnvironmentUtilityTest extends TestCase
         }
     }
 
+    public function testGetInstalledSshVersionOrExpectExceptionIfNotInstalled(): void
+    {
+        if ((new EnvironmentUtility())->isSshInstalled()) {
+            $sshVersion = (new EnvironmentUtility())->getSshVersion();
+            $this->assertEquals(1, version_compare($sshVersion, '7.0.0'));
+        } else {
+            $this->expectException(CommandExecutionException::class);
+            (new EnvironmentUtility())->getSshVersion();
+        }
+    }
+
     public function testGetInstalledMysqldumpVersionOrExpectExceptionIfNotInstalled(): void
     {
         if ((new EnvironmentUtility())->isMysqlDumpInstalled()) {

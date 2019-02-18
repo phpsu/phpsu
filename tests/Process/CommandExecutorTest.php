@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Process;
 
 use PHPSu\Process\CommandExecutor;
-use PHPSu\Process\Process;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -26,7 +25,7 @@ class CommandExecutorTest extends TestCase
         $output = new ConsoleOutput();
         $exitCode = $commandExecutor->passthru('ewj', $output);
         $this->assertNotEquals(0, $exitCode);
-        $this->assertEquals(127, $exitCode, 'command shouldn't be installed');
+        $this->assertEquals(127, $exitCode, 'command shouldn\'t be installed');
     }
 
     public function testExecuteCommandsParallel(): void

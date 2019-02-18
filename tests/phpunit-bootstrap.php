@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 error_reporting(E_ALL);
-ini_set('display_errors', (string)1);
+ini_set('display_errors', '1');
 
 // Currently phpunit's default error handling doesn't properly catch warnings / errors from data providers
 // https://github.com/sebastianbergmann/phpunit/issues/2449

@@ -40,13 +40,13 @@ final class Process extends \Symfony\Component\Process\Process
         throw new \LogicException('This should never happen');
     }
 
-    public function __construct($commandline, ?string $cwd = null, ?array $env = null, $input = null, $timeout = 60, array $options = [])
+    public function __construct($commandline, ?string $cwd = null, ?array $env = null, $input = null, ?float $timeout = 60, array $options = [])
     {
-        if (\is_array($commandline) && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '3.4.0', 'lt')) {
+        if (\is_array($commandline) && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '3.4.0', '<')) {
             throw new CommandExecutionException('Support for arrays as commandline-argument is not supported in symfony < 3.4.0');
         }
-        if (\is_string($commandline) && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '3.4.0', 'gte')) {
-            throw new CommandExecutionException('Support for strings as commandline-argument is not supported in symfony >= 3.4.0');
+        if (\is_string($commandline) && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.2.0', '>=')) {
+            throw new CommandExecutionException('Support for strings as commandline-argument is not supported in symfony >= 4.2.0');
         }
         parent::__construct($commandline, $cwd, $env, $input, $timeout, $options);
     }
@@ -59,7 +59,7 @@ final class Process extends \Symfony\Component\Process\Process
      */
     public static function fromShellCommandline(string $command, string $cwd = null, array $env = null, $input = null, ?float $timeout = 60): self
     {
-        if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', '>')) {
+        if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.2.0', '>=')) {
             /** @noinspection PhpUndefinedMethodInspection Symfony version > 4.X */
             return parent::fromShellCommandline($command, $cwd, $env, $input, $timeout);
         }

@@ -5,8 +5,8 @@ namespace PHPSu\Tests;
 
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
-use PHPSu\SshOptions;
-use PHPSu\SyncOptions;
+use PHPSu\Options\SshOptions;
+use PHPSu\Options\SyncOptions;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -230,10 +230,30 @@ final class ControllerTest extends TestCase
         $config->addAppInstance('production', 'localhost', __DIR__);
         $config->addAppInstance('local');
         $controller = new Controller();
-        $syncOptions = new SyncOptions('production');
+        $syncOptions = new SyncOptions('');
         $syncOptions->setNoDatabases(true);
         $syncOptions->setNoFiles(true);
-        $this->expectExceptionMessage('The output is not an instance of ConsoleOutputInterface therefore the sections are null');
-        $controller->sync(new BufferedOutput(), $config, $syncOptions);
+        $syncOptions->setSource('local');
+        $syncOptions->setDestination('production');
+        $output = new BufferedOutput();
+        $controller->sync($output, $config, $syncOptions);
+        $this->assertEmpty($output->fetch(), 'Excepting sync to do nothing');
+    }
+
+    public function testSshOutputPassthruExecution(): void
+    {
+        $controller = new Controller();
+        $config = new GlobalConfig();
+        $config->addAppInstance('production', '127.0.0.1', __DIR__);
+        $config->addAppInstance('local');
+        $sshOptions = new SshOptions('');
+        $sshOptions->setDestination('local');
+        $sshOptions->setCommand('');
+        $output = new BufferedOutput();
+        $controller->ssh($output, $config, $sshOptions);
+        // todo: add assert to catch failed to connect to port 22 on localhost
+        // todo: make sure, passthru does not simply output to commandline and instead procs everything properly
+        // todo: add functional tests for this + for sync command in order to really test this and not apply line coverage
+        $this->assertEmpty($output->fetch(), 'Excepting ssh to do nothing');
     }
 }

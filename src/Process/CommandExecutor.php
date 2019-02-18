@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
-use PHPSu\Exceptions\CommandExecutionException;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -48,10 +47,7 @@ final class CommandExecutor
     public function executeDirectly(string $command, bool $throwOnError = false): Process
     {
         $process = Process::fromShellCommandline($command, null, null, null, null);
-        $process->run();
-        if ($throwOnError && (!empty($process->getErrorOutput()) || $process->getExitCode() !== 0)) {
-            throw new CommandExecutionException('Command execution failed - ' . $process->getErrorOutput(), $process->getExitCode());
-        }
-        return [$process->getOutput(), $process->getErrorOutput(), $process->getExitCode()];
+        $throwOnError ? $process->mustRun() : $process->run();
+        return $process;
     }
 }

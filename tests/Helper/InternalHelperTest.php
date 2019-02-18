@@ -4,7 +4,7 @@ namespace PHPSu\Tests\Helper;
 
 use PHPSu\Exceptions\CommandExecutionException;
 use PHPSu\Exceptions\EnvironmentException;
-use PHPSu\Helper\InternalHelper;
+use PHPSu\Helper\ApplicationHelper;
 use PHPSu\Tools\EnvironmentUtility;
 use PHPUnit\Framework\TestCase;
 
@@ -30,17 +30,6 @@ class InternalHelperTest extends TestCase
         }
     }
 
-    public function testGetPhpSuVersionFromGitCommand(): void
-    {
-        if (!(new EnvironmentUtility())->isGitInstalled()) {
-            $this->expectException(CommandExecutionException::class);
-            $this->callPrivateMethod('getPhpSuVersionFromGitCommand');
-        } else {
-            $result = $this->callPrivateMethod('getPhpSuVersionFromGitCommand');
-            $this->assertNotEmpty($result, 'branch name could be everything but never empty');
-        }
-    }
-
     public function testIsGitFolderAvailable(): void
     {
         $this->assertSame(file_exists(self::GIT_PATH), $this->callPrivateMethod('isGitFolderAvailable'));
@@ -48,7 +37,7 @@ class InternalHelperTest extends TestCase
 
     private function callPrivateMethod(string $method)
     {
-        $object = new InternalHelper();
+        $object = new ApplicationHelper();
         $reflection =  (new \ReflectionClass($object))->getMethod($method);
         $reflection->setAccessible(true);
         return $reflection->invoke($object);

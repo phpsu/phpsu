@@ -4,34 +4,18 @@ declare(strict_types=1);
 namespace PHPSu\Cli;
 
 use PHPSu\Config\AppInstance;
-use PHPSu\Config\ConfigurationLoaderInterface;
-use PHPSu\ControllerInterface;
 use PHPSu\Helper\StringHelper;
-use PHPSu\SshOptions;
-use Symfony\Component\Console\Command\Command;
+use PHPSu\Options\SshOptions;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
-final class SshCliCommand extends Command
+final class SshCliCommand extends AbstractCliCommand
 {
-    /** @var ConfigurationLoaderInterface */
-    private $configurationLoader;
-    /** @var ControllerInterface */
-    private $controller;
-
     /** @var null|string[] */
     private $instances;
-
-
-    public function __construct(ConfigurationLoaderInterface $configurationLoader, ControllerInterface $controller)
-    {
-        parent::__construct();
-        $this->configurationLoader = $configurationLoader;
-        $this->controller = $controller;
-    }
 
     protected function configure(): void
     {

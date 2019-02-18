@@ -11,11 +11,11 @@ cache:
 
 env:
   matrix:
-    - SYMFOMY_UPDATE="composer update symfony/* --prefer-lowest && "
+    - SYMFOMY_UPDATE="composer update symfony/* --prefer-lowest"
     - SYMFONY_UPDATE=""
 
-install: composer install --no-suggest
+install: composer install --no-suggest && $SYMFONY_UPDATE
 
-script: $SYMFONY_UPDATE vendor/bin/grumphp run && composer test
+script: vendor/bin/grumphp run && composer test
 
 after_success: bash <(curl -s https://codecov.io/bash)
