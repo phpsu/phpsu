@@ -13,10 +13,10 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 if (!class_exists('ConsoleSectionOutput', false)) {
-    if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', 'gte')) {
-        \class_alias('Symfony\\Component\\Console\\Output\\ConsoleSectionOutput', 'ConsoleSectionOutput');
+    if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', '>=')) {
+        \class_alias(\Symfony\Component\Console\Output\ConsoleSectionOutput::class, 'ConsoleSectionOutput');
     } else {
-        \class_alias('PHPSu\Tools\ConsolePolyfill\ConsoleSectionOutput', 'ConsoleSectionOutput');
+        \class_alias(\PHPSu\Tools\ConsolePolyfill\ConsoleSectionOutput::class, 'ConsoleSectionOutput');
     }
 }
 

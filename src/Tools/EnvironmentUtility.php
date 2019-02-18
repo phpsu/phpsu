@@ -95,8 +95,8 @@ final class EnvironmentUtility
 
     private function spotVendorPath(): string
     {
-        if (file_exists(Controller::PHPSU_ROOT_PATH . '/../autoload.php')) {
-            return Controller::PHPSU_ROOT_PATH . '/../';
+        if (file_exists(Controller::PHPSU_ROOT_PATH . '/../../autoload.php')) {
+            return Controller::PHPSU_ROOT_PATH . '/../../';
         }
         return Controller::PHPSU_ROOT_PATH . '/vendor/';
     }
