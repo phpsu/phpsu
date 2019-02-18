@@ -60,7 +60,7 @@ final class ControllerTest extends TestCase
     public function testExcludeShouldBePresentInRsyncCommand(): void
     {
         $config = new GlobalConfig();
-        $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExclude('*.zip');
+        $config->addFilesystem('fileadmin', 'fileadmin')->addExcludes('*.mp4')->addExcludes(['*.mp3', '*.zip']);
         $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb');
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
         $config->addAppInstance('testing', 'projectEu', '/srv/www/project/test.project');
@@ -83,18 +83,18 @@ final class ControllerTest extends TestCase
     public function testExcludeShouldBePresentInDatabaseCommand(): void
     {
         $config = new GlobalConfig();
-        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExclude('table1')->addExclude('table2');
+        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExcludes('table1')->addExcludes(['table2', 'table3']);
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
         $config->addAppInstance('testing', 'projectEu', '/srv/www/project/test.project');
         $config->addAppInstance('local', '', './testInstance')
-            ->addDatabase('database', 'mysql://root:root@127.0.0.1/test1234')->addExclude('table1')->addExclude('table1');
+            ->addDatabase('database', 'mysql://root:root@127.0.0.1/test1234')->addExcludes('table1')->addExcludes(['table2', 'table3']);
 
         $output = new BufferedOutput();
         $controller = new Controller();
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' --ignore-table='\''testdb.table1'\'' --ignore-table='\''testdb.table2'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' --ignore-table='\''testdb.table1'\'' --ignore-table='\''testdb.table2'\'' --ignore-table='\''testdb.table3'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -103,12 +103,12 @@ final class ControllerTest extends TestCase
     public function testAllOptionShouldOverwriteExcludes(): void
     {
         $config = new GlobalConfig();
-        $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExclude('*.zip');
-        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExclude('table1')->addExclude('table2');
+        $config->addFilesystem('fileadmin', 'fileadmin')->addExcludes('*.mp4')->addExcludes(['*.mp3', '*.zip']);
+        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExcludes('table1')->addExcludes('table2', 'table3');
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
         $config->addAppInstance('testing', 'projectEu', '/srv/www/project/test.project');
         $config->addAppInstance('local', '', './testInstance')
-            ->addDatabase('database', 'mysql://root:root@127.0.0.1/test1234')->addExclude('table1')->addExclude('table1');
+            ->addDatabase('database', 'mysql://root:root@127.0.0.1/test1234')->addExcludes('table1')->addExcludes('table1');
 
         $output = new BufferedOutput();
         $controller = new Controller();
@@ -126,12 +126,12 @@ final class ControllerTest extends TestCase
     public function testNoDbOptionShouldRemoveDatabaseCommand(): void
     {
         $config = new GlobalConfig();
-        $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExclude('*.zip');
-        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExclude('table1')->addExclude('table2');
+        $config->addFilesystem('fileadmin', 'fileadmin')->addExcludes('*.mp4')->addExcludes(['*.mp3', '*.zip']);
+        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExcludes('table1')->addExcludes(['table2', 'table3']);
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
         $config->addAppInstance('testing', 'projectEu', '/srv/www/project/test.project');
         $config->addAppInstance('local', '', './testInstance')
-            ->addDatabase('database', 'mysql://root:root@127.0.0.1/test1234')->addExclude('table1')->addExclude('table1');
+            ->addDatabase('database', 'mysql://root:root@127.0.0.1/test1234')->addExcludes('table1')->addExcludes('table1');
 
         $output = new BufferedOutput();
         $controller = new Controller();
@@ -147,12 +147,12 @@ final class ControllerTest extends TestCase
     public function testNoFileOptionShouldRemoveDatabaseCommand(): void
     {
         $config = new GlobalConfig();
-        $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExclude('*.zip');
-        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExclude('table1')->addExclude('table2');
+        $config->addFilesystem('fileadmin', 'fileadmin')->addExcludes('*.mp4')->addExcludes(['*.mp3', '*.zip']);
+        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExcludes('table1')->addExcludes(['table2', 'table3']);
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
         $config->addAppInstance('testing', 'projectEu', '/srv/www/project/test.project');
         $config->addAppInstance('local', '', './testInstance')
-            ->addDatabase('database', 'mysql://root:root@127.0.0.1/test1234')->addExclude('table1')->addExclude('table1');
+            ->addDatabase('database', 'mysql://root:root@127.0.0.1/test1234')->addExcludes('table1')->addExcludes('table1');
 
         $output = new BufferedOutput();
         $controller = new Controller();
@@ -172,7 +172,7 @@ final class ControllerTest extends TestCase
         $config->addAppInstance('testing', 'projectEu', '/srv/www/project/test.project')
             ->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb');
         $config->addAppInstance('local', '', './testInstance')
-            ->addDatabase('database', 'mysql://root:root@127.0.0.1/test1234')->addExclude('table1')->addExclude('table1');
+            ->addDatabase('database', 'mysql://root:root@127.0.0.1/test1234')->addExcludes('table1')->addExcludes('table1');
 
         $output = new BufferedOutput();
         $controller = new Controller();
