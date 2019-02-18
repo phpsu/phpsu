@@ -55,19 +55,13 @@ final class Controller implements ControllerInterface
      * @deprecated the usage of symfony 3.x is discouraged. With the next version we will remove support
      * @param array $sectionOutputs
      * @param OutputInterface $output
-     * @return Symfony\Component\Console\Output\ConsoleSectionOutput|Tools\ConsolePolyfill\ConsoleSectionOutput
+     * @return \Symfony\Component\Console\Output\ConsoleSectionOutput|Tools\ConsolePolyfill\ConsoleSectionOutput
      */
     private function getNewSection(array &$sectionOutputs, OutputInterface $output)
     {
         if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', '>=')) {
             return $output->section();
         }
-        return new Tools\ConsolePolyfill\ConsoleSectionOutput(
-            $output->getStream(),
-            $sectionOutputs,
-            $output->getVerbosity(),
-            $output->isDecorated(),
-            $output->getFormatter()
-        );
+        return new Tools\ConsolePolyfill\ConsoleSectionOutput($output->getStream(), $sectionOutputs, $output->getVerbosity(), $output->isDecorated(), $output->getFormatter());
     }
 }
