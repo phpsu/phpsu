@@ -2,5 +2,7 @@
 /vendor/
 /composer.lock
 /.phpsu/
+/tests/.phpsu
 /tests/test-results/
 /phpsu-config.php
+/.phpunit-watcher-cache.php
