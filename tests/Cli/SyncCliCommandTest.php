@@ -34,7 +34,7 @@ class SyncCliCommandTest extends TestCase
 
         $output = $commandTester->getDisplay();
         $this->assertContains("filesystem:storage\n", $output);
-        $this->assertContains("rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'us:/var/www/var/storage/*' './var/storage/'\n", $output);
+        $this->assertContains("rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'us:/var/www/var/storage/' './var/storage/'\n", $output);
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 

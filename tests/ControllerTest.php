@@ -49,7 +49,7 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'filesystem:fileadmin',
-            "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/*' './testInstance/fileadmin/'",
+            "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
             'database:database',
             "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
             '',
@@ -72,7 +72,7 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'filesystem:fileadmin',
-            "rsync -az --exclude='*.mp4' --exclude='*.mp3' --exclude='*.zip' -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/*' './testInstance/fileadmin/'",
+            "rsync -az --exclude='*.mp4' --exclude='*.mp3' --exclude='*.zip' -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
             'database:database',
             "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
             '',
@@ -115,7 +115,7 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true));
         $lines = [
             'filesystem:fileadmin',
-            "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/*' './testInstance/fileadmin/'",
+            "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
             'database:database',
             "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
             '',
@@ -138,7 +138,7 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoDatabases(true));
         $lines = [
             'filesystem:fileadmin',
-            "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/*' './testInstance/fileadmin/'",
+            "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
