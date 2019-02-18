@@ -39,9 +39,28 @@ final class FileSystem
         return $this->excludes;
     }
 
+    /**
+     * @param string|array $excludes
+     * @return FileSystem
+     */
+    public function addExcludes($excludes): FileSystem
+    {
+        if (is_array($excludes)) {
+            $this->excludes = array_merge($this->excludes, $excludes);
+        } else {
+            $this->excludes[] = $excludes;
+        }
+        return $this;
+    }
+
+    /**
+     * @param string $exclude
+     * @return FileSystem
+     * @deprecated Use $this->addExcludes();
+     */
     public function addExclude(string $exclude): FileSystem
     {
-        $this->excludes[] = $exclude;
+        $this->addExcludes($exclude);
         return $this;
     }
 }

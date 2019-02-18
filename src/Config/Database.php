@@ -41,9 +41,28 @@ final class Database
         return $this->excludes;
     }
 
+    /**
+     * @param string|array $excludes
+     * @return Database
+     */
+    public function addExcludes($excludes): Database
+    {
+        if (is_array($excludes)) {
+            $this->excludes = array_merge($this->excludes, $excludes);
+        } else {
+            $this->excludes[] = $excludes;
+        }
+        return $this;
+    }
+
+    /**
+     * @param string $exclude
+     * @return Database
+     * @deprecated Use $this->addExcludes();
+     */
     public function addExclude(string $exclude): Database
     {
-        $this->excludes[] = $exclude;
+        $this->addExcludes($exclude);
         return $this;
     }
 }
