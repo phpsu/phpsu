@@ -16,7 +16,7 @@ final class PhpsuApplication
 
     public static function createApplication(): Application
     {
-        $application = new Application('phpsu', '1.0.0-alpha3');
+        $application = new Application('phpsu', '1.0.0-alpha4');
         $configurationLoader = new ConfigurationLoader();
         $application->add(new SyncCliCommand($configurationLoader, new Controller()));
         $application->add(new SshCliCommand($configurationLoader, new Controller()));
