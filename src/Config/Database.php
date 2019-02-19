@@ -43,9 +43,7 @@ final class Database
 
     public function addExcludes(array $excludes): Database
     {
-        foreach ($excludes as $exclude) {
-            $this->addExclude($exclude);
-        }
+        $this->excludes = array_merge($this->excludes, $excludes);
         return $this;
     }
 

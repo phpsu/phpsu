@@ -41,9 +41,7 @@ final class FileSystem
 
     public function addExcludes(array $excludes): FileSystem
     {
-        foreach ($excludes as $exclude) {
-            $this->addExclude($exclude);
-        }
+        $this->excludes = array_merge($this->excludes, $excludes);
         return $this;
     }
 
