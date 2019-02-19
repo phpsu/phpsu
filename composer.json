@@ -34,7 +34,8 @@
   ],
   "scripts": {
     "test": "vendor/bin/phpunit -c tests/phpunit.xml --testdox --color=always",
-    "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox"
+    "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox",
+    "infection": "vendor/bin/infection --threads=4 --min-msi=80 --min-covered-msi=80 --ansi"
   },
   "autoload": {
     "psr-4": {
@@ -55,7 +56,8 @@
   "require-dev": {
     "phpunit/phpunit": "7.*",
     "pluswerk/grumphp-config": "2.*",
-    "spatie/phpunit-watcher": "1.*"
+    "spatie/phpunit-watcher": "1.*",
+    "infection/infection": "0.12.*"
   },
   "extra": {
     "pluswerk/grumphp-config": {

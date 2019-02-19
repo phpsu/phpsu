@@ -11,6 +11,9 @@ cache:
 
 install: composer i --no-suggest
 
-script: vendor/bin/grumphp run && composer test
+script:
+  - vendor/bin/grumphp run
+  - composer test
+  - composer infection
 
 after_success: bash <(curl -s https://codecov.io/bash)
