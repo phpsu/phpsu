@@ -42,13 +42,14 @@ final class SshConfigGeneratorTest extends TestCase
 
         $sshConnections->add((new SshConnection())->setHost('hostb')
             ->setUrl('user@host_b')
-            ->setFrom(['hosta']));
+            ->setFrom(['hosta'])
+            ->setOptions(['ForwardAgent' => 'no']));
 
         $sshConnections->add((new SshConnection())->setHost('hosta')
             ->setUrl('user@localhost:2208'));
 
         $sshConfigGenerator = new SshConfigGenerator();
-        $sshConfig = $sshConfigGenerator->generate($sshConnections, [], 'local');
+        $sshConfig = $sshConfigGenerator->generate($sshConnections, ['ForwardAgent' => 'yes'], 'local');
 
         $sshConfigExpected = new SshConfig();
         $sshConfigExpected->hostc = new SshConfigHost();
@@ -60,11 +61,64 @@ final class SshConfigGeneratorTest extends TestCase
         $sshConfigExpected->hostb->User = 'user';
         $sshConfigExpected->hostb->HostName = 'host_b';
         $sshConfigExpected->hostb->ProxyJump = 'hosta';
+        $sshConfigExpected->hostb->ForwardAgent = 'no';
 
         $sshConfigExpected->hosta = new SshConfigHost();
         $sshConfigExpected->hosta->User = 'user';
         $sshConfigExpected->hosta->HostName = 'localhost';
         $sshConfigExpected->hosta->Port = 2208;
+
+        $sshConfigExpected->{'*'} = new SshConfigHost();
+        $sshConfigExpected->{'*'}->ForwardAgent = 'yes';
+        $this->assertEquals($sshConfigExpected, $sshConfig);
+    }
+
+    public function testSshConfigGeneratorGenerateError(): void
+    {
+        $sshConnections = new SshConnections();
+        $this->expectExceptionMessage('the source and destination Host can not be the same: hostb');
+        $sshConnections->add((new SshConnection())->setHost('hostb')
+            ->setUrl('user@host_b')
+            ->setFrom(['hosta', 'hostb']));
+    }
+
+    public function testSshConfigGeneratorGenerateWithMultipleFrom(): void
+    {
+        $sshConnections = new SshConnections();
+        $sshConnections->add((new SshConnection())->setHost('hostc')
+            ->setUrl('user@host_c')
+            ->setFrom(['hostb', 'hosta']));
+
+        $sshConnections->add((new SshConnection())->setHost('hostb')
+            ->setUrl('user@host_b')
+            ->setFrom(['hosta'])
+            ->setOptions(['ForwardAgent' => 'no']));
+
+        $sshConnections->add((new SshConnection())->setHost('hosta')
+            ->setUrl('user@localhost:2208'));
+
+        $sshConfigGenerator = new SshConfigGenerator();
+        $sshConfig = $sshConfigGenerator->generate($sshConnections, ['ForwardAgent' => 'yes'], 'local');
+
+        $sshConfigExpected = new SshConfig();
+        $sshConfigExpected->hostc = new SshConfigHost();
+        $sshConfigExpected->hostc->User = 'user';
+        $sshConfigExpected->hostc->HostName = 'host_c';
+        $sshConfigExpected->hostc->ProxyJump = 'hosta';
+
+        $sshConfigExpected->hostb = new SshConfigHost();
+        $sshConfigExpected->hostb->User = 'user';
+        $sshConfigExpected->hostb->HostName = 'host_b';
+        $sshConfigExpected->hostb->ProxyJump = 'hosta';
+        $sshConfigExpected->hostb->ForwardAgent = 'no';
+
+        $sshConfigExpected->hosta = new SshConfigHost();
+        $sshConfigExpected->hosta->User = 'user';
+        $sshConfigExpected->hosta->HostName = 'localhost';
+        $sshConfigExpected->hosta->Port = 2208;
+
+        $sshConfigExpected->{'*'} = new SshConfigHost();
+        $sshConfigExpected->{'*'}->ForwardAgent = 'yes';
         $this->assertEquals($sshConfigExpected, $sshConfig);
     }
 }

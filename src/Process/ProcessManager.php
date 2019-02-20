@@ -133,16 +133,11 @@ final class ProcessManager
         $errors = [];
         foreach ($this->processes as $process) {
             if ($process->getExitCode() !== 0) {
-                $errors[$process->getName()] = [
-                    'code' => $process->getExitCode(),
-                    'codeMessage' => $process->getExitCodeText(),
-                    'out' => $process->getOutput(),
-                    'err' => $process->getErrorOutput(),
-                ];
+                $errors[] = $process->getName();
             }
         }
-        if ($errors) {
-            throw new \Exception(sprintf('Error in Process%s %s', count($errors) > 1 ? 'es' : '', implode(', ', array_keys($errors))));
+        if ($this->getErrorOutputs()) {
+            throw new \Exception(sprintf('Error in Process%s %s', count($errors) > 1 ? 'es' : '', implode(', ', $errors)));
         }
     }
 

@@ -221,8 +221,6 @@ final class DatabaseCommand implements CommandInterface
             'user' => $parsedUrl['user'] ?? die('username Not Set'),
             'pass' => $parsedUrl['pass'] ?? die('password Not Set'),
             'path' => $parsedUrl['path'] ?? die('database Not Set'),
-            'query' => $parsedUrl['query'] ?? '',
-            'fragment' => $parsedUrl['fragment'] ?? '',
         ];
         $parsedUrl['path'] = str_replace('/', '', $parsedUrl['path']);
         return $parsedUrl;

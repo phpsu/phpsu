@@ -12,22 +12,6 @@
         "text": "tests/test-results/infection.log"
     },
     "mutators": {
-        "@arithmetic": true,
-        "@boolean": true,
-        "@conditional_boundary": true,
-        "@conditional_negotiation": true,
-        "@equal": true,
-        "@function_signature": true,
-        "@identical": true,
-        "@number": true,
-        "@operator": true,
-        "@regex": true,
-        "@removal": true,
-        "@return_value": true,
-        "@sort": true,
-        "@zero_iteration": true,
-        "@cast": true,
-        "@unwrap": true,
         "@default": true
     }
 }

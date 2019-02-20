@@ -54,14 +54,11 @@ final class CommandGeneratorTest extends TestCase
         $this->assertSame("ssh -F 'php://temp' 'serverEu' -t 'cd '\''/var/www/production'\''; echo \"test\"'", $result);
     }
 
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage Source and Destination are Identical: same
-     */
     public function testFromAndToSameDisallowed(): void
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
+        $this->expectExceptionMessage('Source and Destination are Identical: same');
         $commandGenerator->syncCommands((new SyncOptions('same'))->setDestination('same'));
     }
 
@@ -204,6 +201,16 @@ Host *
 
 SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+    }
+
+    public function testProductionToStagingFromStagingError(): void
+    {
+        $globalConfig = static::getGlobalConfig();
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile($file = new \SplTempFileObject());
+
+        $this->expectExceptionMessage('Host clearlyAnError not found in SshConnections');
+        $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('staging')->setCurrentHost('clearlyAnError'));
     }
 
     public function testStagingToProductionFromStaging(): void

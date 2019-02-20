@@ -9,12 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 final class AppInstancesTest extends TestCase
 {
-    /**
-     * @expectedException \Exception
-     */
     public function testGetException(): void
     {
         $apps = new AppInstances();
+        $this->expectExceptionMessage('App Instance with name NameNotInApps not found');
         $apps->get('NameNotInApps');
     }
 
