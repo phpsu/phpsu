@@ -15,5 +15,6 @@ script:
   - vendor/bin/grumphp run
   - composer test
   - composer infection
+  - composer phpstan
 
 after_success: bash <(curl -s https://codecov.io/bash)

@@ -35,7 +35,8 @@
   "scripts": {
     "test": "vendor/bin/phpunit -c tests/phpunit.xml --testdox --color=always",
     "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox",
-    "infection": "vendor/bin/infection --threads=4 --min-msi=80 --min-covered-msi=80 --ansi"
+    "infection": "vendor/bin/infection --threads=4 --min-msi=80 --min-covered-msi=80 --ansi",
+    "phpstan": "vendor/bin/phpstan analyse -l 2 src tests"
   },
   "autoload": {
     "psr-4": {
@@ -57,7 +58,8 @@
     "phpunit/phpunit": "7.*",
     "pluswerk/grumphp-config": "2.*",
     "spatie/phpunit-watcher": "1.*",
-    "infection/infection": "0.12.*"
+    "infection/infection": "0.12.*",
+    "phpstan/phpstan": "^0.11.2"
   },
   "extra": {
     "pluswerk/grumphp-config": {

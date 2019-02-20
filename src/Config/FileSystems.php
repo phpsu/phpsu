@@ -8,7 +8,7 @@ final class FileSystems
     /** @var FileSystem[] */
     private $fileSystems = [];
 
-    public function add(Filesystem $filesystem): void
+    public function add(FileSystem $filesystem): void
     {
         $this->fileSystems[$filesystem->getName()] = $filesystem;
     }
