@@ -60,7 +60,7 @@ $config->addAppInstance('production', 'hostA', '/var/www/')
     ->addDatabase('app', 'mysql://root:password@127.0.0.1:3307/production01db')
     ->addExclude('table1')
     ->addExclude('table2')
-    ->addExcludes('table3', 'table4');
+    ->addExcludes(['table3', 'table4']);
 $config->addAppInstance('local')
     ->addDatabase('app', 'mysql://root:root@127.0.0.1/testingLocal');
 return $config;
