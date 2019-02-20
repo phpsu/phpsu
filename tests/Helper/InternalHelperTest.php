@@ -15,7 +15,6 @@ class InternalHelperTest extends TestCase
     public function testGetPhpsuVersionFromVendor(): void
     {
         $result = $this->callPrivateMethod('getPhpSuVersionFromVendor');
-        // PHPSU_VENDOR_INSTALLATION === false
         $this->assertEmpty($result, 'Asserting phpsu-vendor version to be empty due to test context');
     }
 

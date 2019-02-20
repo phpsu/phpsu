@@ -15,22 +15,16 @@ class ProcessPolyfillTest extends TestCase
 
     public function testSuccessfulProcessCommandOutput(): void
     {
-        $result = (new CommandExecutor())->executeDirectly('echo hi');
+        $result = (new CommandExecutor())->runCommand('echo hi');
         $this->assertEquals($result->getOutput(), 'hi' . PHP_EOL, 'Executor output was correct: hi');
         $this->assertEmpty($result->getErrorOutput(), 'Executor error output was correctly empty');
     }
 
     public function testErrorProcessCommandOutput(): void
     {
-        $result = (new CommandExecutor())->executeDirectly('oijewfoijwfj');
+        $result = (new CommandExecutor())->runCommand('oijewfoijwfj');
         $this->assertEmpty($result->getOutput(), 'Executor output was correctly empty');
         $this->assertNotEmpty($result->getErrorOutput(), 'Executor error output was correctly not empty');
-    }
-
-    public function testThrowErrorProcessCommand(): void
-    {
-        $this->expectException(ProcessFailedException::class);
-        (new CommandExecutor())->executeDirectly('oijewfoijwfj', true);
     }
 
     public function testNewProcessForDifferentVersions(): void

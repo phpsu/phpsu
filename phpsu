@@ -5,31 +5,24 @@ if (version_compare('7.1.0', PHP_VERSION, '>')) {
     die();
 }
 
-const COMPOSER_INSTALLATION = 0;
-const GIT_INSTALLATION = 1;
-
 call_user_func(function () {
 
-    $possibleVendorPaths = [
+    $possibleAutoloadFiles = [
         // php ./vendor/bin/phpsu
-        __DIR__ . '/..' => COMPOSER_INSTALLATION,
+        __DIR__ . '/../autoload.php',
         // php ./bin/phpsu
-        __DIR__ . '/../vendor'  => COMPOSER_INSTALLATION,
+        __DIR__ . '/../vendor/autoload.php',
         // php ./phpsu
-        __DIR__ . '/vendor' => GIT_INSTALLATION,
+        __DIR__ . '/vendor/autoload.php',
         // php ./vendor/phpsu/phpsu/phpsu may be symlinked from ./vendor/bin/phpsu
-        __DIR__ . '/../..' => COMPOSER_INSTALLATION,
+        __DIR__ . '/../../autoload.php',
     ];
 
     $firstVendorAutoloadFile = null;
 
-    foreach ($possibleVendorPaths as $vendorPath => $installationType) {
-        if (file_exists($vendorPath . '/autoload.php')) {
-            define('PHPSU_VENDOR_PATH', $vendorPath);
-            if ($installationType === COMPOSER_INSTALLATION) {
-                define('PHPSU_VENDOR_INSTALLATION', true);
-            }
-            $firstVendorAutoloadFile = $vendorPath . '/autoload.php';
+    foreach ($possibleAutoloadFiles as $file) {
+        if (file_exists($file)) {
+            $firstVendorAutoloadFile = $file;
             break;
         }
     }

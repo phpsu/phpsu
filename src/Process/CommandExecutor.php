@@ -44,10 +44,10 @@ final class CommandExecutor
         return $process->getExitCode();
     }
 
-    public function executeDirectly(string $command, bool $throwOnError = false): Process
+    public function runCommand(string $command): Process
     {
         $process = Process::fromShellCommandline($command, null, null, null, null);
-        $throwOnError ? $process->mustRun() : $process->run();
+        $process->run();
         return $process;
     }
 }

@@ -96,6 +96,6 @@ final class ProcessManagerTest extends TestCase
         $result = (new ProcessManager())
             ->addProcess($pError = Process::fromShellCommandline('echo hi'))
             ->mustRun();
-        $this->assertTrue($result->getState(0) ==='running' || $result->getState(0) === 'succeeded');
+        $this->assertContains($result->getState(0), [Process::STATE_RUNNING, Process::STATE_SUCCEEDED]);
     }
 }

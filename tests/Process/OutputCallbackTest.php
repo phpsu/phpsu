@@ -24,7 +24,7 @@ final class OutputCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE, true);
         $callback = new OutputCallback($output);
         $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::OUT, 'message');
-        $this->assertSame("\033[33mtestName:\033[39m message\n", $output->fetch());
+        $this->assertSame("\e[33mtestName:\e[39m message\n", $output->fetch());
     }
 
     public function testProcessColorError(): void
@@ -32,7 +32,7 @@ final class OutputCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $callback = new OutputCallback($output);
         $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::ERR, 'message');
-        $this->assertSame("\033[31mtestName:\033[39m message\n", $output->fetch());
+        $this->assertSame("\e[31mtestName:\e[39m message\n", $output->fetch());
     }
 
     public function testProcessColorErrorMultiline(): void
@@ -40,7 +40,7 @@ final class OutputCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $callback = new OutputCallback($output);
         $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::ERR, 'message' . PHP_EOL . 'message2');
-        $this->assertSame("\033[31mtestName:\033[39m message\n" . "\033[31mtestName:\033[39m message2\n", $output->fetch());
+        $this->assertSame("\e[31mtestName:\e[39m message\n" . "\e[31mtestName:\e[39m message2\n", $output->fetch());
     }
 
     public function testProcessColorStdVerboseMultiline(): void
@@ -48,7 +48,7 @@ final class OutputCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE, true);
         $callback = new OutputCallback($output);
         $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::OUT, 'message' . PHP_EOL . 'message2');
-        $this->assertSame("\033[33mtestName:\033[39m message\n" . "\033[33mtestName:\033[39m message2\n", $output->fetch());
+        $this->assertSame("\e[33mtestName:\e[39m message\n" . "\e[33mtestName:\e[39m message2\n", $output->fetch());
     }
 
     public function testProcessColorErrQuite(): void
@@ -56,7 +56,7 @@ final class OutputCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_QUIET, true);
         $callback = new OutputCallback($output);
         $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::ERR, 'message');
-        $this->assertSame("\033[31mtestName:\033[39m message\n", $output->fetch());
+        $this->assertSame("\e[31mtestName:\e[39m message\n", $output->fetch());
     }
 
     public function testProcessErr(): void
@@ -81,6 +81,6 @@ final class OutputCallbackTest extends TestCase
         $callback = new OutputCallback($output);
         $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::ERR, 'message');
         $callback->__invoke(Process::fromShellCommandline('sleep 2')->setName('testName2'), Process::OUT, 'message2');
-        $this->assertSame("\033[31mtestName:\033[39m message\n" . "\033[33mtestName2:\033[39m message2\n", $output->fetch());
+        $this->assertSame("\e[31mtestName:\e[39m message\n" . "\e[33mtestName2:\e[39m message2\n", $output->fetch());
     }
 }

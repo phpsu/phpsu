@@ -34,7 +34,7 @@ final class EnvironmentUtility
 
     public function isCommandInstalled(string $command): bool
     {
-        $output = $this->commandExecutor->executeDirectly($command);
+        $output = $this->commandExecutor->runCommand($command);
         if ($output->getExitCode() === 127) {
             return false;
         }
@@ -43,7 +43,7 @@ final class EnvironmentUtility
 
     public function getRsyncVersion(): string
     {
-        $command = $this->commandExecutor->executeDirectly('rsync --version');
+        $command = $this->commandExecutor->runCommand('rsync --version');
         if (empty($command->getOutput()) && $this->isRsyncInstalled()) {
             throw new CommandExecutionException('Result of rsync --version was empty');
         }
@@ -53,7 +53,7 @@ final class EnvironmentUtility
 
     public function getSshVersion(): string
     {
-        $command = $this->commandExecutor->executeDirectly('ssh -V');
+        $command = $this->commandExecutor->runCommand('ssh -V');
         if (empty($command->getOutput()) && $command->getExitCode() !== 0) {
             throw new CommandExecutionException('Result of ssh -V was empty');
         }
@@ -65,7 +65,7 @@ final class EnvironmentUtility
 
     public function getMysqlDumpVersion(): array
     {
-        $output = $this->commandExecutor->executeDirectly('mysqldump -V')->getOutput();
+        $output = $this->commandExecutor->runCommand('mysqldump -V')->getOutput();
         if (empty($output) && $this->isMysqlDumpInstalled()) {
             throw new CommandExecutionException('Result of mysqldump -V was empty');
         }

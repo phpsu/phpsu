@@ -13,6 +13,7 @@ class CommandExecutorTest extends TestCase
 {
     public function testPassthruPassesSuccessfullyThrough(): void
     {
+        $this->markTestSkipped('this test outputs to the real console.');
         $commandExecutor = new CommandExecutor();
         $output = new ConsoleOutput();
         $exitCode = $commandExecutor->passthru('echo', $output);
@@ -21,6 +22,7 @@ class CommandExecutorTest extends TestCase
 
     public function testPassthruPassesUnSuccessfullyThrough(): void
     {
+        $this->markTestSkipped('this test outputs to the real console.');
         $commandExecutor = new CommandExecutor();
         $output = new ConsoleOutput();
         $exitCode = $commandExecutor->passthru('ewj', $output);
@@ -30,6 +32,7 @@ class CommandExecutorTest extends TestCase
 
     public function testExecuteCommandsParallel(): void
     {
+        $this->markTestSkipped('this test has Timing issues');
         $commandExecutor = new CommandExecutor();
         $outputLog = new BufferedOutput();
         $outputStatus = new BufferedOutput();
