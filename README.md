@@ -85,6 +85,11 @@ You can also check, whether any changes you made are affecting your tests immedi
 composer test:watch
 ````
 
+If you see a low `Mutation Score Indicator (MSI)` value, you can show the mutations that are escaping:
+````bash
+composer infection -- -s
+````
+
 ## Security
 
 If you discover any security related issues, please email git@kanti.de instead of using the issue tracker.
