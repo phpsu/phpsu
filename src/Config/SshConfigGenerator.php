@@ -6,19 +6,19 @@ namespace PHPSu\Config;
 final class SshConfigGenerator
 {
     /**
-     * @param string $from
-     * @param string $to
+     * @param string $source
+     * @param string $destination
      * @param SshConnections $sshConnections
      * @return SshConnection[]
      */
-    public function findShortestPath(string $from, string $to, SshConnections $sshConnections): array
+    public function findShortestPath(string $source, string $destination, SshConnections $sshConnections): array
     {
-        $shortestLength = 999999;
-        $shortest = '';
-        $connections = $this->findAllPaths($from, $to, $sshConnections);
-        if (count($connections) > 1) {
-            //TODO warning found multiple Connection Possibilities, Selected one of the Shortest. these are all of them: ...
-        }
+        $shortestLength = PHP_INT_MAX;
+        $shortest = [[]];
+        $connections = $this->findAllPaths($source, $destination, $sshConnections);
+        //TODO: warning found multiple Connection Possibilities, Selected one of the Shortest. these are all of them: ...
+//        if (count($connections) > 1) {
+//        }
         foreach ($connections as $connectionPath) {
             $length = count($connectionPath);
             if ($length < $shortestLength) {
@@ -29,25 +29,25 @@ final class SshConfigGenerator
     }
 
     /**
-     * @param string $from
-     * @param string $to
+     * @param string $source
+     * @param string $destination
      * @param SshConnections $sshConnections
      * @return SshConnection[]
      */
-    public function findAllPaths(string $from, string $to, SshConnections $sshConnections): array
+    public function findAllPaths(string $source, string $destination, SshConnections $sshConnections): array
     {
-        if ($from === $to) {
+        if ($source === $destination) {
             return [[]];
         }
         $result = [];
-        foreach ($sshConnections->getPossibilities($to) as $host => $possibleConnection) {
+        foreach ($sshConnections->getPossibilities($destination) as $host => $possibleConnection) {
             if ($host === '') {
                 return [[(clone $possibleConnection)->setFrom([])]];
             }
-            if ($host === $from) {
+            if ($host === $source) {
                 return [[(clone $possibleConnection)->setFrom([$host])]];
             }
-            $possibleSubConnections = $this->findAllPaths($from, $host, $sshConnections);
+            $possibleSubConnections = $this->findAllPaths($source, $host, $sshConnections);
             foreach ($possibleSubConnections as $possibleSubConnection) {
                 $possibleSubConnection[] = (clone $possibleConnection)->setFrom([$host]);
                 $result[] = $possibleSubConnection;
@@ -63,9 +63,6 @@ final class SshConfigGenerator
             $connectionsUsedForPath = $this->findShortestPath($currentHost, $host, $sshConnections);
             foreach ($connectionsUsedForPath as $sshConnection) {
                 $fromHosts = $sshConnection->getFrom();
-                if (count($fromHosts) > 1) {
-                    throw new \Exception('sshConnection Should only have one From at this point!');
-                }
                 $host = new SshConfigHost();
                 $dsn = $sshConnection->getUrl();
                 $host->User = $dsn->getUser();

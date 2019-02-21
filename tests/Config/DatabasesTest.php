@@ -8,12 +8,10 @@ use PHPUnit\Framework\TestCase;
 
 final class DatabasesTest extends TestCase
 {
-    /**
-     * @expectedException \Exception
-     */
     public function testGetException(): void
     {
         $databases = new Databases();
+        $this->expectExceptionMessage('Database NameNotInDatabases not found');
         $databases->get('NameNotInDatabases');
     }
 }

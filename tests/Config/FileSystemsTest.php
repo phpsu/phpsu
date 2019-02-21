@@ -8,12 +8,10 @@ use PHPUnit\Framework\TestCase;
 
 final class FileSystemsTest extends TestCase
 {
-    /**
-     * @expectedException \Exception
-     */
     public function testGetException(): void
     {
         $fileSystems = new FileSystems();
+        $this->expectExceptionMessage('Filesystem NameNotInDatabases not found');
         $fileSystems->get('NameNotInDatabases');
     }
 }

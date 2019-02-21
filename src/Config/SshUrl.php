@@ -26,7 +26,7 @@ final class SshUrl
         $this->setUser($result['user'] ?? '');
         $this->setPassword($result['pass'] ?? '');
         $this->setHost($result['host'] ?? '');
-        $this->setPort((int)($result['port'] ?? 22));
+        $this->setPort($result['port'] ?? 22);
     }
 
     public function getUser(): string

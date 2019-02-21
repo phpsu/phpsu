@@ -25,12 +25,16 @@ final class SshConnections
         }
     }
 
-    private function addSingleConnection(string $from, SshConnection $sshConnection): void
+    private function addSingleConnection(string $source, SshConnection $sshConnection): void
     {
-        if (isset($this->connections[$sshConnection->getHost()][$from])) {
-            throw new \Exception(sprintf('suspicious Connection Model found: %s->%s has more than one definition', $from, $sshConnection->getHost()));
+        $destination = $sshConnection->getHost();
+        if ($source === $destination) {
+            throw new \Exception(sprintf('the source and destination Host can not be the same: %s', $source));
         }
-        $this->connections[$sshConnection->getHost()][$from] = $sshConnection;
+        if (isset($this->connections[$destination][$source])) {
+            throw new \Exception(sprintf('suspicious Connection Model found: %s->%s has more than one definition', $source, $destination));
+        }
+        $this->connections[$destination][$source] = $sshConnection;
     }
 
     /**

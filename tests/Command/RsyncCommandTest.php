@@ -33,7 +33,7 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/' 'hostc:/var/www/testing/'", $generated);
     }
 
-    public function testGenerate(): void
+    public function testRsyncGenerate(): void
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -153,5 +153,27 @@ final class RsyncCommandTest extends TestCase
         $fileSystem = (new FileSystem())->setName('app')->setPath('var/storage');
         $generated = RsyncCommand::fromAppInstances($instanceA, $instanceB, $fileSystem, $fileSystem, 'local', false, OutputInterface::VERBOSITY_DEBUG)->setSshConfig($sshConfig)->generate();
         $this->assertSame("rsync -vvv -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
+    }
+
+    public function testRsyncGetter(): void
+    {
+        $sshConfig = new SshConfig();
+        $sshConfig->setFile(new \SplTempFileObject());
+        $rsync = new RsyncCommand();
+        $rsync->setName('rsyncName')
+            ->setSshConfig($sshConfig)
+            ->setOptions('-r')
+            ->setSourceHost('hosta')
+            ->setSourcePath('~/test/*')
+            ->setDestinationHost('hostc')
+            ->setToPath('./__test/');
+
+        $this->assertSame('rsyncName', $rsync->getName());
+        $this->assertSame($sshConfig, $rsync->getSshConfig());
+        $this->assertSame('-r', $rsync->getOptions());
+        $this->assertSame('hosta', $rsync->getSourceHost());
+        $this->assertSame('~/test/*', $rsync->getSourcePath());
+        $this->assertSame('hostc', $rsync->getDestinationHost());
+        $this->assertSame('./__test/', $rsync->getToPath());
     }
 }

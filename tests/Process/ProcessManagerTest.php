@@ -24,16 +24,28 @@ final class ProcessManagerTest extends TestCase
         $this->assertSame('Testing List2' . PHP_EOL, $pList2->getOutput());
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testRunWithError(): void
     {
-        (new ProcessManager())
-            ->addProcess($pError = Process::fromShellCommandline('error')->setName('error' . md5(random_bytes(100))))
+        $name = 'error' . md5(random_bytes(100));
+        $processManager = (new ProcessManager())
+            ->addProcess(Process::fromShellCommandline('error')->setName($name))
             ->start()
-            ->wait()
-            ->validateProcesses();
+            ->wait();
+        $this->expectExceptionMessage('Error in Process ' . $name);
+        $processManager->validateProcesses();
+    }
+
+    public function testRunWithMultipleErrors(): void
+    {
+        $name1 = 'error' . md5(random_bytes(100));
+        $name2 = 'error' . md5(random_bytes(100));
+        $processManager = (new ProcessManager())
+            ->addProcess(Process::fromShellCommandline('error')->setName($name1))
+            ->addProcess(Process::fromShellCommandline('error2')->setName($name2))
+            ->start()
+            ->wait();
+        $this->expectExceptionMessage('Error in Processes ' . $name1 . ', ' . $name2);
+        $processManager->validateProcesses();
     }
 
     public function testRunGetErrorOutput(): void
