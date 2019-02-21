@@ -6,22 +6,27 @@ namespace PHPSu\Tests\Tools;
 
 use PHPSu\Tools\ConsolePolyfill\ConsoleSectionOutput;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Tester\TesterTrait;
+use Symfony\Component\Console\Output\StreamOutput;
 
 class ConsoleSectionOutputPolyfillTest extends TestCase
 {
-    use TesterTrait;
-
     public function testConsoleSectionOutputPolyfill(): void
     {
         $sectionOutputs = [];
-        $this->initOutput(['decorated' => true]);
-        $this->output->writeln('output');
-        $section = new ConsoleSectionOutput($this->output->getStream(), $sectionOutputs, $this->output->getVerbosity(), $this->output->isDecorated(), $this->output->getFormatter());
+        $output = new StreamOutput(fopen('php://memory', 'w', false));
+        $output->setDecorated(true);
+        $output->writeln('output');
+        $section = new ConsoleSectionOutput($output->getStream(), $sectionOutputs, $output->getVerbosity(), $output->isDecorated(), $output->getFormatter());
         $section->writeln('sectionwriteln');
-        $this->assertContains('output', $this->getDisplay());
-        $this->assertContains('sectionwriteln', $this->getDisplay());
+        $this->assertContains('output', $this->getDisplay($output));
+        $this->assertContains('sectionwriteln', $this->getDisplay($output));
         $section->overwrite('hello');
-        $this->assertEquals("output\nsectionwriteln\n\e[1A\e[0Jhello\n", $this->getDisplay());
+        $this->assertEquals("output\nsectionwriteln\n\e[1A\e[0Jhello\n", $this->getDisplay($output));
+    }
+
+    private function getDisplay(StreamOutput $output)
+    {
+        rewind($output->getStream());
+        return stream_get_contents($output->getStream());
     }
 }

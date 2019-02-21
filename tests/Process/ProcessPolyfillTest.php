@@ -27,22 +27,35 @@ class ProcessPolyfillTest extends TestCase
         $this->assertNotEmpty($result->getErrorOutput(), 'Executor error output was correctly not empty');
     }
 
-    public function testNewProcessForDifferentVersions(): void
+    public function testNewProcessSymfonyOlder3dot4(): void
     {
-        $symfonyVersion = (new EnvironmentUtility())->getSymfonyProcessVersion();
-        if (version_compare($symfonyVersion, '3.4.0', '<')) {
+        if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '3.4.0', '<')) {
             $process = new Process('echo');
             $this->assertInstanceOf(Process::class, $process, 'Successfully created Process');
             $this->expectException(CommandExecutionException::class);
+            $this->expectExceptionMessage('Support for arrays as commandline-argument is not supported in symfony < 3.4.0');
             new Process([]);
         }
-        if (version_compare($symfonyVersion, '3.4.0', '>=')) {
+        $this->markTestSkipped('Installed version is not older than 3.4.0');
+    }
+
+    public function testNewProcessSymfonyNewer3dot4(): void
+    {
+        if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '3.4.0', '>=')) {
             $process = new Process([]);
             $this->assertInstanceOf(Process::class, $process, 'Successfully created Process');
+            return;
         }
-        if (version_compare($symfonyVersion, '4.2.0', '>=')) {
+        $this->markTestSkipped('Installed version is not newer than 3.4.0');
+    }
+
+    public function testNewProcessSymfonyNewer4dot2(): void
+    {
+        if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.2.0', '>=')) {
             $this->expectException(CommandExecutionException::class);
+            $this->expectExceptionMessage('Support for strings as commandline-argument is not supported in symfony >= 4.2.0');
             new Process('echo');
         }
+        $this->markTestSkipped('Installed version is not newer than 4.2.0');
     }
 }

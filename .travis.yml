@@ -1,9 +1,9 @@
 language: php
 
 php:
-  - 7.1
-  - 7.2
-  - 7.3
+  - "7.1"
+  - "7.2"
+  - "7.3"
 
 cache:
   directories:
@@ -11,10 +11,11 @@ cache:
 
 env:
   matrix:
-    - SYMFOMY_UPDATE="composer update symfony/* --prefer-lowest"
-    - SYMFONY_UPDATE=""
+    - COMPOSWER_INSTALL="composer require symfony/process:3.2.* symfony/console:3.2.*"
+    - COMPOSWER_INSTALL="composer require symfony/process:3.4.* symfony/console:3.4.*"
+    - COMPOSWER_INSTALL="composer require symfony/process:4.2.* symfony/console:4.2.*"
 
-install: composer install --no-suggest && $SYMFONY_UPDATE
+install: $COMPOSWER_INSTALL
 
 script: vendor/bin/grumphp run && composer test
 
