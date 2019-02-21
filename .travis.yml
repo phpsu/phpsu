@@ -11,11 +11,11 @@ cache:
 
 env:
   matrix:
-    - COMPOSWER_INSTALL="composer require symfony/process:3.2.* symfony/console:3.2.*"
-    - COMPOSWER_INSTALL="composer require symfony/process:3.4.* symfony/console:3.4.*"
-    - COMPOSWER_INSTALL="composer require symfony/process:4.2.* symfony/console:4.2.*"
+    - SYMFONY_VERSION="3.2.*"
+    - SYMFONY_VERSION="3.4.*"
+    - SYMFONY_VERSION="4.2.*"
 
-install: $COMPOSWER_INSTALL
+install: composer require symfony/process:$SYMFONY_VERSION symfony/console:$SYMFONY_VERSION
 
 script: vendor/bin/grumphp run && composer test
 
