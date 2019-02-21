@@ -40,9 +40,9 @@ final class Controller implements ControllerInterface
 
         $sectionTop = $output;
         $sectionBottom = $output;
-        $sectionOutput = [];
 
         if ($output instanceof ConsoleOutputInterface) {
+            $sectionOutput = [];
             $sectionTop = $this->getNewSection($sectionOutput, $output);
             $sectionMiddle = $this->getNewSection($sectionOutput, $output);
             $sectionMiddle->writeln(str_repeat('-', 20), OutputInterface::OUTPUT_RAW);
@@ -57,7 +57,7 @@ final class Controller implements ControllerInterface
      * @param OutputInterface $output
      * @return \Symfony\Component\Console\Output\ConsoleSectionOutput|Tools\ConsolePolyfill\ConsoleSectionOutput
      */
-    private function getNewSection(array &$sectionOutputs, OutputInterface $output)
+    private function getNewSection(array &$sectionOutputs, ConsoleOutputInterface $output)
     {
         if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', '>=')) {
             return $output->section();

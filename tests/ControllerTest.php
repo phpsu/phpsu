@@ -212,7 +212,7 @@ final class ControllerTest extends TestCase
 
     public function testSyncOutputHasSectionsWithEmptyConfigAndConsoleOutput(): void
     {
-        $this->markTestSkipped('this test outputs to the real console. This hangs phpunit');
+        $this->markTestSkipped('this test outputs to the real console.');
         $config = new GlobalConfig();
         $config->addAppInstance('production', 'localhost', __DIR__);
         $config->addAppInstance('local');
@@ -222,6 +222,7 @@ final class ControllerTest extends TestCase
         $syncOptions->setNoFiles(true);
         $output = new ConsoleOutput();
         $controller->sync($output, $config, $syncOptions);
+        rewind($output->getStream());
         $this->assertEquals('', stream_get_contents($output->getStream()), 'Asserting result empty since config is empty as well');
     }
 
