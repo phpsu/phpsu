@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Tools;
 
-use PHPSu\Tools\ConsolePolyfill\ConsoleSectionOutput;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\StreamOutput;
 
 class ConsoleSectionOutputPolyfillTest extends TestCase

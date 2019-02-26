@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Process;
 
 use PHPSu\Process\CommandExecutor;
+use PHPSu\Tests\TestHelper\BufferedConsoleOutput;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -13,26 +14,21 @@ class CommandExecutorTest extends TestCase
 {
     public function testPassthruPassesSuccessfullyThrough(): void
     {
-        $this->markTestSkipped('this test outputs to the real console.');
         $commandExecutor = new CommandExecutor();
-        $output = new ConsoleOutput();
-        $exitCode = $commandExecutor->passthru('echo', $output);
+        $exitCode = $commandExecutor->passthru('echo "foo" >> /dev/null');
         $this->assertEquals(0, $exitCode);
     }
 
-    public function testPassthruPassesUnSuccessfullyThrough(): void
+    public function testPassthruPassesUnsuccessfullyThrough(): void
     {
-        $this->markTestSkipped('this test outputs to the real console.');
         $commandExecutor = new CommandExecutor();
-        $output = new ConsoleOutput();
-        $exitCode = $commandExecutor->passthru('ewj', $output);
+        $exitCode = $commandExecutor->passthru('ewj >> /dev/null');
         $this->assertNotEquals(0, $exitCode);
         $this->assertEquals(127, $exitCode, 'command shouldn\'t be installed');
     }
 
     public function testExecuteCommandsParallel(): void
     {
-        $this->markTestSkipped('this test has Timing issues');
         $commandExecutor = new CommandExecutor();
         $outputLog = new BufferedOutput();
         $outputStatus = new BufferedOutput();

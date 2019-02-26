@@ -11,16 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
-
-if (!class_exists('ConsoleSectionOutput', false)) {
-    if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', '>=')) {
-        \class_alias(\Symfony\Component\Console\Output\ConsoleSectionOutput::class, 'ConsoleSectionOutput');
-    } else {
-        \class_alias(\PHPSu\Tools\ConsolePolyfill\ConsoleSectionOutput::class, 'ConsoleSectionOutput');
-    }
-}
-
-use \ConsoleSectionOutput;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
 final class StateChangeCallbackTest extends TestCase
 {

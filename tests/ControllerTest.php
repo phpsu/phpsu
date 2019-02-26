@@ -7,9 +7,9 @@ use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
 use PHPSu\Options\SshOptions;
 use PHPSu\Options\SyncOptions;
+use PHPSu\Tests\TestHelper\BufferedConsoleOutput;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\ConsoleOutput;
 
 final class ControllerTest extends TestCase
 {
@@ -212,7 +212,6 @@ final class ControllerTest extends TestCase
 
     public function testSyncOutputHasSectionsWithEmptyConfigAndConsoleOutput(): void
     {
-        $this->markTestSkipped('this test outputs to the real console.');
         $config = new GlobalConfig();
         $config->addAppInstance('production', 'localhost', __DIR__);
         $config->addAppInstance('local');
@@ -220,10 +219,10 @@ final class ControllerTest extends TestCase
         $syncOptions = new SyncOptions('production');
         $syncOptions->setNoDatabases(true);
         $syncOptions->setNoFiles(true);
-        $output = new ConsoleOutput();
+        $output = new BufferedConsoleOutput();
         $controller->sync($output, $config, $syncOptions);
         rewind($output->getStream());
-        $this->assertEquals('', stream_get_contents($output->getStream()), 'Asserting result empty since config is empty as well');
+        $this->assertEquals("--------------------\n", stream_get_contents($output->getStream()), 'Asserting result empty since config is empty as well');
     }
 
     public function testSyncOutputHasSectionsWithEmptyConfigAndBufferedOutput(): void

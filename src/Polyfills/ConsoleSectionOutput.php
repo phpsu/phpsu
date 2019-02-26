@@ -1,12 +1,10 @@
 <?php
 declare(strict_types=1);
 
-
-namespace PHPSu\Tools\ConsolePolyfill;
+namespace Symfony\Component\Console\Output;
 
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Helper\Helper;
-use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Terminal;
 
 class ConsoleSectionOutput extends StreamOutput
@@ -30,6 +28,7 @@ class ConsoleSectionOutput extends StreamOutput
         $this->sections = &$sections;
         $this->terminal = new Terminal();
     }
+
     /**
      * Clears previous output for this section.
      *
@@ -49,6 +48,7 @@ class ConsoleSectionOutput extends StreamOutput
         $this->lines -= $lines;
         parent::doWrite($this->popStreamContentUntilCurrentSection($lines), false);
     }
+
     /**
      * Overwrites the previous output with a new message.
      *
@@ -59,14 +59,15 @@ class ConsoleSectionOutput extends StreamOutput
         $this->clear();
         $this->writeln($message);
     }
+
     public function getContent(): string
     {
         return implode('', $this->content);
     }
 
     /**
-     * @internal
      * @param string $input
+     * @internal
      */
     public function addContent(string $input): void
     {
@@ -76,6 +77,7 @@ class ConsoleSectionOutput extends StreamOutput
             $this->content[] = PHP_EOL;
         }
     }
+
     /**
      * {@inheritdoc}
      */
@@ -115,6 +117,7 @@ class ConsoleSectionOutput extends StreamOutput
         }
         return implode('', array_reverse($erasedContent));
     }
+
     private function getDisplayLength(string $text): string
     {
         return (string)Helper::strlenWithoutDecoration($this->getFormatter(), str_replace("\t", '        ', $text));
