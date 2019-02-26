@@ -22,7 +22,7 @@ class CommandExecutorTest extends TestCase
     public function testPassthruPassesUnsuccessfullyThrough(): void
     {
         $commandExecutor = new CommandExecutor();
-        $exitCode = $commandExecutor->passthru('ewj >> /dev/null');
+        $exitCode = $commandExecutor->passthru('ewj 2> /dev/null');
         $this->assertNotEquals(0, $exitCode);
         $this->assertEquals(127, $exitCode, 'command shouldn\'t be installed');
     }
