@@ -209,8 +209,8 @@ SSH_CONFIG;
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new \SplTempFileObject());
 
-        $this->expectExceptionMessage('Host clearlyAnError not found in SshConnections');
-        $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('staging')->setCurrentHost('clearlyAnError'));
+        $this->expectExceptionMessage('Host noHost not found in SshConnections');
+        $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('staging')->setCurrentHost('noHost'));
     }
 
     public function testStagingToProductionFromStaging(): void

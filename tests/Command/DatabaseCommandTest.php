@@ -84,7 +84,7 @@ final class DatabaseCommandTest extends TestCase
         $this->assertEquals("ssh -vvv -F 'php://temp' 'hostc' 'mysqldump -vvv --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root' 'sequelmovie2'", $database->generate());
     }
 
-    public function testDatabaseGetter(): void
+    public function testDatabaseCommandGetter(): void
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());

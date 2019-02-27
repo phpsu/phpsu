@@ -98,7 +98,7 @@ final class SshUrlTest extends TestCase
         $this->assertSame('ssh://user@192.168.0.1', $dsn->__toString());
     }
 
-    public function testSetter(): void
+    public function testSshUrlGetter(): void
     {
         $dsn = new SshUrl('user@192.168.0.1');
         $this->assertSame('user', $dsn->getUser());
