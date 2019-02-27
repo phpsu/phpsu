@@ -73,7 +73,7 @@ phpsu sync p --no-fs
 phpsu sync production testing --all
 ````
 
-### PHP API Examples
+<!--### PHP API Examples
 
 ````php
 <?php
@@ -84,7 +84,7 @@ $configurationLoader = new \PHPSu\Config\ConfigurationLoader();
 $syncOptions = new \PHPSu\SyncOptions('production');
 $phpsu = new \PHPSu\Controller();
 $phpsu->sync($log, $configurationLoader->getConfig(), $syncOptions);
-````
+````-->
 
 ## Contributing
 
