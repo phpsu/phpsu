@@ -22,7 +22,7 @@ final class ApplicationHelper
 
     private function getPhpSuVersionFromGitFolder(): ?string
     {
-        if (!$this->isGitFolderAvailable()) {
+        if (!file_exists(Controller::PHPSU_ROOT_PATH . '/.git/')) {
             return null;
         }
         $file = file_get_contents(Controller::PHPSU_ROOT_PATH . '/.git/HEAD');
@@ -30,10 +30,5 @@ final class ApplicationHelper
             throw new EnvironmentException('The git folder is available but the HEAD file does not seem to be readable');
         }
         return str_replace('ref: refs/heads/', '', $file);
-    }
-
-    private function isGitFolderAvailable(): bool
-    {
-        return file_exists(Controller::PHPSU_ROOT_PATH . '/.git/');
     }
 }

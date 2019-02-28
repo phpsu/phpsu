@@ -29,11 +29,6 @@ class InternalHelperTest extends TestCase
         }
     }
 
-    public function testIsGitFolderAvailable(): void
-    {
-        $this->assertSame(file_exists(self::GIT_PATH), $this->callPrivateMethod('isGitFolderAvailable'));
-    }
-
     private function callPrivateMethod(string $method)
     {
         $object = new ApplicationHelper();

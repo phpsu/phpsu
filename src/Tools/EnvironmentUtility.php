@@ -96,8 +96,10 @@ final class EnvironmentUtility
     private function spotVendorPath(): string
     {
         if (file_exists(Controller::PHPSU_ROOT_PATH . '/../../autoload.php')) {
+            // installed via composer require
             return Controller::PHPSU_ROOT_PATH . '/../../';
         }
+        // in dev installation
         return Controller::PHPSU_ROOT_PATH . '/vendor/';
     }
 

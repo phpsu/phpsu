@@ -246,7 +246,7 @@ final class ControllerTest extends TestCase
         $config = new GlobalConfig();
         $config->addAppInstance('production', '127.0.0.1', __DIR__);
         $config->addAppInstance('local');
-        $sshOptions = new SshOptions('local');
+        $sshOptions = (new SshOptions('typo'))->setDestination('local');
         $output = new BufferedOutput();
         $this->expectExceptionMessage('the found host and the current Host are the same');
         $controller->ssh($output, $config, $sshOptions);
