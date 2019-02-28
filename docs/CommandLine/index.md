@@ -1,4 +1,4 @@
-#The Command Line of Phpsu
+# The Command Line of Phpsu
 
 - [The Sync Command](Sync.md#phpsu-sync)
   - [The Arguments source and destination](Sync.md#the-arguments-source-and-destination)
