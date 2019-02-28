@@ -1,10 +1,10 @@
-#The Command Line of Phpsu
+# The Command Line of Phpsu
 
 - [The Sync Command](Sync.md#phpsu-sync)
   - [The Arguments source and destination](Sync.md#the-arguments-source-and-destination)
   - [The Option --dry-run](Sync.md#the-option---dry-run)
   - [The Option --all](Sync.md#the-option---all)
-  - [The Option --no-file](Sync.md#the-option---no-file)
+  - [The Option --no-fs](Sync.md#the-option---no-fs)
   - [The Option --no-db](Sync.md#the-option---no-db)
   - [The Option --verbose](Sync.md#the-option---verbose)
   - [The Option --from](Sync.md#the-option---from)

@@ -75,7 +75,7 @@ final class CommandGeneratorTest extends TestCase
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/' './fileadmin/'",
             'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/' './uploads/'",
-            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\''' | mysql -h'host' -P3307 -u'user' -p'pw' 'database'",
+            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `database`;USE `database`;' && cat) | mysql -h'host' -P3307 -u'user' -p'pw'",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -104,7 +104,7 @@ SSH_CONFIG;
         $this->assertSame([
             'filesystem:fileadmin' => "ssh -F 'php://temp' 'serverEu' 'rsync -az '\''/var/www/production/fileadmin2/'\'' '\''/var/www/testing/fileadmin/'\'''",
             'filesystem:uploads' => "ssh -F 'php://temp' 'serverEu' 'rsync -az '\''/var/www/production/uploads/'\'' '\''/var/www/testing/uploads/'\'''",
-            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\'' | mysql -h'\''host'\'' -P3307 -u'\''user'\'' -p'\''pw'\'' '\''database'\'''",
+            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `database`;USE `database`;'\'' && cat) | mysql -h'\''host'\'' -P3307 -u'\''user'\'' -p'\''pw'\'''",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -133,7 +133,7 @@ SSH_CONFIG;
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -az './fileadmin/' '../local2/fileadmin/'",
             'filesystem:uploads' => "rsync -az './uploads/' '../local2/uploads/'",
-            'database:app' => "mysqldump --opt --skip-comments -h'host' -P3307 -u'user' -p'pw' 'database' | mysql -h'host' -P3307 -u'user' -p'pw' 'database'",
+            'database:app' => "mysqldump --opt --skip-comments -h'host' -P3307 -u'user' -p'pw' 'database' | (echo 'CREATE DATABASE IF NOT EXISTS `database`;USE `database`;' && cat) | mysql -h'host' -P3307 -u'user' -p'pw'",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -162,7 +162,7 @@ SSH_CONFIG;
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/' 'stagingServer:/var/www/staging/fileadmin/'",
             'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/' 'stagingServer:/var/www/staging/uploads/'",
-            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\''' | ssh -F 'php://temp' 'stagingServer' 'mysql -h'\''host'\'' -P3307 -u'\''user'\'' -p'\''pw'\'' '\''database'\'''",
+            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `database`;USE `database`;' && cat) | ssh -F 'php://temp' 'stagingServer' 'mysql -h'\''host'\'' -P3307 -u'\''user'\'' -p'\''pw'\'''",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -191,7 +191,7 @@ SSH_CONFIG;
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/' '/var/www/staging/fileadmin/'",
             'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/' '/var/www/staging/uploads/'",
-            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\''' | mysql -h'host' -P3307 -u'user' -p'pw' 'database'",
+            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `database`;USE `database`;' && cat) | mysql -h'host' -P3307 -u'user' -p'pw'",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -216,7 +216,7 @@ SSH_CONFIG;
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' '/var/www/staging/fileadmin/' 'serverEu:/var/www/production/fileadmin2/'",
             'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' '/var/www/staging/uploads/' 'serverEu:/var/www/production/uploads/'",
-            'database:app' => "mysqldump --opt --skip-comments -h'host' -P3307 -u'user' -p'pw' 'database' | ssh -F 'php://temp' 'serverEu' 'mysql -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'' '\''appDatabase'\'''",
+            'database:app' => "mysqldump --opt --skip-comments -h'host' -P3307 -u'user' -p'pw' 'database' | (echo 'CREATE DATABASE IF NOT EXISTS `appDatabase`;USE `appDatabase`;' && cat) | ssh -F 'php://temp' 'serverEu' 'mysql -h'\''appHost'\'' -u'\''root'\'' -p'\''root'\'''",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
