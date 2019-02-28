@@ -19,7 +19,7 @@ class InfoCliCommandTest extends TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $result =  $commandTester->getDisplay(true);
-        foreach (['rsync', 'ssh', 'mysqldump', 'mysql-client', 'locally', 'installed'] as $string) {
+        foreach (['rsync', 'ssh', 'mysqldump', 'mysql-distribution', 'locally', 'installed'] as $string) {
             $this->assertContains($string, $result, '', true);
         }
     }

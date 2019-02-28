@@ -34,7 +34,7 @@ class InfoCliCommand extends AbstractCliCommand
             ['Dependency', 'Installed', 'Version'],
             [
                 ['rsync', $environmentUtility->isRsyncInstalled() ? '✔' : '✘', $environmentUtility->getRsyncVersion()],
-                ['mysql-client', $environmentUtility->isMysqlDumpInstalled() ? '✔' : '✘', $environmentUtility->getMysqlDumpVersion()['mysqlVersion']], // name mysql-client is misleading. The version gettet is the Server Version for that client
+                ['mysql-distribution', $environmentUtility->isMysqlDumpInstalled() ? '✔' : '✘', $environmentUtility->getMysqlDumpVersion()['mysqlVersion']],
                 ['mysqldump', $environmentUtility->isMysqlDumpInstalled() ? '✔' : '✘', $environmentUtility->getMysqlDumpVersion()['dumpVersion']],
                 ['ssh', $environmentUtility->isSshInstalled() ? '✔' : '✘', $environmentUtility->getSshVersion()]
             ]
