@@ -3,13 +3,17 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\TestHelper;
 
-use PHPSu\Tools\EnvironmentUtility;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
+/**
+ * This Class is mainly copied from \Symfony\Component\Console\Output\ConsoleSectionOutput
+ * It is used for Testing only.
+ * {@inheritdoc}
+ */
 final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputInterface
 {
     private $stderr;
@@ -81,45 +85,6 @@ final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputI
     public function setErrorOutput(OutputInterface $error)
     {
         $this->stderr = $error;
-    }
-
-    /**
-     * Returns true if current environment supports writing console output to
-     * STDOUT.
-     *
-     * @return bool
-     */
-    protected function hasStdoutSupport()
-    {
-        return false === $this->isRunningOS400();
-    }
-
-    /**
-     * Returns true if current environment supports writing console output to
-     * STDERR.
-     *
-     * @return bool
-     */
-    protected function hasStderrSupport()
-    {
-        return false === $this->isRunningOS400();
-    }
-
-    /**
-     * Checks if current executing environment is IBM iSeries (OS400), which
-     * doesn't properly convert character-encodings between ASCII to EBCDIC.
-     *
-     * @return bool
-     */
-    private function isRunningOS400()
-    {
-        $checks = [
-            \function_exists('php_uname') ? php_uname('s') : '',
-            getenv('OSTYPE'),
-            PHP_OS,
-        ];
-
-        return false !== stripos(implode(';', $checks), 'OS400');
     }
 
     /**

@@ -40,7 +40,9 @@
     "psr-4": {
       "PHPSu\\": "src"
     },
-    "files": ["src/polyfill.php"]
+    "files": [
+      "src/Polyfills/auto-polyfill.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": {
