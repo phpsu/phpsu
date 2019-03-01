@@ -9,7 +9,7 @@ use PHPSu\Config\Database;
 use PHPSu\Config\FileSystem;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConnection;
-use PHPSu\SyncOptions;
+use PHPSu\Options\SyncOptions;
 use PHPUnit\Framework\TestCase;
 
 final class CommandGeneratorTest extends TestCase

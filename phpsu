@@ -6,6 +6,7 @@ if (version_compare('7.1.0', PHP_VERSION, '>')) {
 }
 
 call_user_func(function () {
+
     $possibleAutoloadFiles = [
         // php ./vendor/bin/phpsu
         __DIR__ . '/../autoload.php',
@@ -17,19 +18,20 @@ call_user_func(function () {
         __DIR__ . '/../../autoload.php',
     ];
 
-    $firstFileExisting = null;
+    $firstVendorAutoloadFile = null;
 
     foreach ($possibleAutoloadFiles as $file) {
         if (file_exists($file)) {
-            $firstFileExisting = $file;
+            $firstVendorAutoloadFile = $file;
             break;
         }
     }
 
-    if (!$firstFileExisting) {
+    if (!$firstVendorAutoloadFile) {
         fwrite(STDERR, 'phpsu could not find any autoload file' . PHP_EOL);
         die();
     }
-    require $firstFileExisting;
-    \PHPSu\Cli\PhpsuApplication::command();
+
+    require $firstVendorAutoloadFile;
+    \PHPSu\Cli\PhpsuApplication::createApplication()->run();
 });

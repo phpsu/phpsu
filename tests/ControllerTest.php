@@ -5,8 +5,9 @@ namespace PHPSu\Tests;
 
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
-use PHPSu\SshOptions;
-use PHPSu\SyncOptions;
+use PHPSu\Options\SshOptions;
+use PHPSu\Options\SyncOptions;
+use PHPSu\Tests\TestHelper\BufferedConsoleOutput;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -207,5 +208,47 @@ final class ControllerTest extends TestCase
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
+    }
+
+    public function testSyncOutputHasSectionsWithEmptyConfigAndConsoleOutput(): void
+    {
+        $config = new GlobalConfig();
+        $config->addAppInstance('production', 'localhost', __DIR__);
+        $config->addAppInstance('local');
+        $controller = new Controller();
+        $syncOptions = new SyncOptions('production');
+        $syncOptions->setNoDatabases(true);
+        $syncOptions->setNoFiles(true);
+        $output = new BufferedConsoleOutput();
+        $controller->sync($output, $config, $syncOptions);
+        rewind($output->getStream());
+        $this->assertEquals("--------------------\n", stream_get_contents($output->getStream()), 'Asserting result empty since config is empty as well');
+    }
+
+    public function testSyncOutputHasSectionsWithEmptyConfigAndBufferedOutput(): void
+    {
+        $config = new GlobalConfig();
+        $config->addAppInstance('production', 'localhost', __DIR__);
+        $config->addAppInstance('local');
+        $controller = new Controller();
+        $syncOptions = new SyncOptions('local');
+        $syncOptions->setNoDatabases(true);
+        $syncOptions->setNoFiles(true);
+        $syncOptions->setDestination('production');
+        $output = new BufferedOutput();
+        $controller->sync($output, $config, $syncOptions);
+        $this->assertEquals('', $output->fetch(), 'Excepting sync to do nothing');
+    }
+
+    public function testSshOutputPassthruExecution(): void
+    {
+        $controller = new Controller();
+        $config = new GlobalConfig();
+        $config->addAppInstance('production', '127.0.0.1', __DIR__);
+        $config->addAppInstance('local');
+        $sshOptions = (new SshOptions('typo'))->setDestination('local');
+        $output = new BufferedOutput();
+        $this->expectExceptionMessage('the found host and the current Host are the same');
+        $controller->ssh($output, $config, $sshOptions);
     }
 }

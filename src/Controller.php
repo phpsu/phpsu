@@ -5,12 +5,17 @@ namespace PHPSu;
 
 use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\GlobalConfig;
+use PHPSu\Options\SshOptions;
+use PHPSu\Options\SyncOptions;
 use PHPSu\Process\CommandExecutor;
+use PHPSu\Tools\EnvironmentUtility;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class Controller implements ControllerInterface
 {
+    public const PHPSU_ROOT_PATH = __DIR__ . '/../';
 
     public function ssh(OutputInterface $output, GlobalConfig $config, SshOptions $options): int
     {
@@ -19,7 +24,7 @@ final class Controller implements ControllerInterface
             $output->writeln($sshCommand);
             return 0;
         }
-        return (new CommandExecutor())->passthru($sshCommand, $output);
+        return (new CommandExecutor())->passthru($sshCommand);
     }
 
     public function sync(OutputInterface $output, GlobalConfig $config, SyncOptions $options): void
@@ -34,15 +39,30 @@ final class Controller implements ControllerInterface
             return;
         }
 
+        $sectionTop = $output;
+        $sectionBottom = $output;
+
         if ($output instanceof ConsoleOutputInterface) {
-            $sectionTop = $output->section();
-            $sectionMiddle = $output->section();
+            $sectionOutput = [];
+            $sectionTop = $this->getNewSection($sectionOutput, $output);
+            $sectionMiddle = $this->getNewSection($sectionOutput, $output);
             $sectionMiddle->writeln(str_repeat('-', 20), OutputInterface::OUTPUT_RAW);
-            $sectionBottom = $output->section();
-        } else {
-            $sectionTop = $output;
-            $sectionBottom = $output;
+            $sectionBottom = $this->getNewSection($sectionOutput, $output);
         }
         (new CommandExecutor())->executeParallel($commands, $sectionTop, $sectionBottom);
+    }
+
+    /**
+     * @param array $sectionOutputs
+     * @param OutputInterface $output
+     * @return \Symfony\Component\Console\Output\ConsoleSectionOutput
+     *@deprecated the usage of symfony 3.x is discouraged. With the next version we will remove support
+     */
+    private function getNewSection(array &$sectionOutputs, ConsoleOutputInterface $output): ConsoleSectionOutput
+    {
+        if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', '>=')) {
+            return $output->section();
+        }
+        return new ConsoleSectionOutput($output->getStream(), $sectionOutputs, $output->getVerbosity(), $output->isDecorated(), $output->getFormatter());
     }
 }

@@ -78,15 +78,15 @@ final class ProcessManager
         do {
             $isAProcessRunning = false;
             foreach ($this->processes as $processId => $process) {
+                if ($process->isRunning()) {
+                    $isAProcessRunning = true;
+                }
                 $newState = $process->getState();
                 if ($this->processStates[$processId] !== $newState) {
                     $this->processStates[$processId] = $newState;
                     $this->notifyStateChangeCallbacks($processId, $process, $this->processStates[$processId], $this);
                 }
                 $this->notifyTickCallbacks($this);
-                if ($process->isRunning()) {
-                    $isAProcessRunning = true;
-                }
             }
             // Sleep starting with 100ns for very fast Processes.
             // Going up in 100ns steps, until 100ms steps.

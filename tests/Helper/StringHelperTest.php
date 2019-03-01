@@ -5,6 +5,7 @@ namespace PHPSu\Tests\Helper;
 
 use PHPSu\Helper\StringHelper;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class StringHelperTest extends TestCase
 {
@@ -35,5 +36,12 @@ class StringHelperTest extends TestCase
         $this->assertSame('local', StringHelper::findStringInArray('l', ['production', 'local']), 'different letter');
         $this->assertSame('', StringHelper::findStringInArray('l', ['london', 'local']), 'if inconclusive');
         $this->assertSame('', StringHelper::findStringInArray('', ['london', 'local']), 'empty input');
+    }
+
+    public function testUndefinedVerbosityException(): void
+    {
+        $verbosity = 9999;
+        $this->expectExceptionMessage("Verbosity $verbosity is not defined");
+        StringHelper::optionStringForVerbosity($verbosity);
     }
 }

@@ -185,9 +185,7 @@ final class DatabaseCommand implements CommandInterface
 
         $dumpCmd = 'mysqldump ' . StringHelper::optionStringForVerbosity($this->getVerbosity()) . '--opt --skip-comments ' . $this->generateCliParameters($from, false) . $this->excludeParts($from['path']);
         $importCmd = 'mysql ' . $this->generateCliParameters($to, true);
-        $escapedTargetDatabase = '`' . str_replace('`', '``', $to['path']) . '`';
-        $intermediateSql = sprintf('CREATE DATABASE IF NOT EXISTS %s;USE %s;', $escapedTargetDatabase, $escapedTargetDatabase);
-        $combinationPipe = ' | (echo ' . escapeshellarg($intermediateSql) . ' && cat) | ';
+        $combinationPipe = $this->getCombinationPipe($to['path']);
         if ($hostsDifferentiate) {
             if ($this->getFromHost()) {
                 $sshCommand = new SshCommand();
@@ -261,5 +259,13 @@ final class DatabaseCommand implements CommandInterface
             return ' ' . implode(' ', $excludeOptions);
         }
         return '';
+    }
+
+    private function getCombinationPipe(string $targetDatabase): string
+    {
+        $escapedTargetDatabase = '`' . str_replace('`', '``', $targetDatabase) . '`';
+        $intermediateSql = sprintf('CREATE DATABASE IF NOT EXISTS %s;USE %s;', $escapedTargetDatabase, $escapedTargetDatabase);
+        $combinationPipe = ' | (echo ' . escapeshellarg($intermediateSql) . ' && cat) | ';
+        return $combinationPipe;
     }
 }
