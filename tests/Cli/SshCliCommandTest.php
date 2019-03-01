@@ -8,7 +8,7 @@ use PHPSu\Config\ConfigurationLoaderInterface;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
 use PHPSu\ControllerInterface;
-use PHPSu\SshOptions;
+use PHPSu\Options\SshOptions;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\HelperSet;

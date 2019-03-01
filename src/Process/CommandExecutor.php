@@ -30,17 +30,18 @@ final class CommandExecutor
         $manager->mustRun();
     }
 
-    public function passthru(string $command, OutputInterface $output): int
+    public function passthru(string $command): int
     {
         $process = Process::fromShellCommandline($command, null, null, null, null);
         $process->setTty(true);
-        $process->run(function ($type, $buffer) use ($output) {
-            if ($type === Process::ERR && $output instanceof ConsoleOutputInterface) {
-                $output = $output->getErrorOutput();
-                $output->setVerbosity(OutputInterface::VERBOSITY_QUIET);
-            }
-            $output->write($buffer);
-        });
+        $process->run();
         return $process->getExitCode();
+    }
+
+    public function runCommand(string $command): Process
+    {
+        $process = Process::fromShellCommandline($command, null, null, null, null);
+        $process->run();
+        return $process;
     }
 }

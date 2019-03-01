@@ -120,7 +120,7 @@ final class GlobalConfig
     public function getHostName(string $connectionName): string
     {
         if ($this->appInstances->has($connectionName)) {
-            return $this->getAppInstance($connectionName)->getHost();
+            return $this->getAppInstance($connectionName)->getHost() ?: $connectionName;
         }
         return $connectionName;
     }

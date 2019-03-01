@@ -1,9 +1,9 @@
 # Phpsu: Synchronisation Utility: File and Database
 
-[![Latest Version](https://img.shields.io/github/release/phpsu/phpsu.svg?style=flat-square)](https://github.com/phpsu/phpsu/releases)
+[![Latest Version](https://img.shields.io/github/release-pre/phpsu/phpsu.svg?style=flat-square)](https://github.com/phpsu/phpsu/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Build Status](https://img.shields.io/travis/phpsu/phpsu/master.svg?style=flat-square)](https://travis-ci.org/phpsu/phpsu)
-[![Coverage Status](https://img.shields.io/codecov/c/g/phpsu/phpsu.svg?style=flat-square)](https://codecov.io/gh/phpsu/phpsu)
+[![Coverage Status](https://img.shields.io/codecov/c/gh/phpsu/phpsu.svg?style=flat-square)](https://codecov.io/gh/phpsu/phpsu)
 [![Quality Score](https://img.shields.io/scrutinizer/g/phpsu/phpsu.svg?style=flat-square)](https://scrutinizer-ci.com/g/phpsu/phpsu)
 [![Total Downloads](https://img.shields.io/packagist/dt/phpsu/phpsu.svg?style=flat-square)](https://packagist.org/packages/phpsu/phpsu)
 
@@ -25,9 +25,8 @@ composer require --dev phpsu/phpsu
 
 The following versions of PHP are supported by this version.
 
-* PHP 7.1
-* PHP 7.2
-* PHP 7.3
+* PHP `7.1`, `7.2` and `7.3`
+* Compatible and continuously tested with symfony `3.2`, `3.4` and `4.2`
 
 Required for synchronisation are:
 * ``ssh`` on execution System

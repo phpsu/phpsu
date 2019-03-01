@@ -5,8 +5,9 @@ namespace PHPSu\Tests;
 
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
-use PHPSu\SshOptions;
-use PHPSu\SyncOptions;
+use PHPSu\Options\SshOptions;
+use PHPSu\Options\SyncOptions;
+use PHPSu\Tests\TestHelper\BufferedConsoleOutput;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -51,7 +52,7 @@ final class ControllerTest extends TestCase
             'filesystem:fileadmin',
             "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -74,7 +75,7 @@ final class ControllerTest extends TestCase
             'filesystem:fileadmin',
             "rsync -az --exclude='*.mp4' --exclude='*.mp3' --exclude='*.zip' -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -94,7 +95,7 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' --ignore-table='\''testdb.table1'\'' --ignore-table='\''testdb.table2'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' --ignore-table='\''testdb.table1'\'' --ignore-table='\''testdb.table2'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -117,7 +118,7 @@ final class ControllerTest extends TestCase
             'filesystem:fileadmin',
             "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -159,7 +160,7 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -179,7 +180,7 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode(PHP_EOL, $output->fetch()));
@@ -201,11 +202,53 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
             'database:database2',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb2'\''' | mysql -h'127.0.0.1' -u'root' -p'root' 'test1234_2'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb2'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234_2`;USE `test1234_2`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
+    }
+
+    public function testSyncOutputHasSectionsWithEmptyConfigAndConsoleOutput(): void
+    {
+        $config = new GlobalConfig();
+        $config->addAppInstance('production', 'localhost', __DIR__);
+        $config->addAppInstance('local');
+        $controller = new Controller();
+        $syncOptions = new SyncOptions('production');
+        $syncOptions->setNoDatabases(true);
+        $syncOptions->setNoFiles(true);
+        $output = new BufferedConsoleOutput();
+        $controller->sync($output, $config, $syncOptions);
+        rewind($output->getStream());
+        $this->assertEquals("--------------------\n", stream_get_contents($output->getStream()), 'Asserting result empty since config is empty as well');
+    }
+
+    public function testSyncOutputHasSectionsWithEmptyConfigAndBufferedOutput(): void
+    {
+        $config = new GlobalConfig();
+        $config->addAppInstance('production', 'localhost', __DIR__);
+        $config->addAppInstance('local');
+        $controller = new Controller();
+        $syncOptions = new SyncOptions('local');
+        $syncOptions->setNoDatabases(true);
+        $syncOptions->setNoFiles(true);
+        $syncOptions->setDestination('production');
+        $output = new BufferedOutput();
+        $controller->sync($output, $config, $syncOptions);
+        $this->assertEquals('', $output->fetch(), 'Excepting sync to do nothing');
+    }
+
+    public function testSshOutputPassthruExecution(): void
+    {
+        $controller = new Controller();
+        $config = new GlobalConfig();
+        $config->addAppInstance('production', '127.0.0.1', __DIR__);
+        $config->addAppInstance('local');
+        $sshOptions = (new SshOptions('typo'))->setDestination('local');
+        $output = new BufferedOutput();
+        $this->expectExceptionMessage('the found host and the current Host are the same');
+        $controller->ssh($output, $config, $sshOptions);
     }
 }

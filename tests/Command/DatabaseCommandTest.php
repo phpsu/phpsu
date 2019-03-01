@@ -20,8 +20,7 @@ final class DatabaseCommandTest extends TestCase
             ->setFromHost('hostc')
             ->setToUrl('mysql://root:root@127.0.0.1:2206/sequelmovie2')
             ->setToHost('');
-
-        $this->assertEquals("ssh -F 'php://temp' 'hostc' 'mysqldump --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root' 'sequelmovie2'", $database->generate());
+        $this->assertSame("ssh -F 'php://temp' 'hostc' 'mysqldump --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;' && cat) | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
     public function testDatabaseCommandQuiet(): void
@@ -36,7 +35,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToHost('')
             ->setVerbosity(OutputInterface::VERBOSITY_QUIET);
 
-        $this->assertEquals("ssh -q -F 'php://temp' 'hostc' 'mysqldump -q --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root' 'sequelmovie2'", $database->generate());
+        $this->assertSame("ssh -q -F 'php://temp' 'hostc' 'mysqldump -q --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;' && cat) | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
     public function testDatabaseCommandVerbose(): void
@@ -51,7 +50,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToHost('')
             ->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
 
-        $this->assertEquals("ssh -v -F 'php://temp' 'hostc' 'mysqldump -v --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root' 'sequelmovie2'", $database->generate());
+        $this->assertSame("ssh -v -F 'php://temp' 'hostc' 'mysqldump -v --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;' && cat) | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
     public function testDatabaseCommandVeryVerbose(): void
@@ -66,7 +65,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToHost('')
             ->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
 
-        $this->assertEquals("ssh -vv -F 'php://temp' 'hostc' 'mysqldump -vv --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root' 'sequelmovie2'", $database->generate());
+        $this->assertSame("ssh -vv -F 'php://temp' 'hostc' 'mysqldump -vv --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;' && cat) | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
     public function testDatabaseCommandDebug(): void
@@ -80,8 +79,8 @@ final class DatabaseCommandTest extends TestCase
             ->setToUrl('mysql://root:root@127.0.0.1:2206/sequelmovie2')
             ->setToHost('')
             ->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
-
-        $this->assertEquals("ssh -vvv -F 'php://temp' 'hostc' 'mysqldump -vvv --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root' 'sequelmovie2'", $database->generate());
+      
+        $this->assertSame("ssh -vvv -F 'php://temp' 'hostc' 'mysqldump -vvv --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;' && cat) | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
     public function testDatabaseCommandGetter(): void

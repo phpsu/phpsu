@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPSu;
+namespace PHPSu\Options;
 
 final class SshOptions
 {

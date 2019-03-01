@@ -183,8 +183,9 @@ final class DatabaseCommand implements CommandInterface
         $from = $this->parseDatabaseUrl($this->getFromUrl());
         $to = $this->parseDatabaseUrl($this->getToUrl());
 
-        $dumpCmd = 'mysqldump ' . StringHelper::optionStringForVerbosity($this->getVerbosity()). '--opt --skip-comments ' . $this->generateCliParameters($from) . $this->excludeParts($from['path']);
-        $importCmd = 'mysql ' . $this->generateCliParameters($to);
+        $dumpCmd = 'mysqldump ' . StringHelper::optionStringForVerbosity($this->getVerbosity()) . '--opt --skip-comments ' . $this->generateCliParameters($from, false) . $this->excludeParts($from['path']);
+        $importCmd = 'mysql ' . $this->generateCliParameters($to, true);
+        $combinationPipe = $this->getCombinationPipe($to['path']);
         if ($hostsDifferentiate) {
             if ($this->getFromHost()) {
                 $sshCommand = new SshCommand();
@@ -200,13 +201,13 @@ final class DatabaseCommand implements CommandInterface
                 $sshCommand->setVerbosity($this->getVerbosity());
                 $importCmd = $sshCommand->generate($importCmd);
             }
-            return $dumpCmd . ' | ' . $importCmd;
+            return $dumpCmd . $combinationPipe . $importCmd;
         }
         $sshCommand = new SshCommand();
         $sshCommand->setSshConfig($this->getSshConfig());
         $sshCommand->setInto($this->getFromHost());
         $sshCommand->setVerbosity($this->getVerbosity());
-        return $sshCommand->generate($dumpCmd . ' | ' . $importCmd);
+        return $sshCommand->generate($dumpCmd . $combinationPipe . $importCmd);
     }
 
     private function parseDatabaseUrl(string $url): array
@@ -228,9 +229,10 @@ final class DatabaseCommand implements CommandInterface
 
     /**
      * @param array $parameters
+     * @param bool $excludeDatabase
      * @return string
      */
-    private function generateCliParameters(array $parameters): string
+    private function generateCliParameters(array $parameters, bool $excludeDatabase): string
     {
         $result = [];
         $result[] = '-h' . escapeshellarg($parameters['host']);
@@ -239,7 +241,9 @@ final class DatabaseCommand implements CommandInterface
         }
         $result[] = '-u' . escapeshellarg($parameters['user']);
         $result[] = '-p' . escapeshellarg($parameters['pass']);
-        $result[] = '' . escapeshellarg($parameters['path']);
+        if (!$excludeDatabase) {
+            $result[] = '' . escapeshellarg($parameters['path']);
+        }
         return implode(' ', $result);
     }
 
@@ -253,5 +257,12 @@ final class DatabaseCommand implements CommandInterface
             return ' ' . implode(' ', $excludeOptions);
         }
         return '';
+    }
+
+    private function getCombinationPipe(string $targetDatabase): string
+    {
+        $escapedTargetDatabase = '`' . str_replace('`', '``', $targetDatabase) . '`';
+        $intermediateSql = sprintf('CREATE DATABASE IF NOT EXISTS %s;USE %s;', $escapedTargetDatabase, $escapedTargetDatabase);
+        return ' | (echo ' . escapeshellarg($intermediateSql) . ' && cat) | ';
     }
 }
