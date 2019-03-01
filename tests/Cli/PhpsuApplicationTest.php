@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class PhpsuApplicationTest extends TestCase
 {
-    public function testCommand()
+    public function testPhpsuApplicationCommand(): void
     {
         $app = PhpsuApplication::createApplication();
         $this->assertInstanceOf(SyncCliCommand::class, $app->get('sync'));

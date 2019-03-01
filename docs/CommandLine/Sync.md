@@ -59,13 +59,13 @@ The `--all` option lets you ignore the excludes of your configuration.
 It is going to sync all Files and all Database Tables.
 
 
-### The Option --no-file
+### The Option --no-fs
 
 ```bash
-phpsu sync source destination --no-file
+phpsu sync source destination --no-fs
 ``` 
 
-With the `--no-file` option phpsu will ignore all `->addFilesystem()` configurations.
+With the `--no-fs` option phpsu will ignore all `->addFilesystem()` configurations.
 
 ### The Option --no-db
 

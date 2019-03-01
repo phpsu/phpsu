@@ -1,15 +1,21 @@
 language: php
 
 php:
-  - 7.1
-  - 7.2
-  - 7.3
+  - "7.1"
+  - "7.2"
+  - "7.3"
 
 cache:
   directories:
     - $HOME/.composer/cache
 
-install: composer i --no-suggest
+env:
+  matrix:
+    - SYMFONY_VERSION="3.2.*"
+    - SYMFONY_VERSION="3.4.*"
+    - SYMFONY_VERSION="4.2.*"
+
+install: composer require symfony/process:$SYMFONY_VERSION symfony/console:$SYMFONY_VERSION
 
 script: vendor/bin/grumphp run && composer test
 

@@ -6,7 +6,7 @@ namespace PHPSu\Command;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Config\TempSshConfigFile;
-use PHPSu\SyncOptions;
+use PHPSu\Options\SyncOptions;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class CommandGenerator
