@@ -36,16 +36,22 @@ final class SshConfigGeneratorTest extends TestCase
     public function testSshConfigGeneratorGenerate(): void
     {
         $sshConnections = new SshConnections();
-        $sshConnections->add((new SshConnection())->setHost('hostc')
+        $sshConnections->add(
+            (new SshConnection())->setHost('hostc')
             ->setUrl('user@host_c')
-            ->setFrom(['hostb']));
+            ->setFrom(['hostb'])
+        );
 
-        $sshConnections->add((new SshConnection())->setHost('hostb')
+        $sshConnections->add(
+            (new SshConnection())->setHost('hostb')
             ->setUrl('user@host_b')
-            ->setFrom(['hosta']));
+            ->setFrom(['hosta'])
+        );
 
-        $sshConnections->add((new SshConnection())->setHost('hosta')
-            ->setUrl('user@localhost:2208'));
+        $sshConnections->add(
+            (new SshConnection())->setHost('hosta')
+            ->setUrl('user@localhost:2208')
+        );
 
         $sshConfigGenerator = new SshConfigGenerator();
         $sshConfig = $sshConfigGenerator->generate($sshConnections, [], 'local');
