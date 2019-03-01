@@ -46,7 +46,7 @@ final class SshConfigGeneratorTest extends TestCase
             (new SshConnection())->setHost('hostb')
             ->setUrl('user@host_b')
             ->setFrom(['hosta'])
-            ->setOptions(['ForwardAgent' => 'no']));
+            ->setOptions(['ForwardAgent' => 'no'])
         );
 
         $sshConnections->add(
