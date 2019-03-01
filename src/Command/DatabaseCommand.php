@@ -265,7 +265,6 @@ final class DatabaseCommand implements CommandInterface
     {
         $escapedTargetDatabase = '`' . str_replace('`', '``', $targetDatabase) . '`';
         $intermediateSql = sprintf('CREATE DATABASE IF NOT EXISTS %s;USE %s;', $escapedTargetDatabase, $escapedTargetDatabase);
-        $combinationPipe = ' | (echo ' . escapeshellarg($intermediateSql) . ' && cat) | ';
-        return $combinationPipe;
+        return ' | (echo ' . escapeshellarg($intermediateSql) . ' && cat) | ';
     }
 }
