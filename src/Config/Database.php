@@ -43,7 +43,7 @@ final class Database
 
     public function addExcludes(array $excludes): Database
     {
-        $this->excludes = array_merge($this->excludes, $excludes);
+        $this->excludes = \array_merge($this->excludes, $excludes);
         return $this;
     }
 
