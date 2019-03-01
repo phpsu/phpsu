@@ -34,7 +34,7 @@ final class CommandGeneratorTest extends TestCase
         return $globalConfig;
     }
 
-    public function testSshGeneration(): void
+    public function testSshGeneration()
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
@@ -43,7 +43,7 @@ final class CommandGeneratorTest extends TestCase
         $this->assertSame("ssh -F 'php://temp' 'serverEu' -t 'cd '\''/var/www/production'\''; bash --login'", $result);
     }
 
-    public function testSshWithCommand(): void
+    public function testSshWithCommand()
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
@@ -58,14 +58,14 @@ final class CommandGeneratorTest extends TestCase
      * @expectedException \Exception
      * @expectedExceptionMessage Source and Destination are Identical: same
      */
-    public function testFromAndToSameDisallowed(): void
+    public function testFromAndToSameDisallowed()
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->syncCommands((new SyncOptions('same'))->setDestination('same'));
     }
 
-    public function testProductionToLocalFromAnyThere(): void
+    public function testProductionToLocalFromAnyThere()
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
@@ -94,7 +94,7 @@ SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
     }
 
-    public function testProductionToTestingFromAnyThere(): void
+    public function testProductionToTestingFromAnyThere()
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
@@ -123,7 +123,7 @@ SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
     }
 
-    public function testLocalToLocal2FromAnyThere(): void
+    public function testLocalToLocal2FromAnyThere()
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
@@ -152,7 +152,7 @@ SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
     }
 
-    public function testProductionToStagingFromAnyThere(): void
+    public function testProductionToStagingFromAnyThere()
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
@@ -181,7 +181,7 @@ SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
     }
 
-    public function testProductionToStagingFromStaging(): void
+    public function testProductionToStagingFromStaging()
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
@@ -206,7 +206,7 @@ SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
     }
 
-    public function testStagingToProductionFromStaging(): void
+    public function testStagingToProductionFromStaging()
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);

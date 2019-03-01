@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 final class SshConfigHostTest extends TestCase
 {
 
-    public function testSetIssetGet(): void
+    public function testSetIssetGet()
     {
         $sshConfigHost = new SshConfigHost();
         $this->assertFalse(isset($sshConfigHost->User));

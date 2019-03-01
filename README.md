@@ -25,7 +25,7 @@ composer require --dev phpsu/phpsu
 
 The following versions of PHP are supported by this version.
 
-* PHP `7.1`, `7.2` and `7.3`
+* PHP `7.0`, `7.1`, `7.2` and `7.3`
 * Compatible and continuously tested with symfony `3.2`, `3.4` and `4.2`
 
 Required for synchronisation are:

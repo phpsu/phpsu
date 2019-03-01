@@ -12,19 +12,19 @@ final class AppInstancesTest extends TestCase
     /**
      * @expectedException \Exception
      */
-    public function testGetException(): void
+    public function testGetException()
     {
         $apps = new AppInstances();
         $apps->get('NameNotInApps');
     }
 
-    public function testGetAll(): void
+    public function testGetAll()
     {
         $apps = new AppInstances();
         $this->assertSame([], $apps->getAll());
     }
 
-    public function testGetAllOneInstance(): void
+    public function testGetAllOneInstance()
     {
         $apps = new AppInstances();
         $name = 'TestInstance';

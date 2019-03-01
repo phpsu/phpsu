@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
 final class StateChangeCallbackTest extends TestCase
 {
-    public function testNormalReady(): void
+    public function testNormalReady()
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $manager = new ProcessManager();
@@ -24,7 +24,7 @@ final class StateChangeCallbackTest extends TestCase
         $this->assertSame("\e[37msleepProcess:\e[39m  \n", $output->fetch());
     }
 
-    public function testNormalRunning(): void
+    public function testNormalRunning()
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $manager = new ProcessManager();
@@ -33,7 +33,7 @@ final class StateChangeCallbackTest extends TestCase
         $this->assertSame("\e[33msleepProcess:\e[39m (      )\n", $output->fetch());
     }
 
-    public function testNormalSucceeded(): void
+    public function testNormalSucceeded()
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $manager = new ProcessManager();
@@ -42,7 +42,7 @@ final class StateChangeCallbackTest extends TestCase
         $this->assertSame("\e[32msleepProcess:\e[39m ✔\n", $output->fetch());
     }
 
-    public function testNormalErrored(): void
+    public function testNormalErrored()
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $manager = new ProcessManager();
@@ -51,7 +51,7 @@ final class StateChangeCallbackTest extends TestCase
         $this->assertSame("\e[31msleepProcess:\e[39m ✘\n", $output->fetch());
     }
 
-    public function testSectionReady(): void
+    public function testSectionReady()
     {
         $sections = [];
         $outputStream = fopen('php://memory', 'rwb');
@@ -63,7 +63,7 @@ final class StateChangeCallbackTest extends TestCase
         $this->assertSame("\n", stream_get_contents($outputStream));
     }
 
-    public function testSectionReadyWithProcess(): void
+    public function testSectionReadyWithProcess()
     {
         $sections = [];
         $outputStream = fopen('php://memory', 'rwb');
@@ -77,7 +77,7 @@ final class StateChangeCallbackTest extends TestCase
         $this->assertSame("\e[37msleepProcess:\e[39m  \n", stream_get_contents($outputStream));
     }
 
-    public function testSectionRunningWithProcess(): void
+    public function testSectionRunningWithProcess()
     {
         $sections = [];
         $outputStream = fopen('php://memory', 'rwb');
@@ -100,7 +100,7 @@ final class StateChangeCallbackTest extends TestCase
         );
     }
 
-    public function testSectionRunningWithProcessSpinner(): void
+    public function testSectionRunningWithProcessSpinner()
     {
         $sections = [];
         $outputStream = fopen('php://memory', 'rwb');
@@ -136,7 +136,7 @@ final class StateChangeCallbackTest extends TestCase
         );
     }
 
-    public function setPrivateProperty($object, string $propertyName, $value): void
+    public function setPrivateProperty($object, string $propertyName, $value)
     {
         $property = (new \ReflectionClass($object))->getProperty($propertyName);
         $property->setAccessible(true);

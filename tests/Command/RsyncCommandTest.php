@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class RsyncCommandTest extends TestCase
 {
 
-    public function testRsyncWithAppInstance(): void
+    public function testRsyncWithAppInstance()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -33,7 +33,7 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/' 'hostc:/var/www/testing/'", $generated);
     }
 
-    public function testGenerate(): void
+    public function testGenerate()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -47,7 +47,7 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -r -e 'ssh -F '\''php://temp'\''' 'hosta:~/test/*' './__test/'", $rsync->generate());
     }
 
-    public function testRsyncWithAppInstanceLocal(): void
+    public function testRsyncWithAppInstanceLocal()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -65,7 +65,7 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/' './'", $generated);
     }
 
-    public function testLocalAndVarStorage(): void
+    public function testLocalAndVarStorage()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -83,7 +83,7 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 
-    public function testRsyncQuiet(): void
+    public function testRsyncQuiet()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -101,7 +101,7 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -q -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 
-    public function testRsyncVerbose(): void
+    public function testRsyncVerbose()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -119,7 +119,7 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -v -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 
-    public function testRsyncVeryVerbose(): void
+    public function testRsyncVeryVerbose()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -137,7 +137,7 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -vv -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 
-    public function testRsyncDebug(): void
+    public function testRsyncDebug()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());

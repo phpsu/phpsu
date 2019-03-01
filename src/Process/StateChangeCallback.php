@@ -29,7 +29,10 @@ final class StateChangeCallback
         }
     }
 
-    private function sectionCall(ConsoleSectionOutput $sectionOutput, ProcessManager $manager): void
+    /**
+     * @return void
+     */
+    private function sectionCall(ConsoleSectionOutput $sectionOutput, ProcessManager $manager)
     {
         $lines = [];
         foreach ($manager->getProcesses() as $processId => $process) {
@@ -38,7 +41,10 @@ final class StateChangeCallback
         $sectionOutput->overwrite(implode(PHP_EOL, $lines));
     }
 
-    private function normalCall(int $processId, Process $process, string $state): void
+    /**
+     * @return void
+     */
+    private function normalCall(int $processId, Process $process, string $state)
     {
         $this->output->writeln($this->getMessage($processId, $state, $process->getName()));
     }

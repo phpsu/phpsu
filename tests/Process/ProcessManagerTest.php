@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 final class ProcessManagerTest extends TestCase
 {
-    public function testProcessesShouldBeRunning(): void
+    public function testProcessesShouldBeRunning()
     {
         $processManager = new ProcessManager();
         $processManager->addProcess($pList1 = Process::fromShellCommandline('echo "Testing List1" && sleep 0.1')->setName('list1'));
@@ -27,7 +27,7 @@ final class ProcessManagerTest extends TestCase
     /**
      * @expectedException \Exception
      */
-    public function testRunWithError(): void
+    public function testRunWithError()
     {
         (new ProcessManager())
             ->addProcess($pError = Process::fromShellCommandline('error')->setName('error' . md5(random_bytes(100))))
@@ -36,7 +36,7 @@ final class ProcessManagerTest extends TestCase
             ->validateProcesses();
     }
 
-    public function testRunGetErrorOutput(): void
+    public function testRunGetErrorOutput()
     {
         $processManager = new ProcessManager();
         $name = 'error' . md5(random_bytes(100));
@@ -52,7 +52,7 @@ final class ProcessManagerTest extends TestCase
         $this->assertTrue(false, 'Exception should be thrown');
     }
 
-    public function testAddOutputCallback(): void
+    public function testAddOutputCallback()
     {
         $processManager = new ProcessManager();
         $processManager->addOutputCallback(function () {
@@ -65,7 +65,7 @@ final class ProcessManagerTest extends TestCase
         }
     }
 
-    public function testAddStateChangeCallback(): void
+    public function testAddStateChangeCallback()
     {
         $processManager = new ProcessManager();
         $processManager->addStateChangeCallback(function () {
@@ -78,7 +78,7 @@ final class ProcessManagerTest extends TestCase
         }
     }
 
-    public function testAddTickCallback(): void
+    public function testAddTickCallback()
     {
         $processManager = new ProcessManager();
         $processManager->addTickCallback(function () {
@@ -91,7 +91,7 @@ final class ProcessManagerTest extends TestCase
         }
     }
 
-    public function testProcessManagerMustRun(): void
+    public function testProcessManagerMustRun()
     {
         $result = (new ProcessManager())
             ->addProcess($pError = Process::fromShellCommandline('echo hi'))

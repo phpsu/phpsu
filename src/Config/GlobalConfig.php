@@ -105,9 +105,10 @@ final class GlobalConfig
 
     /**
      * @param string $host
+     * @return void
      * @throws \Exception
      */
-    public function validateConnectionToHost(string $host): void
+    public function validateConnectionToHost(string $host)
     {
         $this->sshConnections->getPossibilities($host);
     }

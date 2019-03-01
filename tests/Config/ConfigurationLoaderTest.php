@@ -18,7 +18,7 @@ final class ConfigurationLoaderTest extends TestCase
         chdir(__DIR__ . '/../fixtures');
     }
 
-    public function testGetConfig(): void
+    public function testGetConfig()
     {
         $configurationLoader = new ConfigurationLoader();
         $this->assertEquals(new GlobalConfig(), $configurationLoader->getConfig());

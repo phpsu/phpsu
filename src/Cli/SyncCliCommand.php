@@ -12,8 +12,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class SyncCliCommand extends AbstractCliCommand
 {
-
-    protected function configure(): void
+    /**
+     * @return void
+     */
+    protected function configure()
     {
         $this->setName('sync')
             ->setDescription('Sync AppInstances')

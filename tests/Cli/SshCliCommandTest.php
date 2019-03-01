@@ -19,7 +19,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 class SshCliCommandTest extends TestCase
 {
 
-    public function testSshCliCommandDryRun(): void
+    public function testSshCliCommandDryRun()
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
 
@@ -39,7 +39,7 @@ class SshCliCommandTest extends TestCase
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
-    public function testSshCliCommandDryRunInteractive(): void
+    public function testSshCliCommandDryRunInteractive()
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
 
@@ -61,7 +61,7 @@ class SshCliCommandTest extends TestCase
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
-    public function testSshCliCommandExecute(): void
+    public function testSshCliCommandExecute()
     {
         $globalConfig = $this->createConfig();
         $mockConfigurationLoader = $this->createMockConfigurationLoader($globalConfig);
