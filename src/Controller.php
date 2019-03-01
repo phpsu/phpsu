@@ -54,15 +54,16 @@ final class Controller implements ControllerInterface
 
     /**
      * @param array $sectionOutputs
-     * @param OutputInterface $output
+     * @param ConsoleOutputInterface $output
      * @return \Symfony\Component\Console\Output\ConsoleSectionOutput
-     *@deprecated the usage of symfony 3.x is discouraged. With the next version we will remove support
+     * @deprecated the usage of symfony 3.x is discouraged. With the next version we will remove support
      */
     private function getNewSection(array &$sectionOutputs, ConsoleOutputInterface $output): ConsoleSectionOutput
     {
-        if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', '>=')) {
+        if (method_exists($output, 'section') && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', '>=')) {
             return $output->section();
         }
-        return new ConsoleSectionOutput($output->getStream(), $sectionOutputs, $output->getVerbosity(), $output->isDecorated(), $output->getFormatter());
+        $stream = method_exists($output, 'getStream') ? $output->getStream() : null;
+        return new ConsoleSectionOutput($stream, $sectionOutputs, $output->getVerbosity(), $output->isDecorated(), $output->getFormatter());
     }
 }

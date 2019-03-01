@@ -9,6 +9,8 @@
     beStrictAboutOutputDuringTests="true"
     beStrictAboutChangesToGlobalState="true"
     enforceTimeLimit="true"
+    executionOrder="default"
+    resolveDependencies="true"
     timeoutForLargeTests="1"
     timeoutForMediumTests="1"
     timeoutForSmallTests="1"

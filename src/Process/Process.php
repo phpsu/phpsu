@@ -40,7 +40,16 @@ final class Process extends \Symfony\Component\Process\Process
         throw new \LogicException('This should never happen');
     }
 
-    public function __construct($commandline, ?string $cwd = null, ?array $env = null, $input = null, ?float $timeout = 60, array $options = [])
+    /**
+     * Process constructor.
+     * @param mixed $commandline
+     * @param string|null $cwd
+     * @param array|null $env
+     * @param null $input
+     * @param float|int|null $timeout
+     * @throws CommandExecutionException
+     */
+    public function __construct($commandline, ?string $cwd = null, ?array $env = null, $input = null, $timeout = 60)
     {
         if (\is_array($commandline) && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '3.4.0', '<')) {
             throw new CommandExecutionException('Support for arrays as commandline-argument is not supported in symfony < 3.4.0');
@@ -48,7 +57,7 @@ final class Process extends \Symfony\Component\Process\Process
         if (\is_string($commandline) && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.2.0', '>=')) {
             throw new CommandExecutionException('Support for strings as commandline-argument is not supported in symfony >= 4.2.0');
         }
-        parent::__construct($commandline, $cwd, $env, $input, $timeout, $options);
+        parent::__construct($commandline, $cwd, $env, $input, $timeout);
     }
 
 
@@ -57,7 +66,7 @@ final class Process extends \Symfony\Component\Process\Process
      *
      * {@inheritdoc}
      */
-    public static function fromShellCommandline(string $command, string $cwd = null, array $env = null, $input = null, ?float $timeout = 60): self
+    public static function fromShellCommandline(string $command, string $cwd = null, array $env = null, $input = null, ?float $timeout = 60.0): self
     {
         if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.2.0', '>=')) {
             /** @noinspection PhpUndefinedMethodInspection Symfony version > 4.X */
