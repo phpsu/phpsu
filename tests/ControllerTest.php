@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests;
 
+use PHPSu\Config\ConfigurationLoader;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
 use PHPSu\Options\SshOptions;
@@ -214,16 +215,17 @@ final class ControllerTest extends TestCase
     {
         $oldCwd = getcwd();
         chdir(__DIR__ . '/fixtures');
-        $config = (new \PHPSu\Config\ConfigurationLoader())->getConfig();
+        $config = (new ConfigurationLoader())->getConfig();
         chdir($oldCwd);
 
         $log = new BufferedOutput();
-        $syncOptions = new \PHPSu\SyncOptions('production');
+        $syncOptions = new SyncOptions('production');
         $syncOptions->setDryRun(true);
-        $phpsu = new \PHPSu\Controller();
+        $phpsu = new Controller();
         $phpsu->sync($log, $config, $syncOptions);
 
         $this->assertSame('filesystem:var/storage' . PHP_EOL . 'rsync -az \'testProduction/var/storage/\' \'testLocal/var/storage/\'' . PHP_EOL, $log->fetch());
+    }
 
     public function testSyncOutputHasSectionsWithEmptyConfigAndConsoleOutput(): void
     {
