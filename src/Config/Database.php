@@ -41,6 +41,12 @@ final class Database
         return $this->excludes;
     }
 
+    public function addExcludes(array $excludes): Database
+    {
+        $this->excludes = \array_merge($this->excludes, $excludes);
+        return $this;
+    }
+
     public function addExclude(string $exclude): Database
     {
         $this->excludes[] = $exclude;
