@@ -27,8 +27,8 @@ final class GlobalConfigTest extends TestCase
         $sshCommand = SshCommand::fromGlobal($global, 'testing', 'local', OutputInterface::VERBOSITY_NORMAL);
         $this->assertEquals((new SshCommand())->setInto('serverEu')->setPath('/var/www/testing'), $sshCommand);
 
-        $sshCommand = SshCommand::fromGlobal($global, 'serverEu', 'local', OutputInterface::VERBOSITY_NORMAL);
-        $this->assertEquals((new SshCommand())->setInto('serverEu'), $sshCommand);
+        $sshCommand = SshCommand::fromGlobal($global, 'serverEu', 'local', OutputInterface::VERBOSITY_QUIET);
+        $this->assertEquals((new SshCommand())->setInto('serverEu')->setVerbosity(OutputInterface::VERBOSITY_QUIET), $sshCommand);
     }
 
     public function testDatabaseFromGlobalConfig(): void
