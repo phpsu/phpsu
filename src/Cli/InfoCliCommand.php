@@ -11,7 +11,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class InfoCliCommand extends AbstractCliCommand
 {
-    public function configure(): void
+    /**
+     * @return void
+     */
+    public function configure()
     {
         $this->setName('info')
             ->setDescription('show version information of all instances')
@@ -26,7 +29,10 @@ class InfoCliCommand extends AbstractCliCommand
         $this->printDependencyVersions($output, $symfonyStyle);
     }
 
-    public function printDependencyVersions(OutputInterface $output, SymfonyStyle $symfonyStyle): void
+    /**
+     * @return void
+     */
+    public function printDependencyVersions(OutputInterface $output, SymfonyStyle $symfonyStyle)
     {
         $environmentUtility = new EnvironmentUtility();
         $output->writeln('<info>Locally installed</info>');

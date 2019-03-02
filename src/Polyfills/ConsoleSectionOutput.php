@@ -33,8 +33,9 @@ class ConsoleSectionOutput extends StreamOutput
      * Clears previous output for this section.
      *
      * @param int $lines Number of lines to clear. If null, then the entire output of this section is cleared
+     * @return void
      */
-    public function clear(int $lines = null): void
+    public function clear(int $lines = null)
     {
         if (empty($this->content) || !$this->isDecorated()) {
             return;
@@ -53,8 +54,9 @@ class ConsoleSectionOutput extends StreamOutput
      * Overwrites the previous output with a new message.
      *
      * @param array|string $message
+     * @return void
      */
-    public function overwrite($message): void
+    public function overwrite($message)
     {
         $this->clear();
         $this->writeln($message);
@@ -67,9 +69,10 @@ class ConsoleSectionOutput extends StreamOutput
 
     /**
      * @param string $input
+     * @return void
      * @internal
      */
-    public function addContent(string $input): void
+    public function addContent(string $input)
     {
         foreach (explode(PHP_EOL, $input) as $lineContent) {
             $this->lines += ceil($this->getDisplayLength($lineContent) / $this->terminal->getWidth()) ?: 1;

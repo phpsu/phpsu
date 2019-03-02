@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 final class SshConfigGeneratorTest extends TestCase
 {
-    public function testConnectionProblem(): void
+    public function testConnectionProblem()
     {
         // from everywhere
         $sshConnections = new SshConnections();
@@ -33,7 +33,7 @@ final class SshConfigGeneratorTest extends TestCase
         $this->assertEquals([$toA, $toCFromA], $path);
     }
 
-    public function testSshConfigGeneratorGenerate(): void
+    public function testSshConfigGeneratorGenerate()
     {
         $sshConnections = new SshConnections();
         $sshConnections->add(

@@ -8,19 +8,19 @@ use PHPUnit\Framework\TestCase;
 
 final class SshUrlTest extends TestCase
 {
-    public function testInvalidUrl(): void
+    public function testInvalidUrl()
     {
         $this->expectExceptionMessageRegExp('/SshUrl could not been parsed/');
         new SshUrl('://:/:/:/:/');
     }
 
-    public function testInvalidUser(): void
+    public function testInvalidUser()
     {
         $this->expectExceptionMessageRegExp('/User must be set/');
         new SshUrl('test');
     }
 
-    public function testInvalidPort(): void
+    public function testInvalidPort()
     {
         $dsn = new SshUrl('user@test');
         $this->expectExceptionMessage('port must be between 0 and 65535');
@@ -48,7 +48,7 @@ final class SshUrlTest extends TestCase
         $this->assertEquals(65534, $dsn->getPort());
     }
 
-    public function testSshWithoutSchema(): void
+    public function testSshWithoutSchema()
     {
         $dsn = new SshUrl('user@host');
         $this->assertSame('user', $dsn->getUser());
@@ -58,7 +58,7 @@ final class SshUrlTest extends TestCase
         $this->assertSame('ssh://user@host', $dsn->__toString());
     }
 
-    public function testSshWithSchema(): void
+    public function testSshWithSchema()
     {
         $dsn = new SshUrl('ssh://user@host');
         $this->assertSame('user', $dsn->getUser());
@@ -68,7 +68,7 @@ final class SshUrlTest extends TestCase
         $this->assertSame('ssh://user@host', $dsn->__toString());
     }
 
-    public function testSshWithSchemaPort2206(): void
+    public function testSshWithSchemaPort2206()
     {
         $dsn = new SshUrl('ssh://user@host:2206');
         $this->assertSame('user', $dsn->getUser());
@@ -78,7 +78,7 @@ final class SshUrlTest extends TestCase
         $this->assertSame('ssh://user@host:2206', $dsn->__toString());
     }
 
-    public function testSshWithPassword(): void
+    public function testSshWithPassword()
     {
         $dsn = new SshUrl('ssh://user:password@host');
         $this->assertSame('user', $dsn->getUser());
@@ -88,7 +88,7 @@ final class SshUrlTest extends TestCase
         $this->assertSame('ssh://user:password@host', $dsn->__toString());
     }
 
-    public function testSshWithIp(): void
+    public function testSshWithIp()
     {
         $dsn = new SshUrl('user@192.168.0.1');
         $this->assertSame('user', $dsn->getUser());

@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class SshCommandTest extends TestCase
 {
-    public function testSshCommandGenerate(): void
+    public function testSshCommandGenerate()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -21,7 +21,7 @@ final class SshCommandTest extends TestCase
         $this->assertEquals("ssh -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
-    public function testSshCommandQuiet(): void
+    public function testSshCommandQuiet()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -32,7 +32,7 @@ final class SshCommandTest extends TestCase
         $this->assertEquals("ssh -q -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
-    public function testSshCommandVerbose(): void
+    public function testSshCommandVerbose()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -43,7 +43,7 @@ final class SshCommandTest extends TestCase
         $this->assertEquals("ssh -v -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
-    public function testSshCommandVeryVerbose(): void
+    public function testSshCommandVeryVerbose()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -54,7 +54,7 @@ final class SshCommandTest extends TestCase
         $this->assertEquals("ssh -vv -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
-    public function testSshCommandDebug(): void
+    public function testSshCommandDebug()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -80,7 +80,11 @@ final class SshCommandTest extends TestCase
         $this->assertEquals(OutputInterface::VERBOSITY_DEBUG, $ssh->getVerbosity());
     }
 
-    public function testSameException(): void
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessage  the found host and the current Host are the same: same
+     */
+    public function testSameException()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());

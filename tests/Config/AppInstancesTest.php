@@ -9,20 +9,23 @@ use PHPUnit\Framework\TestCase;
 
 final class AppInstancesTest extends TestCase
 {
-    public function testGetException(): void
+    /**
+     * @expectedException \Exception
+     */
+    public function testGetException()
     {
         $apps = new AppInstances();
         $this->expectExceptionMessage('App Instance with name NameNotInApps not found');
         $apps->get('NameNotInApps');
     }
 
-    public function testGetAll(): void
+    public function testGetAll()
     {
         $apps = new AppInstances();
         $this->assertSame([], $apps->getAll());
     }
 
-    public function testGetAllOneInstance(): void
+    public function testGetAllOneInstance()
     {
         $apps = new AppInstances();
         $name = 'TestInstance';

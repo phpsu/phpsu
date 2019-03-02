@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class Controller implements ControllerInterface
 {
-    public const PHPSU_ROOT_PATH = __DIR__ . '/../';
+    const PHPSU_ROOT_PATH = __DIR__ . '/../';
 
     public function ssh(OutputInterface $output, GlobalConfig $config, SshOptions $options): int
     {
@@ -27,7 +27,10 @@ final class Controller implements ControllerInterface
         return (new CommandExecutor())->passthru($sshCommand);
     }
 
-    public function sync(OutputInterface $output, GlobalConfig $config, SyncOptions $options): void
+    /**
+     * @return void
+     */
+    public function sync(OutputInterface $output, GlobalConfig $config, SyncOptions $options)
     {
         $commands = (new CommandGenerator($config, $output->getVerbosity()))->syncCommands($options);
 
@@ -63,7 +66,9 @@ final class Controller implements ControllerInterface
         if (method_exists($output, 'section') && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', '>=')) {
             return $output->section();
         }
-        $stream = method_exists($output, 'getStream') ? $output->getStream() : null;
-        return new ConsoleSectionOutput($stream, $sectionOutputs, $output->getVerbosity(), $output->isDecorated(), $output->getFormatter());
+        if (method_exists($output, 'getStream')) {
+            return new ConsoleSectionOutput($output->getStream(), $sectionOutputs, $output->getVerbosity(), $output->isDecorated(), $output->getFormatter());
+        }
+        throw new \Exception('This should never happen!');
     }
 }

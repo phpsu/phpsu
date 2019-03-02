@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class ProcessTest extends TestCase
 {
-    public function testImpossibleStateException(): void
+    public function testImpossibleStateException()
     {
         $process = Process::fromShellCommandline('');
         $reflection =  (new \ReflectionClass($process))->getParentClass()->getProperty('status');

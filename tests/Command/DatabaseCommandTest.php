@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class DatabaseCommandTest extends TestCase
 {
-    public function testDatabaseCommandGenerate(): void
+    public function testDatabaseCommandGenerate()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -23,7 +23,7 @@ final class DatabaseCommandTest extends TestCase
         $this->assertSame("ssh -F 'php://temp' 'hostc' 'mysqldump --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;' && cat) | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
-    public function testDatabaseCommandQuiet(): void
+    public function testDatabaseCommandQuiet()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -38,7 +38,7 @@ final class DatabaseCommandTest extends TestCase
         $this->assertSame("ssh -q -F 'php://temp' 'hostc' 'mysqldump -q --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;' && cat) | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
-    public function testDatabaseCommandVerbose(): void
+    public function testDatabaseCommandVerbose()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -53,7 +53,7 @@ final class DatabaseCommandTest extends TestCase
         $this->assertSame("ssh -v -F 'php://temp' 'hostc' 'mysqldump -v --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;' && cat) | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
-    public function testDatabaseCommandVeryVerbose(): void
+    public function testDatabaseCommandVeryVerbose()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
@@ -68,7 +68,7 @@ final class DatabaseCommandTest extends TestCase
         $this->assertSame("ssh -vv -F 'php://temp' 'hostc' 'mysqldump -vv --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;' && cat) | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
-    public function testDatabaseCommandDebug(): void
+    public function testDatabaseCommandDebug()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());

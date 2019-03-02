@@ -12,14 +12,14 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class CommandExecutorTest extends TestCase
 {
-    public function testPassthruPassesSuccessfullyThrough(): void
+    public function testPassthruPassesSuccessfullyThrough()
     {
         $commandExecutor = new CommandExecutor();
         $exitCode = $commandExecutor->passthru('echo "foo" >> /dev/null');
         $this->assertEquals(0, $exitCode);
     }
 
-    public function testPassthruPassesUnsuccessfullyThrough(): void
+    public function testPassthruPassesUnsuccessfullyThrough()
     {
         $commandExecutor = new CommandExecutor();
         $exitCode = $commandExecutor->passthru('ewj 2> /dev/null');
@@ -27,7 +27,7 @@ class CommandExecutorTest extends TestCase
         $this->assertEquals(127, $exitCode, 'command shouldn\'t be installed');
     }
 
-    public function testExecuteCommandsParallel(): void
+    public function testExecuteCommandsParallel()
     {
         $commandExecutor = new CommandExecutor();
         $outputLog = new BufferedOutput();

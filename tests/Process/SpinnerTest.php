@@ -8,14 +8,14 @@ use PHPUnit\Framework\TestCase;
 
 class SpinnerTest extends TestCase
 {
-    public function testSpinForRandomState(): void
+    public function testSpinForRandomState()
     {
         $number = \random_int(0, \count(Spinner::PONG) - 1);
         $spinner = $this->setSpinnerStateToNumber(new Spinner, $number);
         $this->assertSame(Spinner::PONG[$number], $spinner->spin());
     }
 
-    public function testSpinForLargeNumberToZeroAsState(): void
+    public function testSpinForLargeNumberToZeroAsState()
     {
         $number = 100000000000000;
         $spinner = $this->setSpinnerStateToNumber(new Spinner, $number);

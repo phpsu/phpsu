@@ -12,7 +12,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class InfoCliCommandTest extends TestCase
 {
-    public function testPrintDependencyVersionsLocally(): void
+    public function testPrintDependencyVersionsLocally()
     {
         $command = new InfoCliCommand(new ConfigurationLoader(), new Controller());
 

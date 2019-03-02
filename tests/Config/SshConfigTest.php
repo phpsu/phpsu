@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 final class SshConfigTest extends TestCase
 {
 
-    public function testWriteConfig(): void
+    public function testWriteConfig()
     {
         $sshConfig = new SshConfig();
         $file = new \SplTempFileObject();
