@@ -94,7 +94,6 @@ install for Contribution
 git clone git@github.com:phpsu/phpsu.git
 cd phpsu
 composer install
-cp phpsu-config.dist.php phpsu-config.php
 ````
 
 ## Testing
