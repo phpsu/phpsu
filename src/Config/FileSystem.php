@@ -39,6 +39,12 @@ final class FileSystem
         return $this->excludes;
     }
 
+    public function addExcludes(array $excludes): FileSystem
+    {
+        $this->excludes = \array_merge($this->excludes, $excludes);
+        return $this;
+    }
+
     public function addExclude(string $exclude): FileSystem
     {
         $this->excludes[] = $exclude;

@@ -5,7 +5,7 @@ namespace PHPSu\Process;
 
 final class Spinner
 {
-    public const PONG = [
+    const PONG = [
         '(      )',
         '(●     )',
         '( ●    )',

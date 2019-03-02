@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 final class ControllerTest extends TestCase
 {
-    public function testEmptyConfigSshDryRun(): void
+    public function testEmptyConfigSshDryRun()
     {
         $output = new BufferedOutput();
         $config = new GlobalConfig();
@@ -25,7 +25,7 @@ final class ControllerTest extends TestCase
         $this->assertSame("ssh -F '.phpsu/config/ssh_config' 'serverEu' -t 'cd '\''/var/www/prod'\''; bash --login'\n", $output->fetch());
     }
 
-    public function testEmptyConfigSyncDryRun(): void
+    public function testEmptyConfigSyncDryRun()
     {
         $output = new BufferedOutput();
         $config = new GlobalConfig();
@@ -36,7 +36,7 @@ final class ControllerTest extends TestCase
         $this->assertSame('', $output->fetch());
     }
 
-    public function testFilesystemAndDatabase(): void
+    public function testFilesystemAndDatabase()
     {
         $config = new GlobalConfig();
         $config->addFilesystem('fileadmin', 'fileadmin');
@@ -59,10 +59,10 @@ final class ControllerTest extends TestCase
         $this->assertSame($lines, explode("\n", $output->fetch()));
     }
 
-    public function testExcludeShouldBePresentInRsyncCommand(): void
+    public function testExcludeShouldBePresentInRsyncCommand()
     {
         $config = new GlobalConfig();
-        $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExclude('*.zip');
+        $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExcludes(['*.zip', '*.rar']);
         $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb');
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
         $config->addAppInstance('testing', 'projectEu', '/srv/www/project/test.project');
@@ -74,7 +74,7 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'filesystem:fileadmin',
-            "rsync -az --exclude='*.mp4' --exclude='*.mp3' --exclude='*.zip' -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
+            "rsync -az --exclude='*.mp4' --exclude='*.mp3' --exclude='*.zip' --exclude='*.rar' -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
             'database:database',
             "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
@@ -82,10 +82,10 @@ final class ControllerTest extends TestCase
         $this->assertSame($lines, explode("\n", $output->fetch()));
     }
 
-    public function testExcludeShouldBePresentInDatabaseCommand(): void
+    public function testExcludeShouldBePresentInDatabaseCommand()
     {
         $config = new GlobalConfig();
-        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExclude('table1')->addExclude('table2');
+        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExclude('table1')->addExclude('table2')->addExcludes(['table3', 'table4']);
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
         $config->addAppInstance('testing', 'projectEu', '/srv/www/project/test.project');
         $config->addAppInstance('local', '', './testInstance')
@@ -96,17 +96,17 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' --ignore-table='\''testdb.table1'\'' --ignore-table='\''testdb.table2'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' --ignore-table='\''testdb.table1'\'' --ignore-table='\''testdb.table2'\'' --ignore-table='\''testdb.table3'\'' --ignore-table='\''testdb.table4'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
     }
 
-    public function testAllOptionShouldOverwriteExcludes(): void
+    public function testAllOptionShouldOverwriteExcludes()
     {
         $config = new GlobalConfig();
-        $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExclude('*.zip');
-        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExclude('table1')->addExclude('table2');
+        $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExcludes(['*.zip', '*.rar']);
+        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExclude('table1')->addExclude('table2')->addExcludes(['table3', 'table4']);
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
         $config->addAppInstance('testing', 'projectEu', '/srv/www/project/test.project');
         $config->addAppInstance('local', '', './testInstance')
@@ -125,11 +125,11 @@ final class ControllerTest extends TestCase
         $this->assertSame($lines, explode("\n", $output->fetch()));
     }
 
-    public function testNoDbOptionShouldRemoveDatabaseCommand(): void
+    public function testNoDbOptionShouldRemoveDatabaseCommand()
     {
         $config = new GlobalConfig();
-        $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExclude('*.zip');
-        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExclude('table1')->addExclude('table2');
+        $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExcludes(['*.zip', '*.rar']);
+        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExclude('table1')->addExclude('table2')->addExcludes(['table3', 'table4']);
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
         $config->addAppInstance('testing', 'projectEu', '/srv/www/project/test.project');
         $config->addAppInstance('local', '', './testInstance')
@@ -146,11 +146,11 @@ final class ControllerTest extends TestCase
         $this->assertSame($lines, explode("\n", $output->fetch()));
     }
 
-    public function testNoFileOptionShouldRemoveDatabaseCommand(): void
+    public function testNoFileOptionShouldRemoveDatabaseCommand()
     {
         $config = new GlobalConfig();
-        $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExclude('*.zip');
-        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExclude('table1')->addExclude('table2');
+        $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExcludes(['*.zip', '*.rar']);
+        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExclude('table1')->addExclude('table2')->addExcludes(['table3', 'table4']);
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
         $config->addAppInstance('testing', 'projectEu', '/srv/www/project/test.project');
         $config->addAppInstance('local', '', './testInstance')
@@ -167,7 +167,7 @@ final class ControllerTest extends TestCase
         $this->assertSame($lines, explode("\n", $output->fetch()));
     }
 
-    public function testUseCaseWithoutGlobalDatabase(): void
+    public function testUseCaseWithoutGlobalDatabase()
     {
         $config = new GlobalConfig();
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
@@ -187,7 +187,7 @@ final class ControllerTest extends TestCase
         $this->assertSame($lines, explode(PHP_EOL, $output->fetch()));
     }
 
-    public function testUseCaseDatabaseOnlyDefinedOnOneEnd(): void
+    public function testUseCaseDatabaseOnlyDefinedOnOneEnd()
     {
         $config = new GlobalConfig();
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
@@ -227,7 +227,7 @@ final class ControllerTest extends TestCase
         $this->assertSame('filesystem:var/storage' . PHP_EOL . 'rsync -az \'testProduction/var/storage/\' \'testLocal/var/storage/\'' . PHP_EOL, $log->fetch());
     }
 
-    public function testSyncOutputHasSectionsWithEmptyConfigAndConsoleOutput(): void
+    public function testSyncOutputHasSectionsWithEmptyConfigAndConsoleOutput()
     {
         $config = new GlobalConfig();
         $config->addAppInstance('production', 'localhost', __DIR__);
@@ -242,7 +242,7 @@ final class ControllerTest extends TestCase
         $this->assertEquals("--------------------\n", stream_get_contents($output->getStream()), 'Asserting result empty since config is empty as well');
     }
 
-    public function testSyncOutputHasSectionsWithEmptyConfigAndBufferedOutput(): void
+    public function testSyncOutputHasSectionsWithEmptyConfigAndBufferedOutput()
     {
         $config = new GlobalConfig();
         $config->addAppInstance('production', 'localhost', __DIR__);
@@ -257,7 +257,7 @@ final class ControllerTest extends TestCase
         $this->assertEquals('', $output->fetch(), 'Excepting sync to do nothing');
     }
 
-    public function testSshOutputPassthruExecution(): void
+    public function testSshOutputPassthruExecution()
     {
         $controller = new Controller();
         $config = new GlobalConfig();

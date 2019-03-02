@@ -8,17 +8,17 @@ use PHPUnit\Framework\TestCase;
 
 class EnvironmentUtilityTest extends TestCase
 {
-    public function testCommandIsInstalled(): void
+    public function testCommandIsInstalled()
     {
         $this->assertEquals(true, (new EnvironmentUtility())->isCommandInstalled('echo'));
     }
 
-    public function testCommandIsNotInstalled(): void
+    public function testCommandIsNotInstalled()
     {
         $this->assertEquals(false, (new EnvironmentUtility())->isCommandInstalled('reiguheruh'));
     }
 
-    public function testGetInstalledRsyncVersionOrExpectExceptionIfNotInstalled(): void
+    public function testGetInstalledRsyncVersionOrExpectExceptionIfNotInstalled()
     {
         if ((new EnvironmentUtility())->isRsyncInstalled()) {
             $rsyncVersion = (new EnvironmentUtility())->getRsyncVersion();
@@ -29,7 +29,7 @@ class EnvironmentUtilityTest extends TestCase
         }
     }
 
-    public function testGetInstalledSshVersionOrExpectExceptionIfNotInstalled(): void
+    public function testGetInstalledSshVersionOrExpectExceptionIfNotInstalled()
     {
         if ((new EnvironmentUtility())->isSshInstalled()) {
             $sshVersion = (new EnvironmentUtility())->getSshVersion();
@@ -40,7 +40,7 @@ class EnvironmentUtilityTest extends TestCase
         }
     }
 
-    public function testGetInstalledMysqldumpVersionOrExpectExceptionIfNotInstalled(): void
+    public function testGetInstalledMysqldumpVersionOrExpectExceptionIfNotInstalled()
     {
         if ((new EnvironmentUtility())->isMysqlDumpInstalled()) {
             $mysqldumpVersion = (new EnvironmentUtility())->getMysqlDumpVersion();
@@ -52,13 +52,13 @@ class EnvironmentUtilityTest extends TestCase
         }
     }
 
-    public function testGetInstalledSymfonyConsoleVersion(): void
+    public function testGetInstalledSymfonyConsoleVersion()
     {
         $symfonyConsoleVersion = (new EnvironmentUtility())->getSymfonyConsoleVersion();
         $this->assertEquals(1, version_compare($symfonyConsoleVersion, '3.0.0'));
     }
 
-    public function testGetInstalledSymfonyProcessVersion(): void
+    public function testGetInstalledSymfonyProcessVersion()
     {
         $symfonyConsoleVersion = (new EnvironmentUtility())->getSymfonyProcessVersion();
         $this->assertEquals(1, version_compare($symfonyConsoleVersion, '3.0.0'));

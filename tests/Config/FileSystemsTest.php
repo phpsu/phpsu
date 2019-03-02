@@ -11,7 +11,7 @@ final class FileSystemsTest extends TestCase
     /**
      * @expectedException \Exception
      */
-    public function testGetException(): void
+    public function testGetException()
     {
         $fileSystems = new FileSystems();
         $fileSystems->get('NameNotInDatabases');

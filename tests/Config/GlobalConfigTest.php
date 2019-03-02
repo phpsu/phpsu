@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class GlobalConfigTest extends TestCase
 {
-    public function testSshFromGlobalConfig(): void
+    public function testSshFromGlobalConfig()
     {
         $global = static::getGlobalConfig();
 
@@ -31,7 +31,7 @@ final class GlobalConfigTest extends TestCase
         $this->assertEquals((new SshCommand())->setInto('serverEu'), $sshCommand);
     }
 
-    public function testDatabaseFromGlobalConfig(): void
+    public function testDatabaseFromGlobalConfig()
     {
         $global = static::getGlobalConfig();
 
@@ -41,7 +41,7 @@ final class GlobalConfigTest extends TestCase
         ], $rsyncCommands);
     }
 
-    public function testRsyncFromGlobalConfig(): void
+    public function testRsyncFromGlobalConfig()
     {
         $global = static::getGlobalConfig();
 
@@ -52,7 +52,7 @@ final class GlobalConfigTest extends TestCase
         ], $rsyncCommands);
     }
 
-    public function testSshConfigFromGlobalConfig(): void
+    public function testSshConfigFromGlobalConfig()
     {
         $global = static::getGlobalConfig();
 
@@ -66,7 +66,7 @@ final class GlobalConfigTest extends TestCase
         $this->assertEquals($sshConfigExpected, $sshConfig);
     }
 
-    public function testOverwriteDefaultSshConfig(): void
+    public function testOverwriteDefaultSshConfig()
     {
         $global = static::getGlobalConfig();
         $global->setDefaultSshConfig(['ForwardAgent' => 'no']);

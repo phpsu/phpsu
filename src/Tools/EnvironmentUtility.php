@@ -82,7 +82,10 @@ final class EnvironmentUtility
         ];
     }
 
-    public function getInstalledPackageVersion(string $packageName): ?string
+    /**
+     * @return string|null
+     */
+    public function getInstalledPackageVersion(string $packageName)
     {
         $activeInstallations = json_decode(file_get_contents($this->spotVendorPath() . '/composer/installed.json'));
         foreach ($activeInstallations as $installed) {

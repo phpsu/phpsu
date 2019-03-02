@@ -8,10 +8,10 @@ use PHPSu\Tools\EnvironmentUtility;
 
 final class Process extends \Symfony\Component\Process\Process
 {
-    public const STATE_READY = 'ready';
-    public const STATE_RUNNING = 'running';
-    public const STATE_SUCCEEDED = 'succeeded';
-    public const STATE_ERRORED = 'errored';
+    const STATE_READY = 'ready';
+    const STATE_RUNNING = 'running';
+    const STATE_SUCCEEDED = 'succeeded';
+    const STATE_ERRORED = 'errored';
 
     /** @var string */
     private $name = '';
@@ -40,7 +40,7 @@ final class Process extends \Symfony\Component\Process\Process
         throw new \LogicException('This should never happen');
     }
 
-    public function __construct($commandline, ?string $cwd = null, ?array $env = null, $input = null, ?float $timeout = 60, array $options = [])
+    public function __construct($commandline, string $cwd = null, array $env = null, $input = null, $timeout = 60.0, array $options = [])
     {
         if (\is_array($commandline) && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '3.4.0', '<')) {
             throw new CommandExecutionException('Support for arrays as commandline-argument is not supported in symfony < 3.4.0');
@@ -57,7 +57,7 @@ final class Process extends \Symfony\Component\Process\Process
      *
      * {@inheritdoc}
      */
-    public static function fromShellCommandline(string $command, string $cwd = null, array $env = null, $input = null, ?float $timeout = 60): self
+    public static function fromShellCommandline(string $command, string $cwd = null, array $env = null, $input = null, float $timeout = null): self
     {
         if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.2.0', '>=')) {
             /** @noinspection PhpUndefinedMethodInspection Symfony version > 4.X */
