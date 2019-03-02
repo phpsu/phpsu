@@ -15,6 +15,10 @@ This option gives you a quick overview on how to use it.
 
 ```bash
 phpsu ssh destination
+# eg
+phpsu ssh ThisAppInstance
+phpsu ssh ThisHost
+phpsu ssh thish
 ```
 
 ```php
@@ -26,14 +30,16 @@ $config->addAppInstance('ThisAppInstance', '...');
 // ...
 ```
 
-The keyword destination can either be replaced with an AppInstance Name or a HostName. 
+The keyword destination can either be replaced with an AppInstanceName or a HostName. 
 Keeping that in mind, with the example config from above, the destination can either be ``ThisHost``  or ``ThisAppInstance``.
-If an AppInstance is being used as the destination, the configured path will be the working directory right after connecting
+If an AppInstance is being used as the destination, the configured path will be the working directory right after connecting.
 
 ### The Argument commands
 
 ```bash
 phpsu ssh destination [...commands]
+# eg
+phpsu ssh destination ./clearCache.sh
 ```
 
 It is possible to provide an arbitrary amount of commands that will be executed on the remote server.
