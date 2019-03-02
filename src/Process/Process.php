@@ -49,7 +49,7 @@ final class Process extends \Symfony\Component\Process\Process
      * @param float|int|null $timeout
      * @throws CommandExecutionException
      */
-    public function __construct($commandline, ?string $cwd = null, ?array $env = null, $input = null, $timeout = 60)
+    public function __construct($commandline, ?string $cwd = null, ?array $env = null, $input = null, $timeout = 60.0)
     {
         if (\is_array($commandline) && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '3.4.0', '<')) {
             throw new CommandExecutionException('Support for arrays as commandline-argument is not supported in symfony < 3.4.0');
