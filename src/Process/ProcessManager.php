@@ -22,19 +22,25 @@ final class ProcessManager
 
     public function addOutputCallback(callable $callback): ProcessManager
     {
-        $this->outputCallbacks[] = \Closure::fromCallable($callback);
+        $this->outputCallbacks[] = function () use ($callback) {
+            return $callback(...func_get_args());
+        };
         return $this;
     }
 
     public function addStateChangeCallback(callable $callback): ProcessManager
     {
-        $this->stateChangeCallbacks[] = \Closure::fromCallable($callback);
+        $this->stateChangeCallbacks[] = function () use ($callback) {
+            return $callback(...func_get_args());
+        };
         return $this;
     }
 
     public function addTickCallback(callable $callback): ProcessManager
     {
-        $this->tickCallbacks[] = \Closure::fromCallable($callback);
+        $this->tickCallbacks[] = function () use ($callback) {
+            return $callback(...func_get_args());
+        };
         return $this;
     }
 
@@ -50,7 +56,7 @@ final class ProcessManager
     {
         foreach ($this->processes as $processId => $process) {
             $this->notifyStateChangeCallbacks($processId, $process, $this->processStates[$processId], $this);
-            $process->start(function (string $type, string $data) use ($process): void {
+            $process->start(function (string $type, string $data) use ($process) {
                 $this->notifyOutputCallbacks($process, $type, $data);
             });
         }
@@ -96,21 +102,30 @@ final class ProcessManager
         return $this;
     }
 
-    private function notifyOutputCallbacks(Process $process, string $type, string $data): void
+    /**
+     * @return void
+     */
+    private function notifyOutputCallbacks(Process $process, string $type, string $data)
     {
         foreach ($this->outputCallbacks as $callback) {
             $callback($process, $type, $data);
         }
     }
 
-    private function notifyStateChangeCallbacks(int $processId, Process $process, string $newState, ProcessManager $manager): void
+    /**
+     * @return void
+     */
+    private function notifyStateChangeCallbacks(int $processId, Process $process, string $newState, ProcessManager $manager)
     {
         foreach ($this->stateChangeCallbacks as $callback) {
             $callback($processId, $process, $newState, $manager);
         }
     }
 
-    private function notifyTickCallbacks(ProcessManager $manager): void
+    /**
+     * @return void
+     */
+    private function notifyTickCallbacks(ProcessManager $manager)
     {
         foreach ($this->tickCallbacks as $callback) {
             $callback($manager);
@@ -128,7 +143,10 @@ final class ProcessManager
         return $errors;
     }
 
-    public function validateProcesses(): void
+    /**
+     * @return void
+     */
+    public function validateProcesses()
     {
         $errors = [];
         foreach ($this->processes as $process) {

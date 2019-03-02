@@ -14,7 +14,7 @@ final class CommandExecutor
      * @param OutputInterface $statusOutput
      * @return void
      */
-    public function executeParallel(array $commands, OutputInterface $logOutput, OutputInterface $statusOutput): void
+    public function executeParallel(array $commands, OutputInterface $logOutput, OutputInterface $statusOutput)
     {
         $manager = new ProcessManager();
         foreach ($commands as $name => $command) {

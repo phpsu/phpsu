@@ -18,7 +18,7 @@ final class TempSshConfigFileTest extends TestCase
         exec(sprintf('rm -rf %s', escapeshellarg(__DIR__ . '/../fixtures/.phpsu/')));
     }
 
-    public function testConstruct(): void
+    public function testConstruct()
     {
         $file = new TempSshConfigFile();
         $this->assertSame('', implode('', iterator_to_array($file)));

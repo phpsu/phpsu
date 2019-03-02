@@ -15,12 +15,18 @@ final class ApplicationHelper
         return $this->getPhpSuVersionFromVendor() ?? $this->getPhpSuVersionFromGitFolder() ?? 'development';
     }
 
-    private function getPhpSuVersionFromVendor(): ?string
+    /**
+     * @return string|null
+     */
+    private function getPhpSuVersionFromVendor()
     {
         return (new EnvironmentUtility())->getInstalledPackageVersion('phpsu/phpsu');
     }
 
-    private function getPhpSuVersionFromGitFolder(): ?string
+    /**
+     * @return string|null
+     */
+    private function getPhpSuVersionFromGitFolder()
     {
         if (!file_exists(Controller::PHPSU_ROOT_PATH . '/.git/')) {
             return null;

@@ -9,25 +9,25 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class StringHelperTest extends TestCase
 {
-    public function testThatSplitStringSplitsAtRightPosition(): void
+    public function testThatSplitStringSplitsAtRightPosition()
     {
         $result = StringHelper::splitString('test 12_1 12_2 12_3', 10);
         $this->assertSame(['test 12_1', '12_2 12_3'], $result);
     }
 
-    public function testThatSplitStringCannotForceSplit(): void
+    public function testThatSplitStringCannotForceSplit()
     {
         $result = StringHelper::splitString('test_test_test_test', 10);
         $this->assertSame(['test_test_test_test'], $result);
     }
 
-    public function testThatSplitStringCanSplitLarge(): void
+    public function testThatSplitStringCanSplitLarge()
     {
         $result = StringHelper::splitString('test test_test_test_test_test_test_test_test_test', 30);
         $this->assertSame(['test', 'test_test_test_test_test_test_test_test_test'], $result);
     }
 
-    public function testFindStringInArray(): void
+    public function testFindStringInArray()
     {
         $this->assertSame('production', StringHelper::findStringInArray('production', ['production']), 'perfect match');
         $this->assertSame('production', StringHelper::findStringInArray('p', ['production']), 'only first letter');
@@ -38,7 +38,7 @@ class StringHelperTest extends TestCase
         $this->assertSame('', StringHelper::findStringInArray('', ['london', 'local']), 'empty input');
     }
 
-    public function testUndefinedVerbosityException(): void
+    public function testUndefinedVerbosityException()
     {
         $verbosity = 9999;
         $this->expectExceptionMessage("Verbosity $verbosity is not defined");

@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class OutputCallbackTest extends TestCase
 {
-    public function testProcessColorStd(): void
+    public function testProcessColorStd()
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $callback = new OutputCallback($output);
@@ -19,7 +19,7 @@ final class OutputCallbackTest extends TestCase
         $this->assertSame('', $output->fetch());
     }
 
-    public function testProcessColorStdVerbose(): void
+    public function testProcessColorStdVerbose()
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE, true);
         $callback = new OutputCallback($output);
@@ -27,7 +27,7 @@ final class OutputCallbackTest extends TestCase
         $this->assertSame("\e[33mtestName:\e[39m message\n", $output->fetch());
     }
 
-    public function testProcessColorError(): void
+    public function testProcessColorError()
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $callback = new OutputCallback($output);
@@ -35,7 +35,7 @@ final class OutputCallbackTest extends TestCase
         $this->assertSame("\e[31mtestName:\e[39m message\n", $output->fetch());
     }
 
-    public function testProcessColorErrorMultiline(): void
+    public function testProcessColorErrorMultiline()
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $callback = new OutputCallback($output);
@@ -43,7 +43,7 @@ final class OutputCallbackTest extends TestCase
         $this->assertSame("\e[31mtestName:\e[39m message\n" . "\e[31mtestName:\e[39m message2\n", $output->fetch());
     }
 
-    public function testProcessColorStdVerboseMultiline(): void
+    public function testProcessColorStdVerboseMultiline()
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE, true);
         $callback = new OutputCallback($output);
@@ -51,7 +51,7 @@ final class OutputCallbackTest extends TestCase
         $this->assertSame("\e[33mtestName:\e[39m message\n" . "\e[33mtestName:\e[39m message2\n", $output->fetch());
     }
 
-    public function testProcessColorErrQuite(): void
+    public function testProcessColorErrQuite()
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_QUIET, true);
         $callback = new OutputCallback($output);
@@ -59,7 +59,7 @@ final class OutputCallbackTest extends TestCase
         $this->assertSame("\e[31mtestName:\e[39m message\n", $output->fetch());
     }
 
-    public function testProcessErr(): void
+    public function testProcessErr()
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, false);
         $callback = new OutputCallback($output);
@@ -67,7 +67,7 @@ final class OutputCallbackTest extends TestCase
         $this->assertSame("testName: message\n", $output->fetch());
     }
 
-    public function testProcessStdVerbose(): void
+    public function testProcessStdVerbose()
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE, false);
         $callback = new OutputCallback($output);
@@ -75,7 +75,7 @@ final class OutputCallbackTest extends TestCase
         $this->assertSame("testName: message\n", $output->fetch());
     }
 
-    public function testProcessMultipleCalls(): void
+    public function testProcessMultipleCalls()
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE, true);
         $callback = new OutputCallback($output);

@@ -7,14 +7,20 @@ final class SshConnections
 {
     private $connections = [];
 
-    public function addConnections(SshConnection ...$sshConnections): void
+    /**
+     * @return void
+     */
+    public function addConnections(SshConnection ...$sshConnections)
     {
         foreach ($sshConnections as $sshConnection) {
             $this->add($sshConnection);
         }
     }
 
-    public function add(SshConnection $sshConnection): void
+    /**
+     * @return void
+     */
+    public function add(SshConnection $sshConnection)
     {
         if (count($sshConnection->getFrom()) === 0) {
             $this->addSingleConnection('', $sshConnection);
@@ -25,7 +31,10 @@ final class SshConnections
         }
     }
 
-    private function addSingleConnection(string $from, SshConnection $sshConnection): void
+    /**
+     * @return void
+     */
+    private function addSingleConnection(string $from, SshConnection $sshConnection)
     {
         if (isset($this->connections[$sshConnection->getHost()][$from])) {
             throw new \Exception(sprintf('suspicious Connection Model found: %s->%s has more than one definition', $from, $sshConnection->getHost()));

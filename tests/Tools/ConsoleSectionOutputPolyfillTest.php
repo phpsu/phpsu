@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\StreamOutput;
 
 class ConsoleSectionOutputPolyfillTest extends TestCase
 {
-    public function testConsoleSectionOutputPolyfill(): void
+    public function testConsoleSectionOutputPolyfill()
     {
         $sectionOutputs = [];
         $output = new StreamOutput(fopen('php://memory', 'w', false));

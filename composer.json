@@ -11,9 +11,6 @@
   ],
   "homepage": "https://phpsu.de/",
   "config": {
-    "platform": {
-      "php": "7.1.3"
-    },
     "optimize-autoloader": true,
     "process-timeout": 0
   },
@@ -53,11 +50,11 @@
   "require": {
     "symfony/console": "3.2.* | 3.4.* | 4.2.*",
     "symfony/process": "3.2.* | 3.4.* | 4.2.*",
-    "php": ">=7.1.3 <7.4",
+    "php": ">=7.0.0 <7.4",
     "ext-json": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "7.*",
+    "phpunit/phpunit": "6.* | 7.*",
     "pluswerk/grumphp-config": "2.*",
     "spatie/phpunit-watcher": "1.*"
   },

@@ -26,7 +26,10 @@ final class SshConfig
         return $this->hosts[$name];
     }
 
-    public function __set(string $name, SshConfigHost $host): void
+    /**
+     * @return void
+     */
+    public function __set(string $name, SshConfigHost $host)
     {
         $this->hosts[$name] = $host;
     }
@@ -36,12 +39,18 @@ final class SshConfig
         return $this->file;
     }
 
-    public function setFile(\SplFileObject $file): void
+    /**
+     * @return void
+     */
+    public function setFile(\SplFileObject $file)
     {
         $this->file = $file;
     }
 
-    public function writeConfig(): void
+    /**
+     * @return void
+     */
+    public function writeConfig()
     {
         $this->file->ftruncate(0);
         $this->file->fwrite($this->toFileString());

@@ -13,7 +13,7 @@ final class SshConnectionsTest extends TestCase
      * @expectedException \Exception
      * @expectedExceptionMessage suspicious Connection Model found: fromHere->test has more than one definition
      */
-    public function testAdd(): void
+    public function testAdd()
     {
         $sshConnections = new SshConnections();
         $sshConnections->add((new SshConnection())->setHost('test')->setFrom(['fromHere']));
@@ -24,7 +24,7 @@ final class SshConnectionsTest extends TestCase
      * @expectedException \Exception
      * @expectedExceptionMessage Host test not found in SshConnections
      */
-    public function testGetPossibilities(): void
+    public function testGetPossibilities()
     {
         $sshConnections = new SshConnections();
         $sshConnections->getPossibilities('test');

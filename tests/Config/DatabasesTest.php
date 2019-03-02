@@ -11,7 +11,7 @@ final class DatabasesTest extends TestCase
     /**
      * @expectedException \Exception
      */
-    public function testGetException(): void
+    public function testGetException()
     {
         $databases = new Databases();
         $databases->get('NameNotInDatabases');

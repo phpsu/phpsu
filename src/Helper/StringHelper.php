@@ -29,7 +29,10 @@ final class StringHelper
         return [$full];
     }
 
-    public static function findStringInArray(string $needle, array $haystack): ?string
+    /**
+     * @return string|null
+     */
+    public static function findStringInArray(string $needle, array $haystack)
     {
         $remaining = array_filter($haystack, function ($el) use ($needle) {
             return stripos($el, $needle) === 0;
