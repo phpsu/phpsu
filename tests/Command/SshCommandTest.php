@@ -65,7 +65,7 @@ final class SshCommandTest extends TestCase
         $this->assertEquals("ssh -vvv -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
-    public function testSshCommandGetter(): void
+    public function testSshCommandGetter()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());

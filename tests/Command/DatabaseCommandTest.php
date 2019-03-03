@@ -83,7 +83,7 @@ final class DatabaseCommandTest extends TestCase
         $this->assertSame("ssh -vvv -F 'php://temp' 'hostc' 'mysqldump -vvv --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;' && cat) | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
-    public function testDatabaseCommandGetter(): void
+    public function testDatabaseCommandGetter()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());

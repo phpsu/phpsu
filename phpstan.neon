@@ -1,3 +1,6 @@
 parameters:
+	reportUnmatchedIgnoredErrors: false
 	ignoreErrors:
 		- '#Access to an undefined property PHPSu\\Config\\SshConfig::\$[a-zA-Z0-9_]+#'
+		- '#Call to an undefined static method Symfony\\Component\\Process\\Process::fromShellCommandline#'
+		- '#Call to an undefined method Symfony\\Component\\Console\\Output\\ConsoleOutputInterface::(section|getStream)#'

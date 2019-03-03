@@ -155,7 +155,7 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -vvv -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 
-    public function testRsyncCommandGetter(): void
+    public function testRsyncCommandGetter()
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());

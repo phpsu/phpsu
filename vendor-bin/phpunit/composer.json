@@ -1,0 +1,7 @@
+{
+    "require-dev": {
+        "phpunit/phpunit": "6.* | 7.*",
+        "spatie/phpunit-watcher": "*",
+        "phpunit/php-invoker": "*"
+    }
+}

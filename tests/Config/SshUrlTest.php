@@ -27,21 +27,21 @@ final class SshUrlTest extends TestCase
         $dsn->setPort(0);
     }
 
-    public function testInvalidPort2(): void
+    public function testInvalidPort2()
     {
         $dsn = new SshUrl('user@test');
         $this->expectExceptionMessage('port must be between 0 and 65535');
         $dsn->setPort(65535);
     }
 
-    public function testMinimumValidPort(): void
+    public function testMinimumValidPort()
     {
         $dsn = new SshUrl('user@test');
         $dsn->setPort(1);
         $this->assertEquals(1, $dsn->getPort());
     }
 
-    public function testMaximumValidPort(): void
+    public function testMaximumValidPort()
     {
         $dsn = new SshUrl('user@test');
         $dsn->setPort(65534);
@@ -98,7 +98,7 @@ final class SshUrlTest extends TestCase
         $this->assertSame('ssh://user@192.168.0.1', $dsn->__toString());
     }
 
-    public function testSshUrlGetter(): void
+    public function testSshUrlGetter()
     {
         $dsn = new SshUrl('user@192.168.0.1');
         $this->assertSame('user', $dsn->getUser());

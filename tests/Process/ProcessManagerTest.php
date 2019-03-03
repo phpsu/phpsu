@@ -38,7 +38,7 @@ final class ProcessManagerTest extends TestCase
         $processManager->validateProcesses();
     }
 
-    public function testRunWithMultipleErrors(): void
+    public function testRunWithMultipleErrors()
     {
         $name1 = 'error' . md5(random_bytes(100));
         $name2 = 'error' . md5(random_bytes(100));
