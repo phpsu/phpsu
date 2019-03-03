@@ -42,7 +42,7 @@ The full [Documentation](docs/index.md) can be found in the ``/docs`` Directory.
 
 ## Configuration Example
 
-Simple configuration example:
+Simple configuration example `phpsu-config.php`:
 
 ````php
 <?php
