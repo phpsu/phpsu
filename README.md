@@ -18,8 +18,23 @@ This package is compliant with [PSR-1], [PSR-2] and [PSR-4]. If you notice compl
 Via Composer:
 
 ````bash
-composer require --dev phpsu/phpsu
+composer require --dev phpsu/phpsu:@beta
 ````
+
+### Install with conflicting versions
+
+If you have problems with conflicting versions. eg. symfony:2.* you can use the [composer-bin-plugin]
+
+````bash
+composer require --dev bamarni/composer-bin-plugin
+composer bin phpsu require phpsu/phpsu:@beta
+#  we recomand to install it with the auto installation scripts:
+composer config scripts.post-install-cmd '@composer bin all install --ansi'
+composer config scripts.post-update-cmd '@composer bin all update --ansi'
+echo '/vendor-bin/**/vendor' >> .gitignore
+````
+
+[composer-bin-plugin]: https://github.com/bamarni/composer-bin-plugin
 
 ## Requirements
 
