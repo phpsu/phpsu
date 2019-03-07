@@ -12,6 +12,8 @@
         "text": "tests/test-results/infection.log"
     },
     "mutators": {
-        "@default": true
+        "@default": true,
+        "IdenticalEqual": false,
+        "NotIdenticalNotEqual": false
     }
 }
