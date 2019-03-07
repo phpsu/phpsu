@@ -18,8 +18,23 @@ This package is compliant with [PSR-1], [PSR-2] and [PSR-4]. If you notice compl
 Via Composer:
 
 ````bash
-composer require --dev phpsu/phpsu
+composer require --dev phpsu/phpsu:@beta
 ````
+
+### Install with conflicting versions
+
+If you have problems with conflicting versions. eg. symfony:2.* you can use the [composer-bin-plugin]
+
+````bash
+composer require --dev bamarni/composer-bin-plugin
+composer bin phpsu require phpsu/phpsu:@beta
+#  we recomand to install it with the auto installation scripts:
+composer config scripts.post-install-cmd '@composer bin all install --ansi'
+composer config scripts.post-update-cmd '@composer bin all update --ansi'
+echo '/vendor-bin/**/vendor' >> .gitignore
+````
+
+[composer-bin-plugin]: https://github.com/bamarni/composer-bin-plugin
 
 ## Requirements
 
@@ -42,7 +57,7 @@ The full [Documentation](docs/index.md) can be found in the ``/docs`` Directory.
 
 ## Configuration Example
 
-Simple configuration example:
+Simple configuration example `phpsu-config.php`:
 
 ````php
 <?php
@@ -65,6 +80,28 @@ $config->addAppInstance('local')
 return $config;
 ````
 
+## CLI Examples
+
+````bash
+phpsu sync production --dry-run
+phpsu sync p --no-db
+phpsu sync p --no-fs
+phpsu sync production testing --all
+````
+
+<!--### PHP API Examples
+
+````php
+<?php
+declare(strict_types=1);
+
+$log = new \Symfony\Component\Console\Output\BufferedOutput();
+$configurationLoader = new \PHPSu\Config\ConfigurationLoader();
+$syncOptions = new \PHPSu\SyncOptions('production');
+$phpsu = new \PHPSu\Controller();
+$phpsu->sync($log, $configurationLoader->getConfig(), $syncOptions);
+````-->
+
 ## Contributing
 
 install for Contribution
@@ -72,7 +109,6 @@ install for Contribution
 git clone git@github.com:phpsu/phpsu.git
 cd phpsu
 composer install
-cp phpsu-config.dist.php phpsu-config.php
 ````
 
 ## Testing
