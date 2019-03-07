@@ -34,8 +34,7 @@ final class CommandExecutor
     {
         $process = Process::fromShellCommandline($command, null, null, null, null);
         $process->setTty(true);
-        $process->run();
-        return $process->getExitCode();
+        return $process->run();
     }
 
     public function runCommand(string $command): Process

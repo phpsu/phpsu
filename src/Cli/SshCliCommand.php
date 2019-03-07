@@ -36,7 +36,7 @@ final class SshCliCommand extends AbstractCliCommand
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $default = $input->hasArgument('destination') ? $input->getArgument('destination') : '';
+        $default = (string)($input->hasArgument('destination') ? $input->getArgument('destination') : '');
         if ($default) {
             $input->setArgument(
                 'destination',
@@ -65,10 +65,10 @@ final class SshCliCommand extends AbstractCliCommand
         return $this->controller->ssh(
             $output,
             $this->configurationLoader->getConfig(),
-            (new SshOptions($input->getArgument('destination')))
-                ->setCurrentHost($input->getOption('from'))
+            (new SshOptions((string)$input->getArgument('destination')))
+                ->setCurrentHost((string)$input->getOption('from'))
                 ->setCommand(implode(' ', $input->getArgument('commands')))
-                ->setDryRun($input->getOption('dry-run'))
+                ->setDryRun((bool)$input->getOption('dry-run'))
         );
     }
 

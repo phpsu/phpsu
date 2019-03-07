@@ -33,19 +33,19 @@ final class SyncCliCommand extends AbstractCliCommand
     {
         $configuration = $this->configurationLoader->getConfig();
         $instances = $configuration->getAppInstanceNames();
-        $source = $input->getArgument('source');
-        $destination = $input->getArgument('destination');
+        $source = (string)$input->getArgument('source');
+        $destination = (string)$input->getArgument('destination');
 
         $this->controller->sync(
             $output,
             $configuration,
             (new SyncOptions(StringHelper::findStringInArray($source, $instances) ?: $source))
                 ->setDestination(StringHelper::findStringInArray($destination, $instances) ?: $destination)
-                ->setCurrentHost($input->getOption('from'))
-                ->setDryRun($input->getOption('dry-run'))
-                ->setAll($input->getOption('all'))
-                ->setNoFiles($input->getOption('no-fs'))
-                ->setNoDatabases($input->getOption('no-db'))
+                ->setCurrentHost((string)$input->getOption('from'))
+                ->setDryRun((bool)$input->getOption('dry-run'))
+                ->setAll((bool)$input->getOption('all'))
+                ->setNoFiles((bool)$input->getOption('no-fs'))
+                ->setNoDatabases((bool)$input->getOption('no-db'))
         );
         return 0;
     }
