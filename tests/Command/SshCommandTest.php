@@ -18,7 +18,7 @@ final class SshCommandTest extends TestCase
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta');
-        $this->assertSame("ssh -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertEquals("ssh -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
     public function testSshCommandQuiet()
@@ -29,7 +29,7 @@ final class SshCommandTest extends TestCase
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
             ->setVerbosity(OutputInterface::VERBOSITY_QUIET);
-        $this->assertSame("ssh -q -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertEquals("ssh -q -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
     public function testSshCommandVerbose()
@@ -40,7 +40,7 @@ final class SshCommandTest extends TestCase
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
             ->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
-        $this->assertSame("ssh -v -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertEquals("ssh -v -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
     public function testSshCommandVeryVerbose()
@@ -51,7 +51,7 @@ final class SshCommandTest extends TestCase
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
             ->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
-        $this->assertSame("ssh -vv -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertEquals("ssh -vv -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
     public function testSshCommandDebug()
@@ -62,7 +62,22 @@ final class SshCommandTest extends TestCase
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
             ->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
-        $this->assertSame("ssh -vvv -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertEquals("ssh -vvv -F 'php://temp' 'hosta'", $ssh->generate());
+    }
+
+    public function testSshCommandGetter()
+    {
+        $sshConfig = new SshConfig();
+        $sshConfig->setFile(new \SplTempFileObject());
+        $ssh = new SshCommand();
+        $ssh->setSshConfig($sshConfig)
+            ->setInto('hosta')
+            ->setPath('/path/g2v7b89')
+            ->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
+        $this->assertEquals('hosta', $ssh->getInto());
+        $this->assertEquals('/path/g2v7b89', $ssh->getPath());
+        $this->assertEquals($sshConfig, $ssh->getSshConfig());
+        $this->assertEquals(OutputInterface::VERBOSITY_DEBUG, $ssh->getVerbosity());
     }
 
     /**
@@ -73,6 +88,7 @@ final class SshCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new \SplTempFileObject());
+        $this->expectExceptionMessage('the found host and the current Host are the same: same');
         SshCommand::fromGlobal(new GlobalConfig(), 'same', 'same', OutputInterface::VERBOSITY_NORMAL);
     }
 }

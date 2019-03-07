@@ -24,6 +24,10 @@ matrix:
 
 install: composer require symfony/process:$SYMFONY_VERSION symfony/console:$SYMFONY_VERSION
 
-script: vendor/bin/grumphp run && composer test
+script:
+  - vendor/bin/grumphp run
+  - composer test
+  - composer infection
+  - composer phpstan
 
 after_success: bash <(curl -s https://codecov.io/bash)

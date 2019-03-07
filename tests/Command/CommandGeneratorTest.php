@@ -62,6 +62,7 @@ final class CommandGeneratorTest extends TestCase
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
+        $this->expectExceptionMessage('Source and Destination are Identical: same');
         $commandGenerator->syncCommands((new SyncOptions('same'))->setDestination('same'));
     }
 
@@ -204,6 +205,16 @@ Host *
 
 SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+    }
+
+    public function testProductionToStagingFromStagingError()
+    {
+        $globalConfig = static::getGlobalConfig();
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile($file = new \SplTempFileObject());
+
+        $this->expectExceptionMessage('Host noHost not found in SshConnections');
+        $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('staging')->setCurrentHost('noHost'));
     }
 
     public function testStagingToProductionFromStaging()

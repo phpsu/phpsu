@@ -14,6 +14,7 @@ final class DatabasesTest extends TestCase
     public function testGetException()
     {
         $databases = new Databases();
+        $this->expectExceptionMessage('Database NameNotInDatabases not found');
         $databases->get('NameNotInDatabases');
     }
 }

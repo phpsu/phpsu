@@ -15,6 +15,7 @@ final class AppInstancesTest extends TestCase
     public function testGetException()
     {
         $apps = new AppInstances();
+        $this->expectExceptionMessage('App Instance with name NameNotInApps not found');
         $apps->get('NameNotInApps');
     }
 

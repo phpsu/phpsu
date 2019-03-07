@@ -1,6 +1,7 @@
 /.idea/
 /vendor/
-/composer.lock
+/vendor-bin/**/vendor
+composer.lock
 /.phpsu/
 /tests/test-results/
 /phpsu-config.php

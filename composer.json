@@ -31,7 +31,11 @@
   ],
   "scripts": {
     "test": "vendor/bin/phpunit -c tests/phpunit.xml --testdox --color=always",
-    "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox"
+    "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox",
+    "infection": "vendor/bin/infection --threads=4 --min-msi=80 --min-covered-msi=80 --ansi",
+    "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon -l 2 src tests --autoload-file=vendor-bin/phpunit/vendor/autoload.php --ansi",
+    "post-install-cmd": ["@composer bin all install --ansi"],
+    "post-update-cmd": ["@composer bin all update --ansi"]
   },
   "autoload": {
     "psr-4": {
@@ -54,9 +58,8 @@
     "ext-json": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "6.* | 7.*",
     "pluswerk/grumphp-config": "2.*",
-    "spatie/phpunit-watcher": "1.*"
+    "bamarni/composer-bin-plugin": "^1.2"
   },
   "extra": {
     "pluswerk/grumphp-config": {

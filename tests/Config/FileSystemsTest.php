@@ -14,6 +14,7 @@ final class FileSystemsTest extends TestCase
     public function testGetException()
     {
         $fileSystems = new FileSystems();
+        $this->expectExceptionMessage('Filesystem NameNotInDatabases not found');
         $fileSystems->get('NameNotInDatabases');
     }
 }

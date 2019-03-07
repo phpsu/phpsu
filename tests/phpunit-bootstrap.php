@@ -16,3 +16,6 @@ set_error_handler(
         throw new ErrorException(__FILE__ . __FUNCTION__ . ': ' . $message, 0, $severity, $file, $line);
     }
 );
+
+
+require_once __DIR__ . '/../vendor/autoload.php';

@@ -9,11 +9,12 @@ final class FileSystems
     private $fileSystems = [];
 
     /**
+     * @param FileSystem $fileSystem
      * @return void
      */
-    public function add(Filesystem $filesystem)
+    public function add(FileSystem $fileSystem)
     {
-        $this->fileSystems[$filesystem->getName()] = $filesystem;
+        $this->fileSystems[$fileSystem->getName()] = $fileSystem;
     }
 
     /**
