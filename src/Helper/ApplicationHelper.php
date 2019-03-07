@@ -21,10 +21,7 @@ final class ApplicationHelper
     private function getPhpSuVersionFromGlobals()
     {
         $pharVersion = '@phpsu_version@';
-        if (strpos($pharVersion, '@') === 0) {
-            return null;
-        }
-        return $pharVersion;
+        return \strpos($pharVersion, '@') === 0 ? null : $pharVersion;
     }
 
     /**
