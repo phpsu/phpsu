@@ -66,9 +66,6 @@ final class Controller implements ControllerInterface
         if (method_exists($output, 'section') && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', '>=')) {
             return $output->section();
         }
-        if (method_exists($output, 'getStream')) {
-            return new ConsoleSectionOutput($output->getStream(), $sectionOutputs, $output->getVerbosity(), $output->isDecorated(), $output->getFormatter());
-        }
-        throw new \Exception('This should never happen!');
+        return new ConsoleSectionOutput($output->getStream(), $sectionOutputs, $output->getVerbosity(), $output->isDecorated(), $output->getFormatter());
     }
 }
