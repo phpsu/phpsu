@@ -12,7 +12,16 @@ final class ApplicationHelper
 
     public function getCurrentPHPSUVersion(): string
     {
-        return $this->getPhpSuVersionFromVendor() ?? $this->getPhpSuVersionFromGitFolder() ?? 'development';
+        return $this->getPhpSuVersionFromGlobals() ?? $this->getPhpSuVersionFromVendor() ?? $this->getPhpSuVersionFromGitFolder() ?? 'development';
+    }
+
+    /**
+     * @return string|null
+     */
+    private function getPhpSuVersionFromGlobals()
+    {
+        $pharVersion = '@phpsu_version@';
+        return \strpos($pharVersion, '@') === 0 ? null : $pharVersion;
     }
 
     /**
