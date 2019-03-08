@@ -9,7 +9,7 @@ use PHPSu\Process\CommandExecutor;
 
 final class EnvironmentUtility
 {
-    /** @var CommandExecutor  */
+    /** @var CommandExecutor */
     private $commandExecutor;
 
     public function __construct(CommandExecutor $executor = null)
@@ -87,7 +87,14 @@ final class EnvironmentUtility
      */
     public function getInstalledPackageVersion(string $packageName)
     {
-        $activeInstallations = json_decode(file_get_contents($this->spotVendorPath() . '/composer/installed.json'));
+        $contents = file_get_contents($this->spotVendorPath() . '/composer/installed.json');
+        if ($contents === false) {
+            return null;
+        }
+        $activeInstallations = json_decode($contents);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return null;
+        }
         foreach ($activeInstallations as $installed) {
             if ($installed->name === $packageName) {
                 return $installed->version;
@@ -108,11 +115,19 @@ final class EnvironmentUtility
 
     public function getSymfonyProcessVersion(): string
     {
-        return str_replace('v', '', $this->getInstalledPackageVersion('symfony/process'));
+        $version = $this->getInstalledPackageVersion('symfony/process');
+        if ($version === null) {
+            throw new \Exception('could not retreve package version of symfony/process, not installed?');
+        }
+        return str_replace('v', '', $version);
     }
 
     public function getSymfonyConsoleVersion(): string
     {
-        return str_replace('v', '', $this->getInstalledPackageVersion('symfony/console'));
+        $version = $this->getInstalledPackageVersion('symfony/console');
+        if ($version === null) {
+            throw new \Exception('could not retreve package version of symfony/process, not installed?');
+        }
+        return str_replace('v', '', $version);
     }
 }

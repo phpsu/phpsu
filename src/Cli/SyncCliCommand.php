@@ -33,15 +33,25 @@ final class SyncCliCommand extends AbstractCliCommand
     {
         $configuration = $this->configurationLoader->getConfig();
         $instances = $configuration->getAppInstanceNames();
-        $source = (string)$input->getArgument('source');
-        $destination = (string)$input->getArgument('destination');
+        $source = $input->getArgument('source');
+        if (!is_string($source)) {
+            throw new \Exception('misconfigured source, source must be string');
+        }
+        $destination = $input->getArgument('destination');
+        if (!is_string($destination)) {
+            throw new \Exception('misconfigured destination, destination must be string');
+        }
+        $currentHost = $input->getOption('from');
+        if (!is_string($currentHost)) {
+            throw new \Exception('misconfigured currentHost, currentHost must be string');
+        }
 
         $this->controller->sync(
             $output,
             $configuration,
             (new SyncOptions(StringHelper::findStringInArray($source, $instances) ?: $source))
                 ->setDestination(StringHelper::findStringInArray($destination, $instances) ?: $destination)
-                ->setCurrentHost((string)$input->getOption('from'))
+                ->setCurrentHost($currentHost)
                 ->setDryRun((bool)$input->getOption('dry-run'))
                 ->setAll((bool)$input->getOption('all'))
                 ->setNoFiles((bool)$input->getOption('no-fs'))

@@ -10,12 +10,15 @@ final class StringHelper
     /**
      * @param string $string
      * @param int $maxLength
-     * @return string[]
+     * @return array<string>
      */
     public static function splitString(string $string, int $maxLength): array
     {
         $exploded = explode(' ', $string);
         $full = array_shift($exploded);
+        if (!\is_string($full)) {
+            return [];
+        }
         while (count($exploded)) {
             $part = array_shift($exploded);
             if (strlen($full . ' ' . $part) > $maxLength) {

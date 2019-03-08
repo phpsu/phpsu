@@ -5,6 +5,7 @@ namespace PHPSu\Config;
 
 final class SshConnections
 {
+    /** @var array<string, array<string, SshConnection>>  */
     private $connections = [];
 
     /**
@@ -56,7 +57,7 @@ final class SshConnections
 
     /**
      * @param string $to
-     * @return SshConnection[]
+     * @return array<string, SshConnection>
      */
     public function getPossibilities(string $to): array
     {

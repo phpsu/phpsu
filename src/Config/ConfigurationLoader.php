@@ -5,7 +5,7 @@ namespace PHPSu\Config;
 
 final class ConfigurationLoader implements ConfigurationLoaderInterface
 {
-    /** @var GlobalConfig */
+    /** @var ?GlobalConfig */
     private $config;
 
     public function getConfig(): GlobalConfig

@@ -36,8 +36,8 @@ final class SshCliCommand extends AbstractCliCommand
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $default = (string)($input->hasArgument('destination') ? $input->getArgument('destination') : '');
-        if ($default) {
+        $default = $input->hasArgument('destination') ? $input->getArgument('destination') : '';
+        if ($default && is_string($default)) {
             $input->setArgument(
                 'destination',
                 StringHelper::findStringInArray($default, $this->getAppInstancesWithHost()) ?: $default
@@ -62,12 +62,24 @@ final class SshCliCommand extends AbstractCliCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $destination = $input->getArgument('destination');
+        if (!is_string($destination)) {
+            throw new \Exception('misconfigured destination, destination must be string');
+        }
+        $currentHost = $input->getOption('from');
+        if (!is_string($currentHost)) {
+            throw new \Exception('misconfigured currentHost, currentHost must be string');
+        }
+        $commandArray = $input->getArgument('commands');
+        if (!is_array($commandArray)) {
+            throw new \Exception('misconfigured commandArray, commandArray must be string');
+        }
         return $this->controller->ssh(
             $output,
             $this->configurationLoader->getConfig(),
-            (new SshOptions((string)$input->getArgument('destination')))
-                ->setCurrentHost((string)$input->getOption('from'))
-                ->setCommand(implode(' ', $input->getArgument('commands')))
+            (new SshOptions($destination))
+                ->setCurrentHost($currentHost)
+                ->setCommand(implode(' ', $commandArray))
                 ->setDryRun((bool)$input->getOption('dry-run'))
         );
     }
