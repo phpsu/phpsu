@@ -239,7 +239,7 @@ final class ControllerTest extends TestCase
         $output = new BufferedConsoleOutput();
         $controller->sync($output, $config, $syncOptions);
         rewind($output->getStream());
-        $this->assertEquals("--------------------\n", stream_get_contents($output->getStream()), 'Asserting result empty since config is empty as well');
+        $this->assertSame("--------------------\n", stream_get_contents($output->getStream()), 'Asserting result empty since config is empty as well');
     }
 
     public function testSyncOutputHasSectionsWithEmptyConfigAndBufferedOutput()
@@ -254,7 +254,7 @@ final class ControllerTest extends TestCase
         $syncOptions->setDestination('production');
         $output = new BufferedOutput();
         $controller->sync($output, $config, $syncOptions);
-        $this->assertEquals('', $output->fetch(), 'Excepting sync to do nothing');
+        $this->assertSame('', $output->fetch(), 'Excepting sync to do nothing');
     }
 
     public function testSshOutputPassthruExecution()

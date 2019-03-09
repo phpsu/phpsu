@@ -21,8 +21,8 @@ class ConsoleSectionOutputPolyfillTest extends TestCase
         $this->assertContains('output', $this->getDisplay($output));
         $this->assertContains('sectionwriteln', $this->getDisplay($output));
         $section->overwrite('hello');
-        $this->assertEquals("output\nsectionwriteln\n\e[1A\e[0Jhello\n", $this->getDisplay($output));
-        $this->assertEquals("hello\n", $section->getContent());
+        $this->assertSame("output\nsectionwriteln\n\e[1A\e[0Jhello\n", $this->getDisplay($output));
+        $this->assertSame("hello\n", $section->getContent());
     }
 
     private function getDisplay(StreamOutput $output)

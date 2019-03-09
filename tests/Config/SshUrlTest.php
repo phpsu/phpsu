@@ -38,14 +38,14 @@ final class SshUrlTest extends TestCase
     {
         $dsn = new SshUrl('user@test');
         $dsn->setPort(1);
-        $this->assertEquals(1, $dsn->getPort());
+        $this->assertSame(1, $dsn->getPort());
     }
 
     public function testMaximumValidPort()
     {
         $dsn = new SshUrl('user@test');
         $dsn->setPort(65534);
-        $this->assertEquals(65534, $dsn->getPort());
+        $this->assertSame(65534, $dsn->getPort());
     }
 
     public function testSshWithoutSchema()

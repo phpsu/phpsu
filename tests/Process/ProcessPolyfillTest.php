@@ -16,7 +16,7 @@ class ProcessPolyfillTest extends TestCase
     public function testSuccessfulProcessCommandOutput()
     {
         $result = (new CommandExecutor())->runCommand('echo hi');
-        $this->assertEquals($result->getOutput(), 'hi' . PHP_EOL, 'Executor output was correct: hi');
+        $this->assertSame($result->getOutput(), 'hi' . PHP_EOL, 'Executor output was correct: hi');
         $this->assertEmpty($result->getErrorOutput(), 'Executor error output was correctly empty');
     }
 
