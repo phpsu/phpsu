@@ -15,10 +15,8 @@ final class StringHelper
     public static function splitString(string $string, int $maxLength): array
     {
         $exploded = explode(' ', $string);
+        /** @var string $full phpstan bug https://github.com/phpstan/phpstan/issues/1723 */
         $full = array_shift($exploded);
-        if (!\is_string($full)) {
-            return [];
-        }
         while (count($exploded)) {
             $part = array_shift($exploded);
             if (strlen($full . ' ' . $part) > $maxLength) {

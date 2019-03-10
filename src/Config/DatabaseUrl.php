@@ -101,13 +101,13 @@ final class DatabaseUrl
 
     public function __toString(): string
     {
-        $result = 'ssh://';
+        $result = 'mysql://';
         $result .= $this->getUser();
         if ($this->getPassword()) {
             $result .= ':' . $this->getPassword();
         }
         $result .= '@' . $this->getHost();
-        if ($this->getPort() !== 22) {
+        if ($this->getPort() !== 3306) {
             $result .= ':' . $this->getPort();
         }
         return $result;

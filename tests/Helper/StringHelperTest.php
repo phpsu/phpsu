@@ -9,6 +9,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class StringHelperTest extends TestCase
 {
+    public function testThatSplitStringSplitsEmptyString()
+    {
+        $result = StringHelper::splitString('', 10);
+        $this->assertSame([''], $result);
+    }
     public function testThatSplitStringSplitsAtRightPosition()
     {
         $result = StringHelper::splitString('test 12_1 12_2 12_3', 10);
