@@ -16,7 +16,8 @@ final class GlobalConfig
 
     /** @var string[] */
     private $defaultSshConfig = [
-        'ForwardAgent' => 'yes'
+        'ForwardAgent' => 'yes',
+        'ServerAliveInterval' => '120'
     ];
 
     public function __construct()
