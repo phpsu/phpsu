@@ -54,13 +54,53 @@ class EnvironmentUtilityTest extends TestCase
 
     public function testGetInstalledSymfonyConsoleVersion()
     {
-        $symfonyConsoleVersion = (new EnvironmentUtility())->getSymfonyConsoleVersion();
-        $this->assertSame(1, version_compare($symfonyConsoleVersion, '3.0.0'));
+        $environmentUtility = new EnvironmentUtility();
+        $phpsuRootPath = __DIR__ . '/../fixtures/installed/version4.2';
+        $environmentUtility->setPhpsuRootPath($phpsuRootPath);
+        $this->assertSame($phpsuRootPath, $environmentUtility->getPhpsuRootPath());
+        $symfonyConsoleVersion = $environmentUtility->getSymfonyConsoleVersion();
+        $this->assertSame('4.2.19992', $symfonyConsoleVersion);
+    }
+
+    public function testGetInstalledSymfonyConsoleVersionFixtures()
+    {
+        $environmentUtility = new EnvironmentUtility();
+        $environmentUtility->setPhpsuRootPath(__DIR__ . '/../fixtures/installed/empty');
+        $this->expectExceptionMessage('could not retreve package version of symfony/console, not installed?');
+        $environmentUtility->getSymfonyConsoleVersion();
     }
 
     public function testGetInstalledSymfonyProcessVersion()
     {
-        $symfonyConsoleVersion = (new EnvironmentUtility())->getSymfonyProcessVersion();
-        $this->assertSame(1, version_compare($symfonyConsoleVersion, '3.0.0'));
+        $environmentUtility = new EnvironmentUtility();
+        $environmentUtility->setPhpsuRootPath(__DIR__ . '/../fixtures/installed/version4.2');
+        $symfonyProcessVersion = $environmentUtility->getSymfonyProcessVersion();
+        $this->assertSame('4.2.19991', $symfonyProcessVersion);
+    }
+
+    public function testGetInstalledSymfonyProcessVersionFixtures()
+    {
+        $environmentUtility = new EnvironmentUtility();
+        $environmentUtility->setPhpsuRootPath(__DIR__ . '/../fixtures/installed/empty');
+        $this->expectExceptionMessage('could not retreve package version of symfony/process, not installed?');
+        $environmentUtility->getSymfonyProcessVersion();
+    }
+
+    public function testGetInstalledSymfonyProcessVersionFixtures2()
+    {
+        $environmentUtility = new EnvironmentUtility();
+        $phpsuRootPath = __DIR__ . '/../fixtures/installed/noFile';
+        $environmentUtility->setPhpsuRootPath($phpsuRootPath);
+        $this->expectExceptionMessageRegExp('/failed to open stream\: No such file or director$/');
+        $environmentUtility->getSymfonyProcessVersion();
+    }
+
+    public function testGetInstalledSymfonyProcessVersionFixtures3()
+    {
+        $environmentUtility = new EnvironmentUtility();
+        $phpsuRootPath = __DIR__ . '/../fixtures/installed/invalidJson';
+        $environmentUtility->setPhpsuRootPath($phpsuRootPath);
+        $this->expectExceptionMessage('could not retreve package version of symfony/process, not installed?');
+        $environmentUtility->getSymfonyProcessVersion();
     }
 }

@@ -63,10 +63,10 @@
   },
   "extra": {
     "pluswerk/grumphp-config": {
-      "auto-setting": true
+      "auto-setting": false
     },
     "grumphp": {
-      "config-default-path": "vendor/pluswerk/grumphp-config/grumphp.yml"
+      "config-default-path": "grumphp.yml"
     }
   }
 }
