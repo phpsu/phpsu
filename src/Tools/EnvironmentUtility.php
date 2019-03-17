@@ -11,10 +11,24 @@ final class EnvironmentUtility
 {
     /** @var CommandExecutor */
     private $commandExecutor;
+    /** @var string */
+    private $phpsuRootPath;
 
     public function __construct(CommandExecutor $executor = null)
     {
         $this->commandExecutor = $executor ?? new CommandExecutor();
+        $this->phpsuRootPath = Controller::PHPSU_ROOT_PATH;
+    }
+
+    public function getPhpsuRootPath(): string
+    {
+        return $this->phpsuRootPath;
+    }
+
+    public function setPhpsuRootPath(string $phpsuRootPath): EnvironmentUtility
+    {
+        $this->phpsuRootPath = $phpsuRootPath;
+        return $this;
     }
 
     public function isRsyncInstalled(): bool
@@ -105,19 +119,19 @@ final class EnvironmentUtility
 
     private function spotVendorPath(): string
     {
-        if (file_exists(Controller::PHPSU_ROOT_PATH . '/../../autoload.php')) {
+        if (file_exists($this->phpsuRootPath . '/../../autoload.php')) {
             // installed via composer require
-            return Controller::PHPSU_ROOT_PATH . '/../../';
+            return $this->phpsuRootPath . '/../../';
         }
         // in dev installation
-        return Controller::PHPSU_ROOT_PATH . '/vendor/';
+        return $this->phpsuRootPath . '/vendor/';
     }
 
     public function getSymfonyProcessVersion(): string
     {
         $version = $this->getInstalledPackageVersion('symfony/process');
         if ($version === null) {
-            throw new \Exception('could not retreve package version of symfony/process, not installed?');
+            throw new \Exception('could not retrieve package version of symfony/process, not installed?');
         }
         return str_replace('v', '', $version);
     }
@@ -126,7 +140,7 @@ final class EnvironmentUtility
     {
         $version = $this->getInstalledPackageVersion('symfony/console');
         if ($version === null) {
-            throw new \Exception('could not retreve package version of symfony/process, not installed?');
+            throw new \Exception('could not retrieve package version of symfony/console, not installed?');
         }
         return str_replace('v', '', $version);
     }
