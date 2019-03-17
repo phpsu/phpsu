@@ -131,7 +131,7 @@ final class EnvironmentUtility
     {
         $version = $this->getInstalledPackageVersion('symfony/process');
         if ($version === null) {
-            throw new \Exception('could not retreve package version of symfony/process, not installed?');
+            throw new \Exception('could not retrieve package version of symfony/process, not installed?');
         }
         return str_replace('v', '', $version);
     }
@@ -140,7 +140,7 @@ final class EnvironmentUtility
     {
         $version = $this->getInstalledPackageVersion('symfony/console');
         if ($version === null) {
-            throw new \Exception('could not retreve package version of symfony/console, not installed?');
+            throw new \Exception('could not retrieve package version of symfony/console, not installed?');
         }
         return str_replace('v', '', $version);
     }
