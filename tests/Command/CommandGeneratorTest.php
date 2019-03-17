@@ -89,6 +89,7 @@ Host stagingServer
 
 Host *
   ForwardAgent yes
+  ServerAliveInterval 120
 
 
 SSH_CONFIG;
@@ -118,6 +119,7 @@ Host stagingServer
 
 Host *
   ForwardAgent yes
+  ServerAliveInterval 120
 
 
 SSH_CONFIG;
@@ -147,6 +149,7 @@ Host stagingServer
 
 Host *
   ForwardAgent yes
+  ServerAliveInterval 120
 
 
 SSH_CONFIG;
@@ -176,6 +179,7 @@ Host stagingServer
 
 Host *
   ForwardAgent yes
+  ServerAliveInterval 120
 
 
 SSH_CONFIG;
@@ -201,6 +205,7 @@ Host serverEu
 
 Host *
   ForwardAgent yes
+  ServerAliveInterval 120
 
 
 SSH_CONFIG;
@@ -236,6 +241,7 @@ Host serverEu
 
 Host *
   ForwardAgent yes
+  ServerAliveInterval 120
 
 
 SSH_CONFIG;
