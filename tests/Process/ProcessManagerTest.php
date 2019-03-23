@@ -113,4 +113,12 @@ final class ProcessManagerTest extends TestCase
             ->mustRun();
         $this->assertContains($result->getState(0), [Process::STATE_RUNNING, Process::STATE_SUCCEEDED]);
     }
+
+    public function testEchoToStderrDoseNotMeanTheProcessErrored()
+    {
+        $processManager = (new ProcessManager())
+            ->addProcess($pError = Process::fromShellCommandline('>&2 echo hi '))
+            ->mustRun();
+        $this->assertContains($processManager->getState(0), [Process::STATE_SUCCEEDED]);
+    }
 }

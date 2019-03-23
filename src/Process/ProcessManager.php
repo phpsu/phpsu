@@ -154,7 +154,7 @@ final class ProcessManager
                 $errors[] = $process->getName();
             }
         }
-        if ($this->getErrorOutputs()) {
+        if ($errors) {
             throw new \Exception(sprintf('Error in Process%s %s', count($errors) > 1 ? 'es' : '', implode(', ', $errors)));
         }
     }
