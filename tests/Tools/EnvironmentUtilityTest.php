@@ -97,6 +97,21 @@ class EnvironmentUtilityTest extends TestCase
 
     public function testGetInstalledSymfonyProcessVersionFixturesC()
     {
+        $oldErrorReporting = error_reporting();
+        error_reporting($oldErrorReporting & ~E_WARNING);
+        $environmentUtility = new EnvironmentUtility();
+        $phpsuRootPath = __DIR__ . '/../fixtures/installed/noFile';
+        $environmentUtility->setPhpsuRootPath($phpsuRootPath);
+        $this->expectExceptionMessage('could not retrieve package version of symfony/process, not installed?');
+        try {
+            $environmentUtility->getSymfonyProcessVersion();
+        } finally {
+            error_reporting($oldErrorReporting);
+        }
+    }
+
+    public function testGetInstalledSymfonyProcessVersionFixturesD()
+    {
         $environmentUtility = new EnvironmentUtility();
         $phpsuRootPath = __DIR__ . '/../fixtures/installed/invalidJson';
         $environmentUtility->setPhpsuRootPath($phpsuRootPath);

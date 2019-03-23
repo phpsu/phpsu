@@ -33,18 +33,9 @@ final class SyncCliCommand extends AbstractCliCommand
     {
         $configuration = $this->configurationLoader->getConfig();
         $instances = $configuration->getAppInstanceNames();
-        $source = $input->getArgument('source');
-        if (!is_string($source)) {
-            throw new \Exception('misconfigured source, source must be string');
-        }
-        $destination = $input->getArgument('destination');
-        if (!is_string($destination)) {
-            throw new \Exception('misconfigured destination, destination must be string');
-        }
-        $currentHost = $input->getOption('from');
-        if (!is_string($currentHost)) {
-            throw new \Exception('misconfigured currentHost, currentHost must be string');
-        }
+        $source = $this->getArgument($input, 'source');
+        $destination = $this->getArgument($input, 'destination');
+        $currentHost = $this->getOption($input, 'from');
 
         $this->controller->sync(
             $output,

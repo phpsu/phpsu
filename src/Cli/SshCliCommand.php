@@ -36,13 +36,11 @@ final class SshCliCommand extends AbstractCliCommand
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $default = $input->hasArgument('destination') ? $input->getArgument('destination') : '';
-        if ($default && is_string($default)) {
-            $input->setArgument(
-                'destination',
-                StringHelper::findStringInArray($default, $this->getAppInstancesWithHost()) ?: $default
-            );
-        }
+        $default = $input->hasArgument('destination') ? $this->getArgument($input, 'destination') ?? '' : '';
+        $input->setArgument(
+            'destination',
+            StringHelper::findStringInArray($default, $this->getAppInstancesWithHost()) ?: $default
+        );
     }
 
     /**
@@ -50,7 +48,7 @@ final class SshCliCommand extends AbstractCliCommand
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        $default = $input->hasArgument('destination') ? $input->getArgument('destination') : '';
+        $default = $input->hasArgument('destination') ? $this->getArgument($input, 'destination') : '';
         if (!\in_array($default, $this->getAppInstancesWithHost(), true)) {
             $question = new ChoiceQuestion('Please select one of the AppInstances', $this->getAppInstancesWithHost());
             $question->setErrorMessage('AppInstance %s not found in Config.');
@@ -62,18 +60,9 @@ final class SshCliCommand extends AbstractCliCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $destination = $input->getArgument('destination');
-        if (!is_string($destination)) {
-            throw new \Exception('misconfigured destination, destination must be string');
-        }
-        $currentHost = $input->getOption('from');
-        if (!is_string($currentHost)) {
-            throw new \Exception('misconfigured currentHost, currentHost must be string');
-        }
-        $commandArray = $input->getArgument('commands');
-        if (!is_array($commandArray)) {
-            throw new \Exception('misconfigured commandArray, commandArray must be string');
-        }
+        $destination = $this->getArgument($input, 'destination');
+        $currentHost = $this->getOption($input, 'from');
+        $commandArray = $this->getArgument($input, 'commands');
         return $this->controller->ssh(
             $output,
             $this->configurationLoader->getConfig(),
