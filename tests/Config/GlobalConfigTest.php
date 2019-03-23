@@ -63,6 +63,7 @@ final class GlobalConfigTest extends TestCase
         $sshConfigExpected->serverEu->HostName = 'server.eu';
         $sshConfigExpected->{'*'} = new SshConfigHost();
         $sshConfigExpected->{'*'}->ForwardAgent = 'yes';
+        $sshConfigExpected->{'*'}->ServerAliveInterval = '120';
         $this->assertEquals($sshConfigExpected, $sshConfig);
     }
 
