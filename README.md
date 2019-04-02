@@ -28,7 +28,7 @@ If you have problems with conflicting versions. eg. symfony:2.* you can use the 
 ````bash
 composer require --dev bamarni/composer-bin-plugin
 composer bin phpsu require --dev phpsu/phpsu:@beta
-#  we recomand to install it with the auto installation scripts:
+#  we recommend to install it with the auto installation scripts:
 composer config scripts.bin "echo 'bin not installed'"
 composer config scripts.post-install-cmd '@composer bin all install --ansi'
 composer config scripts.post-update-cmd '@composer bin all update --ansi'
