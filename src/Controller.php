@@ -24,7 +24,7 @@ final class Controller implements ControllerInterface
             $output->writeln($sshCommand);
             return 0;
         }
-        return (new CommandExecutor())->passthru($sshCommand);
+        return (new CommandExecutor())->passthru($sshCommand, $output);
     }
 
     /**

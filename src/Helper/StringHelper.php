@@ -10,11 +10,12 @@ final class StringHelper
     /**
      * @param string $string
      * @param int $maxLength
-     * @return string[]
+     * @return array<string>
      */
     public static function splitString(string $string, int $maxLength): array
     {
         $exploded = explode(' ', $string);
+        /** @var string $full phpstan bug https://github.com/phpstan/phpstan/issues/1723 */
         $full = array_shift($exploded);
         while (count($exploded)) {
             $part = array_shift($exploded);

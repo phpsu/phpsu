@@ -9,12 +9,26 @@ use PHPSu\Process\CommandExecutor;
 
 final class EnvironmentUtility
 {
-    /** @var CommandExecutor  */
+    /** @var CommandExecutor */
     private $commandExecutor;
+    /** @var string */
+    private $phpsuRootPath;
 
     public function __construct(CommandExecutor $executor = null)
     {
         $this->commandExecutor = $executor ?? new CommandExecutor();
+        $this->phpsuRootPath = Controller::PHPSU_ROOT_PATH;
+    }
+
+    public function getPhpsuRootPath(): string
+    {
+        return $this->phpsuRootPath;
+    }
+
+    public function setPhpsuRootPath(string $phpsuRootPath): EnvironmentUtility
+    {
+        $this->phpsuRootPath = $phpsuRootPath;
+        return $this;
     }
 
     public function isRsyncInstalled(): bool
@@ -87,7 +101,14 @@ final class EnvironmentUtility
      */
     public function getInstalledPackageVersion(string $packageName)
     {
-        $activeInstallations = json_decode(file_get_contents($this->spotVendorPath() . '/composer/installed.json'));
+        $contents = file_get_contents($this->spotVendorPath() . '/composer/installed.json');
+        if ($contents === false) {
+            return null;
+        }
+        $activeInstallations = json_decode($contents);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return null;
+        }
         foreach ($activeInstallations as $installed) {
             if ($installed->name === $packageName) {
                 return $installed->version;
@@ -98,21 +119,29 @@ final class EnvironmentUtility
 
     private function spotVendorPath(): string
     {
-        if (file_exists(Controller::PHPSU_ROOT_PATH . '/../../autoload.php')) {
+        if (file_exists($this->phpsuRootPath . '/../../autoload.php')) {
             // installed via composer require
-            return Controller::PHPSU_ROOT_PATH . '/../../';
+            return $this->phpsuRootPath . '/../../';
         }
         // in dev installation
-        return Controller::PHPSU_ROOT_PATH . '/vendor/';
+        return $this->phpsuRootPath . '/vendor/';
     }
 
     public function getSymfonyProcessVersion(): string
     {
-        return str_replace('v', '', $this->getInstalledPackageVersion('symfony/process'));
+        $version = $this->getInstalledPackageVersion('symfony/process');
+        if ($version === null) {
+            throw new \Exception('could not retrieve package version of symfony/process, not installed?');
+        }
+        return str_replace('v', '', $version);
     }
 
     public function getSymfonyConsoleVersion(): string
     {
-        return str_replace('v', '', $this->getInstalledPackageVersion('symfony/console'));
+        $version = $this->getInstalledPackageVersion('symfony/console');
+        if ($version === null) {
+            throw new \Exception('could not retrieve package version of symfony/console, not installed?');
+        }
+        return str_replace('v', '', $version);
     }
 }

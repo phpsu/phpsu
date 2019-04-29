@@ -1,0 +1,7 @@
+imports:
+  - { resource: vendor/pluswerk/grumphp-config/grumphp.yml }
+
+
+parameters:
+  convention.jsonlint_ignore_pattern:
+    - "tests/fixtures/installed/invalidJson/vendor/composer/installed.json"

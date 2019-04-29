@@ -5,6 +5,7 @@ namespace PHPSu\Command;
 
 use PHPSu\Config\AppInstance;
 use PHPSu\Config\Database;
+use PHPSu\Config\DatabaseUrl;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Helper\StringHelper;
@@ -180,12 +181,12 @@ final class DatabaseCommand implements CommandInterface
     public function generate(): string
     {
         $hostsDifferentiate = $this->getFromHost() !== $this->getToHost();
-        $from = $this->parseDatabaseUrl($this->getFromUrl());
-        $to = $this->parseDatabaseUrl($this->getToUrl());
+        $from = new DatabaseUrl($this->getFromUrl());
+        $to = new DatabaseUrl($this->getToUrl());
 
-        $dumpCmd = 'mysqldump ' . StringHelper::optionStringForVerbosity($this->getVerbosity()) . '--opt --skip-comments ' . $this->generateCliParameters($from, false) . $this->excludeParts($from['path']);
+        $dumpCmd = 'mysqldump ' . StringHelper::optionStringForVerbosity($this->getVerbosity()) . '--opt --skip-comments ' . $this->generateCliParameters($from, false) . $this->excludeParts($from->getDatabase());
         $importCmd = 'mysql ' . $this->generateCliParameters($to, true);
-        $combinationPipe = $this->getCombinationPipe($to['path']);
+        $combinationPipe = $this->getCombinationPipe($to->getDatabase());
         if ($hostsDifferentiate) {
             if ($this->getFromHost()) {
                 $sshCommand = new SshCommand();
@@ -210,39 +211,22 @@ final class DatabaseCommand implements CommandInterface
         return $sshCommand->generate($dumpCmd . $combinationPipe . $importCmd);
     }
 
-    private function parseDatabaseUrl(string $url): array
-    {
-        //TODO: make compatible with PDO_MYSQL DSN: http://php.net/manual/de/ref.pdo-mysql.connection.php
-        //TODO: use DSN Class
-        $parsedUrl = parse_url($url);
-        $parsedUrl = [
-            'scheme' => $parsedUrl['scheme'] ?? 'mysql',
-            'host' => $parsedUrl['host'] ?? die('host Not Set'),
-            'port' => $parsedUrl['port'] ?? 3306,
-            'user' => $parsedUrl['user'] ?? die('username Not Set'),
-            'pass' => $parsedUrl['pass'] ?? die('password Not Set'),
-            'path' => $parsedUrl['path'] ?? die('database Not Set'),
-        ];
-        $parsedUrl['path'] = str_replace('/', '', $parsedUrl['path']);
-        return $parsedUrl;
-    }
-
     /**
-     * @param array $parameters
+     * @param DatabaseUrl $databaseUrl
      * @param bool $excludeDatabase
      * @return string
      */
-    private function generateCliParameters(array $parameters, bool $excludeDatabase): string
+    private function generateCliParameters(DatabaseUrl $databaseUrl, bool $excludeDatabase): string
     {
         $result = [];
-        $result[] = '-h' . escapeshellarg($parameters['host']);
-        if ((int)$parameters['port'] !== 3306) {
-            $result[] = '-P' . (int)$parameters['port'];
+        $result[] = '-h' . escapeshellarg($databaseUrl->getHost());
+        if ($databaseUrl->getPort() !== 3306) {
+            $result[] = '-P' . $databaseUrl->getPort();
         }
-        $result[] = '-u' . escapeshellarg($parameters['user']);
-        $result[] = '-p' . escapeshellarg($parameters['pass']);
+        $result[] = '-u' . escapeshellarg($databaseUrl->getUser());
+        $result[] = '-p' . escapeshellarg($databaseUrl->getPassword());
         if (!$excludeDatabase) {
-            $result[] = '' . escapeshellarg($parameters['path']);
+            $result[] = '' . escapeshellarg($databaseUrl->getDatabase());
         }
         return implode(' ', $result);
     }

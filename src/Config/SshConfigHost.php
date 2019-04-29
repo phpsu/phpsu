@@ -65,7 +65,7 @@ namespace PHPSu\Config;
  * @property string $PKCS11Provider
  * @property string $PasswordAuthentication
  * @property string $PermitLocalCommand
- * @property string $Port
+ * @property int $Port
  * @property string $PreferredAuthentications
  * @property string $ProxyCommand
  * @property string $ProxyJump

@@ -7,6 +7,7 @@ namespace PHPSu\Cli;
 use PHPSu\Config\ConfigurationLoaderInterface;
 use PHPSu\ControllerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 
 abstract class AbstractCliCommand extends Command
 {
@@ -20,5 +21,15 @@ abstract class AbstractCliCommand extends Command
         parent::__construct();
         $this->configurationLoader = $configurationLoader;
         $this->controller = $controller;
+    }
+
+    public function getArgument(InputInterface $input, string $argumentName)
+    {
+        return $input->getArgument($argumentName);
+    }
+
+    public function getOption(InputInterface $input, string $argumentName)
+    {
+        return $input->getOption($argumentName);
     }
 }

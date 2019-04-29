@@ -30,12 +30,23 @@ final class CommandExecutor
         $manager->mustRun();
     }
 
-    public function passthru(string $command): int
+    public function passthru(string $command, OutputInterface $output): int
     {
         $process = Process::fromShellCommandline($command, null, null, null, null);
-        $process->setTty(true);
-        $process->run();
-        return $process->getExitCode();
+        $process->setTty($output->isDecorated());
+
+        $errorOutput = $output;
+        if ($output instanceof ConsoleOutputInterface) {
+            $errorOutput = $output->getErrorOutput();
+        }
+
+        return $process->run(function ($type, $buffer) use ($output, $errorOutput) {
+            if ($type == \Symfony\Component\Process\Process::OUT) {
+                $output->write($buffer);
+            } else {
+                $errorOutput->write($buffer);
+            }
+        });
     }
 
     public function runCommand(string $command): Process

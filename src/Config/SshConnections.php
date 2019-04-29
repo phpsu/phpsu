@@ -5,7 +5,11 @@ namespace PHPSu\Config;
 
 final class SshConnections
 {
+    /** @var SshConnection[] */
     private $connections = [];
+
+    /** @var ?array<string, array<string, SshConnection>> */
+    private $compiled = null;
 
     /**
      * @return void
@@ -22,28 +26,56 @@ final class SshConnections
      */
     public function add(SshConnection $sshConnection)
     {
-        if (count($sshConnection->getFrom()) === 0) {
-            $this->addSingleConnection('', $sshConnection);
-        } else {
-            foreach ($sshConnection->getFrom() as $from) {
-                $this->addSingleConnection($from, $sshConnection);
-            }
-        }
+        $this->connections[] = $sshConnection;
+        $this->compiled = null;
     }
 
     /**
      * @return void
      */
-    private function addSingleConnection(string $source, SshConnection $sshConnection)
+    public function compile()
+    {
+        $this->getCompiled();
+    }
+
+    /**
+     * @return array<string, array<string, SshConnection>>
+     */
+    private function getCompiled()
+    {
+        if ($this->compiled === null) {
+            $this->compiled = [];
+            foreach ($this->connections as $connection) {
+                if (count($connection->getFrom()) === 0) {
+                    $this->compiled = $this->addCompiledSingleConnection('', $connection, $this->compiled);
+                } else {
+                    foreach ($connection->getFrom() as $from) {
+                        $this->compiled = $this->addCompiledSingleConnection($from, $connection, $this->compiled);
+                    }
+                }
+            }
+        }
+        return $this->compiled;
+    }
+
+    /**
+     * @param string $source
+     * @param SshConnection $sshConnection
+     * @param array<string, array<string, SshConnection>> $compiled
+     * @return array<string, array<string, SshConnection>>
+     * @throws \Exception
+     */
+    private function addCompiledSingleConnection(string $source, SshConnection $sshConnection, array $compiled)
     {
         $destination = $sshConnection->getHost();
         if ($source === $destination) {
             throw new \Exception(sprintf('the source and destination Host can not be the same: %s', $source));
         }
-        if (isset($this->connections[$destination][$source])) {
+        if (isset($this->compiled[$destination][$source])) {
             throw new \Exception(sprintf('suspicious Connection Model found: %s->%s has more than one definition', $source, $destination));
         }
-        $this->connections[$destination][$source] = $sshConnection;
+        $compiled[$destination][$source] = $sshConnection;
+        return $compiled;
     }
 
     /**
@@ -51,18 +83,20 @@ final class SshConnections
      */
     public function getAllHosts(): array
     {
-        return array_keys($this->connections);
+        $compiled = $this->getCompiled();
+        return array_keys($compiled);
     }
 
     /**
      * @param string $to
-     * @return SshConnection[]
+     * @return array<string, SshConnection>
      */
     public function getPossibilities(string $to): array
     {
-        if (!isset($this->connections[$to])) {
+        $compiled = $this->getCompiled();
+        if (!isset($compiled[$to])) {
             throw new \Exception(sprintf('Host %s not found in SshConnections', $to));
         }
-        return $this->connections[$to];
+        return $compiled[$to];
     }
 }

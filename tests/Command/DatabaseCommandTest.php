@@ -97,13 +97,13 @@ final class DatabaseCommandTest extends TestCase
             ->setVerbosity(OutputInterface::VERBOSITY_DEBUG)
             ->setExcludes(['exclude1', 'exclude2']);
 
-        $this->assertEquals('databaseName', $database->getName());
-        $this->assertEquals($sshConfig, $database->getSshConfig());
-        $this->assertEquals(['exclude1', 'exclude2'], $database->getExcludes());
-        $this->assertEquals('mysql://root:root@database/sequelmovie', $database->getFromUrl());
-        $this->assertEquals('hostc', $database->getFromHost());
-        $this->assertEquals('mysql://root:root@127.0.0.1:2206/sequelmovie2', $database->getToUrl());
-        $this->assertEquals('', $database->getToHost());
-        $this->assertEquals(OutputInterface::VERBOSITY_DEBUG, $database->getVerbosity());
+        $this->assertSame('databaseName', $database->getName());
+        $this->assertSame($sshConfig, $database->getSshConfig());
+        $this->assertSame(['exclude1', 'exclude2'], $database->getExcludes());
+        $this->assertSame('mysql://root:root@database/sequelmovie', $database->getFromUrl());
+        $this->assertSame('hostc', $database->getFromHost());
+        $this->assertSame('mysql://root:root@127.0.0.1:2206/sequelmovie2', $database->getToUrl());
+        $this->assertSame('', $database->getToHost());
+        $this->assertSame(OutputInterface::VERBOSITY_DEBUG, $database->getVerbosity());
     }
 }

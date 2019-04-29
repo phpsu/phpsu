@@ -82,6 +82,14 @@ final class GlobalConfigTest extends TestCase
         $this->assertEquals($sshConfigExpected, $sshConfig);
     }
 
+    public function testAddSshConnectionAndChangeFrom()
+    {
+        $global = static::getGlobalConfig();
+        $global->addSshConnection('host42', 'ssh://user@localhost')->setFrom(['serverEu']);
+        $result = $global->getSshConnections()->getPossibilities('host42');
+        $this->assertArrayHasKey('serverEu', $result);
+    }
+
     public static function getGlobalConfig(): GlobalConfig
     {
         $global = new GlobalConfig();

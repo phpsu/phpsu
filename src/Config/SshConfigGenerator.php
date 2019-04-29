@@ -14,7 +14,7 @@ final class SshConfigGenerator
     public function findShortestPath(string $source, string $destination, SshConnections $sshConnections): array
     {
         $shortestLength = PHP_INT_MAX;
-        $shortest = [[]];
+        $shortest = [];
         $connections = $this->findAllPaths($source, $destination, $sshConnections);
         //TODO: warning found multiple Connection Possibilities, Selected one of the Shortest. these are all of them: ...
 //        if (count($connections) > 1) {
@@ -32,7 +32,7 @@ final class SshConfigGenerator
      * @param string $source
      * @param string $destination
      * @param SshConnections $sshConnections
-     * @return SshConnection[]
+     * @return SshConnection[][]
      */
     public function findAllPaths(string $source, string $destination, SshConnections $sshConnections): array
     {

@@ -18,7 +18,7 @@ final class SshCommandTest extends TestCase
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta');
-        $this->assertEquals("ssh -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertSame("ssh -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
     public function testSshCommandQuiet()
@@ -29,7 +29,7 @@ final class SshCommandTest extends TestCase
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
             ->setVerbosity(OutputInterface::VERBOSITY_QUIET);
-        $this->assertEquals("ssh -q -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertSame("ssh -q -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
     public function testSshCommandVerbose()
@@ -40,7 +40,7 @@ final class SshCommandTest extends TestCase
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
             ->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
-        $this->assertEquals("ssh -v -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertSame("ssh -v -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
     public function testSshCommandVeryVerbose()
@@ -51,7 +51,7 @@ final class SshCommandTest extends TestCase
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
             ->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
-        $this->assertEquals("ssh -vv -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertSame("ssh -vv -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
     public function testSshCommandDebug()
@@ -62,7 +62,7 @@ final class SshCommandTest extends TestCase
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
             ->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
-        $this->assertEquals("ssh -vvv -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertSame("ssh -vvv -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
     public function testSshCommandGetter()
@@ -74,10 +74,10 @@ final class SshCommandTest extends TestCase
             ->setInto('hosta')
             ->setPath('/path/g2v7b89')
             ->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
-        $this->assertEquals('hosta', $ssh->getInto());
-        $this->assertEquals('/path/g2v7b89', $ssh->getPath());
-        $this->assertEquals($sshConfig, $ssh->getSshConfig());
-        $this->assertEquals(OutputInterface::VERBOSITY_DEBUG, $ssh->getVerbosity());
+        $this->assertSame('hosta', $ssh->getInto());
+        $this->assertSame('/path/g2v7b89', $ssh->getPath());
+        $this->assertSame($sshConfig, $ssh->getSshConfig());
+        $this->assertSame(OutputInterface::VERBOSITY_DEBUG, $ssh->getVerbosity());
     }
 
     /**

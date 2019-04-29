@@ -32,8 +32,8 @@
   "scripts": {
     "test": "vendor/bin/phpunit -c tests/phpunit.xml --testdox --color=always",
     "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox",
-    "infection": "vendor/bin/infection --threads=4 --min-msi=80 --min-covered-msi=80 --ansi",
-    "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon -l 2 src tests --autoload-file=vendor-bin/phpunit/vendor/autoload.php --ansi",
+    "infection": "vendor/bin/infection --threads=4 --only-covered --min-msi=90 --min-covered-msi=90 --ansi",
+    "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon --level max src --ansi",
     "post-install-cmd": ["@composer bin all install --ansi"],
     "post-update-cmd": ["@composer bin all update --ansi"]
   },
@@ -63,10 +63,10 @@
   },
   "extra": {
     "pluswerk/grumphp-config": {
-      "auto-setting": true
+      "auto-setting": false
     },
     "grumphp": {
-      "config-default-path": "vendor/pluswerk/grumphp-config/grumphp.yml"
+      "config-default-path": "grumphp.yml"
     }
   }
 }

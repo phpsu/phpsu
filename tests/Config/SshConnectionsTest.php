@@ -17,8 +17,10 @@ final class SshConnectionsTest extends TestCase
     {
         $sshConnections = new SshConnections();
         $sshConnections->add((new SshConnection())->setHost('test')->setFrom(['fromHere']));
-        $this->expectExceptionMessage('suspicious Connection Model found: fromHere->test has more than one definition');
         $sshConnections->add((new SshConnection())->setHost('test')->setFrom(['fromHere']));
+
+        $this->expectExceptionMessage('suspicious Connection Model found: fromHere->test has more than one definition');
+        $sshConnections->compile();
     }
 
     /**

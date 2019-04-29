@@ -82,10 +82,11 @@ final class SshConfigGeneratorTest extends TestCase
     public function testSshConfigGeneratorGenerateError()
     {
         $sshConnections = new SshConnections();
-        $this->expectExceptionMessage('the source and destination Host can not be the same: hostb');
         $sshConnections->add((new SshConnection())->setHost('hostb')
             ->setUrl('user@host_b')
             ->setFrom(['hosta', 'hostb']));
+        $this->expectExceptionMessage('the source and destination Host can not be the same: hostb');
+        $sshConnections->compile();
     }
 
     public function testSshConfigGeneratorGenerateWithMultipleFrom()

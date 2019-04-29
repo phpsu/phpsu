@@ -1,0 +1,10 @@
+[
+  {
+    "name": "symfony/console",
+    "version": "v4.2.19992"
+  },
+  {
+    "name": "symfony/process",
+    "version": "v4.2.19991"
+  }
+]
