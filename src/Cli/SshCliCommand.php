@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Cli;
 
+use Exception;
+use function in_array;
 use PHPSu\Config\AppInstance;
 use PHPSu\Helper\StringHelper;
 use PHPSu\Options\SshOptions;
@@ -45,11 +47,15 @@ final class SshCliCommand extends AbstractCliCommand
 
     /**
      * @return void
+     * @throws Exception
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         $default = $input->hasArgument('destination') ? $this->getArgument($input, 'destination') : '';
-        if (!\in_array($default, $this->getAppInstancesWithHost(), true)) {
+        if (empty($this->getAppInstancesWithHost())) {
+            throw new Exception('You need to define at least one AppInstance besides local');
+        }
+        if (!in_array($default, $this->getAppInstancesWithHost(), true)) {
             $question = new ChoiceQuestion('Please select one of the AppInstances', $this->getAppInstancesWithHost());
             $question->setErrorMessage('AppInstance %s not found in Config.');
             $destination = $this->getHelper('question')->ask($input, $output, $question);
