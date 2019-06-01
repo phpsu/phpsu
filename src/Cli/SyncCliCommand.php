@@ -37,17 +37,18 @@ final class SyncCliCommand extends AbstractCliCommand
         $destination = $this->getArgument($input, 'destination');
         $currentHost = $this->getOption($input, 'from');
 
-        $this->controller->sync(
-            $output,
-            $configuration,
-            (new SyncOptions(StringHelper::findStringInArray($source, $instances) ?: $source))
-                ->setDestination(StringHelper::findStringInArray($destination, $instances) ?: $destination)
-                ->setCurrentHost($currentHost)
-                ->setDryRun((bool)$input->getOption('dry-run'))
-                ->setAll((bool)$input->getOption('all'))
-                ->setNoFiles((bool)$input->getOption('no-fs'))
-                ->setNoDatabases((bool)$input->getOption('no-db'))
-        );
+        $options = (new SyncOptions(StringHelper::findStringInArray($source, $instances) ?: $source))
+            ->setDestination(StringHelper::findStringInArray($destination, $instances) ?: $destination)
+            ->setCurrentHost($currentHost)
+            ->setDryRun((bool)$input->getOption('dry-run'))
+            ->setAll((bool)$input->getOption('all'))
+            ->setNoFiles((bool)$input->getOption('no-fs'))
+            ->setNoDatabases((bool)$input->getOption('no-db'));
+
+        $this->controller->testSshConnection($output, $configuration, $options);
+
+        $this->controller->sync($output, $configuration, $options);
+
         return 0;
     }
 }

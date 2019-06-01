@@ -16,4 +16,9 @@ interface ControllerInterface
      * @return void
      */
     public function sync(OutputInterface $output, GlobalConfig $config, SyncOptions $options);
+
+    /**
+     * @return void
+     */
+    public function testSshConnection(OutputInterface $output, GlobalConfig $config, SyncOptions $options);
 }
