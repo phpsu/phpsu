@@ -61,12 +61,12 @@ final class Controller implements ControllerInterface
      */
     public function testSshConnection(OutputInterface $output, GlobalConfig $config, SyncOptions $options)
     {
-        if($options->getSource() !== 'local') {
+        if ($options->getSource() !== 'local') {
             $sshOptionSource = new SshOptions($options->getSource());
             $sshOptionSource->setCommand(sprintf('echo \'ssh connection to %s is working\'', $sshOptionSource->getDestination()));
             $this->ssh($output, $config, $sshOptionSource);
         }
-        if($options->getDestination() !== 'local') {
+        if ($options->getDestination() !== 'local') {
             $sshOptionDestination = new SshOptions($options->getDestination());
             $sshOptionDestination->setCommand(sprintf('echo \'ssh connection to %s is working\'', $sshOptionDestination->getDestination()));
             $this->ssh($output, $config, $sshOptionDestination);

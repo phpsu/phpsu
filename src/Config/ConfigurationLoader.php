@@ -13,7 +13,7 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
         if (!$this->config) {
             $file = getcwd() . '/phpsu-config.php';
             if (!file_exists($file)) {
-                throw new \RuntimeException("{$file} does not exist");
+                throw new \RuntimeException(sprintf("%s does not exist", $file));
             }
             $this->config = require $file;
         }
