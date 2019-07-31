@@ -92,6 +92,23 @@ class SshCliCommandTest extends TestCase
         $this->assertSame(208, $commandTester->getStatusCode());
     }
 
+    public function testSshCliCommandExecuteWithNoAppInstancesConfigured()
+    {
+        $globalConfig = $this->createConfigNoAppInstance();
+        $mockConfigurationLoader = $this->createMockConfigurationLoader($globalConfig);
+
+        /** @var MockObject|ControllerInterface $mockController */
+        $mockController = $this->createMock(ControllerInterface::class);
+
+        $command = new SshCliCommand($mockConfigurationLoader, $mockController);
+        $command->setHelperSet(new HelperSet([new QuestionHelper()]));
+        $commandTester = new CommandTester($command);
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('You need to define at least one AppInstance besides local');
+        $commandTester->execute(['destination' => 'p']);
+    }
+
     /**
      * @return GlobalConfig
      */
@@ -100,6 +117,16 @@ class SshCliCommandTest extends TestCase
         $globalConfig = new GlobalConfig();
         $globalConfig->addSshConnection('us', 'ssh://user@us');
         $globalConfig->addAppInstance('production', 'us', '/var/www/');
+        return $globalConfig;
+    }
+
+    /**
+     * @return GlobalConfig
+     */
+    private function createConfigNoAppInstance(): GlobalConfig
+    {
+        $globalConfig = new GlobalConfig();
+        $globalConfig->addSshConnection('us', 'ssh://user@us');
         return $globalConfig;
     }
 
