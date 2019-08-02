@@ -73,9 +73,9 @@ $config->addFilesystem('Image Uploads', 'var/storage')
 $config->addSshConnection('hostA', 'ssh://user@localhost:2208');
 $config->addAppInstance('production', 'hostA', '/var/www/')
     ->addDatabase('app', 'mysql://root:password@127.0.0.1:3307/production01db')
-    ->addExclude('table1')
-    ->addExclude('table2')
-    ->addExcludes(['table3', 'table4']);
+    ->addExclude('/cache/')
+    ->addExclude('/session$/')
+    ->addExcludes(['/log/']);
 $config->addAppInstance('local')
     ->addDatabase('app', 'mysql://root:root@127.0.0.1/testingLocal');
 return $config;

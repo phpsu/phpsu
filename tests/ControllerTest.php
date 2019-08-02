@@ -85,18 +85,23 @@ final class ControllerTest extends TestCase
     public function testExcludeShouldBePresentInDatabaseCommand()
     {
         $config = new GlobalConfig();
-        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')->addExclude('table1')->addExclude('table2')->addExcludes(['table3', 'table4']);
+        $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')
+            ->addExclude('table1')
+            ->addExcludes(['table2', 'table4']);
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
         $config->addAppInstance('testing', 'projectEu', '/srv/www/project/test.project');
         $config->addAppInstance('local', '', './testInstance')
-            ->addDatabase('database', 'mysql://root:root@127.0.0.1/test1234')->addExclude('table1')->addExclude('table1');
+            ->addDatabase('database', 'mysql://root:root@127.0.0.1/test1234')
+            ->addExclude('table1')
+            ->addExclude('table3')
+            ->addExclude('/cache/');
 
         $output = new BufferedOutput();
         $controller = new Controller();
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' --ignore-table='\''testdb.table1'\'' --ignore-table='\''testdb.table2'\'' --ignore-table='\''testdb.table3'\'' --ignore-table='\''testdb.table4'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'TBLIST=`mysql -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' -AN -e\"SET group_concat_max_len = 10240; SELECT GROUP_CONCAT(table_name separator '\'' '\'') FROM information_schema.tables WHERE table_schema='\''testdb'\'' AND table_name NOT REGEXP '\''cache'\'' AND table_name NOT IN('\''table1'\'','\''table2'\'','\''table4'\'','\''table3'\'')\"` && mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' \${TBLIST}' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
