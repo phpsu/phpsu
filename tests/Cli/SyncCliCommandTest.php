@@ -38,6 +38,28 @@ class SyncCliCommandTest extends TestCase
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
+    public function testSyncCliCommandExecuteReversed()
+    {
+        $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
+
+        $command = new SyncCliCommand($mockConfigurationLoader, new Controller());
+        $command->setHelperSet(new HelperSet([
+            new QuestionHelper(),
+        ]));
+
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([
+            'source' => 'l',
+            'destination' => 'p',
+            '--dry-run' => true,
+        ]);
+
+        $output = $commandTester->getDisplay();
+        $this->assertContains("filesystem:storage\n", $output);
+        $this->assertContains("rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' './var/storage/' 'us:/var/www/var/storage/'\n", $output);
+        $this->assertSame(0, $commandTester->getStatusCode());
+    }
+
     /**
      * @return GlobalConfig
      */

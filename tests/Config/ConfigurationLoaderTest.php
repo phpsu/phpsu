@@ -28,6 +28,14 @@ final class ConfigurationLoaderTest extends TestCase
         $this->assertEquals($expectedConfig, $configurationLoader->getConfig());
     }
 
+    public function testConfigNotFoundException()
+    {
+        chdir(__DIR__ . '/../fixtures/dir-without-phpsu-config');
+        $this->expectExceptionMessageRegExp('/.* does not exist/');
+        $configurationLoader = new ConfigurationLoader();
+        $configurationLoader->getConfig();
+    }
+
     public function tearDown()
     {
         chdir($this->oldCwd);

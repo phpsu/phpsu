@@ -11,7 +11,11 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
     public function getConfig(): GlobalConfig
     {
         if (!$this->config) {
-            $this->config = require getcwd() . '/phpsu-config.php';
+            $file = getcwd() . '/phpsu-config.php';
+            if (!file_exists($file)) {
+                throw new \RuntimeException(sprintf("%s does not exist", $file));
+            }
+            $this->config = require $file;
         }
         return $this->config;
     }
