@@ -9,9 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 final class AppInstancesTest extends TestCase
 {
-    /**
-     * @expectedException \Exception
-     */
     public function testGetException()
     {
         $apps = new AppInstances();

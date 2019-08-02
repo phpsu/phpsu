@@ -74,7 +74,9 @@ final class GlobalConfigTest extends TestCase
 
         $sshConfig = SshConfig::fromGlobal($global, 'local');
         $sshConfigExpected = new SshConfig();
+        $this->assertFalse(isset($sshConfigExpected->serverEu));
         $sshConfigExpected->serverEu = new SshConfigHost();
+        $this->assertTrue(isset($sshConfigExpected->serverEu));
         $sshConfigExpected->serverEu->User = 'user';
         $sshConfigExpected->serverEu->HostName = 'server.eu';
         $sshConfigExpected->{'*'} = new SshConfigHost();
