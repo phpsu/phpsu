@@ -32,6 +32,12 @@ class StringHelperTest extends TestCase
         $this->assertSame(['test', 'test_test_test_test_test_test_test_test_test'], $result);
     }
 
+    public function testThatSplitStringCanSplitOnEdgeCase()
+    {
+        $result = StringHelper::splitString('123 4 5678', 5);
+        $this->assertSame(['123 4', '5678'], $result);
+    }
+
     public function testFindStringInArray()
     {
         $this->assertSame('production', StringHelper::findStringInArray('production', ['production']), 'perfect match');

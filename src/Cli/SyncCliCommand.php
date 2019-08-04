@@ -45,7 +45,7 @@ final class SyncCliCommand extends AbstractCliCommand
             ->setNoFiles((bool)$input->getOption('no-fs'))
             ->setNoDatabases((bool)$input->getOption('no-db'));
 
-        $this->controller->testSshConnection($output, $configuration, $options);
+        $this->controller->checkSshConnection($output, $configuration, $options);
 
         $this->controller->sync($output, $configuration, $options);
 

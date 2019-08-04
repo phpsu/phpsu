@@ -114,17 +114,20 @@ class DatabaseUrlTest extends TestCase
 
     public function testDatabaseUrlGetter()
     {
-        $dsn = new DatabaseUrl('user@192.168.0.1');
+        $dsn = new DatabaseUrl('user@192.168.0.1/database');
         $this->assertSame('user', $dsn->getUser());
+        $this->assertSame('database', $dsn->getDatabase());
         $this->assertSame('', $dsn->getPassword());
         $this->assertSame('192.168.0.1', $dsn->getHost());
         $this->assertSame(3306, $dsn->getPort());
         $this->assertSame('mysql://user@192.168.0.1', $dsn->__toString());
         $dsn->setUser('user2');
+        $dsn->setDatabase('database2');
         $dsn->setPassword('pw2');
         $dsn->setHost('host2');
         $dsn->setPort(2298);
         $this->assertSame('user2', $dsn->getUser());
+        $this->assertSame('database2', $dsn->getDatabase());
         $this->assertSame('pw2', $dsn->getPassword());
         $this->assertSame('host2', $dsn->getHost());
         $this->assertSame(2298, $dsn->getPort());
