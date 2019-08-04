@@ -73,6 +73,7 @@ $config->addFilesystem('Image Uploads', 'var/storage')
 $config->addSshConnection('hostA', 'ssh://user@localhost:2208');
 $config->addAppInstance('production', 'hostA', '/var/www/')
     ->addDatabase('app', 'mysql://root:password@127.0.0.1:3307/production01db')
+    ->addExclude('one_single_table_name')
     ->addExclude('/cache/')
     ->addExclude('/session$/')
     ->addExcludes(['/log/']);
