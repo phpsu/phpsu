@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace PHPSu\Command;
 
 use PHPSu\Config\AppInstance;
+use PHPSu\Config\Compression\CompressionInterface;
+use PHPSu\Config\Compression\EmptyCompression;
 use PHPSu\Config\Database;
 use PHPSu\Config\DatabaseUrl;
 use PHPSu\Config\GlobalConfig;
@@ -33,6 +35,14 @@ final class DatabaseCommand implements CommandInterface
     /** @var int */
     private $verbosity = OutputInterface::VERBOSITY_NORMAL;
 
+    /** @var CompressionInterface */
+    private $compression;
+
+    public function __construct()
+    {
+        $this->setCompression(new EmptyCompression());
+    }
+
     /**
      * @param GlobalConfig $global
      * @param string $fromInstanceName
@@ -52,6 +62,9 @@ final class DatabaseCommand implements CommandInterface
     ): array {
         $fromInstance = $global->getAppInstance($fromInstanceName);
         $toInstance = $global->getAppInstance($toInstanceName);
+
+        $compression = static::getCompressionOverlap($fromInstance, $toInstance);
+
         $result = [];
         foreach ($global->getDatabases() as $databaseName => $database) {
             $fromDatabase = $database;
@@ -62,12 +75,12 @@ final class DatabaseCommand implements CommandInterface
             if ($toInstance->hasDatabase($databaseName)) {
                 $toDatabase = $toInstance->getDatabase($databaseName);
             }
-            $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost, $all, $verbosity);
+            $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost, $all, $verbosity, $compression);
         }
         foreach ($fromInstance->getDatabases() as $databaseName => $fromDatabase) {
             if ($toInstance->hasDatabase($databaseName)) {
                 $toDatabase = $toInstance->getDatabase($databaseName);
-                $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost, $all, $verbosity);
+                $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost, $all, $verbosity, $compression);
             }
         }
         return $result;
@@ -80,7 +93,8 @@ final class DatabaseCommand implements CommandInterface
         Database $toDatabase,
         string $currentHost,
         bool $all,
-        int $verbosity
+        int $verbosity,
+        CompressionInterface $compression
     ): DatabaseCommand {
         $result = new static();
         $result->setName('database:' . $fromDatabase->getName());
@@ -89,10 +103,23 @@ final class DatabaseCommand implements CommandInterface
         $result->setFromUrl($fromDatabase->getUrl());
         $result->setToUrl($toDatabase->getUrl());
         $result->setVerbosity($verbosity);
+        $result->setCompression($compression);
         if ($all === false) {
             $result->setExcludes(array_unique(array_merge($fromDatabase->getExcludes(), $toDatabase->getExcludes())));
         }
         return $result;
+    }
+
+    private static function getCompressionOverlap(AppInstance $fromInstance, AppInstance $toInstance): CompressionInterface
+    {
+        foreach ($fromInstance->getCompressions() as $fromCompression) {
+            foreach ($toInstance->getCompressions() as $toCompression) {
+                if ($fromCompression == $toCompression) {
+                    return $fromCompression;
+                }
+            }
+        }
+        return new EmptyCompression();
     }
 
 
@@ -191,6 +218,17 @@ final class DatabaseCommand implements CommandInterface
         return $this;
     }
 
+    public function getCompression(): CompressionInterface
+    {
+        return $this->compression;
+    }
+
+    public function setCompression(CompressionInterface $compression): DatabaseCommand
+    {
+        $this->compression = $compression;
+        return $this;
+    }
+
     public function generate(): string
     {
         $hostsDifferentiate = $this->getFromHost() !== $this->getToHost();
@@ -208,32 +246,41 @@ final class DatabaseCommand implements CommandInterface
         $dumpCmd .= 'mysqldump '
             . StringHelper::optionStringForVerbosity($this->getVerbosity())
             . '--opt --skip-comments '
-            . $this->generateCliParameters($from, false)
+            . $this->generateCliParameters(
+                $from,
+                false
+            )
             . $tableInfo;
+        $dumpCmd .= $this->getDatabaseCreateStatement($to->getDatabase());
+        $compressCmd = $this->getCompression()->getCompressCommand();
+        $unCompressCmd = $this->getCompression()->getUnCompressCommand();
         $importCmd = 'mysql ' . $this->generateCliParameters($to, true);
-        $combinationPipe = $this->getCombinationPipe($to->getDatabase());
         if ($hostsDifferentiate) {
             if ($this->getFromHost()) {
                 $sshCommand = new SshCommand();
                 $sshCommand->setSshConfig($this->getSshConfig());
                 $sshCommand->setInto($this->getFromHost());
                 $sshCommand->setVerbosity($this->getVerbosity());
-                $dumpCmd = $sshCommand->generate($dumpCmd);
+                $dumpCmd = $sshCommand->generate($dumpCmd . $compressCmd);
+            } else {
+                $dumpCmd = $dumpCmd . $compressCmd;
             }
             if ($this->getToHost()) {
                 $sshCommand = new SshCommand();
                 $sshCommand->setSshConfig($this->getSshConfig());
                 $sshCommand->setInto($this->getToHost());
                 $sshCommand->setVerbosity($this->getVerbosity());
-                $importCmd = $sshCommand->generate($importCmd);
+                $importCmd = $sshCommand->generate($unCompressCmd . $importCmd);
+            } else {
+                $importCmd = $unCompressCmd . $importCmd;
             }
-            return $dumpCmd . $combinationPipe . $importCmd;
+            return $dumpCmd . ' | ' . $importCmd;
         }
         $sshCommand = new SshCommand();
         $sshCommand->setSshConfig($this->getSshConfig());
         $sshCommand->setInto($this->getFromHost());
         $sshCommand->setVerbosity($this->getVerbosity());
-        return $sshCommand->generate($dumpCmd . $combinationPipe . $importCmd);
+        return $sshCommand->generate($dumpCmd . ' | ' . $importCmd);
     }
 
     /**
@@ -256,11 +303,11 @@ final class DatabaseCommand implements CommandInterface
         return implode(' ', $result);
     }
 
-    private function getCombinationPipe(string $targetDatabase): string
+    private function getDatabaseCreateStatement(string $targetDatabase): string
     {
         $escapedTargetDatabase = '`' . str_replace('`', '``', $targetDatabase) . '`';
         $intermediateSql = sprintf('CREATE DATABASE IF NOT EXISTS %s;USE %s;', $escapedTargetDatabase, $escapedTargetDatabase);
-        return ' | (echo ' . escapeshellarg($intermediateSql) . ' && cat) | ';
+        return ' | (echo ' . escapeshellarg($intermediateSql) . ' && cat)';
     }
 
     /**

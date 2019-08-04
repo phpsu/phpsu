@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+use PHPSu\Config\Compression\CompressionInterface;
+
 final class AppInstance
 {
     use AddFilesystemTrait;
@@ -14,6 +16,8 @@ final class AppInstance
     private $host = '';
     /** @var string */
     private $path = '';
+    /** @var CompressionInterface[] */
+    private $compressions = [];
 
     public function __construct()
     {
@@ -89,5 +93,25 @@ final class AppInstance
     public function getDatabases(): array
     {
         return $this->databases->getAll();
+    }
+
+    /**
+     * @return CompressionInterface[]
+     */
+    public function getCompressions(): array
+    {
+        return $this->compressions;
+    }
+
+    public function setCompressions(CompressionInterface ...$compressions): AppInstance
+    {
+        $this->compressions = $compressions;
+        return $this;
+    }
+
+    public function unsetCompressions(): AppInstance
+    {
+        $this->setCompressions();
+        return $this;
     }
 }

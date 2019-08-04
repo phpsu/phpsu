@@ -53,7 +53,7 @@ final class ControllerTest extends TestCase
             'filesystem:fileadmin',
             "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -76,7 +76,7 @@ final class ControllerTest extends TestCase
             'filesystem:fileadmin',
             "rsync -az --exclude='*.mp4' --exclude='*.mp3' --exclude='*.zip' --exclude='*.rar' -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -101,7 +101,7 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'TBLIST=`mysql -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' -AN -e\"SET group_concat_max_len = 10240; SELECT GROUP_CONCAT(table_name separator '\'' '\'') FROM information_schema.tables WHERE table_schema='\''testdb'\'' AND table_name NOT REGEXP '\''cache'\'' AND table_name NOT IN('\''table1'\'','\''table2'\'','\''table4'\'','\''table3'\'')\"` && mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' \${TBLIST}' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'TBLIST=`mysql -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' -AN -e\"SET group_concat_max_len = 10240; SELECT GROUP_CONCAT(table_name separator '\'' '\'') FROM information_schema.tables WHERE table_schema='\''testdb'\'' AND table_name NOT REGEXP '\''cache'\'' AND table_name NOT IN('\''table1'\'','\''table2'\'','\''table4'\'','\''table3'\'')\"` && mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' \${TBLIST} | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -124,7 +124,7 @@ final class ControllerTest extends TestCase
             'filesystem:fileadmin',
             "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -166,7 +166,7 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -186,7 +186,7 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode(PHP_EOL, $output->fetch()));
@@ -208,9 +208,9 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql -h'127.0.0.1' -u'root' -p'root'",
             'database:database2',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb2'\''' | (echo 'CREATE DATABASE IF NOT EXISTS `test1234_2`;USE `test1234_2`;' && cat) | mysql -h'127.0.0.1' -u'root' -p'root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb2'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234_2`;USE `test1234_2`;'\'' && cat)' | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
