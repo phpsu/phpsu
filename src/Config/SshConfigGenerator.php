@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+use function count;
+
 final class SshConfigGenerator
 {
     /**
@@ -42,13 +44,16 @@ final class SshConfigGenerator
         $result = [];
         foreach ($sshConnections->getPossibilities($destination) as $host => $possibleConnection) {
             if ($host === '') {
+                /** @var $possibleConnection SshConnection */
                 return [[(clone $possibleConnection)->setFrom([])]];
             }
             if ($host === $source) {
+                /** @var $possibleConnection SshConnection */
                 return [[(clone $possibleConnection)->setFrom([$host])]];
             }
             $possibleSubConnections = $this->findAllPaths($source, $host, $sshConnections);
             foreach ($possibleSubConnections as $possibleSubConnection) {
+                /** @var $possibleConnection SshConnection */
                 $possibleSubConnection[] = (clone $possibleConnection)->setFrom([$host]);
                 $result[] = $possibleSubConnection;
             }

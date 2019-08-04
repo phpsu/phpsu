@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
-final class DatabaseUrl
+use PHPSu\Exceptions\ConfigurationException;
+
+final class SqlDatabaseConfiguration implements DatabaseConfigurationInterface
 {
     /** @var string */
     private $user;
@@ -23,7 +25,7 @@ final class DatabaseUrl
         }
         $result = parse_url($url);
         if (!$result) {
-            throw new \Exception('DatabaseUrl could not been parsed: ' . $url);
+            throw new ConfigurationException('SqlDatabaseConfiguration could not been parsed: ' . $url);
         }
         $this->setUser($result['user'] ?? '');
         $this->setPassword($result['pass'] ?? '');
@@ -37,7 +39,7 @@ final class DatabaseUrl
         return $this->user;
     }
 
-    public function setUser(string $user): DatabaseUrl
+    public function setUser(string $user): SqlDatabaseConfiguration
     {
         if (!$user) {
             throw new \InvalidArgumentException('User must be set');
@@ -51,7 +53,7 @@ final class DatabaseUrl
         return $this->password;
     }
 
-    public function setPassword(string $password): DatabaseUrl
+    public function setPassword(string $password): SqlDatabaseConfiguration
     {
         $this->password = $password;
         return $this;
@@ -62,7 +64,7 @@ final class DatabaseUrl
         return $this->host;
     }
 
-    public function setHost(string $host): DatabaseUrl
+    public function setHost(string $host): SqlDatabaseConfiguration
     {
         if (strpos($host, '/') !== false) {
             throw new \InvalidArgumentException(sprintf('host %s has invalid character', $host));
@@ -79,10 +81,10 @@ final class DatabaseUrl
         return $this->port;
     }
 
-    public function setPort(int $port): DatabaseUrl
+    public function setPort(int $port): SqlDatabaseConfiguration
     {
         if ($port <= 0 || $port >= 65535) {
-            throw new \Exception('port must be between 0 and 65535');
+            throw new ConfigurationException('port must be between 0 and 65535');
         }
         $this->port = $port;
         return $this;
@@ -93,7 +95,7 @@ final class DatabaseUrl
         return $this->database;
     }
 
-    public function setDatabase(string $database): DatabaseUrl
+    public function setDatabase(string $database): SqlDatabaseConfiguration
     {
         $this->database = $database;
         return $this;

@@ -5,12 +5,13 @@ namespace PHPSu\Tests\Config;
 
 use PHPSu\Config\AppInstance;
 use PHPSu\Config\AppInstances;
+use PHPSu\Exceptions\ConfigurationException;
 use PHPUnit\Framework\TestCase;
 
 final class AppInstancesTest extends TestCase
 {
     /**
-     * @expectedException \Exception
+     * @expectedException ConfigurationException
      */
     public function testGetException()
     {

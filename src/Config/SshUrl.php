@@ -16,7 +16,7 @@ final class SshUrl
 
     public function __construct(string $url)
     {
-        if (!preg_match('/[a-zA-Z]+\:\/\//', $url)) {
+        if (!preg_match('/[a-zA-Z]+:///', $url)) {
             $url = 'ssh://' . $url;
         }
         $result = parse_url($url);

@@ -35,10 +35,10 @@ final class GlobalConfigTest extends TestCase
     {
         $global = static::getGlobalConfig();
 
-        $rsyncCommands = DatabaseCommand::fromGlobal($global, 'production', 'testing', 'local', false, OutputInterface::VERBOSITY_NORMAL);
+        $databaseCommand = DatabaseCommand::fromGlobal($global, 'production', 'testing', 'local', false, OutputInterface::VERBOSITY_NORMAL);
         $this->assertEquals([
             (new DatabaseCommand())->setName('database:app')->setFromHost('serverEu')->setFromUrl('mysql://user:pw@host:3307/database')->setToHost('serverEu')->setToUrl('mysql://user:pw@host:3307/database'),
-        ], $rsyncCommands);
+        ], $databaseCommand);
     }
 
     public function testRsyncFromGlobalConfig()

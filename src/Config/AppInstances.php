@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+use PHPSu\Exceptions\ConfigurationException;
+
 final class AppInstances
 {
     /** @var AppInstance[] */
@@ -22,7 +24,7 @@ final class AppInstances
     public function get(string $name): AppInstance
     {
         if (!isset($this->instances[$name])) {
-            throw new \Exception(sprintf('App Instance with name %s not found', $name));
+            throw new ConfigurationException(sprintf('App Instance with name %s not found', $name));
         }
         return $this->instances[$name];
     }

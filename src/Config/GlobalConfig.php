@@ -23,6 +23,7 @@ final class GlobalConfig
     public function __construct()
     {
         $this->sshConnections = new SshConnections();
+        $this->databaseConnections = new DatabaseConnections();
         $this->appInstances = new AppInstances();
         $this->fileSystems = new FileSystems();
         $this->databases = new Databases();
@@ -38,8 +39,17 @@ final class GlobalConfig
     {
         $sshConnection = new SshConnection();
         $sshConnection->setHost($host)->setUrl($url)->setOptions($options);
+        $sshConnection->setName($host);
         $this->sshConnections->add($sshConnection);
         return $sshConnection;
+    }
+
+    public function addDatabaseConnection($databaseObject, AppInstance $forInstance): DatabaseConnection
+    {
+        $connection = new DatabaseConnection();
+        $connection->setBelongsToAppInstance($forInstance);
+        $this->databaseConnections->add($connection);
+        return $connection;
     }
 
     public function addAppInstanceObject(AppInstance $appInstance): GlobalConfig
@@ -56,6 +66,14 @@ final class GlobalConfig
         return $appInstance;
     }
 
+    public function addAppInstances(...$instances): GlobalConfig
+    {
+        foreach ($instances as $instance) {
+            $this->appInstances->add($instance);
+        }
+        return $this;
+    }
+
     public function setDefaultSshConfig(array $options = []): GlobalConfig
     {
         $this->defaultSshConfig = $options;
@@ -65,6 +83,11 @@ final class GlobalConfig
     public function getSshConnections(): SshConnections
     {
         return $this->sshConnections;
+    }
+
+    public function getDatabaseConnections(): DatabaseConnections
+    {
+        return $this->databaseConnections;
     }
 
     /**

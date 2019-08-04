@@ -8,9 +8,13 @@ trait AddDatabaseTrait
     /** @var Databases */
     private $databases;
 
+    /** @var DatabaseConnections */
+    private $databaseConnections;
+
     public function addDatabaseObject(Database $database): self
     {
-        $this->databases->add($database);
+        $connection = DatabaseConnection::fromDatabaseObject($database);
+        $this->databaseConnections->add($connection);
         return $this;
     }
 
@@ -18,7 +22,7 @@ trait AddDatabaseTrait
     {
         $database = new Database();
         $database->setName($name)->setUrl($url);
-        $this->databases->add($database);
+        $this->addDatabaseObject($database);
         return $database;
     }
 }

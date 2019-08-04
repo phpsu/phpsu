@@ -3,123 +3,123 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Config;
 
-use PHPSu\Config\DatabaseUrl;
+use PHPSu\Config\SqlDatabaseConfiguration;
 use PHPUnit\Framework\TestCase;
 
-class DatabaseUrlTest extends TestCase
+class SqlDatabaseConfigurationTest extends TestCase
 {
     public function testInvalidUrl()
     {
-        $this->expectExceptionMessageRegExp('/DatabaseUrl could not been parsed/');
-        new DatabaseUrl('://:/:/:/:/');
+        $this->expectExceptionMessageRegExp('/SqlDatabaseConfiguration could not been parsed/');
+        new SqlDatabaseConfiguration('://:/:/:/:/');
     }
 
     public function testInvalidUser()
     {
         $this->expectExceptionMessageRegExp('/User must be set/');
-        new DatabaseUrl('test');
+        new SqlDatabaseConfiguration('test');
     }
 
     public function testInvalidPort()
     {
-        $dsn = new DatabaseUrl('user@test');
+        $dsn = new SqlDatabaseConfiguration('user@test');
         $this->expectExceptionMessage('port must be between 0 and 65535');
         $dsn->setPort(0);
     }
 
     public function testInvalidPort2()
     {
-        $dsn = new DatabaseUrl('user@test');
+        $dsn = new SqlDatabaseConfiguration('user@test');
         $this->expectExceptionMessage('port must be between 0 and 65535');
         $dsn->setPort(65535);
     }
 
     public function testInvalidHost()
     {
-        $dsn = new DatabaseUrl('user@test');
+        $dsn = new SqlDatabaseConfiguration('user@test');
         $this->expectExceptionMessage('host ho/st has invalid character');
         $dsn->setHost('ho/st');
     }
 
     public function testInvalidHost2()
     {
-        $dsn = new DatabaseUrl('user@test');
+        $dsn = new SqlDatabaseConfiguration('user@test');
         $this->expectExceptionMessage('Host must be set');
         $dsn->setHost('');
     }
 
     public function testMinimumValidPort()
     {
-        $dsn = new DatabaseUrl('user@test');
+        $dsn = new SqlDatabaseConfiguration('user@test');
         $dsn->setPort(1);
         $this->assertSame(1, $dsn->getPort());
     }
 
     public function testMaximumValidPort()
     {
-        $dsn = new DatabaseUrl('user@test');
+        $dsn = new SqlDatabaseConfiguration('user@test');
         $dsn->setPort(65534);
         $this->assertSame(65534, $dsn->getPort());
     }
 
     public function testSshWithoutSchema()
     {
-        $dsn = new DatabaseUrl('user@host');
+        $dsn = new SqlDatabaseConfiguration('user@host');
         $this->assertSame('user', $dsn->getUser());
         $this->assertSame('', $dsn->getPassword());
         $this->assertSame('host', $dsn->getHost());
         $this->assertSame(3306, $dsn->getPort());
-        $this->assertSame('mysql://user@host', $dsn->__toString());
+        $this->assertSame('mysql://user@host', (string)$dsn);
     }
 
     public function testSshWithSchema()
     {
-        $dsn = new DatabaseUrl('mysql://user@host');
+        $dsn = new SqlDatabaseConfiguration('mysql://user@host');
         $this->assertSame('user', $dsn->getUser());
         $this->assertSame('', $dsn->getPassword());
         $this->assertSame('host', $dsn->getHost());
         $this->assertSame(3306, $dsn->getPort());
-        $this->assertSame('mysql://user@host', $dsn->__toString());
+        $this->assertSame('mysql://user@host', (string)$dsn);
     }
 
     public function testSshWithSchemaPort2206()
     {
-        $dsn = new DatabaseUrl('mysql://user@host:2206');
+        $dsn = new SqlDatabaseConfiguration('mysql://user@host:2206');
         $this->assertSame('user', $dsn->getUser());
         $this->assertSame('', $dsn->getPassword());
         $this->assertSame('host', $dsn->getHost());
         $this->assertSame(2206, $dsn->getPort());
-        $this->assertSame('mysql://user@host:2206', $dsn->__toString());
+        $this->assertSame('mysql://user@host:2206', (string)$dsn);
     }
 
     public function testSshWithPassword()
     {
-        $dsn = new DatabaseUrl('mysql://user:password@host');
+        $dsn = new SqlDatabaseConfiguration('mysql://user:password@host');
         $this->assertSame('user', $dsn->getUser());
         $this->assertSame('password', $dsn->getPassword());
         $this->assertSame('host', $dsn->getHost());
         $this->assertSame(3306, $dsn->getPort());
-        $this->assertSame('mysql://user:password@host', $dsn->__toString());
+        $this->assertSame('mysql://user:password@host', (string)$dsn);
     }
 
     public function testSshWithIp()
     {
-        $dsn = new DatabaseUrl('user@192.168.0.1');
+        $dsn = new SqlDatabaseConfiguration('user@192.168.0.1');
         $this->assertSame('user', $dsn->getUser());
         $this->assertSame('', $dsn->getPassword());
         $this->assertSame('192.168.0.1', $dsn->getHost());
         $this->assertSame(3306, $dsn->getPort());
-        $this->assertSame('mysql://user@192.168.0.1', $dsn->__toString());
+        $this->assertSame('mysql://user@192.168.0.1', (string)$dsn);
     }
 
     public function testDatabaseUrlGetter()
     {
-        $dsn = new DatabaseUrl('user@192.168.0.1');
+        $dsn = new SqlDatabaseConfiguration('user@192.168.0.1');
         $this->assertSame('user', $dsn->getUser());
         $this->assertSame('', $dsn->getPassword());
         $this->assertSame('192.168.0.1', $dsn->getHost());
         $this->assertSame(3306, $dsn->getPort());
-        $this->assertSame('mysql://user@192.168.0.1', $dsn->__toString());
+        $this->assertSame('mysql://user@192.168.0.1', (string)$dsn);
         $dsn->setUser('user2');
         $dsn->setPassword('pw2');
         $dsn->setHost('host2');
@@ -128,6 +128,6 @@ class DatabaseUrlTest extends TestCase
         $this->assertSame('pw2', $dsn->getPassword());
         $this->assertSame('host2', $dsn->getHost());
         $this->assertSame(2298, $dsn->getPort());
-        $this->assertSame('mysql://user2:pw2@host2:2298', $dsn->__toString());
+        $this->assertSame('mysql://user2:pw2@host2:2298', (string)$dsn);
     }
 }

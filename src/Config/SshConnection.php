@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
-final class SshConnection
+use PHPSu\Exceptions\ConfigurationException;
+
+final class SshConnection implements ConnectionInterface
 {
     /** @var string */
     private $host;
@@ -13,6 +15,16 @@ final class SshConnection
     private $options = [];
     /** @var string[] */
     private $from = [];
+    /** @var AppInstance[] */
+    private $connectsTo = [];
+    /** @var string */
+    private $name;
+
+    public function setName(string $name): SshConnection
+    {
+        $this->name = $name;
+        return $this;
+    }
 
     public function getHost(): string
     {
@@ -73,5 +85,27 @@ final class SshConnection
     {
         $this->from = $from;
         return $this;
+    }
+
+    /**
+     * @return AppInstance[]
+     */
+    public function getConnectingInstances(): array
+    {
+        return $this->connectsTo;
+    }
+
+    /**
+     * @param AppInstance[] $connectingInstances
+     * @return void
+     */
+    public function connectsTo(...$connectingInstances)
+    {
+        foreach ($connectingInstances as $instance) {
+            if (!($instance instanceof AppInstance)) {
+                throw new ConfigurationException('ConnectsTo requires all arguments to be AppInstances');
+            }
+            $this->connectsTo[] = $instance;
+        }
     }
 }

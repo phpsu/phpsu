@@ -5,7 +5,7 @@ namespace PHPSu\Command;
 
 use PHPSu\Config\AppInstance;
 use PHPSu\Config\Database;
-use PHPSu\Config\DatabaseUrl;
+use PHPSu\Config\SqlDatabaseConfiguration;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Helper\StringHelper;
@@ -47,20 +47,20 @@ final class DatabaseCommand implements CommandInterface
         $fromInstance = $global->getAppInstance($fromInstanceName);
         $toInstance = $global->getAppInstance($toInstanceName);
         $result = [];
-        foreach ($global->getDatabases() as $databaseName => $database) {
+        foreach ($global->getDatabaseConnections() as $databaseName => $database) {
             $fromDatabase = $database;
-            if ($fromInstance->hasDatabase($databaseName)) {
-                $fromDatabase = $fromInstance->getDatabase($databaseName);
+            if ($fromInstance->hasDatabaseConnection($databaseName)) {
+                $fromDatabase = $fromInstance->getDatabaseConnection($databaseName);
             }
             $toDatabase = $database;
-            if ($toInstance->hasDatabase($databaseName)) {
-                $toDatabase = $toInstance->getDatabase($databaseName);
+            if ($toInstance->hasDatabaseConnection($databaseName)) {
+                $toDatabase = $toInstance->getDatabaseConnection($databaseName);
             }
             $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost, $all, $verbosity);
         }
-        foreach ($fromInstance->getDatabases() as $databaseName => $fromDatabase) {
-            if ($toInstance->hasDatabase($databaseName)) {
-                $toDatabase = $toInstance->getDatabase($databaseName);
+        foreach ($fromInstance->getDatabaseConnections() as $databaseName => $fromDatabase) {
+            if ($toInstance->hasDatabaseConnection($databaseName)) {
+                $toDatabase = $toInstance->getDatabaseConnection($databaseName);
                 $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost, $all, $verbosity);
             }
         }
@@ -181,8 +181,8 @@ final class DatabaseCommand implements CommandInterface
     public function generate(): string
     {
         $hostsDifferentiate = $this->getFromHost() !== $this->getToHost();
-        $from = new DatabaseUrl($this->getFromUrl());
-        $to = new DatabaseUrl($this->getToUrl());
+        $from = new SqlDatabaseConfiguration($this->getFromUrl());
+        $to = new SqlDatabaseConfiguration($this->getToUrl());
 
         $dumpCmd = 'mysqldump ' . StringHelper::optionStringForVerbosity($this->getVerbosity()) . '--opt --skip-comments ' . $this->generateCliParameters($from, false) . $this->excludeParts($from->getDatabase());
         $importCmd = 'mysql ' . $this->generateCliParameters($to, true);
@@ -212,11 +212,11 @@ final class DatabaseCommand implements CommandInterface
     }
 
     /**
-     * @param DatabaseUrl $databaseUrl
+     * @param SqlDatabaseConfiguration $databaseUrl
      * @param bool $excludeDatabase
      * @return string
      */
-    private function generateCliParameters(DatabaseUrl $databaseUrl, bool $excludeDatabase): string
+    private function generateCliParameters(SqlDatabaseConfiguration $databaseUrl, bool $excludeDatabase): string
     {
         $result = [];
         $result[] = '-h' . escapeshellarg($databaseUrl->getHost());
