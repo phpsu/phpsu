@@ -17,6 +17,7 @@ final class PhpsuApplication
         $application->add(new SyncCliCommand($configurationLoader, new Controller()));
         $application->add(new SshCliCommand($configurationLoader, new Controller()));
         $application->add(new InfoCliCommand($configurationLoader, new Controller()));
+        $application->add(new InitCliCommand($configurationLoader, new Controller()));
         return $application;
     }
 }
