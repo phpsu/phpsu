@@ -320,7 +320,7 @@ final class DatabaseCommand implements CommandInterface
         $simpleExclude = [];
         foreach ($excludes as $exclude) {
             $stringLength = strlen($exclude);
-            if ($stringLength > 3 && $exclude[0] === '/' && $exclude[$stringLength - 1] === '/') {
+            if ($stringLength >= 3 && $exclude[0] === '/' && $exclude[$stringLength - 1] === '/') {
                 $result .= ' AND table_name NOT REGEXP \'' . substr($exclude, 1, $stringLength - 2) . '\'';
             } else {
                 $simpleExclude[] = '\'' . $exclude . '\'';
