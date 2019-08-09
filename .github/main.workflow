@@ -1,11 +1,11 @@
 workflow "Workflow" {
   on = "push"
-  resolves = ["composer install", "phpunit test"]
+  resolves = ["phpunit test"]
 }
 
 action "composer install" {
-  uses = "MilesChou/composer-action@master"
-  args = "install --ansi --no-interaction --no-suggest"
+  uses = "docker://kanti/buildy"
+  args = "composer install --no-interaction --no-suggest"
 }
 
 action "phpunit test" {
