@@ -72,11 +72,13 @@ $config->addFilesystem('Image Uploads', 'var/storage')
     ->addExcludes(['*.jpg', '*.gif']);
 $config->addSshConnection('hostA', 'ssh://user@localhost:2208');
 $config->addAppInstance('production', 'hostA', '/var/www/')
+    ->setCompression(new \PHPSu\Config\Compression\GzipCompression())
     ->addDatabase('app', 'mysql://root:password@127.0.0.1:3307/production01db')
     ->addExclude('table1')
     ->addExclude('table2')
     ->addExcludes(['table3', 'table4']);
 $config->addAppInstance('local')
+    ->setCompression(new \PHPSu\Config\Compression\GzipCompression())
     ->addDatabase('app', 'mysql://root:root@127.0.0.1/testingLocal');
 return $config;
 ````
