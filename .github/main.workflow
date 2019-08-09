@@ -1,8 +1,8 @@
 workflow "Workflow" {
-  on = "push"
   resolves = [
-    "composer install"
+    "composer install",
   ]
+  on = "push"
 }
 
 action "setup docker" {
