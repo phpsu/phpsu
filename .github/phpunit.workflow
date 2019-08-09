@@ -1,8 +1,17 @@
-workflow "New workflow" {
+workflow "Workflow" {
   on = "push"
-  resolves = ["new-action"]
+  resolves = [
+    "composer install"
+  ]
 }
 
-action "new-action" {
-  uses = "owner/repo/path@ref"
+action "composer install" {
+  uses = "MilesChou/composer-action@master"
+  args = "install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress"
+}
+
+ction "phpunit" {
+  needs = ["composer install"]
+  uses = "./actions/run-phpunit/"
+  args = "tests/"
 }
