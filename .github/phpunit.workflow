@@ -5,13 +5,13 @@ workflow "Workflow" {
   ]
 }
 
+action "setup docker" {
+  needs = ["composer install"]
+  uses = "docker://kanti/buildy"
+  args = "composer test"
+}
+
 action "composer install" {
   uses = "MilesChou/composer-action@master"
   args = "install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress"
-}
-
-ction "phpunit" {
-  needs = ["composer install"]
-  uses = "./actions/run-phpunit/"
-  args = "tests/"
 }
