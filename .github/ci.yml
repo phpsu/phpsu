@@ -1,0 +1,15 @@
+jobs:
+  test:
+    name: Test on php 7.2
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: use php-7.2
+      uses: docker://kanti/buildy
+    
+    - name: composer install and test
+      run: |
+        composer install --no-interaction --no-progress --no-suggest --ignore-platform-reqs
+        ./vendor/bin/grumphp run
+        composer test
+        composer phpstan
