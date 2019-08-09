@@ -5,7 +5,7 @@ workflow "Workflow" {
 
 action "composer install" {
   uses = "docker://kanti/buildy"
-  args = "composer install --no-interaction --no-suggest"
+  args = "composer install --ignore-platform-reqs --no-interaction --no-suggest"
 }
 
 action "phpunit test" {
