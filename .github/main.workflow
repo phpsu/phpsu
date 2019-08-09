@@ -1,6 +1,6 @@
 workflow "Workflow" {
   on = "push"
-  resolves = ["new-action"]
+  resolves = ["composer install", "phpunit test"]
 }
 
 action "composer install" {
