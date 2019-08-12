@@ -1,6 +1,6 @@
 {
     "require-dev": {
-        "phpunit/phpunit": "6.* | 7.*",
+        "phpunit/phpunit": "6.* | 7.* | 8.*",
         "spatie/phpunit-watcher": "*",
         "phpunit/php-invoker": "*"
     }
