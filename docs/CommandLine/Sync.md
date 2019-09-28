@@ -1,6 +1,6 @@
 # phpsu sync
 
-This command is the basic command that provides the entire suit of synchronising data between two systems
+This command is the basic command that provides the entire suit of synchronising data between two systems.
 
 ## Usage
 
@@ -83,8 +83,8 @@ phpsu sync source destination -v
 ``` 
 
 With the `--verbose` option you can see the output of the commands run by phpsu.
-The level of verbosity can be change by applying more `-v` to the command.
-Phpsu will gave the verbosity option to the underling commands as specified.
+The level of verbosity can be changed by applying more `-v` to the command.
+Phpsu will give the verbosity option to the underling commands as specified.
 `-v`, `-vv`, `-vvv` and `-q` are possible. `-q` will remove all output that isn't error output.
 
 ### The Option --from
