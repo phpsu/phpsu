@@ -38,4 +38,4 @@
 ### TODO
 
 Sorry, we haven't gotten around to writing this part of the documentation yet.  
-If you have the knowledge, could you complement the documentation? for the benefit of us all?
+If you have the knowledge, could you complement the documentation? For the benefit of us all?
