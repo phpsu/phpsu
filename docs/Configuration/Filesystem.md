@@ -1,10 +1,9 @@
 # Configure Filesystem
 
-Suppose your application has a directory where uploaded profiles store images. 
-Then we might need them for locale development. 
-To find a bug better, or to view the design in its entirety.
+Now let's imagine your application has a storage where files are stored, that are required for your application to run proper.
+We most-likely will need to synchronise these files locally to analyse a bug better, to understand the mechanisms of the application or to develop new features.
 
-For this we have included the Option to sync specific Directories:
+For this we have included the option to sync specific directories:
 
 ````php
 <?php
@@ -14,16 +13,16 @@ $globalConfig = new PHPSu\Config\GlobalConfig;
 $globalConfig->addFilesystem('profilePictures', 'relativePath/toProfile/Pictures');
 ````
 
-With this phpsu will sync the complete contents of the Directory `relativePath/toProfile/Pictures` from the source ApplicationInstance to the destination.
+The configuration above tells phpsu that there is a directory at `relativePath/toProfile/Pictures`. The path is relative to the application root. It can be synchronised from the source ApplicationInstance to a given destination.
 If your Source is located at `/var/www` on `hostAlbert` and your destination is at `/home/web/www` on `hostBerta`:
  
-The Filesystem `profilePictures` will sync the absolute directory `/var/www/relativePath/toProfile/Pictures/` from `hostAlbert`
- with all its content into `/home/web/www/relativePath/toProfile/Pictures/` on `hostBerta`.
+phpsu will sync the FileSystem `profilePictures`  the absolute directory recursively `/var/www/relativePath/toProfile/Pictures/` from `hostAlbert`
+ to `/home/web/www/relativePath/toProfile/Pictures/` on `hostBerta`.
 
 ## Excluding Filesystem Elements
 
-Sometimes we want to sync only some files from a Directory.
-For this occasion we have the possibility to exclude certain elements.
+Sometimes we want to sync only some files from a directory.
+For this purpose we added the possibility to exclude certain elements.
 
 ````php
 <?php
@@ -34,8 +33,8 @@ $globalConfig->addFilesystem('profilePictures', 'relativePath/toProfile/Pictures
     ->addExclude('*.mp4');
 ````
 
-With this phpsu will sync the complete contents **excluding** all `mp4` files.
-You can add Multiple Excludes to your Filesystem Configuration:
+With this phpsu will sync all files **excluding** `mp4` files.
+You can add multiple excludes to your Filesystem Configuration:
 
 ````php
 <?php

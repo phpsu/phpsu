@@ -4,7 +4,7 @@ Suppose your application has a MySQL/MariaDB Database where your application sta
 Then we might need this Database for our local development, 
 to find a bug better, or to view the design in its entirety.
 
-For this we have included the Option to sync specific Databases:
+For this we have included the option to do exactly that:
 
 ````php
 <?php
@@ -14,9 +14,9 @@ $globalConfig = new PHPSu\Config\GlobalConfig;
 $globalConfig->addDatabase('appDb', 'mysql://user:password@host/database_to_select');
 ````
 
-With this phpsu will sync the complete contents of the Database `database_to_select` from the source ApplicationInstance to the destination.
-Probably the connection to your database on the source system is different than on the target system.
-For this you can overwrite the connection to your database on every `AppInstance`:
+The above configuration tells phpsu to sync every content of your database `database_to_select` from the source ApplicationInstance to the destination.
+In the circumstance, that the database connection on your source system differs from the target system,
+That's why you can overwrite the connection to your database for every `AppInstance`:
 
 ````php
 <?php
@@ -30,7 +30,7 @@ $appInstanceProduction->addDatabase('appDb', 'mysql://differentUser:differentPas
 $globalConfig->addAppInstance('local');
 ````
 
-With this Configuration the database `appDb` can be synchronised from **production** to **local**. As all necessary information is present.
+With this configuration the database `appDb` can be synchronised from **production** to **local** as all necessary information is present.
 This will sync the `different_database_to_select` from `hostA`'s connection `differentUser:differentPassword@host` to
 `database_to_select` from `"local"`'s connection `user:password@host`.
  
