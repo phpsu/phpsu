@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 $globalConfig = new \PHPSu\Config\GlobalConfig();
