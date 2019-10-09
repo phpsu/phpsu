@@ -7,6 +7,7 @@ For this we have included the option to sync specific directories:
 
 ````php
 <?php
+
 declare(strict_types=1);
 
 $globalConfig = new PHPSu\Config\GlobalConfig;
@@ -26,6 +27,7 @@ For this purpose we added the possibility to exclude certain elements.
 
 ````php
 <?php
+
 declare(strict_types=1);
 
 $globalConfig = new PHPSu\Config\GlobalConfig;

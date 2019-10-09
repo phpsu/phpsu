@@ -29,5 +29,5 @@ $globalConfig->addAppInstance('local');
 ````
 
 With this configuration the database `appDb` can be synchronised from **production** to **local** as all necessary information is present.
-This will sync the `different_database_to_selec`t from `hostA` to `database_to_select` from `"local"` connection `user:password@host`. The database connection of `hostA` is has the configuration string `differentUser:differentPassword@host` while "local" uses `user:password@host` to connect.
+This will sync the `different_database_to_select` from `hostA` to `database_to_select` from `"local"` connection `user:password@host`. The database connection of `hostA` is has the configuration string `differentUser:differentPassword@host` while "local" uses `user:password@host` to connect.
  
