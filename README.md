@@ -64,21 +64,23 @@ Simple configuration example `phpsu-config.php`:
 <?php
 declare(strict_types=1);
 
-$config = new \PHPSu\Config\GlobalConfig();
-$config->addFilesystem('Image Uploads', 'var/storage')
+$globalConfig = new \PHPSu\Config\GlobalConfig();
+$globalConfig->addFilesystem('Image Uploads', 'var/storage')
     ->addExclude('*.mp4')
     ->addExclude('*.mp3')
     ->addExclude('*.zip')
     ->addExcludes(['*.jpg', '*.gif']);
-$config->addSshConnection('hostA', 'ssh://user@localhost:2208');
-$config->addAppInstance('production', 'hostA', '/var/www/')
+$globalConfig->addSshConnection('hostA', 'ssh://user@localhost:2208');
+$globalConfig->addAppInstance('production', 'hostA', '/var/www/')
+    ->setCompression(new \PHPSu\Config\Compression\GzipCompression())
     ->addDatabase('app', 'mysql://root:password@127.0.0.1:3307/production01db')
     ->addExclude('table1')
     ->addExclude('table2')
     ->addExcludes(['table3', 'table4']);
-$config->addAppInstance('local')
+$globalConfig->addAppInstance('local')
+    ->setCompression(new \PHPSu\Config\Compression\GzipCompression())
     ->addDatabase('app', 'mysql://root:root@127.0.0.1/testingLocal');
-return $config;
+return $globalConfig;
 ````
 
 ## CLI Examples
