@@ -1,8 +1,6 @@
 # Configure Database
 
-Suppose your application has a MySQL/MariaDB Database where your application state ist stored. 
-Then we might need this Database for our local development, 
-to find a bug better, or to view the design in its entirety.
+If you have a MySQL/MariaDB database for your application and you need to debug a bug, occurring on a specific system or you have to analyze its entire structure or you just want to copy a production environment for local development, then you need to be able to sync specific databases.
 
 For this we have included the option to do exactly that:
 
@@ -31,6 +29,5 @@ $globalConfig->addAppInstance('local');
 ````
 
 With this configuration the database `appDb` can be synchronised from **production** to **local** as all necessary information is present.
-This will sync the `different_database_to_select` from `hostA`'s connection `differentUser:differentPassword@host` to
-`database_to_select` from `"local"`'s connection `user:password@host`.
+This will sync the `different_database_to_selec`t from `hostA` to `database_to_select` from `"local"` connection `user:password@host`. The database connection of `hostA` is has the configuration string `differentUser:differentPassword@host` while "local" uses `user:password@host` to connect.
  
