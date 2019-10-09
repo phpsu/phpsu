@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PHPSu\Tests\Command;
@@ -22,7 +23,7 @@ final class DatabaseCommandTest extends TestCase
             ->setFromHost('hostc')
             ->setToUrl('mysql://root:root@127.0.0.1:2206/sequelmovie2')
             ->setToHost('');
-        $this->assertSame("ssh -F 'php://temp' 'hostc' 'mysqldump --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
+        $this->assertSame("ssh -F 'php://temp' 'hostc' 'mysqldump --opt --skip-comments --single-transaction --lock-tables=false -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
     public function testDatabaseCommandGzip()
@@ -37,7 +38,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToHost('')
             ->setCompression(new GzipCompression());
 
-        $this->assertSame("ssh -F 'php://temp' 'hostc' 'mysqldump --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat) | gzip' | gunzip | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
+        $this->assertSame("ssh -F 'php://temp' 'hostc' 'mysqldump --opt --skip-comments --single-transaction --lock-tables=false -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat) | gzip' | gunzip | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
     public function testDatabaseCommandBzip2()
@@ -52,7 +53,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToHost('')
             ->setCompression(new Bzip2Compression());
 
-        $this->assertSame("ssh -F 'php://temp' 'hostc' 'mysqldump --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat) | bzip2' | bunzip2 | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
+        $this->assertSame("ssh -F 'php://temp' 'hostc' 'mysqldump --opt --skip-comments --single-transaction --lock-tables=false -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat) | bzip2' | bunzip2 | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
     public function testDatabaseCommandQuiet()
@@ -67,7 +68,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToHost('')
             ->setVerbosity(OutputInterface::VERBOSITY_QUIET);
 
-        $this->assertSame("ssh -q -F 'php://temp' 'hostc' 'mysqldump -q --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
+        $this->assertSame("ssh -q -F 'php://temp' 'hostc' 'mysqldump -q --opt --skip-comments --single-transaction --lock-tables=false -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
     public function testDatabaseCommandVerbose()
@@ -82,7 +83,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToHost('')
             ->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
 
-        $this->assertSame("ssh -v -F 'php://temp' 'hostc' 'mysqldump -v --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
+        $this->assertSame("ssh -v -F 'php://temp' 'hostc' 'mysqldump -v --opt --skip-comments --single-transaction --lock-tables=false -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
     public function testDatabaseCommandVeryVerbose()
@@ -97,7 +98,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToHost('')
             ->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
 
-        $this->assertSame("ssh -vv -F 'php://temp' 'hostc' 'mysqldump -vv --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
+        $this->assertSame("ssh -vv -F 'php://temp' 'hostc' 'mysqldump -vv --opt --skip-comments --single-transaction --lock-tables=false -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
     public function testDatabaseCommandDebug()
@@ -112,7 +113,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToHost('')
             ->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
 
-        $this->assertSame("ssh -vvv -F 'php://temp' 'hostc' 'mysqldump -vvv --opt --skip-comments -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
+        $this->assertSame("ssh -vvv -F 'php://temp' 'hostc' 'mysqldump -vvv --opt --skip-comments --single-transaction --lock-tables=false -h'\''database'\'' -u'\''root'\'' -p'\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | mysql -h'127.0.0.1' -P2206 -u'root' -p'root'", $database->generate());
     }
 
     public function testDatabaseCommandGetter()

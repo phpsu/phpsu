@@ -120,7 +120,7 @@ composer install
 composer test
 ````
 
-You can also check, whether any changes you made are affecting your tests immediatly on save:
+You can also check, whether any changes you made are affecting your tests immediately on save:
 ````bash
 composer test:watch
 ````
