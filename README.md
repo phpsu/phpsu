@@ -23,7 +23,7 @@ composer require --dev phpsu/phpsu
 
 ### Install with conflicting versions
 
-If you have problems with conflicting versions. eg. symfony:2.* you can use the [composer-bin-plugin]
+If you have problems with conflicting versions eg. symfony:2.* you can use the [composer-bin-plugin].
 
 ````bash
 composer require --dev bamarni/composer-bin-plugin
