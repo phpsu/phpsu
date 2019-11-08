@@ -16,7 +16,7 @@ You can use phpsu's Docker image if you like.
 
 The Image has phpsu and all it's dependencies installed.
 There's just a few things you need to get started:
-- your ssh key needs to be inside the container.  
+- if needed: your ssh key needs to be inside the container.  
   It should be in the directory `/root/.ssh/`, we recommend to use a volume like this:  
   ``-v ~/.ssh/:/root/.ssh/``
 - your `phpsu-config.php`needs to be inside the container  
