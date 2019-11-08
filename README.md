@@ -15,13 +15,13 @@ This package is compliant with [PSR-1], [PSR-2] and [PSR-4]. If you notice compl
 
 ## Install
 
-Via Composer:
+### Via Composer:
 
 ````bash
 composer require --dev phpsu/phpsu
 ````
 
-### Install with conflicting versions
+#### Via Composer, with conflicting versions
 
 If you have problems with conflicting versions eg. symfony:2.* you can use the [composer-bin-plugin].
 
@@ -36,6 +36,20 @@ echo '/vendor-bin/**/vendor' >> .gitignore
 ````
 
 [composer-bin-plugin]: https://github.com/bamarni/composer-bin-plugin
+
+### Via Docker:
+
+if you want to use phpsu via Docker we have an minimal phpsu docker image: [phpsu/phpsu].
+
+you can execute any phpsu command via something like this:
+
+``docker run --rm -it -v $(pwd):/app -v ~/.ssh:/root/.ssh phpsu/phpsu:1.1.0 phpsu ssh production``
+
+[read more about docker usage]
+
+
+[phpsu/phpsu]: https://hub.docker.com/r/phpsu/phpsu
+[read more about docker usage]: docs/Docker.md
 
 ## Requirements
 
