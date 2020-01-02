@@ -23,11 +23,12 @@ class InfoCliCommand extends AbstractCliCommand
         ->addOption('instance', 'i', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Filter by one or more instances', []);
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $symfonyStyle = new SymfonyStyle($input, $output);
         $symfonyStyle->title('List of all dependencies and their versions');
         $this->printDependencyVersions($output, $symfonyStyle);
+        return 0;
     }
 
     /**

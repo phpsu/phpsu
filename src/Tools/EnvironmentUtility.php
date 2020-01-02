@@ -78,6 +78,9 @@ final class EnvironmentUtility
         return trim($result[1]);
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getMysqlDumpVersion(): array
     {
         $output = $this->commandExecutor->runCommand('mysqldump -V')->getOutput();

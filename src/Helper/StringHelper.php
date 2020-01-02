@@ -32,6 +32,7 @@ final class StringHelper
     }
 
     /**
+     * @param array<string> $haystack
      * @return string|null
      */
     public static function findStringInArray(string $needle, array $haystack)

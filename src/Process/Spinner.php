@@ -18,6 +18,7 @@ final class Spinner
         '(      )',
     ];
 
+    /** @var int */
     private $state = 0;
 
     public function spin(): string

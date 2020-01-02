@@ -40,6 +40,7 @@ final class SshCliCommand extends AbstractCliCommand
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
+        /** @var string $default */
         $default = $input->hasArgument('destination') ? $this->getArgument($input, 'destination') ?? '' : '';
         $input->setArgument(
             'destination',
@@ -68,8 +69,11 @@ final class SshCliCommand extends AbstractCliCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        /** @var string $destination */
         $destination = $this->getArgument($input, 'destination');
+        /** @var string $currentHost */
         $currentHost = $this->getOption($input, 'from');
+        /** @var array<string> $commandArray */
         $commandArray = $this->getArgument($input, 'commands');
         return $this->controller->ssh(
             $output,

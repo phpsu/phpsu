@@ -15,7 +15,7 @@ final class GlobalConfig
     /** @var AppInstances */
     private $appInstances;
 
-    /** @var string[] */
+    /** @var array<string, string> */
     private $defaultSshConfig = [
         'ForwardAgent' => 'yes',
         'ServerAliveInterval' => '120'
@@ -35,6 +35,9 @@ final class GlobalConfig
         return $this;
     }
 
+    /**
+     * @param array<string, string> $options
+     */
     public function addSshConnection(string $host, string $url, array $options = []): SshConnection
     {
         $sshConnection = new SshConnection();
@@ -57,6 +60,9 @@ final class GlobalConfig
         return $appInstance;
     }
 
+    /**
+     * @param array<string, string> $options
+     */
     public function setDefaultSshConfig(array $options = []): GlobalConfig
     {
         $this->defaultSshConfig = $options;
