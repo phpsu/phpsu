@@ -59,8 +59,8 @@ final class RsyncCommand implements CommandInterface
 
     public static function fromAppInstances(AppInstance $source, AppInstance $destination, FileSystem $sourceFilesystem, FileSystem $destinationFilesystem, string $currentHost, bool $all, int $verbosity): RsyncCommand
     {
-        $fromRelPath = ($sourceFilesystem->getPath() ? '/' : '') . $sourceFilesystem->getPath();
-        $toRelPath = ($destinationFilesystem->getPath() ? '/' : '') . $destinationFilesystem->getPath();
+        $fromRelPath = ($sourceFilesystem->getPath() !== '' ? '/' : '') . $sourceFilesystem->getPath();
+        $toRelPath = ($destinationFilesystem->getPath() !== '' ? '/' : '') . $destinationFilesystem->getPath();
 
         $result = new static();
         $result->setName('filesystem:' . $sourceFilesystem->getName());
@@ -69,12 +69,12 @@ final class RsyncCommand implements CommandInterface
         $result->setSourcePath(rtrim($source->getPath() === '' ? '.' : $source->getPath(), '/*') . $fromRelPath . '/');
         $result->setToPath(rtrim($destination->getPath() === '' ? '.' : $destination->getPath(), '/') . $toRelPath . '/');
         $result->setOptions(StringHelper::optionStringForVerbosity($verbosity) . $result->getOptions());
-        if ($all === false) {
+        if (!$all) {
             $excludeOptions = '';
             foreach (array_unique(array_merge($sourceFilesystem->getExcludes(), $destinationFilesystem->getExcludes())) as $exclude) {
                 $excludeOptions .= '--exclude=' . escapeshellarg($exclude) . ' ';
             }
-            if ($excludeOptions) {
+            if ($excludeOptions !== '') {
                 $result->setOptions($result->getOptions() . ' ' . $excludeOptions);
             }
         }
@@ -166,14 +166,14 @@ final class RsyncCommand implements CommandInterface
         $toHostPart = '';
 
         $command = 'rsync';
-        if ($this->getOptions()) {
+        if ($this->getOptions() !== '') {
             $command .= ' ' . trim($this->getOptions());
         }
         if ($hostsDifferentiate) {
             $file = $this->sshConfig->getFile();
             $command .= ' -e ' . escapeshellarg('ssh -F ' . escapeshellarg($file->getPathname()));
-            $fromHostPart = $this->getSourceHost() ? $this->getSourceHost() . ':' : '';
-            $toHostPart = $this->getDestinationHost() ? $this->getDestinationHost() . ':' : '';
+            $fromHostPart = $this->getSourceHost() !== '' ? $this->getSourceHost() . ':' : '';
+            $toHostPart = $this->getDestinationHost() !== '' ? $this->getDestinationHost() . ':' : '';
         }
         $from = $fromHostPart . $this->getSourcePath();
         $to = $toHostPart . $this->getToPath();

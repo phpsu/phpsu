@@ -37,7 +37,7 @@ final class SshUrl
 
     public function setUser(string $user): SshUrl
     {
-        if (!$user) {
+        if ($user === '') {
             throw new \InvalidArgumentException('User must be set');
         }
         $this->user = $user;
@@ -65,7 +65,7 @@ final class SshUrl
         if (strpos($host, '/') !== false) {
             throw new \InvalidArgumentException(sprintf('host %s has invalid character', $host));
         }
-        if (!$host) {
+        if ($host === '') {
             throw new \InvalidArgumentException('Host must be set');
         }
         $this->host = $host;
@@ -90,7 +90,7 @@ final class SshUrl
     {
         $result = 'ssh://';
         $result .= $this->getUser();
-        if ($this->getPassword()) {
+        if ($this->getPassword() !== '') {
             $result .= ':' . $this->getPassword();
         }
         $result .= '@' . $this->getHost();

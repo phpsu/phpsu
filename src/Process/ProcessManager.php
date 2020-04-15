@@ -137,7 +137,7 @@ final class ProcessManager
     {
         $errors = [];
         foreach ($this->processes as $process) {
-            if ($process->getErrorOutput()) {
+            if ($process->getErrorOutput() !== '') {
                 $errors[$process->getName()] = $process->getErrorOutput();
             }
         }
@@ -155,7 +155,7 @@ final class ProcessManager
                 $errors[] = $process->getName();
             }
         }
-        if ($errors) {
+        if ($errors !== []) {
             throw new \Exception(sprintf('Error in Process%s %s', count($errors) > 1 ? 'es' : '', implode(', ', $errors)));
         }
     }

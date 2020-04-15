@@ -45,10 +45,7 @@
   "autoload": {
     "psr-4": {
       "PHPSu\\": "src"
-    },
-    "files": [
-      "src/Polyfills/auto-polyfill.php"
-    ]
+    }
   },
   "autoload-dev": {
     "psr-4": {
@@ -64,7 +61,8 @@
   },
   "require-dev": {
     "pluswerk/grumphp-config": "^3.0",
-    "bamarni/composer-bin-plugin": "^1.2"
+    "bamarni/composer-bin-plugin": "^1.2",
+    "rector/rector-prefixed": "^0.7.14"
   },
   "suggest": {
     "bamarni/composer-bin-plugin": "Dependency-Independent use of phpsu"

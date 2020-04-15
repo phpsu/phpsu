@@ -66,14 +66,14 @@ final class CommandGenerator
         $sshConfig->setFile($this->getFile());
 
         $result = [];
-        if ($options->isNoFiles() === false) {
+        if (!$options->isNoFiles()) {
             $rsyncCommands = RsyncCommand::fromGlobal($this->globalConfig, $options->getSource(), $options->getDestination(), $options->getCurrentHost(), $options->isAll(), $this->verbosity);
             foreach ($rsyncCommands as $rsyncCommand) {
                 $rsyncCommand->setSshConfig($sshConfig);
                 $result[$rsyncCommand->getName()] = $rsyncCommand->generate();
             }
         }
-        if ($options->isNoDatabases() === false) {
+        if (!$options->isNoDatabases()) {
             $databaseCommands = DatabaseCommand::fromGlobal($this->globalConfig, $options->getSource(), $options->getDestination(), $options->getCurrentHost(), $options->isAll(), $this->verbosity);
             foreach ($databaseCommands as $databaseCommand) {
                 $databaseCommand->setSshConfig($sshConfig);

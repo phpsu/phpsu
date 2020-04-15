@@ -87,13 +87,13 @@ final class SshCommand
             return $command;
         }
         $result = 'ssh ' . StringHelper::optionStringForVerbosity($this->getVerbosity()) . '-F ' . escapeshellarg($file->getPathname()) . ' ' . escapeshellarg($this->getInto());
-        if ($this->getPath()) {
-            if (!$command) {
+        if ($this->getPath() !== '') {
+            if ($command === '') {
                 //keep it interactive if no command is specified
                 $command = 'bash --login';
             }
             $result .= ' -t ' . escapeshellarg('cd ' . escapeshellarg($this->getPath()) . '; ' . $command);
-        } elseif ($command) {
+        } elseif ($command !== '') {
             $result .= ' ' . escapeshellarg($command);
         }
         return $result;

@@ -10,7 +10,7 @@ final class SshConnections
     private $connections = [];
 
     /** @var ?array<string, array<string, SshConnection>> */
-    private $compiled = null;
+    private $compiled;
 
     /**
      * @return void
