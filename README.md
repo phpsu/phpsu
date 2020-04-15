@@ -56,7 +56,7 @@ you can execute any phpsu command via something like this:
 The following versions of PHP are supported by this version.
 
 * PHP `7.0`, `7.1`, `7.2` and `7.3`
-* Compatible and continuously tested with symfony `3.2`, `3.4` and `4.2`
+* Compatible and continuously tested with symfony `3.2`, `3.4` and `4.3`
 
 Required for synchronisation are:
 * ``ssh`` on execution System
@@ -88,9 +88,10 @@ $globalConfig->addSshConnection('hostA', 'ssh://user@localhost:2208');
 $globalConfig->addAppInstance('production', 'hostA', '/var/www/')
     ->setCompression(new \PHPSu\Config\Compression\GzipCompression())
     ->addDatabase('app', 'mysql://root:password@127.0.0.1:3307/production01db')
-    ->addExclude('table1')
-    ->addExclude('table2')
-    ->addExcludes(['table3', 'table4']);
+    ->addExclude('one_single_table_name')
+    ->addExclude('/cache/')
+    ->addExclude('/session$/')
+    ->addExcludes(['/log/']);
 $globalConfig->addAppInstance('local')
     ->setCompression(new \PHPSu\Config\Compression\GzipCompression())
     ->addDatabase('app', 'mysql://root:root@127.0.0.1/testingLocal');
