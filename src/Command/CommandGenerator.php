@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace PHPSu\Command;
 
+use Exception;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Config\TempSshConfigFile;
 use PHPSu\Options\SyncOptions;
+use SplFileObject;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use function in_array;
 
 final class CommandGenerator
 {
-    /** @var \SplFileObject */
+    /** @var SplFileObject */
     private $file;
     /** @var GlobalConfig */
     private $globalConfig;
@@ -25,15 +29,15 @@ final class CommandGenerator
         $this->verbosity = $verbosity;
     }
 
-    public function getFile(): \SplFileObject
+    public function getFile(): SplFileObject
     {
-        if (!$this->file instanceof \SplFileObject) {
+        if (!$this->file instanceof SplFileObject) {
             $this->file = new TempSshConfigFile();
         }
         return $this->file;
     }
 
-    public function setFile(\SplFileObject $file): CommandGenerator
+    public function setFile(SplFileObject $file): CommandGenerator
     {
         $this->file = $file;
         return $this;
@@ -52,14 +56,14 @@ final class CommandGenerator
     /**
      * @param SyncOptions $options
      * @return string[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function syncCommands(SyncOptions $options): array
     {
         if ($options->getSource() === $options->getDestination()) {
-            throw new \Exception(sprintf('Source and Destination are Identical: %s', $options->getSource()));
+            throw new Exception(sprintf('Source and Destination are Identical: %s', $options->getSource()));
         }
-        if (!\in_array($options->getCurrentHost(), ['', 'local'], true)) {
+        if (!in_array($options->getCurrentHost(), ['', 'local'], true)) {
             $this->globalConfig->validateConnectionToHost($options->getCurrentHost());
         }
         $sshConfig = SshConfig::fromGlobal($this->globalConfig, $options->getCurrentHost());

@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection ALL */
+
 declare(strict_types=1);
 
 namespace PHPSu;
@@ -16,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class Controller implements ControllerInterface
 {
-    const PHPSU_ROOT_PATH = __DIR__ . '/../';
+    public const PHPSU_ROOT_PATH = __DIR__ . '/../';
 
     public function ssh(OutputInterface $output, GlobalConfig $config, SshOptions $options): int
     {
@@ -28,10 +30,8 @@ final class Controller implements ControllerInterface
         return (new CommandExecutor())->passthru($sshCommand, $output);
     }
 
-    /**
-     * @return void
-     */
-    public function sync(OutputInterface $output, GlobalConfig $config, SyncOptions $options)
+    
+    public function sync(OutputInterface $output, GlobalConfig $config, SyncOptions $options): void
     {
         $commands = (new CommandGenerator($config, $output->getVerbosity()))->syncCommands($options);
 
@@ -57,10 +57,8 @@ final class Controller implements ControllerInterface
     }
 
 
-    /**
-     * @return void
-     */
-    public function checkSshConnection(OutputInterface $output, GlobalConfig $config, SyncOptions $options)
+    
+    public function checkSshConnection(OutputInterface $output, GlobalConfig $config, SyncOptions $options): void
     {
         if ($options->getSource() !== 'local') {
             $sshOptionSource = new SshOptions($options->getSource());

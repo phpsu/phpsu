@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+use Exception;
+
 final class GlobalConfig
 {
     use AddFilesystemTrait;
@@ -36,7 +38,10 @@ final class GlobalConfig
     }
 
     /**
+     * @param string $host
+     * @param string $url
      * @param array<string, string> $options
+     * @return SshConnection
      */
     public function addSshConnection(string $host, string $url, array $options = []): SshConnection
     {
@@ -62,6 +67,8 @@ final class GlobalConfig
 
     /**
      * @param array<string, string> $options
+     * @return GlobalConfig
+     * @return GlobalConfig
      */
     public function setDefaultSshConfig(array $options = []): GlobalConfig
     {
@@ -114,9 +121,9 @@ final class GlobalConfig
     /**
      * @param string $host
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
-    public function validateConnectionToHost(string $host)
+    public function validateConnectionToHost(string $host): void
     {
         $this->sshConnections->getPossibilities($host);
     }

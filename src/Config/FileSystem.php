@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+use function array_merge;
+
 final class FileSystem
 {
     /** @var string */
@@ -45,10 +47,12 @@ final class FileSystem
 
     /**
      * @param array<string> $excludes
+     * @return FileSystem
+     * @return FileSystem
      */
     public function addExcludes(array $excludes): FileSystem
     {
-        $this->excludes = \array_merge($this->excludes, $excludes);
+        $this->excludes = array_merge($this->excludes, $excludes);
         return $this;
     }
 

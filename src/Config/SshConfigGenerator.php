@@ -66,7 +66,7 @@ final class SshConfigGenerator
     {
         $sshConfig = new SshConfig();
         foreach ($sshConnections->getAllHosts() as $host) {
-            $connectionsUsedForPath = $this->findShortestPath($currentHost, $host, $sshConnections);
+            $connectionsUsedForPath = $this->findShortestPath($currentHost, (string)$host, $sshConnections);
             foreach ($connectionsUsedForPath as $sshConnection) {
                 $fromHosts = $sshConnection->getFrom();
                 $host = new SshConfigHost();

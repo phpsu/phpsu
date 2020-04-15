@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Command;
 
+use Exception;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Helper\StringHelper;
@@ -24,7 +25,7 @@ final class SshCommand
     {
         $host = $global->getHostName($connectionName);
         if ($currentHost === $host) {
-            throw new \Exception(sprintf('the found host and the current Host are the same: %s', $host));
+            throw new Exception(sprintf('the found host and the current Host are the same: %s', $host));
         }
         $result = new static();
         $result->setInto($host);

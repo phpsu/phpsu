@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+use RuntimeException;
+
 final class ConfigurationLoader implements ConfigurationLoaderInterface
 {
     /** @var ?GlobalConfig */
@@ -14,7 +16,7 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
         if ($this->config === null) {
             $file = getcwd() . '/phpsu-config.php';
             if (!file_exists($file)) {
-                throw new \RuntimeException(sprintf("%s does not exist", $file));
+                throw new RuntimeException(sprintf('%s does not exist', $file));
             }
             $this->config = require $file;
         }

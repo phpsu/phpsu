@@ -8,6 +8,8 @@ use PHPSu\Controller;
 use PHPSu\Exceptions\EnvironmentException;
 use PHPSu\Tools\EnvironmentUtility;
 
+use function strpos;
+
 final class ApplicationHelper
 {
 
@@ -19,16 +21,16 @@ final class ApplicationHelper
     /**
      * @return string|null
      */
-    private function getPhpSuVersionFromGlobals()
+    private function getPhpSuVersionFromGlobals(): ?string
     {
         $pharVersion = '@phpsu_version@';
-        return \strpos($pharVersion, '@') === 0 ? null : $pharVersion;
+        return strpos($pharVersion, '@') === 0 ? null : $pharVersion;
     }
 
     /**
      * @return string|null
      */
-    private function getPhpSuVersionFromVendor()
+    private function getPhpSuVersionFromVendor(): ?string
     {
         return (new EnvironmentUtility())->getInstalledPackageVersion('phpsu/phpsu');
     }
@@ -36,7 +38,7 @@ final class ApplicationHelper
     /**
      * @return string|null
      */
-    private function getPhpSuVersionFromGitFolder()
+    private function getPhpSuVersionFromGitFolder(): ?string
     {
         if (!file_exists(Controller::PHPSU_ROOT_PATH . '/.git/')) {
             return null;

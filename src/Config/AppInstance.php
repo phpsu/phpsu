@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+use InvalidArgumentException;
 use PHPSu\Config\Compression\CompressionInterface;
 
 final class AppInstance
@@ -45,7 +46,7 @@ final class AppInstance
     public function setHost(string $host): AppInstance
     {
         if (strpos($host, '/') !== false) {
-            throw new \InvalidArgumentException(sprintf('host %s has invalid character', $host));
+            throw new InvalidArgumentException(sprintf('host %s has invalid character', $host));
         }
         $this->host = $host;
         return $this;

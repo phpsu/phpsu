@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Helper;
 
+use Exception;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class StringHelper
@@ -32,12 +33,13 @@ final class StringHelper
     }
 
     /**
+     * @param string $needle
      * @param array<string> $haystack
      * @return string|null
      */
-    public static function findStringInArray(string $needle, array $haystack)
+    public static function findStringInArray(string $needle, array $haystack): ?string
     {
-        $remaining = array_filter($haystack, function ($el) use ($needle) {
+        $remaining = array_filter($haystack, static function ($el) use ($needle) {
             return stripos($el, $needle) === 0;
         });
         if (count($remaining) === 1) {
@@ -60,6 +62,6 @@ final class StringHelper
             case OutputInterface::VERBOSITY_DEBUG:
                 return '-vvv ';
         }
-        throw new \Exception(sprintf('Verbosity %d is not defined', $verbosity));
+        throw new Exception(sprintf('Verbosity %d is not defined', $verbosity));
     }
 }

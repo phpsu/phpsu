@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
+use Closure;
+use Exception;
+use InvalidArgumentException;
+
 final class ProcessManager
 {
     /** @var Process[] */
@@ -12,18 +16,18 @@ final class ProcessManager
     /** @var string[] */
     private $processStates = [];
 
-    /** @var \Closure[] */
+    /** @var Closure[] */
     private $outputCallbacks = [];
 
-    /** @var \Closure[] */
+    /** @var Closure[] */
     private $stateChangeCallbacks = [];
 
-    /** @var \Closure[] */
+    /** @var Closure[] */
     private $tickCallbacks = [];
 
     public function addOutputCallback(callable $callback): ProcessManager
     {
-        $this->outputCallbacks[] = function () use ($callback) {
+        $this->outputCallbacks[] = static function () use ($callback) {
             return $callback(...func_get_args());
         };
         return $this;
@@ -31,7 +35,7 @@ final class ProcessManager
 
     public function addStateChangeCallback(callable $callback): ProcessManager
     {
-        $this->stateChangeCallbacks[] = function () use ($callback) {
+        $this->stateChangeCallbacks[] = static function () use ($callback) {
             return $callback(...func_get_args());
         };
         return $this;
@@ -39,7 +43,7 @@ final class ProcessManager
 
     public function addTickCallback(callable $callback): ProcessManager
     {
-        $this->tickCallbacks[] = function () use ($callback) {
+        $this->tickCallbacks[] = static function () use ($callback) {
             return $callback(...func_get_args());
         };
         return $this;
@@ -103,30 +107,24 @@ final class ProcessManager
         return $this;
     }
 
-    /**
-     * @return void
-     */
-    private function notifyOutputCallbacks(Process $process, string $type, string $data)
+    
+    private function notifyOutputCallbacks(Process $process, string $type, string $data): void
     {
         foreach ($this->outputCallbacks as $callback) {
             $callback($process, $type, $data);
         }
     }
 
-    /**
-     * @return void
-     */
-    private function notifyStateChangeCallbacks(int $processId, Process $process, string $newState, ProcessManager $manager)
+    
+    private function notifyStateChangeCallbacks(int $processId, Process $process, string $newState, ProcessManager $manager): void
     {
         foreach ($this->stateChangeCallbacks as $callback) {
             $callback($processId, $process, $newState, $manager);
         }
     }
 
-    /**
-     * @return void
-     */
-    private function notifyTickCallbacks(ProcessManager $manager)
+    
+    private function notifyTickCallbacks(ProcessManager $manager): void
     {
         foreach ($this->tickCallbacks as $callback) {
             $callback($manager);
@@ -147,10 +145,8 @@ final class ProcessManager
         return $errors;
     }
 
-    /**
-     * @return void
-     */
-    public function validateProcesses()
+    
+    public function validateProcesses(): void
     {
         $errors = [];
         foreach ($this->processes as $process) {
@@ -159,7 +155,7 @@ final class ProcessManager
             }
         }
         if ($errors !== []) {
-            throw new \Exception(sprintf('Error in Process%s %s', count($errors) > 1 ? 'es' : '', implode(', ', $errors)));
+            throw new Exception(sprintf('Error in Process%s %s', count($errors) > 1 ? 'es' : '', implode(', ', $errors)));
         }
     }
 
@@ -168,6 +164,6 @@ final class ProcessManager
         if (isset($this->processStates[$processId])) {
             return $this->processStates[$processId];
         }
-        throw new \InvalidArgumentException(sprintf('No Process found with id: %d', $processId));
+        throw new InvalidArgumentException(sprintf('No Process found with id: %d', $processId));
     }
 }

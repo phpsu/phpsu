@@ -115,6 +115,7 @@ final class DatabaseCommand implements CommandInterface
     {
         foreach ($fromInstance->getCompressions() as $fromCompression) {
             foreach ($toInstance->getCompressions() as $toCompression) {
+                // @todo: check "==" necessity
                 if ($fromCompression == $toCompression) {
                     return $fromCompression;
                 }

@@ -111,10 +111,8 @@ final class SshConfigHost
         return $this->options[$name];
     }
 
-    /**
-     * @return void
-     */
-    public function __set(string $name, string $config)
+
+    public function __set(string $name, string $config): void
     {
         $this->options[$name] = $config;
     }

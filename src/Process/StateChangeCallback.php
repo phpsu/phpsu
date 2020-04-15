@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
+use LogicException;
 use PHPSu\Tools\EnvironmentUtility;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
@@ -21,10 +22,8 @@ final class StateChangeCallback
         $this->output = $output;
     }
 
-    /**
-     * @return void
-     */
-    public function __invoke(int $processId, Process $process, string $newState, ProcessManager $manager)
+
+    public function __invoke(int $processId, Process $process, string $newState, ProcessManager $manager): void
     {
         if ($this->output instanceof ConsoleSectionOutput) {
             $this->sectionCall($this->output, $manager);
@@ -33,10 +32,8 @@ final class StateChangeCallback
         }
     }
 
-    /**
-     * @return void
-     */
-    private function sectionCall(ConsoleSectionOutput $sectionOutput, ProcessManager $manager)
+
+    private function sectionCall(ConsoleSectionOutput $sectionOutput, ProcessManager $manager): void
     {
         $lines = [];
         foreach ($manager->getProcesses() as $processId => $process) {
@@ -45,10 +42,8 @@ final class StateChangeCallback
         $sectionOutput->overwrite(implode(PHP_EOL, $lines));
     }
 
-    /**
-     * @return void
-     */
-    private function normalCall(int $processId, Process $process, string $state)
+
+    private function normalCall(int $processId, Process $process, string $state): void
     {
         $this->output->writeln($this->getMessage($processId, $state, $process->getName()));
     }
@@ -73,7 +68,7 @@ final class StateChangeCallback
                 $statusSymbol = '✘';
                 break;
             default:
-                throw new \LogicException('This should never happen (State not considered)');
+                throw new LogicException('This should never happen (State not considered)');
         }
         return sprintf('<fg=%s>%s:</> %s', $color, $name, $statusSymbol);
     }

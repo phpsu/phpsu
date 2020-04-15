@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+use SplFileObject;
+
 final class SshConfig
 {
     /** @var SshConfigHost[] */
     private $hosts = [];
 
-    /** @var \SplFileObject */
+    /** @var SplFileObject */
     private $file;
 
     public static function fromGlobal(GlobalConfig $global, string $currentHost): SshConfig
@@ -27,31 +29,25 @@ final class SshConfig
         return $this->hosts[$name];
     }
 
-    /**
-     * @return void
-     */
-    public function __set(string $name, SshConfigHost $host)
+
+    public function __set(string $name, SshConfigHost $host): void
     {
         $this->hosts[$name] = $host;
     }
 
-    public function getFile(): \SplFileObject
+    public function getFile(): SplFileObject
     {
         return $this->file;
     }
 
-    /**
-     * @return void
-     */
-    public function setFile(\SplFileObject $file)
+
+    public function setFile(SplFileObject $file): void
     {
         $this->file = $file;
     }
 
-    /**
-     * @return void
-     */
-    public function writeConfig()
+
+    public function writeConfig(): void
     {
         $this->file->ftruncate(0);
         $this->file->fwrite($this->toFileString());

@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
+use Generator;
+use LogicException;
 use PHPSu\Exceptions\CommandExecutionException;
 use PHPSu\Tools\EnvironmentUtility;
 
 final class Process extends \Symfony\Component\Process\Process
 {
-    const STATE_READY = 'ready';
-    const STATE_RUNNING = 'running';
-    const STATE_SUCCEEDED = 'succeeded';
-    const STATE_ERRORED = 'errored';
+    public const STATE_READY = 'ready';
+    public const STATE_RUNNING = 'running';
+    public const STATE_SUCCEEDED = 'succeeded';
+    public const STATE_ERRORED = 'errored';
 
     /** @var string */
     private $name = '';
@@ -38,14 +40,14 @@ final class Process extends \Symfony\Component\Process\Process
             case self::STATUS_TERMINATED:
                 return $this->getExitCode() === 0 ? self::STATE_SUCCEEDED : self::STATE_ERRORED;
         }
-        throw new \LogicException('This should never happen');
+        throw new LogicException('This should never happen');
     }
 
     /**
      * @param int $flags A bit field of Process::ITER_* flags
-     * @return \Generator<string>
+     * @return Generator<string>
      */
-    public function getIterator($flags = 0): \Generator
+    public function getIterator($flags = 0): Generator
     {
         return parent::getIterator($flags);
     }

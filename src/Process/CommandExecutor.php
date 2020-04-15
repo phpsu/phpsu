@@ -15,7 +15,7 @@ final class CommandExecutor
      * @param OutputInterface $statusOutput
      * @return void
      */
-    public function executeParallel(array $commands, OutputInterface $logOutput, OutputInterface $statusOutput)
+    public function executeParallel(array $commands, OutputInterface $logOutput, OutputInterface $statusOutput): void
     {
         $manager = new ProcessManager();
         foreach ($commands as $name => $command) {
@@ -41,7 +41,7 @@ final class CommandExecutor
             $errorOutput = $output->getErrorOutput();
         }
 
-        return $process->run(function ($type, $buffer) use ($output, $errorOutput) {
+        return $process->run(static function ($type, $buffer) use ($output, $errorOutput) {
             if ($type == \Symfony\Component\Process\Process::OUT) {
                 $output->write($buffer);
             } else {
