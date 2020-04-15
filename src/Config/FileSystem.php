@@ -35,11 +35,17 @@ final class FileSystem
         return $this;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getExcludes(): array
     {
         return $this->excludes;
     }
 
+    /**
+     * @param array<string> $excludes
+     */
     public function addExcludes(array $excludes): FileSystem
     {
         $this->excludes = \array_merge($this->excludes, $excludes);

@@ -98,7 +98,7 @@ namespace PHPSu\Config;
  */
 final class SshConfigHost
 {
-    /** @var string[] */
+    /** @var array<string, string> */
     private $options = [];
 
     public function __isset(string $name): bool
@@ -119,6 +119,9 @@ final class SshConfigHost
         $this->options[$name] = $config;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getConfig(): array
     {
         ksort($this->options);

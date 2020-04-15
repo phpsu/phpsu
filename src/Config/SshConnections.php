@@ -72,7 +72,7 @@ final class SshConnections
         if ($source === $destination) {
             throw new \Exception(sprintf('the source and destination Host can not be the same: %s', $source));
         }
-        if (isset($this->compiled[$destination][$source])) {
+        if ($this->compiled && isset($this->compiled[$destination][$source])) {
             throw new \Exception(sprintf('suspicious Connection Model found: %s->%s has more than one definition', $source, $destination));
         }
         $compiled[$destination][$source] = $sshConnection;

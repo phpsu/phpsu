@@ -133,6 +133,9 @@ final class ProcessManager
         }
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getErrorOutputs(): array
     {
         $errors = [];

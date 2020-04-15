@@ -45,7 +45,7 @@ final class Process extends \Symfony\Component\Process\Process
      * Process constructor.
      * @param mixed $commandline
      * @param string|null $cwd
-     * @param array|null $env
+     * @param array<string>|null $env
      * @param null $input
      * @param float|null $timeout
      * @throws CommandExecutionException
@@ -65,7 +65,8 @@ final class Process extends \Symfony\Component\Process\Process
     /**
      * This methods wraps the symfony behaviour of fromShellCommandline to make it possible to use phpsu for symfony 3 and 4 projects.
      *
-     * {@inheritdoc}
+     * @param array<string>|null $env
+     * @param mixed|null     $input
      */
     public static function fromShellCommandline(string $command, string $cwd = null, array $env = null, $input = null, float $timeout = null): self
     {
@@ -75,5 +76,14 @@ final class Process extends \Symfony\Component\Process\Process
         }
         /** @noinspection PhpParamsInspection In symfony 3.2, passing $command as string was supported */
         return new static($command, $cwd, $env, $input, $timeout);
+    }
+
+    /**
+     * @param int $flags A bit field of Process::ITER_* flags
+     * @return \Generator<string>
+     */
+    public function getIterator($flags = 0): \Generator
+    {
+        return parent::getIterator($flags);
     }
 }

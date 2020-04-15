@@ -55,6 +55,13 @@ final class SshConfigGenerator
         }
         return $result;
     }
+
+    /**
+     * @param SshConnections $sshConnections
+     * @param array<string, string> $defaultSshConfig
+     * @param string $currentHost
+     * @return SshConfig
+     */
     public function generate(SshConnections $sshConnections, array $defaultSshConfig, string $currentHost): SshConfig
     {
         $sshConfig = new SshConfig();
