@@ -9,7 +9,7 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 1. Update the README.md or a fitting documentation page with details of changes to the CLI or behaviour of phpsu
 2. A Pull Request needs to satisfy PSR-standards and needs to be tested
-3. Pull Requests need to be approved by atleast one maintainer to be merged into the master branch.
+3. Pull Requests need to be approved by at least one maintainer to be merged into the master branch.
 
 ## Code of Conduct
 

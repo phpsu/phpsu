@@ -235,11 +235,23 @@ final class DatabaseCommand implements CommandInterface
         $hostsDifferentiate = $this->getFromHost() !== $this->getToHost();
         $from = new DatabaseUrl($this->getFromUrl());
         $to = new DatabaseUrl($this->getToUrl());
-
-        $dumpCmd = 'mysqldump ' . StringHelper::optionStringForVerbosity($this->getVerbosity()) . '--opt --skip-comments --single-transaction --lock-tables=false ' . $this->generateCliParameters(
-            $from,
-            false
-        ) . $this->excludeParts($from->getDatabase());
+        $dumpCmd = '';
+        $tableInfo = '';
+        if ($this->getExcludes()) {
+            $whereCondition = $this->getExcludeSqlPart($this->getExcludes());
+            $sqlPart = 'SET group_concat_max_len = 10240; SELECT GROUP_CONCAT(table_name separator \' \') FROM information_schema.tables WHERE '
+                . 'table_schema=\'' . $from->getDatabase() . '\'' . $whereCondition;
+            $dumpCmd .= 'TBLIST=`mysql ' . $this->generateCliParameters($from, true) . ' -AN -e"' . $sqlPart . '"` && ';
+            $tableInfo = ' ${TBLIST}';
+        }
+        $dumpCmd .= 'mysqldump '
+            . StringHelper::optionStringForVerbosity($this->getVerbosity())
+            . '--opt --skip-comments --single-transaction --lock-tables=false '
+            . $this->generateCliParameters(
+                $from,
+                false
+            )
+            . $tableInfo;
         $dumpCmd .= $this->getDatabaseCreateStatement($to->getDatabase());
         $compressCmd = $this->getCompression()->getCompressCommand();
         $unCompressCmd = $this->getCompression()->getUnCompressCommand();
@@ -292,22 +304,32 @@ final class DatabaseCommand implements CommandInterface
         return implode(' ', $result);
     }
 
-    private function excludeParts(string $database): string
-    {
-        $excludeOptions = [];
-        foreach ($this->getExcludes() as $exclude) {
-            $excludeOptions[] = '--ignore-table=' . escapeshellarg($database . '.' . $exclude);
-        }
-        if ($excludeOptions) {
-            return ' ' . implode(' ', $excludeOptions);
-        }
-        return '';
-    }
-
     private function getDatabaseCreateStatement(string $targetDatabase): string
     {
         $escapedTargetDatabase = '`' . str_replace('`', '``', $targetDatabase) . '`';
         $intermediateSql = sprintf('CREATE DATABASE IF NOT EXISTS %s;USE %s;', $escapedTargetDatabase, $escapedTargetDatabase);
         return ' | (echo ' . escapeshellarg($intermediateSql) . ' && cat)';
+    }
+
+    /**
+     * @param string[] $excludes
+     * @return string
+     */
+    private function getExcludeSqlPart(array $excludes): string
+    {
+        $result = '';
+        $simpleExclude = [];
+        foreach ($excludes as $exclude) {
+            $stringLength = strlen($exclude);
+            if ($stringLength >= 3 && $exclude[0] === '/' && $exclude[$stringLength - 1] === '/') {
+                $result .= ' AND table_name NOT REGEXP \'' . substr($exclude, 1, $stringLength - 2) . '\'';
+            } else {
+                $simpleExclude[] = '\'' . $exclude . '\'';
+            }
+        }
+        if ($simpleExclude) {
+            $result .= ' AND table_name NOT IN(' . implode(',', $simpleExclude) . ')';
+        }
+        return $result;
     }
 }

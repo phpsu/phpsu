@@ -13,6 +13,13 @@ use PHPUnit\Framework\TestCase;
 
 final class SshConfigGeneratorTest extends TestCase
 {
+    public function testFindAllPathsSourceAndDestinationAreSame()
+    {
+        $sshConfigGenerator = new SshConfigGenerator();
+        $result = $sshConfigGenerator->findAllPaths('hosta', 'hosta', new SshConnections());
+        $this->assertEquals([[]], $result);
+    }
+
     public function testConnectionProblem()
     {
         // from everywhere
