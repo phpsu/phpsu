@@ -9,15 +9,16 @@ use PHPSu\Config\AppInstance;
 use PHPSu\Config\FileSystem;
 use PHPSu\Config\SshConfig;
 use PHPUnit\Framework\TestCase;
+use SplTempFileObject;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class RsyncCommandTest extends TestCase
 {
 
-    public function testRsyncWithAppInstance()
+    public function testRsyncWithAppInstance(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
 
         $instanceA = new AppInstance();
         $instanceA->setName('prod')
@@ -34,10 +35,10 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/' 'hostc:/var/www/testing/'", $generated);
     }
 
-    public function testGenerate()
+    public function testGenerate(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $rsync = new RsyncCommand();
         $rsync->setSshConfig($sshConfig)
             ->setOptions('-r')
@@ -48,10 +49,10 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -r -e 'ssh -F '\''php://temp'\''' 'hosta:~/test/*' './__test/'", $rsync->generate());
     }
 
-    public function testRsyncWithAppInstanceLocal()
+    public function testRsyncWithAppInstanceLocal(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
 
         $instanceA = new AppInstance();
         $instanceA->setName('prod')
@@ -66,10 +67,10 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/' './'", $generated);
     }
 
-    public function testLocalAndVarStorage()
+    public function testLocalAndVarStorage(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
 
         $instanceA = new AppInstance();
         $instanceA->setName('prod')
@@ -84,10 +85,10 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 
-    public function testRsyncQuiet()
+    public function testRsyncQuiet(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
 
         $instanceA = new AppInstance();
         $instanceA->setName('prod')
@@ -102,10 +103,10 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -q -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 
-    public function testRsyncVerbose()
+    public function testRsyncVerbose(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
 
         $instanceA = new AppInstance();
         $instanceA->setName('prod')
@@ -120,10 +121,10 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -v -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 
-    public function testRsyncVeryVerbose()
+    public function testRsyncVeryVerbose(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
 
         $instanceA = new AppInstance();
         $instanceA->setName('prod')
@@ -138,10 +139,10 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -vv -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 
-    public function testRsyncDebug()
+    public function testRsyncDebug(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
 
         $instanceA = new AppInstance();
         $instanceA->setName('prod')
@@ -156,10 +157,10 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -vvv -az -e 'ssh -F '\''php://temp'\''' 'hosta:/var/www/prod/var/storage/' './var/storage/'", $generated);
     }
 
-    public function testRsyncCommandGetter()
+    public function testRsyncCommandGetter(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $rsync = new RsyncCommand();
         $rsync->setName('rsyncName')
             ->setSshConfig($sshConfig)

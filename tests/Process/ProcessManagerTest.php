@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Process;
 
+use Exception;
 use PHPSu\Process\Process;
 use PHPSu\Process\ProcessManager;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 final class ProcessManagerTest extends TestCase
 {
-    public function testProcessesShouldBeRunning()
+    public function testProcessesShouldBeRunning(): void
     {
         $processManager = new ProcessManager();
         $processManager->addProcess($pList1 = Process::fromShellCommandline('echo "Testing List1" && sleep 0.1')->setName('list1'));
@@ -25,11 +27,9 @@ final class ProcessManagerTest extends TestCase
         $this->assertSame('Testing List2' . PHP_EOL, $pList2->getOutput());
     }
 
-    /**
-     * @expectedException \Exception
-     */
-    public function testRunWithError()
+    public function testRunWithError(): void
     {
+        $this->expectException(Exception::class);
         $name = 'error' . md5(random_bytes(100));
         $processManager = (new ProcessManager())
             ->addProcess(Process::fromShellCommandline('error')->setName($name))
@@ -39,7 +39,7 @@ final class ProcessManagerTest extends TestCase
         $processManager->validateProcesses();
     }
 
-    public function testRunWithMultipleErrors()
+    public function testRunWithMultipleErrors(): void
     {
         $name1 = 'error' . md5(random_bytes(100));
         $name2 = 'error' . md5(random_bytes(100));
@@ -52,7 +52,7 @@ final class ProcessManagerTest extends TestCase
         $processManager->validateProcesses();
     }
 
-    public function testRunGetErrorOutput()
+    public function testRunGetErrorOutput(): void
     {
         $processManager = new ProcessManager();
         $name = 'error' . md5(random_bytes(100));
@@ -61,53 +61,53 @@ final class ProcessManagerTest extends TestCase
         $processManager->start();
         try {
             $processManager->wait()->validateProcesses();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->assertSame([$name => $pError->getErrorOutput()], $processManager->getErrorOutputs());
             return;
         }
         $this->assertTrue(false, 'Exception should be thrown');
     }
 
-    public function testAddOutputCallback()
+    public function testAddOutputCallback(): void
     {
         $processManager = new ProcessManager();
-        $processManager->addOutputCallback(function () {
+        $processManager->addOutputCallback(static function () {
             return true;
         });
-        $property = (new \ReflectionClass($processManager))->getProperty('outputCallbacks');
+        $property = (new ReflectionClass($processManager))->getProperty('outputCallbacks');
         $property->setAccessible(true);
         foreach ($property->getValue($processManager) as $callback) {
             $this->assertTrue($callback());
         }
     }
 
-    public function testAddStateChangeCallback()
+    public function testAddStateChangeCallback(): void
     {
         $processManager = new ProcessManager();
-        $processManager->addStateChangeCallback(function () {
+        $processManager->addStateChangeCallback(static function () {
             return true;
         });
-        $property = (new \ReflectionClass($processManager))->getProperty('stateChangeCallbacks');
+        $property = (new ReflectionClass($processManager))->getProperty('stateChangeCallbacks');
         $property->setAccessible(true);
         foreach ($property->getValue($processManager) as $callback) {
             $this->assertTrue($callback());
         }
     }
 
-    public function testAddTickCallback()
+    public function testAddTickCallback(): void
     {
         $processManager = new ProcessManager();
-        $processManager->addTickCallback(function () {
+        $processManager->addTickCallback(static function () {
             return true;
         });
-        $property = (new \ReflectionClass($processManager))->getProperty('tickCallbacks');
+        $property = (new ReflectionClass($processManager))->getProperty('tickCallbacks');
         $property->setAccessible(true);
         foreach ($property->getValue($processManager) as $callback) {
             $this->assertTrue($callback());
         }
     }
 
-    public function testProcessManagerMustRun()
+    public function testProcessManagerMustRun(): void
     {
         $result = (new ProcessManager())
             ->addProcess($pError = Process::fromShellCommandline('echo hi'))
@@ -115,7 +115,7 @@ final class ProcessManagerTest extends TestCase
         $this->assertContains($result->getState(0), [Process::STATE_RUNNING, Process::STATE_SUCCEEDED]);
     }
 
-    public function testEchoToStderrDoseNotMeanTheProcessErrored()
+    public function testEchoToStderrDoseNotMeanTheProcessErrored(): void
     {
         $processManager = (new ProcessManager())
             ->addProcess($pError = Process::fromShellCommandline('>&2 echo hi '))

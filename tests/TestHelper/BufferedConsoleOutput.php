@@ -48,7 +48,7 @@ final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputI
     /**
      * {@inheritdoc}
      */
-    public function setDecorated($decorated)
+    public function setDecorated($decorated): void
     {
         parent::setDecorated($decorated);
         $this->stderr->setDecorated($decorated);
@@ -57,7 +57,7 @@ final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputI
     /**
      * {@inheritdoc}
      */
-    public function setFormatter(OutputFormatterInterface $formatter)
+    public function setFormatter(OutputFormatterInterface $formatter): void
     {
         parent::setFormatter($formatter);
         $this->stderr->setFormatter($formatter);
@@ -66,7 +66,7 @@ final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputI
     /**
      * {@inheritdoc}
      */
-    public function setVerbosity($level)
+    public function setVerbosity($level): void
     {
         parent::setVerbosity($level);
         $this->stderr->setVerbosity($level);
@@ -83,7 +83,7 @@ final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputI
     /**
      * {@inheritdoc}
      */
-    public function setErrorOutput(OutputInterface $error)
+    public function setErrorOutput(OutputInterface $error): void
     {
         $this->stderr = $error;
     }
@@ -93,7 +93,7 @@ final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputI
      */
     private function openOutputStream()
     {
-        return fopen('php://memory', 'rw+');
+        return fopen('php://memory', 'rwb+');
     }
 
     /**
@@ -101,6 +101,6 @@ final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputI
      */
     private function openErrorStream()
     {
-        return fopen('php://memory', 'rw+');
+        return fopen('php://memory', 'rwb+');
     }
 }

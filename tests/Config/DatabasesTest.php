@@ -9,11 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 final class DatabasesTest extends TestCase
 {
-    /**
-     * @expectedException \Exception
-     */
-    public function testGetException()
+    public function testGetException(): void
     {
+        $this->expectException(\Exception::class);
         $databases = new Databases();
         $this->expectExceptionMessage('Database NameNotInDatabases not found');
         $databases->get('NameNotInDatabases');

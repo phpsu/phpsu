@@ -9,14 +9,15 @@ use PHPSu\Config\Compression\Bzip2Compression;
 use PHPSu\Config\Compression\GzipCompression;
 use PHPSu\Config\SshConfig;
 use PHPUnit\Framework\TestCase;
+use SplTempFileObject;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class DatabaseCommandTest extends TestCase
 {
-    public function testDatabaseCommandGenerate()
+    public function testDatabaseCommandGenerate(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
         $database->setSshConfig($sshConfig)
             ->setFromUrl('mysql://root:root@database/sequelmovie')
@@ -29,10 +30,10 @@ final class DatabaseCommandTest extends TestCase
         );
     }
 
-    public function testDatabaseCommandGzip()
+    public function testDatabaseCommandGzip(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
         $database->setSshConfig($sshConfig)
             ->setFromUrl('mysql://root:root@database/sequelmovie')
@@ -47,10 +48,10 @@ final class DatabaseCommandTest extends TestCase
         );
     }
 
-    public function testDatabaseCommandBzip2()
+    public function testDatabaseCommandBzip2(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
         $database->setSshConfig($sshConfig)
             ->setFromUrl('mysql://root:root@database/sequelmovie')
@@ -65,10 +66,10 @@ final class DatabaseCommandTest extends TestCase
         );
     }
 
-    public function testDatabaseCommandQuiet()
+    public function testDatabaseCommandQuiet(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
         $database->setSshConfig($sshConfig)
             ->setFromUrl('mysql://root:root@database/sequelmovie')
@@ -83,10 +84,10 @@ final class DatabaseCommandTest extends TestCase
         );
     }
 
-    public function testDatabaseCommandVerbose()
+    public function testDatabaseCommandVerbose(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
         $database->setSshConfig($sshConfig)
             ->setFromUrl('mysql://root:root@database/sequelmovie')
@@ -101,10 +102,10 @@ final class DatabaseCommandTest extends TestCase
         );
     }
 
-    public function testDatabaseCommandVeryVerbose()
+    public function testDatabaseCommandVeryVerbose(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
         $database->setSshConfig($sshConfig)
             ->setFromUrl('mysql://root:root@database/sequelmovie')
@@ -119,10 +120,10 @@ final class DatabaseCommandTest extends TestCase
         );
     }
 
-    public function testDatabaseCommandDebug()
+    public function testDatabaseCommandDebug(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
         $database->setSshConfig($sshConfig)
             ->setFromUrl('mysql://root:root@database/sequelmovie')
@@ -137,10 +138,10 @@ final class DatabaseCommandTest extends TestCase
         );
     }
 
-    public function testDatabaseCommandGetter()
+    public function testDatabaseCommandGetter(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
         $gzipCompression = new GzipCompression();
         $database->setName('databaseName')

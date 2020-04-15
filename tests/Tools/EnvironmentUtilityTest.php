@@ -10,17 +10,17 @@ use PHPUnit\Framework\TestCase;
 
 class EnvironmentUtilityTest extends TestCase
 {
-    public function testCommandIsInstalled()
+    public function testCommandIsInstalled(): void
     {
-        $this->assertSame(true, (new EnvironmentUtility())->isCommandInstalled('echo'));
+        $this->assertTrue((new EnvironmentUtility())->isCommandInstalled('echo'));
     }
 
-    public function testCommandIsNotInstalled()
+    public function testCommandIsNotInstalled(): void
     {
-        $this->assertSame(false, (new EnvironmentUtility())->isCommandInstalled('reiguheruh'));
+        $this->assertFalse((new EnvironmentUtility())->isCommandInstalled('reiguheruh'));
     }
 
-    public function testGetInstalledRsyncVersionOrExpectExceptionIfNotInstalled()
+    public function testGetInstalledRsyncVersionOrExpectExceptionIfNotInstalled(): void
     {
         if ((new EnvironmentUtility())->isRsyncInstalled()) {
             $rsyncVersion = (new EnvironmentUtility())->getRsyncVersion();
@@ -31,7 +31,7 @@ class EnvironmentUtilityTest extends TestCase
         }
     }
 
-    public function testGetInstalledSshVersionOrExpectExceptionIfNotInstalled()
+    public function testGetInstalledSshVersionOrExpectExceptionIfNotInstalled(): void
     {
         if ((new EnvironmentUtility())->isSshInstalled()) {
             $sshVersion = (new EnvironmentUtility())->getSshVersion();
@@ -42,7 +42,7 @@ class EnvironmentUtilityTest extends TestCase
         }
     }
 
-    public function testGetInstalledMysqldumpVersionOrExpectExceptionIfNotInstalled()
+    public function testGetInstalledMysqldumpVersionOrExpectExceptionIfNotInstalled(): void
     {
         if ((new EnvironmentUtility())->isMysqlDumpInstalled()) {
             $mysqldumpVersion = (new EnvironmentUtility())->getMysqlDumpVersion();
@@ -54,7 +54,7 @@ class EnvironmentUtilityTest extends TestCase
         }
     }
 
-    public function testGetInstalledSymfonyConsoleVersion()
+    public function testGetInstalledSymfonyConsoleVersion(): void
     {
         $environmentUtility = new EnvironmentUtility();
         $phpsuRootPath = __DIR__ . '/../fixtures/installed/version4.2';
@@ -64,7 +64,7 @@ class EnvironmentUtilityTest extends TestCase
         $this->assertSame('4.2.19992', $symfonyConsoleVersion);
     }
 
-    public function testGetInstalledSymfonyConsoleVersionFixtures()
+    public function testGetInstalledSymfonyConsoleVersionFixtures(): void
     {
         $environmentUtility = new EnvironmentUtility();
         $environmentUtility->setPhpsuRootPath(__DIR__ . '/../fixtures/installed/empty');
@@ -72,7 +72,7 @@ class EnvironmentUtilityTest extends TestCase
         $environmentUtility->getSymfonyConsoleVersion();
     }
 
-    public function testGetInstalledSymfonyProcessVersion()
+    public function testGetInstalledSymfonyProcessVersion(): void
     {
         $environmentUtility = new EnvironmentUtility();
         $environmentUtility->setPhpsuRootPath(__DIR__ . '/../fixtures/installed/version4.2');
@@ -80,7 +80,7 @@ class EnvironmentUtilityTest extends TestCase
         $this->assertSame('4.2.19991', $symfonyProcessVersion);
     }
 
-    public function testGetInstalledSymfonyProcessVersionFixturesA()
+    public function testGetInstalledSymfonyProcessVersionFixturesA(): void
     {
         $environmentUtility = new EnvironmentUtility();
         $environmentUtility->setPhpsuRootPath(__DIR__ . '/../fixtures/installed/empty');
@@ -88,16 +88,16 @@ class EnvironmentUtilityTest extends TestCase
         $environmentUtility->getSymfonyProcessVersion();
     }
 
-    public function testGetInstalledSymfonyProcessVersionFixturesB()
+    public function testGetInstalledSymfonyProcessVersionFixturesB(): void
     {
         $environmentUtility = new EnvironmentUtility();
         $phpsuRootPath = __DIR__ . '/../fixtures/installed/noFile';
         $environmentUtility->setPhpsuRootPath($phpsuRootPath);
-        $this->expectExceptionMessageRegExp('/failed to open stream\: No such file or directory$/');
+        $this->expectExceptionMessageMatches('/failed to open stream\: No such file or directory$/');
         $environmentUtility->getSymfonyProcessVersion();
     }
 
-    public function testGetInstalledSymfonyProcessVersionFixturesC()
+    public function testGetInstalledSymfonyProcessVersionFixturesC(): void
     {
         $oldErrorReporting = error_reporting();
         error_reporting($oldErrorReporting & ~E_WARNING);
@@ -112,7 +112,7 @@ class EnvironmentUtilityTest extends TestCase
         }
     }
 
-    public function testGetInstalledSymfonyProcessVersionFixturesD()
+    public function testGetInstalledSymfonyProcessVersionFixturesD(): void
     {
         $environmentUtility = new EnvironmentUtility();
         $phpsuRootPath = __DIR__ . '/../fixtures/installed/invalidJson';

@@ -304,18 +304,6 @@ final class DatabaseCommand implements CommandInterface
         return implode(' ', $result);
     }
 
-    private function excludeParts(string $database): string
-    {
-        $excludeOptions = [];
-        foreach ($this->getExcludes() as $exclude) {
-            $excludeOptions[] = '--ignore-table=' . escapeshellarg($database . '.' . $exclude);
-        }
-        if ($excludeOptions !== []) {
-            return ' ' . implode(' ', $excludeOptions);
-        }
-        return '';
-    }
-
     private function getDatabaseCreateStatement(string $targetDatabase): string
     {
         $escapedTargetDatabase = '`' . str_replace('`', '``', $targetDatabase) . '`';

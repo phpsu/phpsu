@@ -5,3 +5,40 @@ imports:
 parameters:
   convention.jsonlint_ignore_pattern:
     - "tests/fixtures/installed/invalidJson/vendor/composer/installed.json"
+  tasks:
+    composer:
+      no_check_publish: true
+      with_dependencies: false
+      strict: false
+    git_commit_message:
+      max_subject_width: 120
+      max_body_width: 120
+      enforce_capitalized_subject: false
+    jsonlint:
+      detect_key_conflicts: true
+      ignore_patterns: "%convention.jsonlint_ignore_pattern%"
+    phpcs:
+      standard: "PSR12"
+      warning_severity: 900000
+      tab_width: 4
+      ignore_patterns: "%convention.phpcslint_ignore_pattern%"
+    phplint: ~
+    xmllint:
+      ignore_patterns: "%convention.xmllint_ignore_pattern%"
+    yamllint:
+      ignore_patterns: "%convention.yamllint_ignore_pattern%"
+    xlifflint:
+      ignore_patterns: "%convention.xlifflint_ignore_pattern%"
+    securitychecker:
+      metadata:
+        blocking: "%convention.security_checker_blocking%"
+    plus_bom_fixer:
+      metadata:
+        priority: 1
+#    phpstan:
+#      autoload_file: ~
+#      configuration: phpstan.neon
+#      level: 8
+#      force_patterns: ['/^src/']
+#      triggered_by: ['php']
+

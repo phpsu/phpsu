@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\Output;
 
 class CommandExecutorTest extends TestCase
 {
-    public function testPassthruPassesSuccessfullyThrough()
+    public function testPassthruPassesSuccessfullyThrough(): void
     {
         $mockOutput = $this->createMock(Output::class);
         $mockOutput->expects($this->once())->method('isDecorated')->willReturn(false);
@@ -23,7 +23,7 @@ class CommandExecutorTest extends TestCase
         $this->assertSame(0, $exitCode);
     }
 
-    public function testPassthruPassesUnsuccessfullyThrough()
+    public function testPassthruPassesUnsuccessfullyThrough(): void
     {
         $mockOutput = $this->createMock(ConsoleOutput::class);
         $mockErrorOutput = $this->createMock(ConsoleOutput::class);
@@ -39,7 +39,7 @@ class CommandExecutorTest extends TestCase
         $this->assertSame(127, $exitCode, 'command shouldn\'t be installed');
     }
 
-    public function testPassthruPassesTtyThrough()
+    public function testPassthruPassesTtyThrough(): void
     {
         $mockOutput = $this->createMock(Output::class);
         $mockOutput->expects($this->once())->method('isDecorated')->willReturn(true);
@@ -51,14 +51,14 @@ class CommandExecutorTest extends TestCase
         $this->assertSame(127, $exitCode, 'command shouldn\'t be installed');
     }
 
-    public function testExecuteCommandsParallel()
+    public function testExecuteCommandsParallel(): void
     {
         $commandExecutor = new CommandExecutor();
         $outputLog = new BufferedOutput();
         $outputStatus = new BufferedOutput();
         $commandExecutor->executeParallel(['A' => 'echo hi', 'B' => 'echo world'], $outputLog, $outputStatus);
         $fetch = $outputStatus->fetch();
-        $this->assertContains('A: ✔', $fetch);
-        $this->assertContains('B: ✔', $fetch);
+        $this->assertStringContainsString('A: ✔', $fetch);
+        $this->assertStringContainsString('B: ✔', $fetch);
     }
 }

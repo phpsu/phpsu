@@ -7,14 +7,15 @@ namespace PHPSu\Tests\Config;
 use PHPSu\Config\SshConfig;
 use PHPSu\Config\SshConfigHost;
 use PHPUnit\Framework\TestCase;
+use SplTempFileObject;
 
 final class SshConfigTest extends TestCase
 {
 
-    public function testWriteConfig()
+    public function testWriteConfig(): void
     {
         $sshConfig = new SshConfig();
-        $file = new \SplTempFileObject();
+        $file = new SplTempFileObject();
         $file->fwrite('This should be overwritten');
         $sshConfig->setFile($file);
         $sshConfig->hostc = new SshConfigHost();

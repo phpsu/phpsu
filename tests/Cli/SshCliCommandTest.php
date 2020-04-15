@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Cli;
 
+use Exception;
 use PHPSu\Cli\SshCliCommand;
 use PHPSu\Config\ConfigurationLoaderInterface;
 use PHPSu\Config\GlobalConfig;
@@ -20,7 +21,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 class SshCliCommandTest extends TestCase
 {
 
-    public function testSshCliCommandDryRun()
+    public function testSshCliCommandDryRun(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
 
@@ -40,7 +41,7 @@ class SshCliCommandTest extends TestCase
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
-    public function testSshCliCommandDryRunInteractive()
+    public function testSshCliCommandDryRunInteractive(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
 
@@ -56,13 +57,13 @@ class SshCliCommandTest extends TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains('Please select one of the AppInstances', $output);
-        $this->assertContains('You selected: production', $output);
-        $this->assertContains("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\''; bash --login'\n", $output);
+        $this->assertStringContainsString('Please select one of the AppInstances', $output);
+        $this->assertStringContainsString('You selected: production', $output);
+        $this->assertStringContainsString("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\''; bash --login'\n", $output);
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
-    public function testSshCliCommandExecute()
+    public function testSshCliCommandExecute(): void
     {
         $globalConfig = $this->createConfig();
         $mockConfigurationLoader = $this->createMockConfigurationLoader($globalConfig);
@@ -93,7 +94,7 @@ class SshCliCommandTest extends TestCase
         $this->assertSame(208, $commandTester->getStatusCode());
     }
 
-    public function testSshCliCommandExecuteWithNoAppInstancesConfigured()
+    public function testSshCliCommandExecuteWithNoAppInstancesConfigured(): void
     {
         $globalConfig = $this->createConfigNoAppInstance();
         $mockConfigurationLoader = $this->createMockConfigurationLoader($globalConfig);
@@ -105,7 +106,7 @@ class SshCliCommandTest extends TestCase
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
         $commandTester = new CommandTester($command);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('You need to define at least one AppInstance besides local');
         $commandTester->execute(['destination' => 'p']);
     }
