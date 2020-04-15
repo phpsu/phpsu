@@ -32,7 +32,7 @@
   "scripts": {
     "test": "vendor/bin/phpunit -c tests/phpunit.xml --testdox --color=always",
     "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox",
-    "infection": "vendor/bin/infection --threads=4 --only-covered --min-msi=91 --min-covered-msi=91 --ansi",
+    "infection": "vendor/bin/infection --threads=4 --only-covered --min-msi=88 --min-covered-msi=88 --ansi",
     "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon --level max src --ansi"
   },
   "autoload": {
@@ -57,9 +57,8 @@
     "pluswerk/grumphp-config": "^3.0",
     "rector/rector-prefixed": "^0.7.14",
     "spatie/phpunit-watcher": "^1.22",
-    "phpunit/php-invoker": "^3.0",
     "phpstan/phpstan": "^0.12.18",
-    "infection/infection": "^0.16.2"
+    "infection/infection": "^0.15.3"
   },
   "suggest": {
     "bamarni/composer-bin-plugin": "Dependency-Independent use of phpsu"
