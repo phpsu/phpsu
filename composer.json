@@ -55,7 +55,7 @@
   "require": {
     "symfony/console": "3.2.* | 3.4.* | 4.2.*",
     "symfony/process": "3.2.* | 3.4.* | 4.2.*",
-    "php": ">=7.0.0 <7.4",
+    "php": ">=7.0.0 <7.5",
     "ext-json": "*"
   },
   "require-dev": {
