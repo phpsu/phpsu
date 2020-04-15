@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection ALL */
-
 declare(strict_types=1);
 
 namespace PHPSu;
@@ -30,7 +28,7 @@ final class Controller implements ControllerInterface
         return (new CommandExecutor())->passthru($sshCommand, $output);
     }
 
-    
+
     public function sync(OutputInterface $output, GlobalConfig $config, SyncOptions $options): void
     {
         $commands = (new CommandGenerator($config, $output->getVerbosity()))->syncCommands($options);
@@ -57,7 +55,7 @@ final class Controller implements ControllerInterface
     }
 
 
-    
+
     public function checkSshConnection(OutputInterface $output, GlobalConfig $config, SyncOptions $options): void
     {
         if ($options->getSource() !== 'local') {
