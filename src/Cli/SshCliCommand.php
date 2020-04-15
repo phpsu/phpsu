@@ -1,10 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PHPSu\Cli;
 
 use Exception;
-use function in_array;
 use PHPSu\Config\AppInstance;
 use PHPSu\Helper\StringHelper;
 use PHPSu\Options\SshOptions;
@@ -13,6 +13,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+
+use function in_array;
 
 final class SshCliCommand extends AbstractCliCommand
 {

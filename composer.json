@@ -34,6 +34,7 @@
     "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox",
     "infection": "vendor/bin/infection --threads=4 --only-covered --min-msi=91 --min-covered-msi=91 --ansi",
     "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon --level max src --ansi",
+    "bin": "echo ''",
     "post-install-cmd": ["@composer bin all install --ansi"],
     "post-update-cmd": ["@composer bin all update --ansi"]
   },

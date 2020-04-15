@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PHPSu\Command;
@@ -245,7 +246,7 @@ final class DatabaseCommand implements CommandInterface
         }
         $dumpCmd .= 'mysqldump '
             . StringHelper::optionStringForVerbosity($this->getVerbosity())
-            . '--opt --skip-comments '
+            . '--opt --skip-comments --single-transaction --lock-tables=false '
             . $this->generateCliParameters(
                 $from,
                 false

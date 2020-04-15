@@ -15,15 +15,15 @@ This package is compliant with [PSR-1], [PSR-2] and [PSR-4]. If you notice compl
 
 ## Install
 
-Via Composer:
+### Via Composer:
 
 ````bash
 composer require --dev phpsu/phpsu
 ````
 
-### Install with conflicting versions
+#### Via Composer, with conflicting versions
 
-If you have problems with conflicting versions. eg. symfony:2.* you can use the [composer-bin-plugin]
+If you have problems with conflicting versions eg. symfony:2.* you can use the [composer-bin-plugin].
 
 ````bash
 composer require --dev bamarni/composer-bin-plugin
@@ -36,6 +36,20 @@ echo '/vendor-bin/**/vendor' >> .gitignore
 ````
 
 [composer-bin-plugin]: https://github.com/bamarni/composer-bin-plugin
+
+### Via Docker:
+
+if you want to use phpsu via Docker we have an minimal phpsu docker image: [phpsu/phpsu].
+
+you can execute any phpsu command via something like this:
+
+``docker run --rm -it -v $(pwd):/app -v ~/.ssh:/root/.ssh phpsu/phpsu:1.1.0 phpsu ssh production``
+
+[read more about docker usage]
+
+
+[phpsu/phpsu]: https://hub.docker.com/r/phpsu/phpsu
+[read more about docker usage]: docs/Docker.md
 
 ## Requirements
 
@@ -64,22 +78,24 @@ Simple configuration example `phpsu-config.php`:
 <?php
 declare(strict_types=1);
 
-$config = new \PHPSu\Config\GlobalConfig();
-$config->addFilesystem('Image Uploads', 'var/storage')
+$globalConfig = new \PHPSu\Config\GlobalConfig();
+$globalConfig->addFilesystem('Image Uploads', 'var/storage')
     ->addExclude('*.mp4')
     ->addExclude('*.mp3')
     ->addExclude('*.zip')
     ->addExcludes(['*.jpg', '*.gif']);
-$config->addSshConnection('hostA', 'ssh://user@localhost:2208');
-$config->addAppInstance('production', 'hostA', '/var/www/')
+$globalConfig->addSshConnection('hostA', 'ssh://user@localhost:2208');
+$globalConfig->addAppInstance('production', 'hostA', '/var/www/')
+    ->setCompression(new \PHPSu\Config\Compression\GzipCompression())
     ->addDatabase('app', 'mysql://root:password@127.0.0.1:3307/production01db')
     ->addExclude('one_single_table_name')
     ->addExclude('/cache/')
     ->addExclude('/session$/')
     ->addExcludes(['/log/']);
-$config->addAppInstance('local')
+$globalConfig->addAppInstance('local')
+    ->setCompression(new \PHPSu\Config\Compression\GzipCompression())
     ->addDatabase('app', 'mysql://root:root@127.0.0.1/testingLocal');
-return $config;
+return $globalConfig;
 ````
 
 ## CLI Examples
@@ -119,7 +135,7 @@ composer install
 composer test
 ````
 
-You can also check, whether any changes you made are affecting your tests immediatly on save:
+You can also check, whether any changes you made are affecting your tests immediately on save:
 ````bash
 composer test:watch
 ````
