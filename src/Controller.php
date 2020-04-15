@@ -48,10 +48,10 @@ final class Controller implements ControllerInterface
 
         if ($output instanceof ConsoleOutputInterface) {
             $sectionOutput = [];
-            $sectionTop = $this->getNewSection($sectionOutput, $output);
-            $sectionMiddle = $this->getNewSection($sectionOutput, $output);
+            $sectionTop = $output->section();
+            $sectionMiddle = $output->section();
             $sectionMiddle->writeln(str_repeat('-', 20), OutputInterface::OUTPUT_RAW);
-            $sectionBottom = $this->getNewSection($sectionOutput, $output);
+            $sectionBottom = $output->section();
         }
         (new CommandExecutor())->executeParallel($commands, $sectionTop, $sectionBottom);
     }
@@ -74,19 +74,5 @@ final class Controller implements ControllerInterface
             $sshOptionDestination->setCommand(sprintf('echo \'ssh connection to %s is working\'', $sshOptionDestination->getDestination()));
             $this->ssh($output, $config, $sshOptionDestination);
         }
-    }
-
-    /**
-     * @param array<ConsoleSectionOutput> $sectionOutputs
-     * @param ConsoleOutputInterface $output
-     * @return \Symfony\Component\Console\Output\ConsoleSectionOutput
-     * @deprecated the usage of symfony 3.x is discouraged. With the next version we will remove support
-     */
-    private function getNewSection(array &$sectionOutputs, ConsoleOutputInterface $output): ConsoleSectionOutput
-    {
-        if (method_exists($output, 'section') && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', '>=')) {
-            return $output->section();
-        }
-        return new ConsoleSectionOutput($output->getStream(), $sectionOutputs, $output->getVerbosity(), $output->isDecorated(), $output->getFormatter());
     }
 }
