@@ -10,9 +10,14 @@ use Symfony\Component\Console\Terminal;
 
 class ConsoleSectionOutput extends StreamOutput
 {
+    /* @var array<string> */
+    /** @var \PPP */
     private $content = [];
+    /** @var int */
     private $lines = 0;
+    /** @var array|\Symfony\Component\Console\Output\ConsoleSectionOutput[] */
     private $sections;
+    /** @var \Symfony\Component\Console\Terminal */
     private $terminal;
 
     /**
@@ -54,7 +59,7 @@ class ConsoleSectionOutput extends StreamOutput
     /**
      * Overwrites the previous output with a new message.
      *
-     * @param array|string $message
+     * @param array<string>|string $message
      * @return void
      */
     public function overwrite($message)
@@ -83,12 +88,15 @@ class ConsoleSectionOutput extends StreamOutput
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $message
+     * @param bool $newline
+     * @return void
      */
     protected function doWrite($message, $newline)
     {
         if (!$this->isDecorated()) {
-            return parent::doWrite($message, $newline);
+            parent::doWrite($message, $newline);
+            return;
         }
         $erasedContent = $this->popStreamContentUntilCurrentSection();
         $this->addContent($message);

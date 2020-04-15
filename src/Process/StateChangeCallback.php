@@ -21,6 +21,9 @@ final class StateChangeCallback
         $this->output = $output;
     }
 
+    /**
+     * @return void
+     */
     public function __invoke(int $processId, Process $process, string $newState, ProcessManager $manager)
     {
         if ($this->output instanceof ConsoleSectionOutput) {

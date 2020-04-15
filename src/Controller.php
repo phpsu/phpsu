@@ -77,7 +77,7 @@ final class Controller implements ControllerInterface
     }
 
     /**
-     * @param array $sectionOutputs
+     * @param array<ConsoleSectionOutput> $sectionOutputs
      * @param ConsoleOutputInterface $output
      * @return \Symfony\Component\Console\Output\ConsoleSectionOutput
      * @deprecated the usage of symfony 3.x is discouraged. With the next version we will remove support

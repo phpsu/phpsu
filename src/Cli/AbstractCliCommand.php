@@ -23,11 +23,17 @@ abstract class AbstractCliCommand extends Command
         $this->controller = $controller;
     }
 
+    /**
+     * @return string|string[]|null
+     */
     public function getArgument(InputInterface $input, string $argumentName)
     {
         return $input->getArgument($argumentName);
     }
 
+    /**
+     * @return bool|string|string[]|null
+     */
     public function getOption(InputInterface $input, string $argumentName)
     {
         return $input->getOption($argumentName);
