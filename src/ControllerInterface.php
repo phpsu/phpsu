@@ -21,5 +21,5 @@ interface ControllerInterface
     /**
      * @return void
      */
-    public function testSshConnection(OutputInterface $output, GlobalConfig $config, SyncOptions $options);
+    public function checkSshConnection(OutputInterface $output, GlobalConfig $config, SyncOptions $options);
 }
