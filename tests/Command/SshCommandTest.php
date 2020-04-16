@@ -8,24 +8,25 @@ use PHPSu\Command\SshCommand;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPUnit\Framework\TestCase;
+use SplTempFileObject;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class SshCommandTest extends TestCase
 {
-    public function testSshCommandGenerate()
+    public function testSshCommandGenerate(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta');
         $this->assertSame("ssh -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
-    public function testSshCommandQuiet()
+    public function testSshCommandQuiet(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
@@ -33,10 +34,10 @@ final class SshCommandTest extends TestCase
         $this->assertSame("ssh -q -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
-    public function testSshCommandVerbose()
+    public function testSshCommandVerbose(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
@@ -44,10 +45,10 @@ final class SshCommandTest extends TestCase
         $this->assertSame("ssh -v -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
-    public function testSshCommandVeryVerbose()
+    public function testSshCommandVeryVerbose(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
@@ -55,10 +56,10 @@ final class SshCommandTest extends TestCase
         $this->assertSame("ssh -vv -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
-    public function testSshCommandDebug()
+    public function testSshCommandDebug(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
@@ -66,10 +67,10 @@ final class SshCommandTest extends TestCase
         $this->assertSame("ssh -vvv -F 'php://temp' 'hosta'", $ssh->generate());
     }
 
-    public function testSshCommandGetter()
+    public function testSshCommandGetter(): void
     {
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
@@ -81,14 +82,12 @@ final class SshCommandTest extends TestCase
         $this->assertSame(OutputInterface::VERBOSITY_DEBUG, $ssh->getVerbosity());
     }
 
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage  the found host and the current Host are the same: same
-     */
-    public function testSameException()
+    public function testSameException(): void
     {
+        $this->expectExceptionMessage("the found host and the current Host are the same: same");
+        $this->expectException(\Exception::class);
         $sshConfig = new SshConfig();
-        $sshConfig->setFile(new \SplTempFileObject());
+        $sshConfig->setFile(new SplTempFileObject());
         $this->expectExceptionMessage('the found host and the current Host are the same: same');
         SshCommand::fromGlobal(new GlobalConfig(), 'same', 'same', OutputInterface::VERBOSITY_NORMAL);
     }

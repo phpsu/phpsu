@@ -55,8 +55,9 @@ you can execute any phpsu command via something like this:
 
 The following versions of PHP are supported by this version.
 
-* PHP `7.0`, `7.1`, `7.2` and `7.3`
-* Compatible and continuously tested with symfony `3.2`, `3.4` and `4.3`
+* PHP `7.2`, `7.3`, `7.4`
+* Compatible and continuously tested with symfony `4.3` and `5.0`
+* for older versions go to [version 1.1.0](https://github.com/phpsu/phpsu/tree/1.1.0)
 
 Required for synchronisation are:
 * ``ssh`` on execution System

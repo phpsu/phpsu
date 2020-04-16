@@ -16,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class Controller implements ControllerInterface
 {
-    const PHPSU_ROOT_PATH = __DIR__ . '/../';
+    public const PHPSU_ROOT_PATH = __DIR__ . '/../';
 
     public function ssh(OutputInterface $output, GlobalConfig $config, SshOptions $options): int
     {
@@ -28,10 +28,8 @@ final class Controller implements ControllerInterface
         return (new CommandExecutor())->passthru($sshCommand, $output);
     }
 
-    /**
-     * @return void
-     */
-    public function sync(OutputInterface $output, GlobalConfig $config, SyncOptions $options)
+
+    public function sync(OutputInterface $output, GlobalConfig $config, SyncOptions $options): void
     {
         $commands = (new CommandGenerator($config, $output->getVerbosity()))->syncCommands($options);
 
@@ -48,19 +46,17 @@ final class Controller implements ControllerInterface
 
         if ($output instanceof ConsoleOutputInterface) {
             $sectionOutput = [];
-            $sectionTop = $this->getNewSection($sectionOutput, $output);
-            $sectionMiddle = $this->getNewSection($sectionOutput, $output);
+            $sectionTop = $output->section();
+            $sectionMiddle = $output->section();
             $sectionMiddle->writeln(str_repeat('-', 20), OutputInterface::OUTPUT_RAW);
-            $sectionBottom = $this->getNewSection($sectionOutput, $output);
+            $sectionBottom = $output->section();
         }
         (new CommandExecutor())->executeParallel($commands, $sectionTop, $sectionBottom);
     }
 
 
-    /**
-     * @return void
-     */
-    public function checkSshConnection(OutputInterface $output, GlobalConfig $config, SyncOptions $options)
+
+    public function checkSshConnection(OutputInterface $output, GlobalConfig $config, SyncOptions $options): void
     {
         if ($options->getSource() !== 'local') {
             $sshOptionSource = new SshOptions($options->getSource());
@@ -74,19 +70,5 @@ final class Controller implements ControllerInterface
             $sshOptionDestination->setCommand(sprintf('echo \'ssh connection to %s is working\'', $sshOptionDestination->getDestination()));
             $this->ssh($output, $config, $sshOptionDestination);
         }
-    }
-
-    /**
-     * @param array<ConsoleSectionOutput> $sectionOutputs
-     * @param ConsoleOutputInterface $output
-     * @return \Symfony\Component\Console\Output\ConsoleSectionOutput
-     * @deprecated the usage of symfony 3.x is discouraged. With the next version we will remove support
-     */
-    private function getNewSection(array &$sectionOutputs, ConsoleOutputInterface $output): ConsoleSectionOutput
-    {
-        if (method_exists($output, 'section') && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.0.0', '>=')) {
-            return $output->section();
-        }
-        return new ConsoleSectionOutput($output->getStream(), $sectionOutputs, $output->getVerbosity(), $output->isDecorated(), $output->getFormatter());
     }
 }

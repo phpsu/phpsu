@@ -13,14 +13,14 @@ use PHPUnit\Framework\TestCase;
 
 final class SshConfigGeneratorTest extends TestCase
 {
-    public function testFindAllPathsSourceAndDestinationAreSame()
+    public function testFindAllPathsSourceAndDestinationAreSame(): void
     {
         $sshConfigGenerator = new SshConfigGenerator();
         $result = $sshConfigGenerator->findAllPaths('hosta', 'hosta', new SshConnections());
         $this->assertEquals([[]], $result);
     }
 
-    public function testConnectionProblem()
+    public function testConnectionProblem(): void
     {
         // from everywhere
         $sshConnections = new SshConnections();
@@ -41,7 +41,7 @@ final class SshConfigGeneratorTest extends TestCase
         $this->assertEquals([$toA, $toCFromA], $path);
     }
 
-    public function testSshConfigGeneratorGenerate()
+    public function testSshConfigGeneratorGenerate(): void
     {
         $sshConnections = new SshConnections();
         $sshConnections->add(
@@ -87,7 +87,7 @@ final class SshConfigGeneratorTest extends TestCase
         $this->assertEquals($sshConfigExpected, $sshConfig);
     }
 
-    public function testSshConfigGeneratorGenerateError()
+    public function testSshConfigGeneratorGenerateError(): void
     {
         $sshConnections = new SshConnections();
         $sshConnections->add((new SshConnection())->setHost('hostb')
@@ -97,7 +97,7 @@ final class SshConfigGeneratorTest extends TestCase
         $sshConnections->compile();
     }
 
-    public function testSshConfigGeneratorGenerateWithMultipleFrom()
+    public function testSshConfigGeneratorGenerateWithMultipleFrom(): void
     {
         $sshConnections = new SshConnections();
         $sshConnections->add((new SshConnection())->setHost('hostc')

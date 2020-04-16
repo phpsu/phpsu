@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+use Exception;
+
 final class FileSystems
 {
     /** @var FileSystem[] */
@@ -13,7 +15,7 @@ final class FileSystems
      * @param FileSystem $fileSystem
      * @return void
      */
-    public function add(FileSystem $fileSystem)
+    public function add(FileSystem $fileSystem): void
     {
         $this->fileSystems[$fileSystem->getName()] = $fileSystem;
     }
@@ -34,7 +36,7 @@ final class FileSystems
     public function get(string $name): FileSystem
     {
         if (!isset($this->fileSystems[$name])) {
-            throw new \Exception(sprintf('Filesystem %s not found', $name));
+            throw new Exception(sprintf('Filesystem %s not found', $name));
         }
         return $this->fileSystems[$name];
     }

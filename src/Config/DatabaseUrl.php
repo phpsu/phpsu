@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+use Exception;
+use InvalidArgumentException;
+
 final class DatabaseUrl
 {
     /** @var string */
@@ -24,7 +27,7 @@ final class DatabaseUrl
         }
         $result = parse_url($url);
         if (!$result) {
-            throw new \Exception('DatabaseUrl could not been parsed: ' . $url);
+            throw new Exception('DatabaseUrl could not been parsed: ' . $url);
         }
         $this->setUser($result['user'] ?? '');
         $this->setPassword($result['pass'] ?? '');
@@ -40,8 +43,8 @@ final class DatabaseUrl
 
     public function setUser(string $user): DatabaseUrl
     {
-        if (!$user) {
-            throw new \InvalidArgumentException('User must be set');
+        if ($user === '') {
+            throw new InvalidArgumentException('User must be set');
         }
         $this->user = $user;
         return $this;
@@ -66,10 +69,10 @@ final class DatabaseUrl
     public function setHost(string $host): DatabaseUrl
     {
         if (strpos($host, '/') !== false) {
-            throw new \InvalidArgumentException(sprintf('host %s has invalid character', $host));
+            throw new InvalidArgumentException(sprintf('host %s has invalid character', $host));
         }
-        if (!$host) {
-            throw new \InvalidArgumentException('Host must be set');
+        if ($host === '') {
+            throw new InvalidArgumentException('Host must be set');
         }
         $this->host = $host;
         return $this;
@@ -83,7 +86,7 @@ final class DatabaseUrl
     public function setPort(int $port): DatabaseUrl
     {
         if ($port <= 0 || $port >= 65535) {
-            throw new \Exception('port must be between 0 and 65535');
+            throw new Exception('port must be between 0 and 65535');
         }
         $this->port = $port;
         return $this;
@@ -104,7 +107,7 @@ final class DatabaseUrl
     {
         $result = 'mysql://';
         $result .= $this->getUser();
-        if ($this->getPassword()) {
+        if ($this->getPassword() !== '') {
             $result .= ':' . $this->getPassword();
         }
         $result .= '@' . $this->getHost();

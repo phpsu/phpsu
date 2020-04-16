@@ -21,10 +21,8 @@ final class SshCliCommand extends AbstractCliCommand
     /** @var null|string[] */
     private $instances;
 
-    /**
-     * @return void
-     */
-    protected function configure()
+
+    protected function configure(): void
     {
         $this->setName('ssh')
             ->setDescription('create SSH Connection')
@@ -35,10 +33,8 @@ final class SshCliCommand extends AbstractCliCommand
             ->addArgument('commands', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'The Destination AppInstance.', []);
     }
 
-    /**
-     * @return void
-     */
-    protected function initialize(InputInterface $input, OutputInterface $output)
+
+    protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         /** @var string $default */
         $default = $input->hasArgument('destination') ? $this->getArgument($input, 'destination') ?? '' : '';
@@ -49,10 +45,12 @@ final class SshCliCommand extends AbstractCliCommand
     }
 
     /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
      * @return void
      * @throws Exception
      */
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $default = $input->hasArgument('destination') ? $this->getArgument($input, 'destination') : '';
         if (empty($this->getAppInstancesWithHost())) {
@@ -91,7 +89,7 @@ final class SshCliCommand extends AbstractCliCommand
     protected function getAppInstancesWithHost(): array
     {
         if ($this->instances === null) {
-            $this->instances = $this->configurationLoader->getConfig()->getAppInstanceNames(function (AppInstance $instance) {
+            $this->instances = $this->configurationLoader->getConfig()->getAppInstanceNames(static function (AppInstance $instance) {
                 return $instance->getHost() !== '';
             });
         }

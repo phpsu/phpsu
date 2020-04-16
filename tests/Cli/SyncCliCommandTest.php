@@ -17,7 +17,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 class SyncCliCommandTest extends TestCase
 {
 
-    public function testSyncCliCommandExecute()
+    public function testSyncCliCommandExecute(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
 
@@ -34,13 +34,13 @@ class SyncCliCommandTest extends TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\''; echo '\''ssh connection to production is working'\'''\n", $output);
-        $this->assertContains("filesystem:storage\n", $output);
-        $this->assertContains("rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'us:/var/www/var/storage/' './var/storage/'\n", $output);
+        $this->assertStringContainsString("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\''; echo '\''ssh connection to production is working'\'''\n", $output);
+        $this->assertStringContainsString("filesystem:storage\n", $output);
+        $this->assertStringContainsString("rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'us:/var/www/var/storage/' './var/storage/'\n", $output);
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
-    public function testSyncCliCommandExecuteReversed()
+    public function testSyncCliCommandExecuteReversed(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
 
@@ -57,9 +57,9 @@ class SyncCliCommandTest extends TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\''; echo '\''ssh connection to production is working'\'''\n", $output);
-        $this->assertContains("filesystem:storage\n", $output);
-        $this->assertContains("rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' './var/storage/' 'us:/var/www/var/storage/'\n", $output);
+        $this->assertStringContainsString("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\''; echo '\''ssh connection to production is working'\'''\n", $output);
+        $this->assertStringContainsString("filesystem:storage\n", $output);
+        $this->assertStringContainsString("rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' './var/storage/' 'us:/var/www/var/storage/'\n", $output);
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 

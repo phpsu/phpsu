@@ -9,61 +9,61 @@ use PHPUnit\Framework\TestCase;
 
 class DatabaseUrlTest extends TestCase
 {
-    public function testInvalidUrl()
+    public function testInvalidUrl(): void
     {
-        $this->expectExceptionMessageRegExp('/DatabaseUrl could not been parsed/');
+        $this->expectExceptionMessageMatches('/DatabaseUrl could not been parsed/');
         new DatabaseUrl('://:/:/:/:/');
     }
 
-    public function testInvalidUser()
+    public function testInvalidUser(): void
     {
-        $this->expectExceptionMessageRegExp('/User must be set/');
+        $this->expectExceptionMessageMatches('/User must be set/');
         new DatabaseUrl('test');
     }
 
-    public function testInvalidPort()
+    public function testInvalidPort(): void
     {
         $dsn = new DatabaseUrl('user@test');
         $this->expectExceptionMessage('port must be between 0 and 65535');
         $dsn->setPort(0);
     }
 
-    public function testInvalidPort2()
+    public function testInvalidPort2(): void
     {
         $dsn = new DatabaseUrl('user@test');
         $this->expectExceptionMessage('port must be between 0 and 65535');
         $dsn->setPort(65535);
     }
 
-    public function testInvalidHost()
+    public function testInvalidHost(): void
     {
         $dsn = new DatabaseUrl('user@test');
         $this->expectExceptionMessage('host ho/st has invalid character');
         $dsn->setHost('ho/st');
     }
 
-    public function testInvalidHost2()
+    public function testInvalidHost2(): void
     {
         $dsn = new DatabaseUrl('user@test');
         $this->expectExceptionMessage('Host must be set');
         $dsn->setHost('');
     }
 
-    public function testMinimumValidPort()
+    public function testMinimumValidPort(): void
     {
         $dsn = new DatabaseUrl('user@test');
         $dsn->setPort(1);
         $this->assertSame(1, $dsn->getPort());
     }
 
-    public function testMaximumValidPort()
+    public function testMaximumValidPort(): void
     {
         $dsn = new DatabaseUrl('user@test');
         $dsn->setPort(65534);
         $this->assertSame(65534, $dsn->getPort());
     }
 
-    public function testSshWithoutSchema()
+    public function testSshWithoutSchema(): void
     {
         $dsn = new DatabaseUrl('user@host');
         $this->assertSame('user', $dsn->getUser());
@@ -73,7 +73,7 @@ class DatabaseUrlTest extends TestCase
         $this->assertSame('mysql://user@host', $dsn->__toString());
     }
 
-    public function testSshWithSchema()
+    public function testSshWithSchema(): void
     {
         $dsn = new DatabaseUrl('mysql://user@host');
         $this->assertSame('user', $dsn->getUser());
@@ -83,7 +83,7 @@ class DatabaseUrlTest extends TestCase
         $this->assertSame('mysql://user@host', $dsn->__toString());
     }
 
-    public function testSshWithSchemaPort2206()
+    public function testSshWithSchemaPort2206(): void
     {
         $dsn = new DatabaseUrl('mysql://user@host:2206');
         $this->assertSame('user', $dsn->getUser());
@@ -93,7 +93,7 @@ class DatabaseUrlTest extends TestCase
         $this->assertSame('mysql://user@host:2206', $dsn->__toString());
     }
 
-    public function testSshWithPassword()
+    public function testSshWithPassword(): void
     {
         $dsn = new DatabaseUrl('mysql://user:password@host');
         $this->assertSame('user', $dsn->getUser());
@@ -103,7 +103,7 @@ class DatabaseUrlTest extends TestCase
         $this->assertSame('mysql://user:password@host', $dsn->__toString());
     }
 
-    public function testSshWithIp()
+    public function testSshWithIp(): void
     {
         $dsn = new DatabaseUrl('user@192.168.0.1');
         $this->assertSame('user', $dsn->getUser());
@@ -113,7 +113,7 @@ class DatabaseUrlTest extends TestCase
         $this->assertSame('mysql://user@192.168.0.1', $dsn->__toString());
     }
 
-    public function testDatabaseUrlGetter()
+    public function testDatabaseUrlGetter(): void
     {
         $dsn = new DatabaseUrl('user@192.168.0.1/database');
         $this->assertSame('user', $dsn->getUser());

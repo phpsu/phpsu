@@ -11,14 +11,14 @@ use PHPUnit\Framework\TestCase;
 
 final class AppInstanceTest extends TestCase
 {
-    public function testSetHostException()
+    public function testSetHostException(): void
     {
         $apps = new AppInstance();
         $this->expectExceptionMessage('host incorrect/Host has invalid character');
         $apps->setHost('incorrect/Host');
     }
 
-    public function testCompressionSettings()
+    public function testCompressionSettings(): void
     {
         $app = new AppInstance();
         $this->assertEquals([], $app->getCompressions());

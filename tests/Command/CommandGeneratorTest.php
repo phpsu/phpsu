@@ -13,6 +13,7 @@ use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConnection;
 use PHPSu\Options\SyncOptions;
 use PHPUnit\Framework\TestCase;
+use SplTempFileObject;
 
 final class CommandGeneratorTest extends TestCase
 {
@@ -36,43 +37,41 @@ final class CommandGeneratorTest extends TestCase
         return $globalConfig;
     }
 
-    public function testSshGeneration()
+    public function testSshGeneration(): void
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
-        $commandGenerator->setFile($file = new \SplTempFileObject());
+        $commandGenerator->setFile($file = new SplTempFileObject());
         $result = $commandGenerator->sshCommand('production', '', '');
         $this->assertSame("ssh -F 'php://temp' 'serverEu' -t 'cd '\''/var/www/production'\''; bash --login'", $result);
     }
 
-    public function testSshWithCommand()
+    public function testSshWithCommand(): void
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
-        $commandGenerator->setFile($file = new \SplTempFileObject());
+        $commandGenerator->setFile($file = new SplTempFileObject());
         $result = $commandGenerator->sshCommand('production', '', 'ls -alh --color');
         $this->assertSame("ssh -F 'php://temp' 'serverEu' -t 'cd '\''/var/www/production'\''; ls -alh --color'", $result);
         $result = $commandGenerator->sshCommand('production', '', 'echo "test"');
         $this->assertSame("ssh -F 'php://temp' 'serverEu' -t 'cd '\''/var/www/production'\''; echo \"test\"'", $result);
     }
 
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage Source and Destination are Identical: same
-     */
-    public function testFromAndToSameDisallowed()
+    public function testFromAndToSameDisallowed(): void
     {
+        $this->expectExceptionMessage("Source and Destination are Identical: same");
+        $this->expectException(\Exception::class);
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $this->expectExceptionMessage('Source and Destination are Identical: same');
         $commandGenerator->syncCommands((new SyncOptions('same'))->setDestination('same'));
     }
 
-    public function testProductionToLocalFromAnyThere()
+    public function testProductionToLocalFromAnyThere(): void
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
-        $commandGenerator->setFile($file = new \SplTempFileObject());
+        $commandGenerator->setFile($file = new SplTempFileObject());
 
         $result = $commandGenerator->syncCommands(new SyncOptions('production'));
         $this->assertSame([
@@ -98,11 +97,11 @@ SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
     }
 
-    public function testProductionToTestingFromAnyThere()
+    public function testProductionToTestingFromAnyThere(): void
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
-        $commandGenerator->setFile($file = new \SplTempFileObject());
+        $commandGenerator->setFile($file = new SplTempFileObject());
 
         $result = $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('testing'));
         $this->assertSame([
@@ -128,11 +127,11 @@ SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
     }
 
-    public function testLocalToLocal2FromAnyThere()
+    public function testLocalToLocal2FromAnyThere(): void
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
-        $commandGenerator->setFile($file = new \SplTempFileObject());
+        $commandGenerator->setFile($file = new SplTempFileObject());
 
         $result = $commandGenerator->syncCommands((new SyncOptions('local'))->setDestination('local2'));
         $this->assertSame([
@@ -158,11 +157,11 @@ SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
     }
 
-    public function testProductionToStagingFromAnyThere()
+    public function testProductionToStagingFromAnyThere(): void
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
-        $commandGenerator->setFile($file = new \SplTempFileObject());
+        $commandGenerator->setFile($file = new SplTempFileObject());
 
         $result = $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('staging'));
         $this->assertSame([
@@ -188,11 +187,11 @@ SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
     }
 
-    public function testProductionToStagingFromStaging()
+    public function testProductionToStagingFromStaging(): void
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
-        $commandGenerator->setFile($file = new \SplTempFileObject());
+        $commandGenerator->setFile($file = new SplTempFileObject());
 
         $result = $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('staging')->setCurrentHost('stagingServer'));
         $this->assertSame([
@@ -214,21 +213,21 @@ SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
     }
 
-    public function testProductionToStagingFromStagingError()
+    public function testProductionToStagingFromStagingError(): void
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
-        $commandGenerator->setFile($file = new \SplTempFileObject());
+        $commandGenerator->setFile($file = new SplTempFileObject());
 
         $this->expectExceptionMessage('Host noHost not found in SshConnections');
         $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('staging')->setCurrentHost('noHost'));
     }
 
-    public function testStagingToProductionFromStaging()
+    public function testStagingToProductionFromStaging(): void
     {
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
-        $commandGenerator->setFile($file = new \SplTempFileObject());
+        $commandGenerator->setFile($file = new SplTempFileObject());
 
         $result = $commandGenerator->syncCommands((new SyncOptions('staging'))->setDestination('production')->setCurrentHost('stagingServer'));
         $this->assertSame([
@@ -250,7 +249,7 @@ SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
     }
 
-    public function testGzipCompression()
+    public function testGzipCompression(): void
     {
         $globalConfig = static::getGlobalConfig();
         $gzipCompression = new GzipCompression();
@@ -258,7 +257,7 @@ SSH_CONFIG;
             $appInstance->setCompressions($gzipCompression);
         }
         $commandGenerator = new CommandGenerator($globalConfig);
-        $commandGenerator->setFile($file = new \SplTempFileObject());
+        $commandGenerator->setFile($file = new SplTempFileObject());
 
         $result = $commandGenerator->syncCommands((new SyncOptions('staging'))->setDestination('production')->setCurrentHost('stagingServer'));
         $this->assertSame([

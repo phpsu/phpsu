@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 final class ControllerTest extends TestCase
 {
-    public function testEmptyConfigSshDryRun()
+    public function testEmptyConfigSshDryRun(): void
     {
         $output = new BufferedOutput();
         $config = new GlobalConfig();
@@ -26,7 +26,7 @@ final class ControllerTest extends TestCase
         $this->assertSame("ssh -F '.phpsu/config/ssh_config' 'serverEu' -t 'cd '\''/var/www/prod'\''; bash --login'\n", $output->fetch());
     }
 
-    public function testEmptyConfigSyncDryRun()
+    public function testEmptyConfigSyncDryRun(): void
     {
         $output = new BufferedOutput();
         $config = new GlobalConfig();
@@ -37,7 +37,7 @@ final class ControllerTest extends TestCase
         $this->assertSame('', $output->fetch());
     }
 
-    public function testFilesystemAndDatabase()
+    public function testFilesystemAndDatabase(): void
     {
         $config = new GlobalConfig();
         $config->addFilesystem('fileadmin', 'fileadmin');
@@ -60,7 +60,7 @@ final class ControllerTest extends TestCase
         $this->assertSame($lines, explode("\n", $output->fetch()));
     }
 
-    public function testExcludeShouldBePresentInRsyncCommand()
+    public function testExcludeShouldBePresentInRsyncCommand(): void
     {
         $config = new GlobalConfig();
         $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExcludes(['*.zip', '*.rar']);
@@ -83,7 +83,7 @@ final class ControllerTest extends TestCase
         $this->assertSame($lines, explode("\n", $output->fetch()));
     }
 
-    public function testExcludeShouldBePresentInDatabaseCommand()
+    public function testExcludeShouldBePresentInDatabaseCommand(): void
     {
         $config = new GlobalConfig();
         $config->addDatabase('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')
@@ -108,7 +108,7 @@ final class ControllerTest extends TestCase
         $this->assertSame($lines, explode("\n", $output->fetch()));
     }
 
-    public function testAllOptionShouldOverwriteExcludes()
+    public function testAllOptionShouldOverwriteExcludes(): void
     {
         $config = new GlobalConfig();
         $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExcludes(['*.zip', '*.rar']);
@@ -131,7 +131,7 @@ final class ControllerTest extends TestCase
         $this->assertSame($lines, explode("\n", $output->fetch()));
     }
 
-    public function testNoDbOptionShouldRemoveDatabaseCommand()
+    public function testNoDbOptionShouldRemoveDatabaseCommand(): void
     {
         $config = new GlobalConfig();
         $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExcludes(['*.zip', '*.rar']);
@@ -152,7 +152,7 @@ final class ControllerTest extends TestCase
         $this->assertSame($lines, explode("\n", $output->fetch()));
     }
 
-    public function testNoFileOptionShouldRemoveDatabaseCommand()
+    public function testNoFileOptionShouldRemoveDatabaseCommand(): void
     {
         $config = new GlobalConfig();
         $config->addFilesystem('fileadmin', 'fileadmin')->addExclude('*.mp4')->addExclude('*.mp3')->addExcludes(['*.zip', '*.rar']);
@@ -173,7 +173,7 @@ final class ControllerTest extends TestCase
         $this->assertSame($lines, explode("\n", $output->fetch()));
     }
 
-    public function testUseCaseWithoutGlobalDatabase()
+    public function testUseCaseWithoutGlobalDatabase(): void
     {
         $config = new GlobalConfig();
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
@@ -193,7 +193,7 @@ final class ControllerTest extends TestCase
         $this->assertSame($lines, explode(PHP_EOL, $output->fetch()));
     }
 
-    public function testUseCaseDatabaseOnlyDefinedOnOneEnd()
+    public function testUseCaseDatabaseOnlyDefinedOnOneEnd(): void
     {
         $config = new GlobalConfig();
         $config->addSshConnection('projectEu', 'ssh://project@project.com');
@@ -217,7 +217,7 @@ final class ControllerTest extends TestCase
         $this->assertSame($lines, explode("\n", $output->fetch()));
     }
 
-    public function testPhpApiReadmeExample()
+    public function testPhpApiReadmeExample(): void
     {
         $oldCwd = getcwd();
         chdir(__DIR__ . '/fixtures');
@@ -233,7 +233,7 @@ final class ControllerTest extends TestCase
         $this->assertSame('filesystem:var/storage' . PHP_EOL . 'rsync -az \'testProduction/var/storage/\' \'testLocal/var/storage/\'' . PHP_EOL, $log->fetch());
     }
 
-    public function testSyncOutputHasSectionsWithEmptyConfigAndConsoleOutput()
+    public function testSyncOutputHasSectionsWithEmptyConfigAndConsoleOutput(): void
     {
         $config = new GlobalConfig();
         $config->addAppInstance('production', 'localhost', __DIR__);
@@ -248,7 +248,7 @@ final class ControllerTest extends TestCase
         $this->assertSame("--------------------\n", stream_get_contents($output->getStream()), 'Asserting result empty since config is empty as well');
     }
 
-    public function testSyncOutputHasSectionsWithEmptyConfigAndBufferedOutput()
+    public function testSyncOutputHasSectionsWithEmptyConfigAndBufferedOutput(): void
     {
         $config = new GlobalConfig();
         $config->addAppInstance('production', 'localhost', __DIR__);
@@ -263,7 +263,7 @@ final class ControllerTest extends TestCase
         $this->assertSame('', $output->fetch(), 'Excepting sync to do nothing');
     }
 
-    public function testSshOutputPassthruExecution()
+    public function testSshOutputPassthruExecution(): void
     {
         $controller = new Controller();
         $config = new GlobalConfig();

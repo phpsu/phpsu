@@ -105,7 +105,7 @@ final class DatabaseCommand implements CommandInterface
         $result->setToUrl($toDatabase->getUrl());
         $result->setVerbosity($verbosity);
         $result->setCompression($compression);
-        if ($all === false) {
+        if (!$all) {
             $result->setExcludes(array_unique(array_merge($fromDatabase->getExcludes(), $toDatabase->getExcludes())));
         }
         return $result;
@@ -115,6 +115,7 @@ final class DatabaseCommand implements CommandInterface
     {
         foreach ($fromInstance->getCompressions() as $fromCompression) {
             foreach ($toInstance->getCompressions() as $toCompression) {
+                // @todo: check "==" necessity
                 if ($fromCompression == $toCompression) {
                     return $fromCompression;
                 }
@@ -257,16 +258,16 @@ final class DatabaseCommand implements CommandInterface
         $unCompressCmd = $this->getCompression()->getUnCompressCommand();
         $importCmd = 'mysql ' . $this->generateCliParameters($to, true);
         if ($hostsDifferentiate) {
-            if ($this->getFromHost()) {
+            if ($this->getFromHost() !== '') {
                 $sshCommand = new SshCommand();
                 $sshCommand->setSshConfig($this->getSshConfig());
                 $sshCommand->setInto($this->getFromHost());
                 $sshCommand->setVerbosity($this->getVerbosity());
                 $dumpCmd = $sshCommand->generate($dumpCmd . $compressCmd);
             } else {
-                $dumpCmd = $dumpCmd . $compressCmd;
+                $dumpCmd .= $compressCmd;
             }
-            if ($this->getToHost()) {
+            if ($this->getToHost() !== '') {
                 $sshCommand = new SshCommand();
                 $sshCommand->setSshConfig($this->getSshConfig());
                 $sshCommand->setInto($this->getToHost());

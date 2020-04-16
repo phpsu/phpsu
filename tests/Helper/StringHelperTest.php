@@ -10,36 +10,36 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class StringHelperTest extends TestCase
 {
-    public function testThatSplitStringSplitsEmptyString()
+    public function testThatSplitStringSplitsEmptyString(): void
     {
         $result = StringHelper::splitString('', 10);
         $this->assertSame([''], $result);
     }
-    public function testThatSplitStringSplitsAtRightPosition()
+    public function testThatSplitStringSplitsAtRightPosition(): void
     {
         $result = StringHelper::splitString('test 12_1 12_2 12_3', 10);
         $this->assertSame(['test 12_1', '12_2 12_3'], $result);
     }
 
-    public function testThatSplitStringCannotForceSplit()
+    public function testThatSplitStringCannotForceSplit(): void
     {
         $result = StringHelper::splitString('test_test_test_test', 10);
         $this->assertSame(['test_test_test_test'], $result);
     }
 
-    public function testThatSplitStringCanSplitLarge()
+    public function testThatSplitStringCanSplitLarge(): void
     {
         $result = StringHelper::splitString('test test_test_test_test_test_test_test_test_test', 30);
         $this->assertSame(['test', 'test_test_test_test_test_test_test_test_test'], $result);
     }
 
-    public function testThatSplitStringCanSplitOnEdgeCase()
+    public function testThatSplitStringCanSplitOnEdgeCase(): void
     {
         $result = StringHelper::splitString('123 4 5678', 5);
         $this->assertSame(['123 4', '5678'], $result);
     }
 
-    public function testFindStringInArray()
+    public function testFindStringInArray(): void
     {
         $this->assertSame('production', StringHelper::findStringInArray('production', ['production']), 'perfect match');
         $this->assertSame('production', StringHelper::findStringInArray('p', ['production']), 'only first letter');
@@ -50,7 +50,7 @@ class StringHelperTest extends TestCase
         $this->assertSame('', StringHelper::findStringInArray('', ['london', 'local']), 'empty input');
     }
 
-    public function testUndefinedVerbosityException()
+    public function testUndefinedVerbosityException(): void
     {
         $verbosity = 9999;
         $this->expectExceptionMessage("Verbosity $verbosity is not defined");

@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
+use Generator;
+use LogicException;
 use PHPSu\Exceptions\CommandExecutionException;
 use PHPSu\Tools\EnvironmentUtility;
 
 final class Process extends \Symfony\Component\Process\Process
 {
-    const STATE_READY = 'ready';
-    const STATE_RUNNING = 'running';
-    const STATE_SUCCEEDED = 'succeeded';
-    const STATE_ERRORED = 'errored';
+    public const STATE_READY = 'ready';
+    public const STATE_RUNNING = 'running';
+    public const STATE_SUCCEEDED = 'succeeded';
+    public const STATE_ERRORED = 'errored';
 
     /** @var string */
     private $name = '';
@@ -38,51 +40,14 @@ final class Process extends \Symfony\Component\Process\Process
             case self::STATUS_TERMINATED:
                 return $this->getExitCode() === 0 ? self::STATE_SUCCEEDED : self::STATE_ERRORED;
         }
-        throw new \LogicException('This should never happen');
-    }
-
-    /**
-     * Process constructor.
-     * @param mixed $commandline
-     * @param string|null $cwd
-     * @param array<string>|null $env
-     * @param null $input
-     * @param float|null $timeout
-     * @throws CommandExecutionException
-     */
-    public function __construct($commandline, $cwd = null, $env = null, $input = null, $timeout = 60.0)
-    {
-        if (\is_array($commandline) && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '3.4.0', '<')) {
-            throw new CommandExecutionException('Support for arrays as commandline-argument is not supported in symfony < 3.4.0');
-        }
-        if (\is_string($commandline) && version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.2.0', '>=')) {
-            throw new CommandExecutionException('Support for strings as commandline-argument is not supported in symfony >= 4.2.0');
-        }
-        parent::__construct($commandline, $cwd, $env, $input, $timeout);
-    }
-
-
-    /**
-     * This methods wraps the symfony behaviour of fromShellCommandline to make it possible to use phpsu for symfony 3 and 4 projects.
-     *
-     * @param array<string>|null $env
-     * @param mixed|null     $input
-     */
-    public static function fromShellCommandline(string $command, string $cwd = null, array $env = null, $input = null, float $timeout = null): self
-    {
-        if (version_compare((new EnvironmentUtility())->getSymfonyProcessVersion(), '4.2.0', '>=')) {
-            /** @noinspection PhpUndefinedMethodInspection Symfony version > 4.X */
-            return parent::fromShellCommandline($command, $cwd, $env, $input, $timeout);
-        }
-        /** @noinspection PhpParamsInspection In symfony 3.2, passing $command as string was supported */
-        return new static($command, $cwd, $env, $input, $timeout);
+        throw new LogicException('This should never happen');
     }
 
     /**
      * @param int $flags A bit field of Process::ITER_* flags
-     * @return \Generator<string>
+     * @return Generator<string>
      */
-    public function getIterator($flags = 0): \Generator
+    public function getIterator($flags = 0): Generator
     {
         return parent::getIterator($flags);
     }

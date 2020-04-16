@@ -18,8 +18,8 @@ final class SshConfigGenerator
         $shortest = [];
         $connections = $this->findAllPaths($source, $destination, $sshConnections);
         //TODO: warning found multiple Connection Possibilities, Selected one of the Shortest. these are all of them: ...
-//        if (count($connections) > 1) {
-//        }
+        //if (count($connections) > 1) {
+        //}
         foreach ($connections as $connectionPath) {
             $length = count($connectionPath);
             if ($length < $shortestLength) {
@@ -28,7 +28,6 @@ final class SshConfigGenerator
         }
         return $shortest;
     }
-
     /**
      * @param string $source
      * @param string $destination
@@ -58,13 +57,16 @@ final class SshConfigGenerator
     }
 
     /**
+     * @param SshConnections $sshConnections
      * @param array<string, string> $defaultSshConfig
+     * @param string $currentHost
+     * @return SshConfig
      */
     public function generate(SshConnections $sshConnections, array $defaultSshConfig, string $currentHost): SshConfig
     {
         $sshConfig = new SshConfig();
         foreach ($sshConnections->getAllHosts() as $host) {
-            $connectionsUsedForPath = $this->findShortestPath($currentHost, $host, $sshConnections);
+            $connectionsUsedForPath = $this->findShortestPath($currentHost, (string)$host, $sshConnections);
             foreach ($connectionsUsedForPath as $sshConnection) {
                 $fromHosts = $sshConnection->getFrom();
                 $host = new SshConfigHost();

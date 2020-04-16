@@ -101,15 +101,16 @@ final class EnvironmentUtility
     }
 
     /**
+     * @param string $packageName
      * @return string|null
      */
-    public function getInstalledPackageVersion(string $packageName)
+    public function getInstalledPackageVersion(string $packageName): ?string
     {
         $contents = file_get_contents($this->spotVendorPath() . '/composer/installed.json');
         if ($contents === false) {
             return null;
         }
-        $activeInstallations = json_decode($contents);
+        $activeInstallations = json_decode($contents, false);
         if (json_last_error() !== JSON_ERROR_NONE) {
             return null;
         }
@@ -129,23 +130,5 @@ final class EnvironmentUtility
         }
         // in dev installation
         return $this->phpsuRootPath . '/vendor/';
-    }
-
-    public function getSymfonyProcessVersion(): string
-    {
-        $version = $this->getInstalledPackageVersion('symfony/process');
-        if ($version === null) {
-            throw new \Exception('could not retrieve package version of symfony/process, not installed?');
-        }
-        return str_replace('v', '', $version);
-    }
-
-    public function getSymfonyConsoleVersion(): string
-    {
-        $version = $this->getInstalledPackageVersion('symfony/console');
-        if ($version === null) {
-            throw new \Exception('could not retrieve package version of symfony/console, not installed?');
-        }
-        return str_replace('v', '', $version);
     }
 }

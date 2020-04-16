@@ -18,10 +18,8 @@ final class OutputCallback
         $this->output = $output;
     }
 
-    /**
-     * @return void
-     */
-    public function __invoke(Process $process, string $type, string $data)
+
+    public function __invoke(Process $process, string $type, string $data): void
     {
         $output = $this->output;
         $verbosity = OutputInterface::VERBOSITY_VERBOSE;

@@ -12,7 +12,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class InfoCliCommandTest extends TestCase
 {
-    public function testPrintDependencyVersionsLocally()
+    public function testPrintDependencyVersionsLocally(): void
     {
         $command = new InfoCliCommand(new ConfigurationLoader(), new Controller());
 
@@ -20,7 +20,7 @@ class InfoCliCommandTest extends TestCase
         $commandTester->execute([]);
         $result =  $commandTester->getDisplay(true);
         foreach (['rsync', 'ssh', 'mysqldump', 'mysql-distribution', 'locally', 'installed'] as $string) {
-            $this->assertContains($string, $result, '', true);
+            $this->assertStringContainsStringIgnoringCase($string, $result, '');
         }
     }
 }

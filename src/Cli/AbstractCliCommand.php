@@ -24,6 +24,8 @@ abstract class AbstractCliCommand extends Command
     }
 
     /**
+     * @param InputInterface $input
+     * @param string $argumentName
      * @return string|string[]|null
      */
     public function getArgument(InputInterface $input, string $argumentName)
@@ -32,6 +34,8 @@ abstract class AbstractCliCommand extends Command
     }
 
     /**
+     * @param InputInterface $input
+     * @param string $argumentName
      * @return bool|string|string[]|null
      */
     public function getOption(InputInterface $input, string $argumentName)

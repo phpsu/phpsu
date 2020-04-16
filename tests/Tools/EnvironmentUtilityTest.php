@@ -10,17 +10,17 @@ use PHPUnit\Framework\TestCase;
 
 class EnvironmentUtilityTest extends TestCase
 {
-    public function testCommandIsInstalled()
+    public function testCommandIsInstalled(): void
     {
-        $this->assertSame(true, (new EnvironmentUtility())->isCommandInstalled('echo'));
+        $this->assertTrue((new EnvironmentUtility())->isCommandInstalled('echo'));
     }
 
-    public function testCommandIsNotInstalled()
+    public function testCommandIsNotInstalled(): void
     {
-        $this->assertSame(false, (new EnvironmentUtility())->isCommandInstalled('reiguheruh'));
+        $this->assertFalse((new EnvironmentUtility())->isCommandInstalled('reiguheruh'));
     }
 
-    public function testGetInstalledRsyncVersionOrExpectExceptionIfNotInstalled()
+    public function testGetInstalledRsyncVersionOrExpectExceptionIfNotInstalled(): void
     {
         if ((new EnvironmentUtility())->isRsyncInstalled()) {
             $rsyncVersion = (new EnvironmentUtility())->getRsyncVersion();
@@ -31,7 +31,7 @@ class EnvironmentUtilityTest extends TestCase
         }
     }
 
-    public function testGetInstalledSshVersionOrExpectExceptionIfNotInstalled()
+    public function testGetInstalledSshVersionOrExpectExceptionIfNotInstalled(): void
     {
         if ((new EnvironmentUtility())->isSshInstalled()) {
             $sshVersion = (new EnvironmentUtility())->getSshVersion();
@@ -42,7 +42,7 @@ class EnvironmentUtilityTest extends TestCase
         }
     }
 
-    public function testGetInstalledMysqldumpVersionOrExpectExceptionIfNotInstalled()
+    public function testGetInstalledMysqldumpVersionOrExpectExceptionIfNotInstalled(): void
     {
         if ((new EnvironmentUtility())->isMysqlDumpInstalled()) {
             $mysqldumpVersion = (new EnvironmentUtility())->getMysqlDumpVersion();
@@ -52,72 +52,5 @@ class EnvironmentUtilityTest extends TestCase
             $this->expectException(CommandExecutionException::class);
             (new EnvironmentUtility())->getMysqlDumpVersion();
         }
-    }
-
-    public function testGetInstalledSymfonyConsoleVersion()
-    {
-        $environmentUtility = new EnvironmentUtility();
-        $phpsuRootPath = __DIR__ . '/../fixtures/installed/version4.2';
-        $environmentUtility->setPhpsuRootPath($phpsuRootPath);
-        $this->assertSame($phpsuRootPath, $environmentUtility->getPhpsuRootPath());
-        $symfonyConsoleVersion = $environmentUtility->getSymfonyConsoleVersion();
-        $this->assertSame('4.2.19992', $symfonyConsoleVersion);
-    }
-
-    public function testGetInstalledSymfonyConsoleVersionFixtures()
-    {
-        $environmentUtility = new EnvironmentUtility();
-        $environmentUtility->setPhpsuRootPath(__DIR__ . '/../fixtures/installed/empty');
-        $this->expectExceptionMessage('could not retrieve package version of symfony/console, not installed?');
-        $environmentUtility->getSymfonyConsoleVersion();
-    }
-
-    public function testGetInstalledSymfonyProcessVersion()
-    {
-        $environmentUtility = new EnvironmentUtility();
-        $environmentUtility->setPhpsuRootPath(__DIR__ . '/../fixtures/installed/version4.2');
-        $symfonyProcessVersion = $environmentUtility->getSymfonyProcessVersion();
-        $this->assertSame('4.2.19991', $symfonyProcessVersion);
-    }
-
-    public function testGetInstalledSymfonyProcessVersionFixturesA()
-    {
-        $environmentUtility = new EnvironmentUtility();
-        $environmentUtility->setPhpsuRootPath(__DIR__ . '/../fixtures/installed/empty');
-        $this->expectExceptionMessage('could not retrieve package version of symfony/process, not installed?');
-        $environmentUtility->getSymfonyProcessVersion();
-    }
-
-    public function testGetInstalledSymfonyProcessVersionFixturesB()
-    {
-        $environmentUtility = new EnvironmentUtility();
-        $phpsuRootPath = __DIR__ . '/../fixtures/installed/noFile';
-        $environmentUtility->setPhpsuRootPath($phpsuRootPath);
-        $this->expectExceptionMessageRegExp('/failed to open stream\: No such file or directory$/');
-        $environmentUtility->getSymfonyProcessVersion();
-    }
-
-    public function testGetInstalledSymfonyProcessVersionFixturesC()
-    {
-        $oldErrorReporting = error_reporting();
-        error_reporting($oldErrorReporting & ~E_WARNING);
-        $environmentUtility = new EnvironmentUtility();
-        $phpsuRootPath = __DIR__ . '/../fixtures/installed/noFile';
-        $environmentUtility->setPhpsuRootPath($phpsuRootPath);
-        $this->expectExceptionMessage('could not retrieve package version of symfony/process, not installed?');
-        try {
-            $environmentUtility->getSymfonyProcessVersion();
-        } finally {
-            error_reporting($oldErrorReporting);
-        }
-    }
-
-    public function testGetInstalledSymfonyProcessVersionFixturesD()
-    {
-        $environmentUtility = new EnvironmentUtility();
-        $phpsuRootPath = __DIR__ . '/../fixtures/installed/invalidJson';
-        $environmentUtility->setPhpsuRootPath($phpsuRootPath);
-        $this->expectExceptionMessage('could not retrieve package version of symfony/process, not installed?');
-        $environmentUtility->getSymfonyProcessVersion();
     }
 }
