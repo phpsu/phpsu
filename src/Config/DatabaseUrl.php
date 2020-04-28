@@ -7,6 +7,9 @@ namespace PHPSu\Config;
 use Exception;
 use InvalidArgumentException;
 
+/**
+ * @internal
+ */
 final class DatabaseUrl
 {
     /** @var string */

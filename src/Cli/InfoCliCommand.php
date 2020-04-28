@@ -10,7 +10,10 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class InfoCliCommand extends AbstractCliCommand
+/**
+ * @internal
+ */
+final class InfoCliCommand extends AbstractCliCommand
 {
 
     public function configure(): void

@@ -6,6 +6,9 @@ namespace PHPSu\Config;
 
 use InvalidArgumentException;
 
+/**
+ * @api
+ */
 final class SshConnection
 {
     /** @var string */

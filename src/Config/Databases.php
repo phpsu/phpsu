@@ -6,6 +6,9 @@ namespace PHPSu\Config;
 
 use Exception;
 
+/**
+ * @internal
+ */
 final class Databases
 {
     /** @var Database[] */

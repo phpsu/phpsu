@@ -6,6 +6,9 @@ namespace PHPSu\Config;
 
 use function array_merge;
 
+/**
+ * @api
+ */
 final class FileSystem
 {
     /** @var string */

@@ -9,6 +9,9 @@ use LogicException;
 use PHPSu\Exceptions\CommandExecutionException;
 use PHPSu\Tools\EnvironmentUtility;
 
+/**
+ * @internal
+ */
 final class Process extends \Symfony\Component\Process\Process
 {
     public const STATE_READY = 'ready';

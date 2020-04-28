@@ -6,6 +6,9 @@ namespace PHPSu\Config;
 
 use Exception;
 
+/**
+ * @api
+ */
 final class GlobalConfig
 {
     use AddFilesystemTrait;

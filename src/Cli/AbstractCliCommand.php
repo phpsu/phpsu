@@ -9,6 +9,9 @@ use PHPSu\ControllerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 
+/**
+ * @internal
+ */
 abstract class AbstractCliCommand extends Command
 {
     /** @var ConfigurationLoaderInterface */

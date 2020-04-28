@@ -8,6 +8,9 @@ use PHPSu\Helper\StringHelper;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @internal
+ */
 final class OutputCallback
 {
     /** @var OutputInterface */

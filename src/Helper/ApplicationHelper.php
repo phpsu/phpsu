@@ -10,6 +10,9 @@ use PHPSu\Tools\EnvironmentUtility;
 
 use function strpos;
 
+/**
+ * @internal
+ */
 final class ApplicationHelper
 {
 

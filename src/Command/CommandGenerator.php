@@ -14,6 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function in_array;
 
+/**
+ * @internal
+ */
 final class CommandGenerator
 {
     /** @var SplFileObject */

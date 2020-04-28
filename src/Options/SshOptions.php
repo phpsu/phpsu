@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace PHPSu\Options;
 
+/**
+ * @internal
+ */
 final class SshOptions
 {
     /** @var string */

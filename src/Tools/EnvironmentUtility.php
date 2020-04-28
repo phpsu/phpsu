@@ -8,6 +8,9 @@ use PHPSu\Controller;
 use PHPSu\Exceptions\CommandExecutionException;
 use PHPSu\Process\CommandExecutor;
 
+/**
+ * @internal
+ */
 final class EnvironmentUtility
 {
     /** @var CommandExecutor */

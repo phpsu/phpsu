@@ -10,6 +10,9 @@ use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Helper\StringHelper;
 
+/**
+ * @internal
+ */
 final class RsyncCommand implements CommandInterface
 {
     /** @var string */

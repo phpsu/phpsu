@@ -9,6 +9,9 @@ use PHPSu\Tools\EnvironmentUtility;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
+/**
+ * @internal
+ */
 final class StateChangeCallback
 {
     /** @var OutputInterface */

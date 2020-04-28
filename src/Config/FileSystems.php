@@ -6,6 +6,9 @@ namespace PHPSu\Config;
 
 use Exception;
 
+/**
+ * @internal
+ */
 final class FileSystems
 {
     /** @var FileSystem[] */
