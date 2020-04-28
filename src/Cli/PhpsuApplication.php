@@ -9,6 +9,9 @@ use PHPSu\Config\ConfigurationLoader;
 use PHPSu\Controller;
 use Symfony\Component\Console\Application;
 
+/**
+ * @internal
+ */
 final class PhpsuApplication
 {
     public static function createApplication(): Application

@@ -7,6 +7,9 @@ namespace PHPSu\Config;
 use Exception;
 use SplFileObject;
 
+/**
+ * @internal
+ */
 final class TempSshConfigFile extends SplFileObject
 {
     public function __construct()

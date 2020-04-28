@@ -14,6 +14,9 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @internal
+ */
 final class Controller implements ControllerInterface
 {
     public const PHPSU_ROOT_PATH = __DIR__ . '/../';

@@ -8,6 +8,9 @@ use Closure;
 use Exception;
 use InvalidArgumentException;
 
+/**
+ * @internal
+ */
 final class ProcessManager
 {
     /** @var Process[] */
@@ -107,7 +110,6 @@ final class ProcessManager
         return $this;
     }
 
-    
     private function notifyOutputCallbacks(Process $process, string $type, string $data): void
     {
         foreach ($this->outputCallbacks as $callback) {
@@ -115,7 +117,6 @@ final class ProcessManager
         }
     }
 
-    
     private function notifyStateChangeCallbacks(int $processId, Process $process, string $newState, ProcessManager $manager): void
     {
         foreach ($this->stateChangeCallbacks as $callback) {
@@ -123,7 +124,6 @@ final class ProcessManager
         }
     }
 
-    
     private function notifyTickCallbacks(ProcessManager $manager): void
     {
         foreach ($this->tickCallbacks as $callback) {
@@ -145,7 +145,6 @@ final class ProcessManager
         return $errors;
     }
 
-    
     public function validateProcesses(): void
     {
         $errors = [];

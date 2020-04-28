@@ -6,6 +6,9 @@ namespace PHPSu\Config;
 
 use SplFileObject;
 
+/**
+ * @internal
+ */
 final class SshConfig
 {
     /** @var SshConfigHost[] */

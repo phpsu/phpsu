@@ -7,6 +7,9 @@ namespace PHPSu\Config;
 use InvalidArgumentException;
 use PHPSu\Config\Compression\CompressionInterface;
 
+/**
+ * @api
+ */
 final class AppInstance
 {
     use AddFilesystemTrait;

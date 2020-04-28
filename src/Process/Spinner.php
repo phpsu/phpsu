@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
+/**
+ * @internal
+ */
 final class Spinner
 {
     public const PONG = [

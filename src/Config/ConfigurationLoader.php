@@ -6,6 +6,9 @@ namespace PHPSu\Config;
 
 use RuntimeException;
 
+/**
+ * @internal
+ */
 final class ConfigurationLoader implements ConfigurationLoaderInterface
 {
     /** @var ?GlobalConfig */

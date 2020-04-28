@@ -6,6 +6,9 @@ namespace PHPSu\Exceptions;
 
 use Exception;
 
-class EnvironmentException extends Exception
+/**
+ * @api
+ */
+final class EnvironmentException extends Exception
 {
 }

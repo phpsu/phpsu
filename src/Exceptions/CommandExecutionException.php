@@ -6,6 +6,9 @@ namespace PHPSu\Exceptions;
 
 use Exception;
 
-class CommandExecutionException extends Exception
+/**
+ * @api
+ */
+final class CommandExecutionException extends Exception
 {
 }

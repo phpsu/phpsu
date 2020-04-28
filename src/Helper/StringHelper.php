@@ -7,6 +7,9 @@ namespace PHPSu\Helper;
 use Exception;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @internal
+ */
 final class StringHelper
 {
     /**

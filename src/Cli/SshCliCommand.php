@@ -16,6 +16,9 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 
 use function in_array;
 
+/**
+ * @internal
+ */
 final class SshCliCommand extends AbstractCliCommand
 {
     /** @var null|string[] */

@@ -7,6 +7,9 @@ namespace PHPSu\Process;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @internal
+ */
 final class CommandExecutor
 {
     /**

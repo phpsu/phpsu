@@ -10,6 +10,9 @@ use PHPSu\Config\SshConfig;
 use PHPSu\Helper\StringHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @internal
+ */
 final class SshCommand
 {
     /** @var SshConfig */

@@ -14,6 +14,9 @@ use PHPSu\Config\SshConfig;
 use PHPSu\Helper\StringHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @internal
+ */
 final class DatabaseCommand implements CommandInterface
 {
     /** @var string */

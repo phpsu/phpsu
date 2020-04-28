@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PHPSu\Config;
 
 /**
+ * @internal
  * @property string $AddKeysToAgent
  * @property string $AddressFamily
  * @property string $BatchMode
