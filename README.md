@@ -147,6 +147,11 @@ If you see a low `Mutation Score Indicator (MSI)` value, you can show the mutati
 composer infection -- -s
 ````
 
+If you have an unwanted BC break in your Pull Request you can run the same test locally with docker:
+````bash
+docker run --rm -v `pwd`:/app nyholm/roave-bc-check --format=markdown > results.md
+````
+
 ## Security
 
 If you discover any security related issues, please email git@kanti.de instead of using the issue tracker.
