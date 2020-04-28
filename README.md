@@ -96,7 +96,7 @@ $globalConfig->addAppInstance('production', 'hostA', '/var/www/')
     ->addExcludes(['/log/']);
 $globalConfig->addAppInstance('local')
     ->setCompression(new \PHPSu\Config\Compression\GzipCompression())
-    ->addDatabase('app', 'mysql://root:root@127.0.0.1/testingLocal');
+    ->addDatabase('app', 'testingLocal', 'root', 'root', '127.0.0.1');
 return $globalConfig;
 ````
 
