@@ -8,6 +8,7 @@ use PHPSu\Command\DatabaseCommand;
 use PHPSu\Command\RsyncCommand;
 use PHPSu\Command\SshCommand;
 use PHPSu\Config\AppInstance;
+use PHPSu\Config\DatabaseConnectionDetails;
 use PHPSu\Config\FileSystem;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
@@ -37,8 +38,9 @@ final class GlobalConfigTest extends TestCase
         $global = static::getGlobalConfig();
 
         $rsyncCommands = DatabaseCommand::fromGlobal($global, 'production', 'testing', 'local', false, OutputInterface::VERBOSITY_NORMAL);
+        $connectionDetails = DatabaseConnectionDetails::fromUrlString('mysql://user:pw@host:3307/database');
         $this->assertEquals([
-            (new DatabaseCommand())->setName('database:app')->setFromHost('serverEu')->setFromUrl('mysql://user:pw@host:3307/database')->setToHost('serverEu')->setToUrl('mysql://user:pw@host:3307/database'),
+            (new DatabaseCommand())->setName('database:app')->setFromHost('serverEu')->setFromConnectionDetails($connectionDetails)->setToHost('serverEu')->setToConnectionDetails($connectionDetails),
         ], $rsyncCommands);
     }
 
@@ -93,12 +95,19 @@ final class GlobalConfigTest extends TestCase
         $this->assertArrayHasKey('serverEu', $result);
     }
 
+    public function testAddDatabaseByUrlDeprecating(): void
+    {
+        $global = static::getGlobalConfig();
+        $this->expectDeprecationMessage('PHPSu\Config\GlobalConfig->addDatabase with an Url as second parameter has been renamed to addDatabaseByUrl. method addDatabase will lose this functionality in a future release.');
+        $global->addDatabase('name', 'mysql://user:pw@host:3307/database');
+    }
+
     public static function getGlobalConfig(): GlobalConfig
     {
         $global = new GlobalConfig();
         $global->addFilesystem('fileadmin', 'fileadmin');
         $global->addFilesystemObject((new FileSystem())->setName('uploads')->setPath('uploads'));
-        $global->addDatabase('app', 'mysql://user:pw@host:3307/database');
+        $global->addDatabaseByUrl('app', 'mysql://user:pw@host:3307/database');
         $global->addSshConnectionObject((new SshConnection())->setHost('serverEu')->setUrl('user@server.eu'));
         $global->addAppInstanceObject((new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production'));
         $global->addAppInstanceObject((new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing'));

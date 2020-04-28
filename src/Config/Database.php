@@ -14,8 +14,8 @@ final class Database
     /** @var string */
     private $name;
 
-    /** @var string */
-    private $url;
+    /** @var DatabaseConnectionDetails */
+    private $connectionDetails;
 
     /** @var string[] */
     private $excludes = [];
@@ -31,14 +31,32 @@ final class Database
         return $this;
     }
 
+    /**
+     * @deprecated will be removed in 3.0
+     */
     public function getUrl(): string
     {
-        return $this->url;
+        return $this->connectionDetails->__toString();
     }
 
+    /**
+     * @param string $url
+     * @return $this
+     */
     public function setUrl(string $url): Database
     {
-        $this->url = $url;
+        $this->connectionDetails = DatabaseConnectionDetails::fromUrlString($url);
+        return $this;
+    }
+
+    public function getConnectionDetails(): DatabaseConnectionDetails
+    {
+        return $this->connectionDetails;
+    }
+
+    public function setConnectionDetails(DatabaseConnectionDetails $connectionDetails): Database
+    {
+        $this->connectionDetails = $connectionDetails;
         return $this;
     }
 

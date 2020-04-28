@@ -50,7 +50,7 @@ phpsu sync source destination -a
 <?php
 // phpsu-config.php
 $config = new \PHPSu\Config\GlobalConfig();
-$config->addDatabase('...')->addExclude('table1');
+$config->addDatabaseByUrl('...')->addExclude('table1');
 $config->addFilesystem('...')->addExclude('*.mp4');
 // ...
 ```
