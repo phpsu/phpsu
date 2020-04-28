@@ -53,6 +53,15 @@ final class StateChangeCallbackTest extends TestCase
         $this->assertSame("\e[31msleepProcess:\e[39m ✘\n", $output->fetch());
     }
 
+    public function testNormalInvalidState(): void
+    {
+        $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
+        $manager = new ProcessManager();
+        $callback = new StateChangeCallback($output);
+        $this->expectExceptionMessage('This should never happen (State not considered)');
+        $callback->__invoke(0, Process::fromShellCommandline('sleep 1')->setName('sleepProcess'), Process::STATE_RUNNING . 'invalidddddd', $manager);
+    }
+
     public function testSectionReady(): void
     {
         $sections = [];
@@ -116,24 +125,34 @@ final class StateChangeCallbackTest extends TestCase
         $this->assertSame("\e[37msleepProcess:\e[39m  \n", stream_get_contents($outputStream));
         $tickCallback = $callback->getTickCallback();
         $tickCallback($manager);
+        rewind($outputStream);
+        $this->assertSame("\e[37msleepProcess:\e[39m  \n", stream_get_contents($outputStream));
+
+        usleep(101 * 1000);
+        $tickCallback($manager);
+        rewind($outputStream);
+        $this->assertSame(
+            "\e[37msleepProcess:\e[39m  \n\e[1A\e[0J\e[37msleepProcess:\e[39m  \n",
+            stream_get_contents($outputStream)
+        );
 
         $this->setPrivateProperty($manager, 'processStates', [0 => Process::STATE_RUNNING]);
         $callback->__invoke(0, $process, Process::STATE_RUNNING, $manager);
         rewind($outputStream);
         $this->assertSame(
-            "\e[37msleepProcess:\e[39m  \n\e[1A\e[0J\e[33msleepProcess:\e[39m (      )\n",
+            "\e[37msleepProcess:\e[39m  \n\e[1A\e[0J\e[37msleepProcess:\e[39m  \n\e[1A\e[0J\e[33msleepProcess:\e[39m (      )\n",
             stream_get_contents($outputStream)
         );
         $callback->__invoke(0, $process, Process::STATE_RUNNING, $manager);
         rewind($outputStream);
         $this->assertSame(
-            "\e[37msleepProcess:\e[39m  \n\e[1A\e[0J\e[33msleepProcess:\e[39m (      )\n\e[1A\e[0J\e[33msleepProcess:\e[39m (●     )\n",
+            "\e[37msleepProcess:\e[39m  \n\e[1A\e[0J\e[37msleepProcess:\e[39m  \n\e[1A\e[0J\e[33msleepProcess:\e[39m (      )\n\e[1A\e[0J\e[33msleepProcess:\e[39m (●     )\n",
             stream_get_contents($outputStream)
         );
         $callback->__invoke(0, $process, Process::STATE_RUNNING, $manager);
         rewind($outputStream);
         $this->assertSame(
-            "\e[37msleepProcess:\e[39m  \n\e[1A\e[0J\e[33msleepProcess:\e[39m (      )\n\e[1A\e[0J\e[33msleepProcess:\e[39m (●     )\n\e[1A\e[0J\e[33msleepProcess:\e[39m ( ●    )\n",
+            "\e[37msleepProcess:\e[39m  \n\e[1A\e[0J\e[37msleepProcess:\e[39m  \n\e[1A\e[0J\e[33msleepProcess:\e[39m (      )\n\e[1A\e[0J\e[33msleepProcess:\e[39m (●     )\n\e[1A\e[0J\e[33msleepProcess:\e[39m ( ●    )\n",
             stream_get_contents($outputStream)
         );
     }

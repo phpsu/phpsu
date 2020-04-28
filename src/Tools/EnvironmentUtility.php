@@ -24,17 +24,6 @@ final class EnvironmentUtility
         $this->phpsuRootPath = Controller::PHPSU_ROOT_PATH;
     }
 
-    public function getPhpsuRootPath(): string
-    {
-        return $this->phpsuRootPath;
-    }
-
-    public function setPhpsuRootPath(string $phpsuRootPath): EnvironmentUtility
-    {
-        $this->phpsuRootPath = $phpsuRootPath;
-        return $this;
-    }
-
     public function isRsyncInstalled(): bool
     {
         return $this->isCommandInstalled('rsync');

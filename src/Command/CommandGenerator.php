@@ -19,7 +19,7 @@ use function in_array;
  */
 final class CommandGenerator
 {
-    /** @var SplFileObject */
+    /** @var SplFileObject|null */
     private $file;
     /** @var GlobalConfig */
     private $globalConfig;
@@ -40,7 +40,7 @@ final class CommandGenerator
         return $this->file;
     }
 
-    public function setFile(SplFileObject $file): CommandGenerator
+    public function setFile(SplFileObject $file = null): CommandGenerator
     {
         $this->file = $file;
         return $this;

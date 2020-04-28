@@ -32,7 +32,6 @@ final class SshConnections
         $this->compiled = null;
     }
 
-
     public function compile(): void
     {
         $this->getCompiled();

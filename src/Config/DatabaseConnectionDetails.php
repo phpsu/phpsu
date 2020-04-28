@@ -10,7 +10,7 @@ use InvalidArgumentException;
 /**
  * @internal
  */
-final class DatabaseUrl
+final class DatabaseConnectionDetails
 {
     /** @var string */
     private $user;
@@ -23,7 +23,22 @@ final class DatabaseUrl
     /** @var string */
     private $database;
 
-    public function __construct(string $url)
+    private function __construct()
+    {
+    }
+
+    public static function fromDetails(string $database, string $user = '', string $password = '', string $host = '127.0.0.1', int $port = 3306): self
+    {
+        $self = new self();
+        $self->setUser($user);
+        $self->setPassword($password);
+        $self->setHost($host);
+        $self->setPort($port);
+        $self->setDatabase($database);
+        return $self;
+    }
+
+    public static function fromUrlString(string $url): self
     {
         if (!preg_match('/[a-zA-Z]+\:\/\//', $url)) {
             $url = 'mysql://' . $url;
@@ -32,11 +47,13 @@ final class DatabaseUrl
         if (!$result) {
             throw new Exception('DatabaseUrl could not been parsed: ' . $url);
         }
-        $this->setUser($result['user'] ?? '');
-        $this->setPassword($result['pass'] ?? '');
-        $this->setHost($result['host'] ?? '');
-        $this->setPort($result['port'] ?? 3306);
-        $this->setDatabase(ltrim($result['path'] ?? '', '/'));
+        return self::fromDetails(
+            ltrim($result['path'] ?? '', '/'),
+            $result['user'] ?? '',
+            $result['pass'] ?? '',
+            $result['host'] ?? '',
+            $result['port'] ?? 3306
+        );
     }
 
     public function getUser(): string
@@ -44,7 +61,7 @@ final class DatabaseUrl
         return $this->user;
     }
 
-    public function setUser(string $user): DatabaseUrl
+    public function setUser(string $user): DatabaseConnectionDetails
     {
         if ($user === '') {
             throw new InvalidArgumentException('User must be set');
@@ -58,7 +75,7 @@ final class DatabaseUrl
         return $this->password;
     }
 
-    public function setPassword(string $password): DatabaseUrl
+    public function setPassword(string $password): DatabaseConnectionDetails
     {
         $this->password = $password;
         return $this;
@@ -69,7 +86,7 @@ final class DatabaseUrl
         return $this->host;
     }
 
-    public function setHost(string $host): DatabaseUrl
+    public function setHost(string $host): DatabaseConnectionDetails
     {
         if (strpos($host, '/') !== false) {
             throw new InvalidArgumentException(sprintf('host %s has invalid character', $host));
@@ -86,7 +103,7 @@ final class DatabaseUrl
         return $this->port;
     }
 
-    public function setPort(int $port): DatabaseUrl
+    public function setPort(int $port): DatabaseConnectionDetails
     {
         if ($port <= 0 || $port >= 65535) {
             throw new Exception('port must be between 0 and 65535');
@@ -100,7 +117,7 @@ final class DatabaseUrl
         return $this->database;
     }
 
-    public function setDatabase(string $database): DatabaseUrl
+    public function setDatabase(string $database): DatabaseConnectionDetails
     {
         $this->database = $database;
         return $this;
@@ -116,6 +133,9 @@ final class DatabaseUrl
         $result .= '@' . $this->getHost();
         if ($this->getPort() !== 3306) {
             $result .= ':' . $this->getPort();
+        }
+        if ($this->getDatabase()) {
+            $result .= '/' . $this->getDatabase();
         }
         return $result;
     }

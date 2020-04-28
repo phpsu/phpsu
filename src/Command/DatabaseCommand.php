@@ -8,7 +8,7 @@ use PHPSu\Config\AppInstance;
 use PHPSu\Config\Compression\CompressionInterface;
 use PHPSu\Config\Compression\EmptyCompression;
 use PHPSu\Config\Database;
-use PHPSu\Config\DatabaseUrl;
+use PHPSu\Config\DatabaseConnectionDetails;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Helper\StringHelper;
@@ -26,13 +26,13 @@ final class DatabaseCommand implements CommandInterface
     /** @var string[] */
     private $excludes = [];
 
-    /** @var string */
-    private $fromUrl;
+    /** @var DatabaseConnectionDetails */
+    private $fromConnectionDetails;
     /** @var string */
     private $fromHost;
 
-    /** @var string */
-    private $toUrl;
+    /** @var DatabaseConnectionDetails */
+    private $toConnectionDetails;
     /** @var string */
     private $toHost;
 
@@ -104,8 +104,8 @@ final class DatabaseCommand implements CommandInterface
         $result->setName('database:' . $fromDatabase->getName());
         $result->setFromHost($from->getHost() === $currentHost ? '' : $from->getHost());
         $result->setToHost($to->getHost() === $currentHost ? '' : $to->getHost());
-        $result->setFromUrl($fromDatabase->getUrl());
-        $result->setToUrl($toDatabase->getUrl());
+        $result->setFromConnectionDetails($fromDatabase->getConnectionDetails());
+        $result->setToConnectionDetails($toDatabase->getConnectionDetails());
         $result->setVerbosity($verbosity);
         $result->setCompression($compression);
         if (!$all) {
@@ -168,14 +168,14 @@ final class DatabaseCommand implements CommandInterface
         return $this;
     }
 
-    public function getFromUrl(): string
+    public function getFromConnectionDetails(): DatabaseConnectionDetails
     {
-        return $this->fromUrl;
+        return $this->fromConnectionDetails;
     }
 
-    public function setFromUrl(string $fromUrl): DatabaseCommand
+    public function setFromConnectionDetails(DatabaseConnectionDetails $fromConnectionDetails): DatabaseCommand
     {
-        $this->fromUrl = $fromUrl;
+        $this->fromConnectionDetails = $fromConnectionDetails;
         return $this;
     }
 
@@ -190,14 +190,14 @@ final class DatabaseCommand implements CommandInterface
         return $this;
     }
 
-    public function getToUrl(): string
+    public function getToConnectionDetails(): DatabaseConnectionDetails
     {
-        return $this->toUrl;
+        return $this->toConnectionDetails;
     }
 
-    public function setToUrl(string $toUrl): DatabaseCommand
+    public function setToConnectionDetails(DatabaseConnectionDetails $toConnectionDetails): DatabaseCommand
     {
-        $this->toUrl = $toUrl;
+        $this->toConnectionDetails = $toConnectionDetails;
         return $this;
     }
 
@@ -237,8 +237,8 @@ final class DatabaseCommand implements CommandInterface
     public function generate(): string
     {
         $hostsDifferentiate = $this->getFromHost() !== $this->getToHost();
-        $from = new DatabaseUrl($this->getFromUrl());
-        $to = new DatabaseUrl($this->getToUrl());
+        $from = $this->getFromConnectionDetails();
+        $to = $this->getToConnectionDetails();
         $dumpCmd = '';
         $tableInfo = '';
         if ($this->getExcludes()) {
@@ -289,21 +289,21 @@ final class DatabaseCommand implements CommandInterface
     }
 
     /**
-     * @param DatabaseUrl $databaseUrl
+     * @param DatabaseConnectionDetails $connectionDetails
      * @param bool $excludeDatabase
      * @return string
      */
-    private function generateCliParameters(DatabaseUrl $databaseUrl, bool $excludeDatabase): string
+    private function generateCliParameters(DatabaseConnectionDetails $connectionDetails, bool $excludeDatabase): string
     {
         $result = [];
-        $result[] = '-h' . escapeshellarg($databaseUrl->getHost());
-        if ($databaseUrl->getPort() !== 3306) {
-            $result[] = '-P' . $databaseUrl->getPort();
+        $result[] = '-h' . escapeshellarg($connectionDetails->getHost());
+        if ($connectionDetails->getPort() !== 3306) {
+            $result[] = '-P' . $connectionDetails->getPort();
         }
-        $result[] = '-u' . escapeshellarg($databaseUrl->getUser());
-        $result[] = '-p' . escapeshellarg($databaseUrl->getPassword());
+        $result[] = '-u' . escapeshellarg($connectionDetails->getUser());
+        $result[] = '-p' . escapeshellarg($connectionDetails->getPassword());
         if (!$excludeDatabase) {
-            $result[] = '' . escapeshellarg($databaseUrl->getDatabase());
+            $result[] = '' . escapeshellarg($connectionDetails->getDatabase());
         }
         return implode(' ', $result);
     }

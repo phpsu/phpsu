@@ -48,7 +48,6 @@ final class Controller implements ControllerInterface
         $sectionBottom = $output;
 
         if ($output instanceof ConsoleOutputInterface) {
-            $sectionOutput = [];
             $sectionTop = $output->section();
             $sectionMiddle = $output->section();
             $sectionMiddle->writeln(str_repeat('-', 20), OutputInterface::OUTPUT_RAW);

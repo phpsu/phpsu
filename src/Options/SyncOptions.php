@@ -26,7 +26,7 @@ final class SyncOptions
 
     public function __construct(string $source)
     {
-        $this->source = $source;
+        $this->setSource($source);
     }
 
     public function getSource(): string
