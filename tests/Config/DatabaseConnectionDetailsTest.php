@@ -102,12 +102,12 @@ class DatabaseConnectionDetailsTest extends TestCase
 
     public function testSshWithPassword(): void
     {
-        $connectionDetails = DatabaseConnectionDetails::fromUrlString('mysql://user:password@host');
+        $connectionDetails = DatabaseConnectionDetails::fromUrlString('mysql://user:password@host/database');
         $this->assertSame('user', $connectionDetails->getUser());
         $this->assertSame('password', $connectionDetails->getPassword());
         $this->assertSame('host', $connectionDetails->getHost());
         $this->assertSame(3306, $connectionDetails->getPort());
-        $this->assertSame('mysql://user:password@host', $connectionDetails->__toString());
+        $this->assertSame('mysql://user:password@host/database', $connectionDetails->__toString());
     }
 
     public function testSshWithIp(): void
@@ -138,6 +138,6 @@ class DatabaseConnectionDetailsTest extends TestCase
         $this->assertSame('pw2', $connectionDetails->getPassword());
         $this->assertSame('host2', $connectionDetails->getHost());
         $this->assertSame(2298, $connectionDetails->getPort());
-        $this->assertSame('mysql://user2:pw2@host2:2298', $connectionDetails->__toString());
+        $this->assertSame('mysql://user2:pw2@host2:2298/database2', $connectionDetails->__toString());
     }
 }

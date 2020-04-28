@@ -28,6 +28,20 @@ final class SshUrlTest extends TestCase
         $dsn->setPort(0);
     }
 
+    public function testInvalidHost1(): void
+    {
+        $dsn = new SshUrl('user@test');
+        $this->expectExceptionMessage('host a/b has invalid character');
+        $dsn->setHost('a/b');
+    }
+
+    public function testInvalidHost2(): void
+    {
+        $dsn = new SshUrl('user@test');
+        $this->expectExceptionMessage('Host must be set');
+        $dsn->setHost('');
+    }
+
     public function testInvalidPort2(): void
     {
         $dsn = new SshUrl('user@test');

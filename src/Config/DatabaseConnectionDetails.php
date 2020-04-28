@@ -134,6 +134,9 @@ final class DatabaseConnectionDetails
         if ($this->getPort() !== 3306) {
             $result .= ':' . $this->getPort();
         }
+        if ($this->getDatabase()) {
+            $result .= '/' . $this->getDatabase();
+        }
         return $result;
     }
 }
