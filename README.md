@@ -45,7 +45,7 @@ if you want to use phpsu via Docker we have an minimal phpsu docker image: [phps
 
 you can execute any phpsu command via something like this:
 
-``docker run --rm -it -v $(pwd):/app -v ~/.ssh:/root/.ssh phpsu/phpsu:1.1.0 phpsu ssh production``
+``docker run --rm -it -v $(pwd):/app -v ~/.ssh:/root/.ssh phpsu/phpsu:latest phpsu ssh production``
 
 [read more about docker usage]
 

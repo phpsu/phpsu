@@ -1,4 +1,4 @@
-FROM php:7.3-alpine3.10
+FROM php:7.4-alpine3.11
 
 RUN apk add mariadb-client openssh rsync
 
@@ -12,7 +12,8 @@ COPY composer.json phpsu LICENSE /phpsu/
 RUN wget https://raw.githubusercontent.com/composer/getcomposer.org/master/web/installer -O - -q | php -- --filename="composer" --install-dir="/bin" && \
     cd /phpsu && \
     composer install --no-dev && \
-    composer clear-cache
+    composer clear-cache && \
+    rm /bin/composer
 
 ENV PATH="/phpsu/:${PATH}"
 
