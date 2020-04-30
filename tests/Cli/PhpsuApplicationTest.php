@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Cli;
 
+use PHPSu\Cli\InfoCliCommand;
 use PHPSu\Cli\PhpsuApplication;
 use PHPSu\Cli\SshCliCommand;
 use PHPSu\Cli\SyncCliCommand;
@@ -16,5 +17,6 @@ class PhpsuApplicationTest extends TestCase
         $app = PhpsuApplication::createApplication();
         $this->assertInstanceOf(SyncCliCommand::class, $app->get('sync'));
         $this->assertInstanceOf(SshCliCommand::class, $app->get('ssh'));
+        $this->assertInstanceOf(InfoCliCommand::class, $app->get('info'));
     }
 }

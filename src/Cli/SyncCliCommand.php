@@ -42,8 +42,10 @@ final class SyncCliCommand extends AbstractCliCommand
         /** @var string $currentHost */
         $currentHost = $this->getOption($input, 'from');
 
-        $options = (new SyncOptions(StringHelper::findStringInArray($source, $instances) ?: $source))
-            ->setDestination(StringHelper::findStringInArray($destination, $instances) ?: $destination)
+        $source = StringHelper::findStringInArray($source, $instances) ?: $source;
+        $destination = StringHelper::findStringInArray($destination, $instances) ?: $destination;
+        $options = (new SyncOptions($source))
+            ->setDestination($destination)
             ->setCurrentHost($currentHost)
             ->setDryRun((bool)$input->getOption('dry-run'))
             ->setAll((bool)$input->getOption('all'))
