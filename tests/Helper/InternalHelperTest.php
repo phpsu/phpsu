@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Helper;
 
-use PHPSu\Exceptions\CommandExecutionException;
+use ErrorException;
 use PHPSu\Exceptions\EnvironmentException;
 use PHPSu\Helper\ApplicationHelper;
-use PHPSu\Tools\EnvironmentUtility;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
@@ -25,17 +24,41 @@ class InternalHelperTest extends TestCase
     {
         $this->assertFileExists(self::GIT_PATH . '/HEAD');
         if (file_exists(self::GIT_PATH . '/HEAD')) {
-            $this->assertNotEmpty($this->callPrivateMethod('getPhpSuVersionFromGitFolder'));
+            $versionString = $this->callPrivateMethod('getPhpSuVersionFromGitFolder');
+            $this->assertIsString($versionString);
+            $this->assertNotEmpty($versionString);
+            $this->assertStringNotContainsString('ref: ', $versionString);
         } else {
             $this->expectException(EnvironmentException::class);
             $this->callPrivateMethod('getPhpSuVersionFromGitFolder');
         }
     }
 
+    public function testGetPhpSuVersionFromGitFolderWithoutFolder(): void
+    {
+        rename(self::GIT_PATH, self::GIT_PATH . '_');
+        try {
+            $this->assertNull($this->callPrivateMethod('getPhpSuVersionFromGitFolder'));
+        } finally {
+            rename(self::GIT_PATH . '_', self::GIT_PATH);
+        }
+    }
+
+    public function testGetPhpSuVersionFromGitFolderWithoutHeadFile(): void
+    {
+        rename(self::GIT_PATH . '/HEAD', self::GIT_PATH . '/HEAD_');
+        try {
+            $this->expectException(ErrorException::class);
+            $this->callPrivateMethod('getPhpSuVersionFromGitFolder');
+        } finally {
+            rename(self::GIT_PATH . '/HEAD_', self::GIT_PATH . '/HEAD');
+        }
+    }
+
     private function callPrivateMethod(string $method)
     {
         $object = new ApplicationHelper();
-        $reflection =  (new ReflectionClass($object))->getMethod($method);
+        $reflection = (new ReflectionClass($object))->getMethod($method);
         $reflection->setAccessible(true);
         return $reflection->invoke($object);
     }

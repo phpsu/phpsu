@@ -89,7 +89,7 @@ final class SshCliCommand extends AbstractCliCommand
     /**
      * @return string[]
      */
-    protected function getAppInstancesWithHost(): array
+    private function getAppInstancesWithHost(): array
     {
         if ($this->instances === null) {
             $this->instances = $this->configurationLoader->getConfig()->getAppInstanceNames(static function (AppInstance $instance) {

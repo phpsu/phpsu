@@ -95,14 +95,15 @@ final class ControllerTest extends TestCase
             ->addDatabaseByUrl('database', 'mysql://root:root@127.0.0.1/test1234')
             ->addExclude('table1')
             ->addExclude('table3')
-            ->addExclude('/cache/');
+            ->addExclude('/cache/')
+            ->addExclude('/c/');
 
         $output = new BufferedOutput();
         $controller = new Controller();
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'TBLIST=`mysql -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' -AN -e\"SET group_concat_max_len = 10240; SELECT GROUP_CONCAT(table_name separator '\'' '\'') FROM information_schema.tables WHERE table_schema='\''testdb'\'' AND table_name NOT REGEXP '\''cache'\'' AND table_name NOT IN('\''table1'\'','\''table2'\'','\''table4'\'','\''table3'\'')\"` && mysqldump --opt --skip-comments --single-transaction --lock-tables=false -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' \${TBLIST} | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql -h'127.0.0.1' -u'root' -p'root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'TBLIST=`mysql -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' -AN -e\"SET group_concat_max_len = 10240; SELECT GROUP_CONCAT(table_name separator '\'' '\'') FROM information_schema.tables WHERE table_schema='\''testdb'\'' AND table_name NOT REGEXP '\''cache'\'' AND table_name NOT REGEXP '\''c'\'' AND table_name NOT IN('\''table1'\'','\''table2'\'','\''table4'\'','\''table3'\'')\"` && mysqldump --opt --skip-comments --single-transaction --lock-tables=false -h'\''127.0.0.1'\'' -u'\''test'\'' -p'\''aaaaaaaa'\'' '\''testdb'\'' \${TBLIST} | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql -h'127.0.0.1' -u'root' -p'root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -255,6 +256,7 @@ final class ControllerTest extends TestCase
         $config->addAppInstance('local');
         $controller = new Controller();
         $syncOptions = new SyncOptions('local');
+        $syncOptions->setSource('local');
         $syncOptions->setNoDatabases(true);
         $syncOptions->setNoFiles(true);
         $syncOptions->setDestination('production');

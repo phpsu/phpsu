@@ -19,8 +19,21 @@ class InfoCliCommandTest extends TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $result =  $commandTester->getDisplay(true);
-        foreach (['rsync', 'ssh', 'mysqldump', 'mysql-distribution', 'locally', 'installed'] as $string) {
-            $this->assertStringContainsStringIgnoringCase($string, $result, '');
-        }
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertStringMatchesFormat('
+List of all dependencies and their versions
+===========================================
+
+Locally installed
+ -------------------- ----------- --------- 
+  Dependency           Installed   Version  
+ -------------------- ----------- --------- 
+  rsync                ✔           %s
+  mysql-distribution   ✔           %s
+  mysqldump            ✔           %s
+  ssh                  ✔           %s
+ -------------------- ----------- --------- 
+
+', $result);
     }
 }
