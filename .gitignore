@@ -5,3 +5,4 @@
 /tests/test-results/
 /phpsu-config.php
 composer.lock
+tests/.phpunit.result.cache
