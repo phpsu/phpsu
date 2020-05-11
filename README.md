@@ -89,14 +89,14 @@ $globalConfig->addFilesystem('Image Uploads', 'var/storage')
     ->addExcludes(['*.jpg', '*.gif']);
 $globalConfig->addSshConnection('hostA', 'ssh://user@localhost:2208');
 $globalConfig->addAppInstance('production', 'hostA', '/var/www/')
-    ->setCompression(new \PHPSu\Config\Compression\GzipCompression())
+    ->setCompressions(new \PHPSu\Config\Compression\GzipCompression())
     ->addDatabase('app', 'production01db', 'root', 'password', '127.0.0.1', 3307)
     ->addExclude('one_single_table_name')
     ->addExclude('/cache/')
     ->addExclude('/session$/')
     ->addExcludes(['/log/']);
 $globalConfig->addAppInstance('local')
-    ->setCompression(new \PHPSu\Config\Compression\GzipCompression())
+    ->setCompressions(new \PHPSu\Config\Compression\GzipCompression())
     ->addDatabase('app', 'testingLocal', 'root', 'root');
 return $globalConfig;
 ````
