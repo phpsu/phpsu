@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace PHPSu\Options;
 
+use PHPSu\ShellCommandBuilder\ShellBuilder;
+use PHPSu\ShellCommandBuilder\ShellInterface;
+
 /**
  * @internal
  */
@@ -13,14 +16,15 @@ final class SshOptions
     private $destination;
     /** @var string */
     private $currentHost = 'local';
-    /** @var string */
-    private $command = '';
+    /** @var ShellInterface */
+    private $command;
     /** @var bool */
     private $dryRun = false;
 
     public function __construct(string $destination)
     {
         $this->destination = $destination;
+        $this->command = ShellBuilder::new();
     }
 
     public function getDestination(): string
@@ -45,12 +49,12 @@ final class SshOptions
         return $this;
     }
 
-    public function getCommand(): string
+    public function getCommand(): ShellInterface
     {
         return $this->command;
     }
 
-    public function setCommand(string $command): SshOptions
+    public function setCommand(ShellInterface $command): SshOptions
     {
         $this->command = $command;
         return $this;

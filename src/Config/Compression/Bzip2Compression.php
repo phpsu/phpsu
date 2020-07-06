@@ -11,11 +11,11 @@ final class Bzip2Compression implements CompressionInterface
 {
     public function getCompressCommand(): string
     {
-        return ' | bzip2';
+        return 'bzip2';
     }
 
     public function getUnCompressCommand(): string
     {
-        return 'bunzip2 | ';
+        return 'bunzip2';
     }
 }

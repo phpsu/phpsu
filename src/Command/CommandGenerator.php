@@ -9,6 +9,8 @@ use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Config\TempSshConfigFile;
 use PHPSu\Options\SyncOptions;
+use PHPSu\ShellCommandBuilder\ShellBuilder;
+use PHPSu\ShellCommandBuilder\ShellInterface;
 use SplFileObject;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -46,14 +48,14 @@ final class CommandGenerator
         return $this;
     }
 
-    public function sshCommand(string $destination, string $currentHost, string $command): string
+    public function sshCommand(string $destination, string $currentHost, ?ShellInterface $command): string
     {
         $sshConfig = SshConfig::fromGlobal($this->globalConfig, $currentHost);
         $sshConfig->setFile($this->getFile());
         $sshCommand = SshCommand::fromGlobal($this->globalConfig, $destination, $currentHost, $this->verbosity);
         $sshCommand->setSshConfig($sshConfig);
         $sshConfig->writeConfig();
-        return $sshCommand->generate($command);
+        return (string)$sshCommand->generate(ShellBuilder::new(), $command);
     }
 
     /**
@@ -77,14 +79,14 @@ final class CommandGenerator
             $rsyncCommands = RsyncCommand::fromGlobal($this->globalConfig, $options->getSource(), $options->getDestination(), $options->getCurrentHost(), $options->isAll(), $this->verbosity);
             foreach ($rsyncCommands as $rsyncCommand) {
                 $rsyncCommand->setSshConfig($sshConfig);
-                $result[$rsyncCommand->getName()] = $rsyncCommand->generate();
+                $result[$rsyncCommand->getName()] = (string)$rsyncCommand->generate(ShellBuilder::new());
             }
         }
         if (!$options->isNoDatabases()) {
             $databaseCommands = DatabaseCommand::fromGlobal($this->globalConfig, $options->getSource(), $options->getDestination(), $options->getCurrentHost(), $options->isAll(), $this->verbosity);
             foreach ($databaseCommands as $databaseCommand) {
                 $databaseCommand->setSshConfig($sshConfig);
-                $result[$databaseCommand->getName()] = $databaseCommand->generate();
+                $result[$databaseCommand->getName()] = (string)$databaseCommand->generate(ShellBuilder::new());
             }
         }
         $sshConfig->writeConfig();

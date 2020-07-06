@@ -8,6 +8,7 @@ use Exception;
 use PHPSu\Config\AppInstance;
 use PHPSu\Helper\StringHelper;
 use PHPSu\Options\SshOptions;
+use PHPSu\ShellCommandBuilder\ShellBuilder;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -76,12 +77,17 @@ final class SshCliCommand extends AbstractCliCommand
         $currentHost = $this->getOption($input, 'from');
         /** @var array<string> $commandArray */
         $commandArray = $this->getArgument($input, 'commands');
+        // todo: ShellBuilder should accept raw
+        $builder = ShellBuilder::new();
+        foreach ($commandArray as $command) {
+            $builder->add($command);
+        }
         return $this->controller->ssh(
             $output,
             $this->configurationLoader->getConfig(),
             (new SshOptions($destination))
                 ->setCurrentHost($currentHost)
-                ->setCommand(implode(' ', $commandArray))
+                ->setCommand($builder)
                 ->setDryRun((bool)$input->getOption('dry-run'))
         );
     }

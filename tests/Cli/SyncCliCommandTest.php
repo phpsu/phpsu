@@ -34,7 +34,7 @@ class SyncCliCommandTest extends TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\''; echo '\''ssh connection to production is working'\'''\n", $output);
+        $this->assertStringContainsString("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\'' ; echo '\''ssh connection to production is working'\'''\n", $output);
         $this->assertStringContainsString("filesystem:storage\n", $output);
         $this->assertStringContainsString("rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'us:/var/www/var/storage/' './var/storage/'\n", $output);
         $this->assertSame(0, $commandTester->getStatusCode());
@@ -57,7 +57,7 @@ class SyncCliCommandTest extends TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\''; echo '\''ssh connection to production is working'\'''\n", $output);
+        $this->assertStringContainsString("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\'' ; echo '\''ssh connection to production is working'\'''\n", $output);
         $this->assertStringContainsString("filesystem:storage\n", $output);
         $this->assertStringContainsString("rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' './var/storage/' 'us:/var/www/var/storage/'\n", $output);
         $this->assertSame(0, $commandTester->getStatusCode());

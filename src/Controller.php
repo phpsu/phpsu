@@ -9,9 +9,8 @@ use PHPSu\Config\GlobalConfig;
 use PHPSu\Options\SshOptions;
 use PHPSu\Options\SyncOptions;
 use PHPSu\Process\CommandExecutor;
-use PHPSu\Tools\EnvironmentUtility;
+use PHPSu\ShellCommandBuilder\ShellBuilder;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
-use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -63,13 +62,17 @@ final class Controller implements ControllerInterface
         if ($options->getSource() !== 'local') {
             $sshOptionSource = new SshOptions($options->getSource());
             $sshOptionSource->setDryRun($options->isDryRun());
-            $sshOptionSource->setCommand(sprintf('echo \'ssh connection to %s is working\'', $sshOptionSource->getDestination()));
+            $command = ShellBuilder::command('echo')
+                ->addArgument(sprintf('ssh connection to %s is working', $sshOptionSource->getDestination()));
+            $sshOptionSource->setCommand($command);
             $this->ssh($output, $config, $sshOptionSource);
         }
         if ($options->getDestination() !== 'local') {
             $sshOptionDestination = new SshOptions($options->getDestination());
             $sshOptionDestination->setDryRun($options->isDryRun());
-            $sshOptionDestination->setCommand(sprintf('echo \'ssh connection to %s is working\'', $sshOptionDestination->getDestination()));
+            $command = ShellBuilder::command('echo')
+                ->addArgument(sprintf('ssh connection to %s is working', $sshOptionDestination->getDestination()));
+            $sshOptionDestination->setCommand($command);
             $this->ssh($output, $config, $sshOptionDestination);
         }
     }

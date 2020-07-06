@@ -11,11 +11,11 @@ final class GzipCompression implements CompressionInterface
 {
     public function getCompressCommand(): string
     {
-        return ' | gzip';
+        return 'gzip';
     }
 
     public function getUnCompressCommand(): string
     {
-        return 'gunzip | ';
+        return 'gunzip';
     }
 }
