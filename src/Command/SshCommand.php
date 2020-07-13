@@ -96,7 +96,7 @@ final class SshCommand
     public function generate(ShellBuilder $shellBuilder, ?ShellInterface $command = null): ShellBuilder
     {
         if ($this->getInto() === '') {
-            return $shellBuilder->add($command);
+            return $command !== null ? $shellBuilder->add($command) : $shellBuilder;
         }
         $file = $this->getSshConfig()->getFile();
         $ssh = $shellBuilder->createCommand('ssh');
@@ -113,10 +113,6 @@ final class SshCommand
                 $command = ShellBuilder::command('bash')->addOption('login');
             }
             try {
-                if (is_string($command)) {
-                    var_dump($command);
-                    die();
-                }
                 $ssh->addShortOption(
                     't',
                     ShellBuilder::new()

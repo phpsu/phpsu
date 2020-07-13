@@ -402,6 +402,11 @@ final class DatabaseCommand implements CommandInterface
         return $result;
     }
 
+    /**
+     * @param string $database
+     * @param string[] $excludes
+     * @return string
+     */
     private function generateSqlQuery(string $database, array $excludes): string
     {
         $whereCondition = $this->getExcludeSqlPart($excludes);
