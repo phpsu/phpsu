@@ -7,6 +7,7 @@ namespace PHPSu\Tools;
 use PHPSu\Controller;
 use PHPSu\Exceptions\CommandExecutionException;
 use PHPSu\Process\CommandExecutor;
+use PHPSu\ShellCommandBuilder\ShellBuilder;
 
 /**
  * @internal
@@ -41,7 +42,7 @@ final class EnvironmentUtility
 
     public function isCommandInstalled(string $command): bool
     {
-        $output = $this->commandExecutor->runCommand($command);
+        $output = $this->commandExecutor->runCommand(ShellBuilder::command($command));
         if ($output->getExitCode() === 127) {
             return false;
         }
@@ -50,7 +51,7 @@ final class EnvironmentUtility
 
     public function getRsyncVersion(): string
     {
-        $command = $this->commandExecutor->runCommand('rsync --version');
+        $command = $this->commandExecutor->runCommand(ShellBuilder::command('rsync')->addOption('version'));
         if (empty($command->getOutput()) && $this->isRsyncInstalled()) {
             throw new CommandExecutionException('Result of rsync --version was empty');
         }
@@ -60,7 +61,7 @@ final class EnvironmentUtility
 
     public function getSshVersion(): string
     {
-        $command = $this->commandExecutor->runCommand('ssh -V');
+        $command = $this->commandExecutor->runCommand(ShellBuilder::command('ssh')->addShortOption('V'));
         if (empty($command->getOutput()) && $command->getExitCode() !== 0) {
             throw new CommandExecutionException('Result of ssh -V was empty');
         }
@@ -75,9 +76,10 @@ final class EnvironmentUtility
      */
     public function getMysqlDumpVersion(): array
     {
-        $output = $this->commandExecutor->runCommand('mysqldump -V')->getOutput();
+        $command = ShellBuilder::command('mysqldump')->addShortOption('V');
+        $output = $this->commandExecutor->runCommand($command)->getOutput();
         if (empty($output) && $this->isMysqlDumpInstalled()) {
-            throw new CommandExecutionException('Result of mysqldump -V was empty');
+            throw new CommandExecutionException('Result of %s was empty', (string)$command);
         }
         preg_match_all(
             '/(.*Ver (?\'dump\'[\d.a-z]+).*)(.*Distrib (?\'mysql\'[\d.a-z]+).*)/m',
@@ -106,7 +108,9 @@ final class EnvironmentUtility
         if (json_last_error() !== JSON_ERROR_NONE) {
             return null;
         }
-        foreach ($activeInstallations as $installed) {
+        // support both composer 1.0 and composer 2.0
+        $installations = $activeInstallations->packages ?? $activeInstallations;
+        foreach ($installations as $installed) {
             if ($installed->name === $packageName) {
                 return $installed->version;
             }

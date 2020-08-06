@@ -50,6 +50,20 @@ final class RsyncCommandTest extends TestCase
         $this->assertSame("rsync -r -e 'ssh -F '\''php://temp'\''' 'hosta:~/test/*' './__test/'", (string)$rsync->generate(ShellBuilder::new()));
     }
 
+    public function testGenerateMultipleOptions(): void
+    {
+        $sshConfig = new SshConfig();
+        $sshConfig->setFile(new SplTempFileObject());
+        $rsync = new RsyncCommand();
+        $rsync->setSshConfig($sshConfig)
+            ->setOptions('-r --colorize')
+            ->setSourceHost('hosta')
+            ->setSourcePath('~/test/*')
+            ->setToPath('./__test/');
+
+        $this->assertSame("rsync -r --colorize -e 'ssh -F '\''php://temp'\''' 'hosta:~/test/*' './__test/'", (string)$rsync->generate(ShellBuilder::new()));
+    }
+
     public function testRsyncWithAppInstanceLocal(): void
     {
         $sshConfig = new SshConfig();

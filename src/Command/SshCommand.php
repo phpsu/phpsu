@@ -112,19 +112,14 @@ final class SshCommand
                 // todo: ShellBuilder needs to have a hasCommands method
                 $command = ShellBuilder::command('bash')->addOption('login');
             }
-            try {
-                $ssh->addShortOption(
-                    't',
-                    ShellBuilder::new()
-                        ->createCommand('cd')
-                        ->addArgument($this->getPath())
-                        ->addToBuilder()
-                        ->add($command)
-                );
-            } catch (\Exception $exception) {
-                var_dump($exception->getFile());
-                die();
-            }
+            $ssh->addShortOption(
+                't',
+                ShellBuilder::new()
+                    ->createCommand('cd')
+                    ->addArgument($this->getPath())
+                    ->addToBuilder()
+                    ->add($command)
+            );
         } elseif (!empty($command)) {
             $ssh->addArgument($command);
         }

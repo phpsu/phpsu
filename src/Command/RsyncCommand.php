@@ -121,8 +121,8 @@ final class RsyncCommand implements CommandInterface
         $shortOptions = [];
         $list = [];
         foreach (explode(' ', $options) as $option) {
-            $current = str_replace('-', '', $option);
-            if (strpos($option, '--')) {
+            $current = str_replace(['-', '--'], '', $option);
+            if (strpos($option, '--') === 0) {
                 $list[] = $current;
             } else {
                 $shortOptions[] = $current;

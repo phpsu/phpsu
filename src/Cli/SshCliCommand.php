@@ -77,10 +77,9 @@ final class SshCliCommand extends AbstractCliCommand
         $currentHost = $this->getOption($input, 'from');
         /** @var array<string> $commandArray */
         $commandArray = $this->getArgument($input, 'commands');
-        // todo: ShellBuilder should accept raw
         $builder = ShellBuilder::new();
         foreach ($commandArray as $command) {
-            $builder->add($command);
+            $builder->addSingle($command, true);
         }
         return $this->controller->ssh(
             $output,

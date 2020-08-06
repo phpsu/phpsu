@@ -1,6 +1,6 @@
 FROM php:7.4-alpine3.11
 
-RUN apk add mariadb-client openssh rsync
+RUN apk add mariadb-client openssh rsync sshpass
 
 # COPY Directories:
 COPY src /phpsu/src/
