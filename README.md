@@ -41,11 +41,11 @@ echo '/vendor-bin/**/vendor' >> .gitignore
 
 ### Via Docker:
 
-if you want to use phpsu via Docker we have an minimal phpsu docker image: [phpsu/phpsu].
+if you want to use phpsu via Docker we have a minimal phpsu docker image: [phpsu/phpsu].
 
 you can execute any phpsu command via something like this:
 
-``docker run --rm -it -v $(pwd):/app -v ~/.ssh:/root/.ssh phpsu/phpsu:latest phpsu ssh production``
+``docker run --rm -it -u $(id -u):$(id -g) -v $(pwd):/app -v ~/.ssh:/home/phpsu/.ssh phpsu/phpsu:latest phpsu ssh production``
 
 [read more about docker usage]
 
