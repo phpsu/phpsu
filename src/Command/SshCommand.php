@@ -8,6 +8,9 @@ use Exception;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Helper\StringHelper;
+use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
+use PHPSu\ShellCommandBuilder\ShellBuilder;
+use PHPSu\ShellCommandBuilder\ShellInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -84,22 +87,43 @@ final class SshCommand
         return $this;
     }
 
-    public function generate(string $command = ''): string
+    /**
+     * @param ShellBuilder $shellBuilder
+     * @param ShellInterface|null $command
+     * @return ShellBuilder
+     * @throws ShellBuilderException|Exception
+     */
+    public function generate(ShellBuilder $shellBuilder, ?ShellInterface $command = null): ShellBuilder
     {
-        $file = $this->getSshConfig()->getFile();
         if ($this->getInto() === '') {
-            return $command;
+            return $command !== null ? $shellBuilder->add($command) : $shellBuilder;
         }
-        $result = 'ssh ' . StringHelper::optionStringForVerbosity($this->getVerbosity()) . '-F ' . escapeshellarg($file->getPathname()) . ' ' . escapeshellarg($this->getInto());
+        $file = $this->getSshConfig()->getFile();
+        $ssh = $shellBuilder->createCommand('ssh');
+        $verbosity = StringHelper::optionStringForVerbosity($this->getVerbosity());
+        if ($verbosity) {
+            $ssh->addShortOption($verbosity);
+        }
+        $ssh->addShortOption('F', $file->getPathname())
+            ->addArgument($this->getInto());
         if ($this->getPath() !== '') {
-            if ($command === '') {
-                //keep it interactive if no command is specified
-                $command = 'bash --login';
+            if (empty($command) || empty($command->__toArray())) {
+                // keep it interactive if no command is specified
+                // todo: ShellBuilder needs to have a hasCommands method
+                $command = ShellBuilder::command('bash')->addOption('login');
             }
-            $result .= ' -t ' . escapeshellarg('cd ' . escapeshellarg($this->getPath()) . '; ' . $command);
-        } elseif ($command !== '') {
-            $result .= ' ' . escapeshellarg($command);
+            $ssh->addShortOption(
+                't',
+                ShellBuilder::new()
+                    ->createCommand('cd')
+                    ->addArgument($this->getPath())
+                    ->addToBuilder()
+                    ->add($command)
+            );
+        } elseif (!empty($command)) {
+            $ssh->addArgument($command);
         }
-        return $result;
+        $ssh->addToBuilder();
+        return $shellBuilder;
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Command;
 
+use GrumPHP\Task\Shell;
 use PHPSu\Config\AppInstance;
 use PHPSu\Config\Compression\CompressionInterface;
 use PHPSu\Config\Compression\EmptyCompression;
@@ -12,7 +13,13 @@ use PHPSu\Config\DatabaseConnectionDetails;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Helper\StringHelper;
+use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
+use PHPSu\ShellCommandBuilder\ShellBuilder;
+use PHPSu\ShellCommandBuilder\ShellCommand;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use function get_class;
+use function strlen;
 
 /**
  * @internal
@@ -233,85 +240,143 @@ final class DatabaseCommand implements CommandInterface
         return $this;
     }
 
-    public function generate(): string
+    /**
+     * @param ShellCommand $command
+     * @param DatabaseConnectionDetails $connectionDetails
+     * @param bool $excludeDatabase
+     * @return ShellCommand
+     * @throws ShellBuilderException
+     */
+    private function addArgumentsToShellCommand(ShellCommand $command, DatabaseConnectionDetails $connectionDetails, bool $excludeDatabase): ShellCommand
+    {
+        $command->addShortOption('h', $connectionDetails->getHost());
+        if ($connectionDetails->getPort() !== 3306) {
+            $command->addShortOption('P', (string)$connectionDetails->getPort(), false);
+        }
+        $command->addShortOption('u', $connectionDetails->getUser())
+            ->addShortOption('p', $connectionDetails->getPassword());
+
+        if (!$excludeDatabase) {
+            $command->addArgument($connectionDetails->getDatabase());
+        }
+        return $command;
+    }
+
+    /**
+     * @param ShellBuilder $shellBuilder
+     * @return ShellBuilder
+     * @throws ShellBuilderException
+     */
+    public function generate(ShellBuilder $shellBuilder): ShellBuilder
     {
         $hostsDifferentiate = $this->getFromHost() !== $this->getToHost();
         $from = $this->getFromConnectionDetails();
         $to = $this->getToConnectionDetails();
-        $dumpCmd = '';
-        $tableInfo = '';
+        $tableInfo = false;
+        $dbBuilder = ShellBuilder::new();
         if ($this->getExcludes()) {
-            $whereCondition = $this->getExcludeSqlPart($this->getExcludes());
-            $sqlPart = 'SET group_concat_max_len = 10240; SELECT GROUP_CONCAT(table_name separator \' \') FROM information_schema.tables WHERE '
-                . 'table_schema=\'' . $from->getDatabase() . '\'' . $whereCondition;
-            $dumpCmd .= 'TBLIST=`mysql ' . $this->generateCliParameters($from, true) . ' -AN -e"' . $sqlPart . '"` && ';
-            $tableInfo = ' ${TBLIST}';
-        }
-        $dumpCmd .= 'mysqldump '
-            . StringHelper::optionStringForVerbosity($this->getVerbosity())
-            . '--opt --skip-comments --single-transaction --lock-tables=false '
-            . $this->generateCliParameters(
+            $sqlPart = $this->generateSqlQuery($from->getDatabase(), $this->getExcludes());
+            $command = $this->addArgumentsToShellCommand(
+                ShellBuilder::command('mysql'),
                 $from,
-                false
+                true
             )
-            . $tableInfo;
-        $dumpCmd .= $this->getDatabaseCreateStatement($to->getDatabase());
+                ->addShortOption('AN')
+                ->addShortOption('e', sprintf('"%s"', $sqlPart), false)
+            ;
+            $dbBuilder->addVariable(
+                'TBLIST',
+                $command,
+                true,
+                true,
+                true
+            );
+            $tableInfo = true;
+        }
+        $dumpCommand = ShellBuilder::command('mysqldump');
+        $verbosity = StringHelper::optionStringForVerbosity($this->getVerbosity());
+        if ($verbosity) {
+            $dumpCommand->addShortOption($verbosity);
+        }
+        $dumpCommand = $this->addArgumentsToShellCommand(
+            $dumpCommand
+                ->addOption('opt')
+                ->addOption('skip-comments')
+                ->addOption('single-transaction')
+                ->addOption('lock-tables', 'false', false, true),
+            $from,
+            false
+        );
+        $dumpBuilder = ShellBuilder::new();
+        if ($tableInfo) {
+            $dumpCommand->addArgument('${TBLIST}', false);
+            $dumpBuilder
+                ->add($dbBuilder)
+                ->and($dumpCommand);
+        } else {
+            $dumpBuilder->add($dumpCommand);
+        }
+        $dumpBuilder
+            ->pipe(
+                $dumpBuilder->createGroup()
+                ->createCommand('echo')
+                ->addArgument($this->getDatabaseCreateStatement($to->getDatabase()))
+                ->addToBuilder()
+                ->and('cat')
+            );
         $compressCmd = $this->getCompression()->getCompressCommand();
         $unCompressCmd = $this->getCompression()->getUnCompressCommand();
-        $importCmd = 'mysql ' . $this->generateCliParameters($to, true);
+        $importCommand = $this->addArgumentsToShellCommand(
+            ShellBuilder::command('mysql'),
+            $to,
+            true
+        );
         if ($hostsDifferentiate) {
             if ($this->getFromHost() !== '') {
                 $sshCommand = new SshCommand();
                 $sshCommand->setSshConfig($this->getSshConfig());
                 $sshCommand->setInto($this->getFromHost());
                 $sshCommand->setVerbosity($this->getVerbosity());
-                $dumpCmd = $sshCommand->generate($dumpCmd . $compressCmd);
-            } else {
-                $dumpCmd .= $compressCmd;
+                if ($compressCmd) {
+                    $dumpBuilder->pipe($compressCmd);
+                }
+                $sshCommand->generate($shellBuilder, $dumpBuilder);
+            } elseif ($compressCmd) {
+                $dumpBuilder->pipe($compressCmd);
             }
+            $importBuilder = ShellBuilder::new();
             if ($this->getToHost() !== '') {
                 $sshCommand = new SshCommand();
                 $sshCommand->setSshConfig($this->getSshConfig());
                 $sshCommand->setInto($this->getToHost());
                 $sshCommand->setVerbosity($this->getVerbosity());
-                $importCmd = $sshCommand->generate($unCompressCmd . $importCmd);
+                if ($unCompressCmd) {
+                    $importBuilder->add($unCompressCmd)->pipe($importCommand);
+                } else {
+                    $importBuilder->add($importCommand);
+                }
+                $importBuilder = $sshCommand->generate(ShellBuilder::new(), $importBuilder);
+            } elseif ($unCompressCmd) {
+                $importBuilder->add($unCompressCmd)->pipe($importCommand);
             } else {
-                $importCmd = $unCompressCmd . $importCmd;
+                $importBuilder->add($importCommand);
             }
-            return $dumpCmd . ' | ' . $importCmd;
+            if (empty($shellBuilder->__toArray())) {
+                $shellBuilder->add($dumpBuilder);
+            }
+            return $shellBuilder->pipe($importBuilder);
         }
         $sshCommand = new SshCommand();
         $sshCommand->setSshConfig($this->getSshConfig());
         $sshCommand->setInto($this->getFromHost());
         $sshCommand->setVerbosity($this->getVerbosity());
-        return $sshCommand->generate($dumpCmd . ' | ' . $importCmd);
-    }
-
-    /**
-     * @param DatabaseConnectionDetails $connectionDetails
-     * @param bool $excludeDatabase
-     * @return string
-     */
-    private function generateCliParameters(DatabaseConnectionDetails $connectionDetails, bool $excludeDatabase): string
-    {
-        $result = [];
-        $result[] = '-h' . escapeshellarg($connectionDetails->getHost());
-        if ($connectionDetails->getPort() !== 3306) {
-            $result[] = '-P' . $connectionDetails->getPort();
-        }
-        $result[] = '-u' . escapeshellarg($connectionDetails->getUser());
-        $result[] = '-p' . escapeshellarg($connectionDetails->getPassword());
-        if (!$excludeDatabase) {
-            $result[] = '' . escapeshellarg($connectionDetails->getDatabase());
-        }
-        return implode(' ', $result);
+        return $sshCommand->generate($shellBuilder, $dumpBuilder->pipe($importCommand));
     }
 
     private function getDatabaseCreateStatement(string $targetDatabase): string
     {
         $escapedTargetDatabase = '`' . str_replace('`', '``', $targetDatabase) . '`';
-        $intermediateSql = sprintf('CREATE DATABASE IF NOT EXISTS %s;USE %s;', $escapedTargetDatabase, $escapedTargetDatabase);
-        return ' | (echo ' . escapeshellarg($intermediateSql) . ' && cat)';
+        return sprintf('CREATE DATABASE IF NOT EXISTS %s;USE %s;', $escapedTargetDatabase, $escapedTargetDatabase);
     }
 
     /**
@@ -324,7 +389,8 @@ final class DatabaseCommand implements CommandInterface
         $simpleExclude = [];
         foreach ($excludes as $exclude) {
             $stringLength = strlen($exclude);
-            if ($stringLength >= 3 && $exclude[0] === '/' && $exclude[$stringLength - 1] === '/') {
+            // can be replaced in php 8.0 with str_starts_with and str_end_with
+            if ($stringLength >= 3 && strncmp($exclude, '/', 1) === 0 && $exclude[$stringLength - 1] === '/') {
                 $result .= ' AND table_name NOT REGEXP \'' . substr($exclude, 1, $stringLength - 2) . '\'';
             } else {
                 $simpleExclude[] = '\'' . $exclude . '\'';
@@ -334,5 +400,18 @@ final class DatabaseCommand implements CommandInterface
             $result .= ' AND table_name NOT IN(' . implode(',', $simpleExclude) . ')';
         }
         return $result;
+    }
+
+    /**
+     * @param string $database
+     * @param string[] $excludes
+     * @return string
+     */
+    private function generateSqlQuery(string $database, array $excludes): string
+    {
+        $whereCondition = $this->getExcludeSqlPart($excludes);
+        return <<<SQL
+SET group_concat_max_len = 10240; SELECT GROUP_CONCAT(table_name separator ' ') FROM information_schema.tables WHERE table_schema='${database}'${whereCondition}
+SQL;
     }
 }

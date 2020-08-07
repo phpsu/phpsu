@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
+use PHPSu\ShellCommandBuilder\Definition\Pattern;
+use PHPSu\ShellCommandBuilder\ShellInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -53,9 +55,9 @@ final class CommandExecutor
         });
     }
 
-    public function runCommand(string $command): Process
+    public function runCommand(ShellInterface $command): Process
     {
-        $process = Process::fromShellCommandline($command, null, null, null, null);
+        $process = new Process(Pattern::split((string)$command));
         $process->run();
         return $process;
     }

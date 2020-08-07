@@ -37,7 +37,28 @@ class SshCliCommandTest extends TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertSame("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\''; bash --login'\n", $output);
+        $this->assertSame("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\'' ; bash --login'\n", $output);
+        $this->assertSame(0, $commandTester->getStatusCode());
+    }
+
+    public function testSshCliCommandDryRunMultipleCommands(): void
+    {
+        $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
+
+        $command = new SshCliCommand($mockConfigurationLoader, new Controller());
+        $command->setHelperSet(new HelperSet([
+            new QuestionHelper(),
+        ]));
+
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([
+            'destination' => 'p',
+            'commands' => ['echo "hello world"', 'echo 1234'],
+            '--dry-run' => true,
+        ]);
+
+        $output = $commandTester->getDisplay();
+        $this->assertSame("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\'' ; echo \"hello world\" ; echo 1234'\n", $output);
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
@@ -59,7 +80,7 @@ class SshCliCommandTest extends TestCase
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString('Please select one of the AppInstances', $output);
         $this->assertStringContainsString('You selected: production', $output);
-        $this->assertStringContainsString("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\''; bash --login'\n", $output);
+        $this->assertStringContainsString("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\'' ; bash --login'\n", $output);
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 

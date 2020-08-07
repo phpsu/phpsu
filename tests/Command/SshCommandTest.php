@@ -7,6 +7,7 @@ namespace PHPSu\Tests\Command;
 use PHPSu\Command\SshCommand;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
+use PHPSu\ShellCommandBuilder\ShellBuilder;
 use PHPUnit\Framework\TestCase;
 use SplTempFileObject;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,7 +21,7 @@ final class SshCommandTest extends TestCase
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta');
-        $this->assertSame("ssh -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertSame("ssh -F 'php://temp' 'hosta'", (string)$ssh->generate(ShellBuilder::new()));
     }
 
     public function testSshCommandQuiet(): void
@@ -31,7 +32,7 @@ final class SshCommandTest extends TestCase
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
             ->setVerbosity(OutputInterface::VERBOSITY_QUIET);
-        $this->assertSame("ssh -q -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertSame("ssh -q -F 'php://temp' 'hosta'", (string)$ssh->generate(ShellBuilder::new()));
     }
 
     public function testSshCommandVerbose(): void
@@ -42,7 +43,7 @@ final class SshCommandTest extends TestCase
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
             ->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
-        $this->assertSame("ssh -v -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertSame("ssh -v -F 'php://temp' 'hosta'", (string)$ssh->generate(ShellBuilder::new()));
     }
 
     public function testSshCommandVeryVerbose(): void
@@ -53,7 +54,7 @@ final class SshCommandTest extends TestCase
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
             ->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
-        $this->assertSame("ssh -vv -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertSame("ssh -vv -F 'php://temp' 'hosta'", (string)$ssh->generate(ShellBuilder::new()));
     }
 
     public function testSshCommandDebug(): void
@@ -64,7 +65,7 @@ final class SshCommandTest extends TestCase
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
             ->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
-        $this->assertSame("ssh -vvv -F 'php://temp' 'hosta'", $ssh->generate());
+        $this->assertSame("ssh -vvv -F 'php://temp' 'hosta'", (string)$ssh->generate(ShellBuilder::new()));
     }
 
     public function testSshCommandGetter(): void

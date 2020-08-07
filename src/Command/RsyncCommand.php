@@ -9,6 +9,8 @@ use PHPSu\Config\FileSystem;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Helper\StringHelper;
+use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
+use PHPSu\ShellCommandBuilder\ShellBuilder;
 
 /**
  * @internal
@@ -19,8 +21,10 @@ final class RsyncCommand implements CommandInterface
     private $name;
     /** @var SshConfig */
     private $sshConfig;
-    /** @var string */
-    private $options = '-az';
+    /** @var array<string> */
+    private $shortOptions = ['az'];
+    /** @var array<string> */
+    private $options = [];
 
     /** @var string */
     private $sourceHost = '';
@@ -31,6 +35,10 @@ final class RsyncCommand implements CommandInterface
     private $destinationHost = '';
     /** @var string */
     private $toPath;
+    /** @var array<string> */
+    private $excludeList = [];
+    /** @var string */
+    private $verbosity = '';
 
     /**
      * @param GlobalConfig $global
@@ -71,14 +79,10 @@ final class RsyncCommand implements CommandInterface
         $result->setDestinationHost($destination->getHost() === $currentHost ? '' : $destination->getHost());
         $result->setSourcePath(rtrim($source->getPath() === '' ? '.' : $source->getPath(), '/*') . $fromRelPath . '/');
         $result->setToPath(rtrim($destination->getPath() === '' ? '.' : $destination->getPath(), '/') . $toRelPath . '/');
-        $result->setOptions(StringHelper::optionStringForVerbosity($verbosity) . $result->getOptions());
+        $result->verbosity = StringHelper::optionStringForVerbosity($verbosity);
         if (!$all) {
-            $excludeOptions = '';
             foreach (array_unique(array_merge($sourceFilesystem->getExcludes(), $destinationFilesystem->getExcludes())) as $exclude) {
-                $excludeOptions .= '--exclude=' . escapeshellarg($exclude) . ' ';
-            }
-            if ($excludeOptions !== '') {
-                $result->setOptions($result->getOptions() . ' ' . $excludeOptions);
+                $result->excludeList[] = $exclude;
             }
         }
 
@@ -109,12 +113,23 @@ final class RsyncCommand implements CommandInterface
 
     public function getOptions(): string
     {
-        return $this->options;
+        return implode(' ', array_merge($this->shortOptions, $this->options));
     }
 
     public function setOptions(string $options): RsyncCommand
     {
-        $this->options = $options;
+        $shortOptions = [];
+        $list = [];
+        foreach (explode(' ', $options) as $option) {
+            $current = str_replace(['-', '--'], '', $option);
+            if (strpos($option, '--') === 0) {
+                $list[] = $current;
+            } else {
+                $shortOptions[] = $current;
+            }
+        }
+        $this->shortOptions = $shortOptions;
+        $this->options = $list;
         return $this;
     }
 
@@ -162,32 +177,50 @@ final class RsyncCommand implements CommandInterface
         return $this;
     }
 
-    public function generate(): string
+    /**
+     * @param ShellBuilder $shellBuilder
+     * @return ShellBuilder
+     * @throws ShellBuilderException
+     */
+    public function generate(ShellBuilder $shellBuilder): ShellBuilder
     {
         $hostsDifferentiate = $this->getSourceHost() !== $this->getDestinationHost();
         $fromHostPart = '';
         $toHostPart = '';
 
-        $command = 'rsync';
-        if ($this->getOptions() !== '') {
-            $command .= ' ' . trim($this->getOptions());
+        $command = ShellBuilder::command('rsync');
+        if ($this->verbosity) {
+            $command->addShortOption($this->verbosity);
+        }
+        foreach ($this->shortOptions as $option) {
+            $command->addShortOption(trim($option));
+        }
+        foreach ($this->options as $option) {
+            $command->addOption(trim($option));
+        }
+        foreach ($this->excludeList as $option) {
+            $command->addOption('exclude', $option);
         }
         if ($hostsDifferentiate) {
             $file = $this->sshConfig->getFile();
-            $command .= ' -e ' . escapeshellarg('ssh -F ' . escapeshellarg($file->getPathname()));
+            $command->addShortOption(
+                'e',
+                ShellBuilder::command('ssh')
+                ->addShortOption('F', $file->getPathname())
+            );
             $fromHostPart = $this->getSourceHost() !== '' ? $this->getSourceHost() . ':' : '';
             $toHostPart = $this->getDestinationHost() !== '' ? $this->getDestinationHost() . ':' : '';
         }
         $from = $fromHostPart . $this->getSourcePath();
         $to = $toHostPart . $this->getToPath();
-        $command .= ' ' . escapeshellarg($from) . ' ' . escapeshellarg($to);
+        $command->addArgument($from)->addArgument($to);
 
         if (!$hostsDifferentiate) {
             $sshCommand = new SshCommand();
             $sshCommand->setSshConfig($this->getSshConfig());
             $sshCommand->setInto($this->getSourceHost());
-            return $sshCommand->generate($command);
+            return $sshCommand->generate($shellBuilder, $command);
         }
-        return $command;
+        return $shellBuilder->add($command);
     }
 }
