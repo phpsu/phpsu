@@ -79,7 +79,7 @@ final class EnvironmentUtility
         $command = ShellBuilder::command('mysqldump')->addShortOption('V');
         $output = $this->commandExecutor->runCommand($command)->getOutput();
         if (empty($output) && $this->isMysqlDumpInstalled()) {
-            throw new CommandExecutionException('Result of %s was empty', (string)$command);
+            throw new CommandExecutionException(sprintf('Result of %s was empty', (string)$command));
         }
         preg_match_all(
             '/(.*Ver (?\'dump\'[\d.a-z]+).*)(.*Distrib (?\'mysql\'[\d.a-z]+).*)/m',
