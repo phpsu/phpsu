@@ -25,7 +25,7 @@ There's just a few things you need to get started:
   
 The basic command to use phpsu's Docker image looks like this:
 
-``docker run --rm -it -v ~/.ssh/:/root/.ssh/ -v $(pwd):/app/ phpsu/phpsu:1.1.0 phpsu ssh production``
+``docker run --rm -it -v ~/.ssh/:/root/.ssh/ -v $(pwd):/app/ phpsu/phpsu:2.1.0 phpsu ssh production``
 
 If you use this command very often, we recommend to setup an alias like this one:
-``alias phpsu='docker run --rm -it -v ~/.ssh/:/root/.ssh/ -v $(pwd):/app/ phpsu/phpsu:1.1.0 phpsu'`` 
+``alias phpsu='docker run --rm -it -v ~/.ssh/:/root/.ssh/ -v $(pwd):/app/ phpsu/phpsu:2.1.0 phpsu'`` 
