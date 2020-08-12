@@ -249,12 +249,12 @@ final class DatabaseCommand implements CommandInterface
      */
     private function addArgumentsToShellCommand(ShellCommand $command, DatabaseConnectionDetails $connectionDetails, bool $excludeDatabase): ShellCommand
     {
-        $command->addShortOption('h', $connectionDetails->getHost());
+        $command->addOption('host', $connectionDetails->getHost(), true, true);
         if ($connectionDetails->getPort() !== 3306) {
-            $command->addShortOption('P', (string)$connectionDetails->getPort(), false);
+            $command->addOption('port', (string)$connectionDetails->getPort(), false, true);
         }
-        $command->addShortOption('u', $connectionDetails->getUser())
-            ->addShortOption('p', $connectionDetails->getPassword());
+        $command->addOption('user', $connectionDetails->getUser(), true, true)
+            ->addOption('password', $connectionDetails->getPassword(), true, true);
 
         if (!$excludeDatabase) {
             $command->addArgument($connectionDetails->getDatabase());
@@ -411,7 +411,7 @@ final class DatabaseCommand implements CommandInterface
     {
         $whereCondition = $this->getExcludeSqlPart($excludes);
         return <<<SQL
-SET group_concat_max_len = 10240; SELECT GROUP_CONCAT(table_name separator ' ') FROM information_schema.tables WHERE table_schema='${database}'${whereCondition}
+SET group_concat_max_len = 51200; SELECT GROUP_CONCAT(table_name separator ' ') FROM information_schema.tables WHERE table_schema='${database}'${whereCondition}
 SQL;
     }
 }
