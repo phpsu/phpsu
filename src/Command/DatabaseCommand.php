@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PHPSu\Command;
 
-use GrumPHP\Task\Shell;
 use PHPSu\Config\AppInstance;
 use PHPSu\Config\Compression\CompressionInterface;
 use PHPSu\Config\Compression\EmptyCompression;
@@ -24,7 +23,7 @@ use function strlen;
 /**
  * @internal
  */
-final class DatabaseCommand implements CommandInterface
+final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
 {
     /** @var string */
     private $name;
@@ -340,7 +339,8 @@ final class DatabaseCommand implements CommandInterface
                 if ($compressCmd) {
                     $dumpBuilder->pipe($compressCmd);
                 }
-                $sshCommand->generate($shellBuilder, $dumpBuilder);
+                $sshCommand->setCommand($dumpBuilder);
+                $sshCommand->generate($shellBuilder);
             } elseif ($compressCmd) {
                 $dumpBuilder->pipe($compressCmd);
             }
@@ -355,7 +355,8 @@ final class DatabaseCommand implements CommandInterface
                 } else {
                     $importBuilder->add($importCommand);
                 }
-                $importBuilder = $sshCommand->generate(ShellBuilder::new(), $importBuilder);
+                $sshCommand->setCommand($importBuilder);
+                $importBuilder = $sshCommand->generate(ShellBuilder::new());
             } elseif ($unCompressCmd) {
                 $importBuilder->add($unCompressCmd)->pipe($importCommand);
             } else {
@@ -370,7 +371,8 @@ final class DatabaseCommand implements CommandInterface
         $sshCommand->setSshConfig($this->getSshConfig());
         $sshCommand->setInto($this->getFromHost());
         $sshCommand->setVerbosity($this->getVerbosity());
-        return $sshCommand->generate($shellBuilder, $dumpBuilder->pipe($importCommand));
+        $sshCommand->setCommand($dumpBuilder->pipe($importCommand));
+        return $sshCommand->generate($shellBuilder);
     }
 
     private function getDatabaseCreateStatement(string $targetDatabase): string

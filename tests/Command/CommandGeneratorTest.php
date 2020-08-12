@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Command;
 
+use GrumPHP\Task\Shell;
 use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\AppInstance;
 use PHPSu\Config\Compression\GzipCompression;
@@ -57,6 +58,66 @@ final class CommandGeneratorTest extends TestCase
         $this->assertSame("ssh -F 'php://temp' 'serverEu' -t 'cd '\''/var/www/production'\'' ; ls -alh --color'", (string)$result);
         $result = $commandGenerator->sshCommand('production', '', ShellBuilder::command('echo')->addArgument('test'));
         $this->assertSame("ssh -F 'php://temp' 'serverEu' -t 'cd '\''/var/www/production'\'' ; echo '\''test'\'''", (string)$result);
+    }
+
+    public function testMysqlCommandGenerationForProduction(): void
+    {
+        $globalConfig = static::getGlobalConfig();
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile($file = new SplTempFileObject());
+        $mysqlCommand = $commandGenerator->mysqlCommand('production', null, null);
+        $comparisonObject = ShellBuilder::new()
+            ->createCommand('ssh')
+            ->addShortOption('t')
+            ->addShortOption('F', 'php://temp')
+            ->addArgument('serverEu')
+            ->addArgument(
+                ShellBuilder::command('mysql')
+                ->addOption('user', 'root', true, true)
+                ->addOption('password', 'root', true, true)
+                ->addOption('host', 'appHost', false, true)
+                ->addOption('port', '3306', false, true)
+                ->addArgument('appDatabase')
+            )->addToBuilder();
+        static::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
+    }
+
+    public function testMysqlCommandGenerationForProductionWithCommand(): void
+    {
+        $globalConfig = static::getGlobalConfig();
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile($file = new SplTempFileObject());
+        $mysqlCommand = $commandGenerator->mysqlCommand('production', 'app', 'SELECT * FROM tablex');
+        $comparisonObject = ShellBuilder::new()
+            ->createCommand('ssh')
+            ->addShortOption('F', 'php://temp')
+            ->addArgument('serverEu')
+            ->addArgument(
+                ShellBuilder::command('mysql')
+                    ->addOption('user', 'root', true, true)
+                    ->addOption('password', 'root', true, true)
+                    ->addOption('host', 'appHost', false, true)
+                    ->addOption('port', '3306', false, true)
+                    ->addArgument('appDatabase')
+                    ->addShortOption('e', 'SELECT * FROM tablex')
+            )->addToBuilder();
+        static::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
+    }
+
+    public function testMysqlCommandGenerationForLocalWithCommand(): void
+    {
+        $globalConfig = static::getGlobalConfig();
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile($file = new SplTempFileObject());
+        $mysqlCommand = $commandGenerator->mysqlCommand('local', null, 'SELECT * FROM tablex');
+        $comparisonObject = ShellBuilder::command('mysql')
+            ->addOption('user', 'user', true, true)
+            ->addOption('password', 'pw', true, true)
+            ->addOption('host', 'host', false, true)
+            ->addOption('port', '3307', false, true)
+            ->addArgument('database')
+            ->addShortOption('e', 'SELECT * FROM tablex')->addToBuilder();
+        static::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
     }
 
     public function testFromAndToSameDisallowed(): void

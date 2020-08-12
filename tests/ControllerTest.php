@@ -7,8 +7,12 @@ namespace PHPSu\Tests;
 use PHPSu\Config\ConfigurationLoader;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
+use PHPSu\Options\MysqlOptions;
 use PHPSu\Options\SshOptions;
 use PHPSu\Options\SyncOptions;
+use PHPSu\Process\CommandExecutor;
+use PHPSu\ShellCommandBuilder\ShellBuilder;
+use PHPSu\ShellCommandBuilder\ShellInterface;
 use PHPSu\Tests\TestHelper\BufferedConsoleOutput;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -35,6 +39,33 @@ final class ControllerTest extends TestCase
         $controller = new Controller();
         $controller->sync($output, $config, (new SyncOptions('production'))->setDryRun(true)->setAll(true));
         $this->assertSame('', $output->fetch());
+    }
+
+    public function testEmptyConfigSsh(): void
+    {
+        $config = new GlobalConfig();
+        $config->addAppInstance('production', 'serverEu', '/var/www/prod');
+        $config->addAppInstance('local');
+        $executor = $this->createMock(CommandExecutor::class);
+        $executor->method('passthru')->willReturn(0);
+        $controller = new Controller($executor);
+        $command = $controller->ssh(new BufferedOutput(), $config, (new SshOptions('production')));
+        $this->assertEquals(0, $command);
+    }
+
+    public function testMysqlCommandDryRun(): void
+    {
+        $config = new GlobalConfig();
+        $config->addAppInstance('local');
+        $config->addDatabase('test', 'web', 'user', '#!;~"', '99.88.77.123');
+        $controller = new Controller();
+        $options = new MysqlOptions();
+        $options->setDryRun(true)
+            ->setDatabase('test')
+            ->setAppInstance('local');
+        $output = new BufferedOutput();
+        $controller->mysql($output, $config, $options);
+        $this->assertEquals(trim('mysql·--user=\'user\'·--password=\'#!;~"\'·--host=99.88.77.123·--port=3306·\'web\''), trim($output->fetch()));
     }
 
     public function testFilesystemAndDatabase(): void

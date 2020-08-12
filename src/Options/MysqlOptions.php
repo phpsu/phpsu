@@ -1,0 +1,73 @@
+<?php
+
+declare(strict_types=1);
+
+namespace PHPSu\Options;
+
+use PHPSu\ShellCommandBuilder\ShellInterface;
+
+/**
+ * @internal
+ * Class MysqlOptions
+ * @package PHPSu\Options
+ */
+final class MysqlOptions
+{
+    /** @var string */
+    private $appInstance = 'local';
+    /** @var null|string */
+    private $command;
+    /** @var null|string */
+    private $database;
+    /** @var bool */
+    private $dryRun = false;
+
+    public function __construct()
+    {
+        $this->command = null;
+    }
+
+    public function getAppInstance(): string
+    {
+        return $this->appInstance;
+    }
+
+    public function setAppInstance(string $appInstance): self
+    {
+        $this->appInstance = $appInstance;
+        return $this;
+    }
+
+    public function getCommand(): ?string
+    {
+        return $this->command;
+    }
+
+    public function setCommand(?string $command): self
+    {
+        $this->command = $command;
+        return $this;
+    }
+
+    public function isDryRun(): bool
+    {
+        return $this->dryRun;
+    }
+
+    public function setDryRun(bool $dryRun): self
+    {
+        $this->dryRun = $dryRun;
+        return $this;
+    }
+
+    public function getDatabase(): ?string
+    {
+        return $this->database;
+    }
+
+    public function setDatabase(?string $database): self
+    {
+        $this->database = $database;
+        return $this;
+    }
+}
