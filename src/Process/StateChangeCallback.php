@@ -25,7 +25,12 @@ final class StateChangeCallback
         $this->output = $output;
     }
 
-
+    /**
+     * @param int $processId
+     * @param Process<mixed> $process
+     * @param string $newState
+     * @param ProcessManager $manager
+     */
     public function __invoke(int $processId, Process $process, string $newState, ProcessManager $manager): void
     {
         if ($this->output instanceof ConsoleSectionOutput) {
@@ -45,7 +50,11 @@ final class StateChangeCallback
         $sectionOutput->overwrite(implode(PHP_EOL, $lines));
     }
 
-
+    /**
+     * @param int $processId
+     * @param Process<mixed> $process
+     * @param string $state
+     */
     private function normalCall(int $processId, Process $process, string $state): void
     {
         $this->output->writeln($this->getMessage($processId, $state, $process->getName()));

@@ -71,6 +71,10 @@ final class ProcessManager
         return $this;
     }
 
+    /**
+     * @param Process<mixed> $process
+     * @return $this
+     */
     public function addProcess(Process $process): ProcessManager
     {
         $this->processes[] = $process;
@@ -110,6 +114,11 @@ final class ProcessManager
         return $this;
     }
 
+    /**
+     * @param Process<mixed> $process
+     * @param string $type
+     * @param string $data
+     */
     private function notifyOutputCallbacks(Process $process, string $type, string $data): void
     {
         foreach ($this->outputCallbacks as $callback) {
@@ -117,6 +126,12 @@ final class ProcessManager
         }
     }
 
+    /**
+     * @param int $processId
+     * @param Process<mixed> $process
+     * @param string $newState
+     * @param ProcessManager $manager
+     */
     private function notifyStateChangeCallbacks(int $processId, Process $process, string $newState, ProcessManager $manager): void
     {
         foreach ($this->stateChangeCallbacks as $callback) {

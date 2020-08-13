@@ -27,6 +27,10 @@ final class Process extends \Symfony\Component\Process\Process
         return $this->name;
     }
 
+    /**
+     * @param string $name
+     * @return self<mixed>
+     */
     public function setName(string $name): Process
     {
         $this->name = $name;

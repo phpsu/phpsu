@@ -64,7 +64,7 @@ class CommandExecutor
 
     /**
      * @param ShellInterface $command
-     * @return Process
+     * @return Process<mixed>
      * @throws ShellBuilderException
      */
     public function runCommand(ShellInterface $command): Process

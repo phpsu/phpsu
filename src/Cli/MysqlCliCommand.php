@@ -70,6 +70,7 @@ final class MysqlCliCommand extends AbstractCliCommand
     {
         $instance = $this->getArgument($input, 'instance');
         $mysqlCommand = $this->getArgument($input, 'mysqlcommand') ?: '';
+        /** @var string|null $database */
         $database = $this->getOption($input, 'database') ?: null;
         assert(is_string($instance) && is_string($mysqlCommand));
         return $this->controller->mysql(

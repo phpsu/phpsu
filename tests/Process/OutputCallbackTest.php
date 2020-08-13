@@ -40,7 +40,7 @@ final class OutputCallbackTest extends TestCase
 
     public function testProcessColorErrorGetErrorOutput(): void
     {
-        $output = new class(OutputInterface::VERBOSITY_NORMAL, true) extends BufferedOutput implements ConsoleOutputInterface
+        $output = new class (OutputInterface::VERBOSITY_NORMAL, true) extends BufferedOutput implements ConsoleOutputInterface
         {
             public function getErrorOutput(): OutputInterface
             {

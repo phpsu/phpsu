@@ -22,6 +22,7 @@ final class Controller implements ControllerInterface
 {
     public const PHPSU_ROOT_PATH = __DIR__ . '/../';
 
+    /** @var CommandExecutor */
     private $executor;
 
     public function __construct(CommandExecutor $commandExecutor = null)
@@ -33,7 +34,7 @@ final class Controller implements ControllerInterface
     {
         $sshCommand = (new CommandGenerator($config, $output->getVerbosity()))->sshCommand($options->getDestination(), $options->getCurrentHost(), $options->getCommand());
         if ($options->isDryRun()) {
-            $output->writeln($sshCommand);
+            $output->writeln((string)$sshCommand);
             return 0;
         }
         return $this->executor->passthru($sshCommand, $output);
@@ -54,7 +55,7 @@ final class Controller implements ControllerInterface
             $options->getCommand()
         );
         if ($options->isDryRun()) {
-            $output->writeln($mysqlCommand);
+            $output->writeln((string)$mysqlCommand);
             return 0;
         }
         return $this->executor->passthru($mysqlCommand, $output);

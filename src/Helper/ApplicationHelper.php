@@ -50,7 +50,7 @@ final class ApplicationHelper
         if (!file_exists($gitPath)) {
             return null;
         }
-        $file = file_get_contents($gitPath . '/HEAD');
+        $file = file_get_contents($gitPath . '/HEAD') ?: '';
         return trim(str_replace('ref: refs/heads/', '', $file));
     }
 }
