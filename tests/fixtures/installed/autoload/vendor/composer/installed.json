@@ -1,0 +1,8 @@
+{
+  "packages": [
+    {
+      "name": "phpsu/phpsu",
+      "version": "1.2.3"
+    }
+  ]
+}

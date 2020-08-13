@@ -12,16 +12,17 @@ use SplFileObject;
  */
 final class TempSshConfigFile extends SplFileObject
 {
+    private static $fileName = '.phpsu/config/ssh_config';
+
     public function __construct()
     {
-        $fileName = '.phpsu/config/ssh_config';
-        $directory = dirname($fileName);
-        if (!file_exists($directory) && (!mkdir($directory, 0777, true) && !is_dir($directory))) {
+        $directory = dirname(self::$fileName);
+        if (!file_exists($directory) && (!@mkdir($directory, 0777, true) && !is_dir($directory))) {
             throw new Exception(sprintf('Directory "%s" was not created', $directory));
         }
-        if (!file_exists($fileName)) {
-            touch($fileName);
+        if (!file_exists(self::$fileName)) {
+            touch(self::$fileName);
         }
-        parent::__construct($fileName, 'w+');
+        parent::__construct(self::$fileName, 'w+');
     }
 }

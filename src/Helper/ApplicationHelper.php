@@ -15,10 +15,13 @@ use function strpos;
  */
 final class ApplicationHelper
 {
-
+    /**
+     * @return string
+     */
     public function getCurrentPHPSUVersion(): string
     {
-        return $this->getPhpSuVersionFromGlobals() ?? $this->getPhpSuVersionFromVendor() ?? $this->getPhpSuVersionFromGitFolder() ?? 'development';
+        $gitPath = Controller::PHPSU_ROOT_PATH . '/.git/';
+        return $this->getPhpSuVersionFromGlobals() ?? $this->getPhpSuVersionFromVendor() ?? $this->getPhpSuVersionFromGitFolder($gitPath) ?? 'development';
     }
 
     /**
@@ -39,17 +42,15 @@ final class ApplicationHelper
     }
 
     /**
+     * @param string $gitPath
      * @return string|null
      */
-    private function getPhpSuVersionFromGitFolder(): ?string
+    private function getPhpSuVersionFromGitFolder(string $gitPath): ?string
     {
-        if (!file_exists(Controller::PHPSU_ROOT_PATH . '/.git/')) {
+        if (!file_exists($gitPath)) {
             return null;
         }
-        $file = file_get_contents(Controller::PHPSU_ROOT_PATH . '/.git/HEAD');
-        if ($file === false) {
-            throw new EnvironmentException('The git folder is available but the HEAD file does not seem to be readable');
-        }
-        return str_replace('ref: refs/heads/', '', $file);
+        $file = file_get_contents($gitPath . '/HEAD');
+        return trim(str_replace('ref: refs/heads/', '', $file));
     }
 }

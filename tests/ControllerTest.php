@@ -65,7 +65,26 @@ final class ControllerTest extends TestCase
             ->setAppInstance('local');
         $output = new BufferedOutput();
         $controller->mysql($output, $config, $options);
-        $this->assertEquals(trim('mysql·--user=\'user\'·--password=\'#!;~"\'·--host=99.88.77.123·--port=3306·\'web\''), trim($output->fetch()));
+        $fetch = trim($output->fetch());
+        static::assertEquals('mysql --user=\'user\' --password=\'#!;~"\' --host=99.88.77.123 --port=3306 \'web\'', $fetch);
+    }
+
+    public function testMysqlCommand(): void
+    {
+        $config = new GlobalConfig();
+        $config->addSshConnection('test', 'ssh://url@bla.com');
+        $instance = $config->addAppInstance('production', 'test');
+        $instance->addDatabase('test', 'web', 'user', '#!;~"', '99.88.77.123');
+        $instance->addDatabase('test2', 'web', 'user', '#!;~"', '99.88.77.123');
+        $executor = $this->createMock(CommandExecutor::class);
+        $executor->method('passthru')->willReturn(11);
+        $controller = new Controller($executor);
+        $options = new MysqlOptions();
+        $options
+            ->setDatabase('test2')
+            ->setCommand('SELECT * FROM web')
+            ->setAppInstance('production');
+        static::assertEquals(11, $controller->mysql(new BufferedOutput(), $config, $options));
     }
 
     public function testFilesystemAndDatabase(): void

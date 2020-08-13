@@ -45,13 +45,4 @@ final class Process extends \Symfony\Component\Process\Process
         }
         throw new LogicException('This should never happen');
     }
-
-    /**
-     * @param int $flags A bit field of Process::ITER_* flags
-     * @return Generator<string>
-     */
-    public function getIterator($flags = 0): Generator
-    {
-        return parent::getIterator($flags);
-    }
 }

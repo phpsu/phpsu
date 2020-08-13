@@ -101,9 +101,6 @@ final class EnvironmentUtility
     public function getInstalledPackageVersion(string $packageName): ?string
     {
         $contents = file_get_contents($this->spotVendorPath() . '/composer/installed.json');
-        if ($contents === false) {
-            return null;
-        }
         $activeInstallations = json_decode($contents, false);
         if (json_last_error() !== JSON_ERROR_NONE) {
             return null;

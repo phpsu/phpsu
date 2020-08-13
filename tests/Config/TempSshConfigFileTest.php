@@ -26,6 +26,22 @@ final class TempSshConfigFileTest extends TestCase
         $this->assertFileExists(__DIR__ . '/../fixtures/.phpsu/config/ssh_config');
     }
 
+    public function testConstructDifferentFolder(): void
+    {
+        $reflection = new \ReflectionClass(TempSshConfigFile::class);
+        $property = $reflection->getProperty('fileName');
+        $property->setAccessible(true);
+        $oldValue = $property->getValue();
+        $property->setValue('/root/.phpsu/ssh_config');
+        static::expectException(\Exception::class);
+        static::expectExceptionMessage(sprintf('Directory "%s" was not created', '/root/.phpsu'));
+        try {
+            new TempSshConfigFile();
+        } finally {
+            $property->setValue($oldValue);
+        }
+    }
+
     public function tearDown(): void
     {
         exec(sprintf('rm -rf %s', escapeshellarg(__DIR__ . '/../fixtures/.phpsu/')));

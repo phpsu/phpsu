@@ -8,6 +8,8 @@ use PHPSu\Process\OutputCallback;
 use PHPSu\Process\Process;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class OutputCallbackTest extends TestCase
@@ -31,6 +33,30 @@ final class OutputCallbackTest extends TestCase
     public function testProcessColorError(): void
     {
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
+        $callback = new OutputCallback($output);
+        $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::ERR, 'message');
+        $this->assertSame("\e[31mtestName:\e[39m message\n", $output->fetch());
+    }
+
+    public function testProcessColorErrorGetErrorOutput(): void
+    {
+        $output = new class(OutputInterface::VERBOSITY_NORMAL, true) extends BufferedOutput implements ConsoleOutputInterface
+        {
+            public function getErrorOutput(): OutputInterface
+            {
+                return $this;
+            }
+
+            public function setErrorOutput(OutputInterface $error): void
+            {
+                throw new \Exception('not implemented');
+            }
+
+            public function section(): ConsoleSectionOutput
+            {
+                throw new \Exception('not implemented');
+            }
+        };
         $callback = new OutputCallback($output);
         $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::ERR, 'message');
         $this->assertSame("\e[31mtestName:\e[39m message\n", $output->fetch());
