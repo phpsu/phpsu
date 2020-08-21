@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Interface ControllerInterface
  * @package PHPSu
+ * @internal
  */
 interface ControllerInterface
 {
