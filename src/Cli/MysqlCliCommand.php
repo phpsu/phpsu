@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace PHPSu\Cli;
 
 use Exception;
-use PHPSu\Config\AppInstance;
 use PHPSu\Helper\StringHelper;
 use PHPSu\Options\MysqlOptions;
-use PHPSu\Options\SshOptions;
-use PHPSu\ShellCommandBuilder\ShellBuilder;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -57,12 +54,24 @@ final class MysqlCliCommand extends AbstractCliCommand
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $default = $input->hasArgument('instance') ? $this->getArgument($input, 'instance') : '';
-        if (!in_array($default, $this->getAppInstancesWithHost(), true)) {
-            $question = new ChoiceQuestion('Please select one of the AppInstances', $this->getAppInstancesWithHost());
+        $appInstancesWithHost = $this->getAppInstancesWithHost();
+        if (!in_array($default, $appInstancesWithHost, true)) {
+            $question = new ChoiceQuestion('Please select one of the AppInstances', $appInstancesWithHost);
             $question->setErrorMessage('AppInstance %s not found in Config.');
             $destination = $this->getHelper('question')->ask($input, $output, $question);
             $output->writeln('You selected: ' . $destination);
             $input->setArgument('instance', $destination);
+        }
+        $default = $input->hasOption('database') ? $this->getOption($input, 'database') : '';
+        $instance = $this->getArgument($input, 'instance');
+        assert(is_string($instance));
+        $databases = $this->getDatabasesForAppInstance($instance);
+        if (count($databases) > 1 && !in_array($default, $databases, true)) {
+            $question = new ChoiceQuestion('Please select one of the Databases', $databases);
+            $question->setErrorMessage('Database %s not found in Config.');
+            $database = $this->getHelper('question')->ask($input, $output, $question);
+            $output->writeln('You selected: ' . $database);
+            $input->setOption('database', $database);
         }
     }
 
@@ -95,5 +104,14 @@ final class MysqlCliCommand extends AbstractCliCommand
             $this->instances = $this->configurationLoader->getConfig()->getAppInstanceNames();
         }
         return $this->instances;
+    }
+
+    /**
+     * @param string $appInstance
+     * @return string[]
+     */
+    private function getDatabasesForAppInstance(string $appInstance): array
+    {
+        return $this->configurationLoader->getConfig()->getAppInstance($appInstance)->getDatabaseNames();
     }
 }

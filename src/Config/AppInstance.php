@@ -101,6 +101,14 @@ final class AppInstance
     }
 
     /**
+     * @return string[]
+     */
+    public function getDatabaseNames(): array
+    {
+        return $this->databases->getDatabaseNames();
+    }
+
+    /**
      * @return CompressionInterface[]
      */
     public function getCompressions(): array
