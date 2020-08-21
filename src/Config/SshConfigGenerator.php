@@ -47,9 +47,6 @@ final class SshConfigGenerator
             if ($host === '') {
                 return [[(clone $possibleConnection)->setFrom([])]];
             }
-            if ($host === $source) {
-                return [[(clone $possibleConnection)->setFrom([$host])]];
-            }
             $possibleSubConnections = $this->findAllPaths($source, $host, $sshConnections);
             foreach ($possibleSubConnections as $possibleSubConnection) {
                 $possibleSubConnection[] = (clone $possibleConnection)->setFrom([$host]);
