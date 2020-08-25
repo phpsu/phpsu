@@ -53,7 +53,7 @@ final class MysqlCliCommandTest extends TestCase
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
-    public function testMysqlCliCommandDryRunInteractive(): void
+    public function testMysqlCliCommandDryRunInteractiveForInstance(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
 
@@ -82,6 +82,43 @@ final class MysqlCliCommandTest extends TestCase
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString('Please select one of the AppInstances', $output);
         $this->assertStringContainsString('You selected: production', $output);
+        $this->assertStringContainsString((string)$compareWith, $output);
+        $this->assertSame(0, $commandTester->getStatusCode());
+    }
+
+    public function testMysqlCliCommandDryRunInteractiveForDatabase(): void
+    {
+        $config = $this->createConfig();
+        $config->getAppInstance('production')
+            ->addDatabase('beta', 'testtest', 'root', 'pass', 'a');
+        $mockConfigurationLoader = $this->createMockConfigurationLoader($config);
+
+        $command = new MysqlCliCommand($mockConfigurationLoader, new Controller());
+        $command->setHelperSet(new HelperSet([new QuestionHelper()]));
+
+        $commandTester = new CommandTester($command);
+        $commandTester->setInputs(['test']);
+        $commandTester->execute([
+            'instance' => 'production',
+            '--dry-run' => true,
+        ]);
+
+        $compareWith = ShellBuilder::command('ssh')
+            ->addShortOption('t')
+            ->addShortOption('F', '.phpsu/config/ssh_config')
+            ->addArgument('us')
+            ->addArgument(
+                ShellBuilder::command('mysql')
+                    ->addOption('user', 'n', true, true)
+                    ->addOption('password', 'c', true, true)
+                    ->addOption('host', 'd', false, true)
+                    ->addOption('port', '3306', false, true)
+                    ->addArgument('a')
+            );
+
+        $output = $commandTester->getDisplay();
+        $this->assertStringContainsString('Please select one of the Databases', $output);
+        $this->assertStringContainsString('You selected: test', $output);
         $this->assertStringContainsString((string)$compareWith, $output);
         $this->assertSame(0, $commandTester->getStatusCode());
     }
