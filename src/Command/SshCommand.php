@@ -150,6 +150,19 @@ final class SshCommand
                 // keep it interactive if no command is specified
                 // todo: ShellBuilder needs to have a hasCommands method
                 $command = ShellBuilder::command('bash')->addOption('login');
+//                Might be the solution for bashrc issue
+//                $command = ShellBuilder::command('bash')
+//                    ->addShortOption(
+//                        'c', ShellBuilder::new()
+//                        ->createCommand('cd')
+//                        ->addArgument($this->getPath())
+//                        ->addToBuilder()
+//                        ->createCommand('exec')
+//                        ->addArgument('bash')
+//                        ->addOption('login')
+//                        ->addShortOption('i')
+//                        ->addToBuilder()
+//                    );
             }
             $this->shellCommand->addShortOption(
                 't',

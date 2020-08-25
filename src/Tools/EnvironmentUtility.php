@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 namespace PHPSu\Tools;
 
+use PHPSu\Command\SshCommand;
+use PHPSu\Config\AppInstance;
+use PHPSu\Config\GlobalConfig;
+use PHPSu\Config\SshConfig;
+use PHPSu\Config\TempSshConfigFile;
 use PHPSu\Controller;
 use PHPSu\Exceptions\CommandExecutionException;
 use PHPSu\Process\CommandExecutor;
+use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
+use PHPSu\ShellCommandBuilder\ShellInterface;
 
 /**
  * @internal
@@ -18,11 +25,18 @@ final class EnvironmentUtility
     private $commandExecutor;
     /** @var string */
     private $phpsuRootPath;
+    /** @var GlobalConfig */
+    private $globalConfig;
 
     public function __construct(CommandExecutor $executor = null)
     {
         $this->commandExecutor = $executor ?? new CommandExecutor();
         $this->phpsuRootPath = Controller::PHPSU_ROOT_PATH;
+    }
+
+    public function setGlobalConfig(GlobalConfig $config): void
+    {
+        $this->globalConfig = $config;
     }
 
     public function isRsyncInstalled(): bool
@@ -40,10 +54,37 @@ final class EnvironmentUtility
         return $this->isCommandInstalled('ssh');
     }
 
+    /**
+     * @param string $command
+     * @return bool
+     * @throws ShellBuilderException
+     */
     public function isCommandInstalled(string $command): bool
     {
         $output = $this->commandExecutor->runCommand(ShellBuilder::command($command));
         if ($output->getExitCode() === 127) {
+            return false;
+        }
+        return stripos(trim($output->getErrorOutput()), 'not found') === false;
+    }
+
+    /**
+     * @param AppInstance $instance
+     * @param ShellInterface $command
+     * @return bool
+     * @throws ShellBuilderException
+     */
+    public function isInstalledOnInstance(AppInstance $instance, ShellInterface $command): bool
+    {
+        $shell = new SshCommand();
+        $shell->setCommand(ShellBuilder::command('sh')->addShortOption('c', $command));
+        $shell->setInto($instance->getHost());
+        $sshConfig = SshConfig::fromGlobal($this->globalConfig, $instance->getHost());
+        $shell->setSshConfig($sshConfig);
+        $result = $shell->generate(ShellBuilder::new());
+        $output = $this->commandExecutor->runCommand($result);
+        var_dump($output->getExitCodeText());
+        if ($output->getExitCode() === 127 || $output->getExitCode() === 255) {
             return false;
         }
         return stripos(trim($output->getErrorOutput()), 'not found') === false;
@@ -73,6 +114,8 @@ final class EnvironmentUtility
 
     /**
      * @return array<string, string>
+     * @throws CommandExecutionException
+     * @throws ShellBuilderException
      */
     public function getMysqlDumpVersion(): array
     {

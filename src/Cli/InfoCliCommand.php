@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Cli;
 
+use PHPSu\ShellCommandBuilder\ShellBuilder;
 use PHPSu\Tools\EnvironmentUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -37,6 +38,12 @@ final class InfoCliCommand extends AbstractCliCommand
     {
         $environmentUtility = new EnvironmentUtility();
         $output->writeln('<info>Locally installed</info>');
+        $config = $this->configurationLoader->getConfig();
+        $environmentUtility->setGlobalConfig($config);
+        var_dump($environmentUtility->isInstalledOnInstance(
+            $this->configurationLoader->getConfig()->getAppInstance('testing'),
+            ShellBuilder::command('rsync')->addShortOption('V')
+        ));
         $symfonyStyle->table(
             ['Dependency', 'Installed', 'Version'],
             [
