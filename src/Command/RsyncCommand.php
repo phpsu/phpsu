@@ -214,6 +214,7 @@ final class RsyncCommand implements CommandInterface, GroupedCommandInterface
         $from = $fromHostPart . $this->getSourcePath();
         $to = $toHostPart . $this->getToPath();
         $command->addArgument($from)->addArgument($to);
+        $command = DockerCommandHelper::wrapCommand(new FileSystem(), $command, false);
 
         if (!$hostsDifferentiate) {
             $sshCommand = new SshCommand();

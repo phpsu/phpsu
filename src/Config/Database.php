@@ -9,8 +9,10 @@ use function array_merge;
 /**
  * @api
  */
-final class Database
+final class Database implements ConfigElement
 {
+    use AddDockerTrait;
+
     /** @var string */
     private $name;
 
@@ -51,6 +53,13 @@ final class Database
 
     public function getConnectionDetails(): DatabaseConnectionDetails
     {
+        if ($this->isDockerEnabled() && $this->getContainer() === '') {
+            $this->setContainer($this->connectionDetails->getHost());
+            $this->connectionDetails->setHost('127.0.0.1');
+        }
+        if ($this->isDockerEnabled() && $this->connectionDetails->getPort() !== 3306) {
+            $this->connectionDetails->setPort(3306);
+        }
         return $this->connectionDetails;
     }
 

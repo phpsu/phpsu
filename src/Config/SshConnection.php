@@ -9,7 +9,7 @@ use InvalidArgumentException;
 /**
  * @api
  */
-final class SshConnection
+final class SshConnection implements ConfigElement
 {
     /** @var string */
     private $host;

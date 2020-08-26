@@ -9,7 +9,7 @@ use function array_merge;
 /**
  * @api
  */
-final class FileSystem
+final class FileSystem implements ConfigElement
 {
     /** @var string */
     private $name;

@@ -87,6 +87,22 @@ final class ControllerTest extends TestCase
         static::assertEquals(11, $controller->mysql(new BufferedOutput(), $config, $options));
     }
 
+    public function testMysqlCommandInDockerDryRun(): void
+    {
+        $config = new GlobalConfig();
+        $instance = $config->addAppInstance('local', '');
+        $instance->addDatabase('test', 'web', 'user', '#!;~"', 'web')->executeInDocker(true);
+        $options = new MysqlOptions();
+        $options
+            ->setDatabase('test')
+            ->setAppInstance('local')
+            ->setDryRun(true);
+        $output = new BufferedOutput();
+        (new Controller())->mysql($output, $config, $options);
+        $fetch = trim($output->fetch());
+        static::assertEquals('docker \'exec\' -it \'web\' mysql --user=\'user\' --password=\'#!;~"\' --host=127.0.0.1 --port=3306 \'web\'', $fetch);
+    }
+
     public function testFilesystemAndDatabase(): void
     {
         $config = new GlobalConfig();
@@ -157,6 +173,26 @@ final class ControllerTest extends TestCase
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
+    }
+
+    public function testExcludeShouldBePresentInDatabaseCommandWithDockerEnabled(): void
+    {
+        $config = new GlobalConfig();
+        $config->addDatabaseByUrl('database', 'mysql://test:aaaaaaaa@127.0.0.1/testdb')
+            ->addExclude('table1')
+            ->setContainer('test')
+            ->executeInDocker(true);
+        $config->addSshConnection('projectEu', 'ssh://project@project.com');
+        $config->addAppInstance('testing', 'projectEu', '/srv/www/project/test.project');
+        $config->addAppInstance('local', '', './testInstance')
+            ->addDatabaseByUrl('database', 'mysql://root:root@127.0.0.1/test1234')
+            ->addExclude('table1');
+
+        $output = new BufferedOutput();
+        $controller = new Controller();
+        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
+        $lines = "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'TBLIST=`docker '\''exec'\'' -i '\''test'\'' mysql --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' -AN -e \"SET group_concat_max_len = 51200; SELECT GROUP_CONCAT(table_name separator '\'' '\'') FROM information_schema.tables WHERE table_schema='\''testdb'\'' AND table_name NOT IN('\''table1'\'')\"` && docker '\''exec'\'' -i -e '\''TBLIST='\''\'\'''\''\${TBLIST}'\''\'\'''\'''\'' '\''test'\'' mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' \${TBLIST} | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql --host='127.0.0.1' --user='root' --password='root'";
+        static::assertSame($lines, trim(explode("\n", $output->fetch())[1]));
     }
 
     public function testAllOptionShouldOverwriteExcludes(): void

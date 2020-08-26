@@ -8,6 +8,7 @@ use PHPSu\Command\DatabaseCommand;
 use PHPSu\Command\RsyncCommand;
 use PHPSu\Command\SshCommand;
 use PHPSu\Config\AppInstance;
+use PHPSu\Config\Database;
 use PHPSu\Config\DatabaseConnectionDetails;
 use PHPSu\Config\FileSystem;
 use PHPSu\Config\GlobalConfig;
@@ -39,8 +40,14 @@ final class GlobalConfigTest extends TestCase
 
         $rsyncCommands = DatabaseCommand::fromGlobal($global, 'production', 'testing', 'local', false, OutputInterface::VERBOSITY_NORMAL);
         $connectionDetails = DatabaseConnectionDetails::fromUrlString('mysql://user:pw@host:3307/database');
+        $db = (new Database())->setConnectionDetails($connectionDetails)->setName('app');
         $this->assertEquals([
-            (new DatabaseCommand())->setName('database:app')->setFromHost('serverEu')->setFromConnectionDetails($connectionDetails)->setToHost('serverEu')->setToConnectionDetails($connectionDetails),
+            (new DatabaseCommand())
+                ->setName('database:app')
+                ->setFromHost('serverEu')
+                ->setFromDatabase($db)
+                ->setToHost('serverEu')
+                ->setToDatabase($db),
         ], $rsyncCommands);
     }
 
