@@ -31,3 +31,40 @@ $globalConfig->addAppInstance('local');
 With this configuration the database `appDb` can be synchronised from **production** to **local** as all necessary information is present.
 This will sync the `different_database_to_select` from `hostA` to `database_to_select` from `"local"` connection `user:password@host`. The database connection of `hostA` is has the configuration string `differentUser:differentPassword@host` while "local" uses `user:password@host` to connect.
  
+### Docker support:
+
+Enabling docker support for any database connection is done like this:  
+Let's look at this example:
+
+````php
+<?php
+declare(strict_types=1);
+
+$globalConfig = new PHPSu\Config\GlobalConfig;
+$globalConfig
+    ->addDatabaseByUrl('appDb', 'mysql://user:password@container/database_to_select')
+    ->executeInDocker(true);
+$globalConfig->addAppInstance('local');
+````
+
+The `executeInDocker` automatically activates the docker support for that database connection.  
+The `host` is used as the container name. Port-Configurations are resetted.
+
+You also have the option to specify the container-name yourself by using `setContainer`.  
+In addition to that, to enable executing docker-commands with `sudo`, you can specify that as well. 
+
+A full example: 
+````php
+
+<?php
+declare(strict_types=1);
+
+$globalConfig = new PHPSu\Config\GlobalConfig;
+$globalConfig
+    ->addDatabaseByUrl('appDb', 'mysql://user:password@container/database_to_select')
+    ->executeInDocker(true)
+    ->enableSudoForDocker(true)
+    ->setContainer('mysql-container')
+;
+$globalConfig->addAppInstance('local');
+````
