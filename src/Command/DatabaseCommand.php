@@ -15,6 +15,7 @@ use PHPSu\Helper\StringHelper;
 use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
 use PHPSu\ShellCommandBuilder\ShellCommand;
+use PHPSu\ShellCommandBuilder\ShellInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function get_class;
@@ -332,6 +333,7 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
                     ->addToBuilder()
                     ->and('cat')
             );
+        $removeDefinerCommand = $this->getRemoveDefinerCommand();
         $compressCmd = $this->getCompression()->getCompressCommand();
         $unCompressCmd = $this->getCompression()->getUnCompressCommand();
         $importCommand = $this->addArgumentsToShellCommand(
@@ -339,19 +341,20 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
             $to,
             true
         );
+        if ($this->getFromDatabase()->shouldDefinerBeRemoved()) {
+            $dumpBuilder->pipe($removeDefinerCommand);
+        }
+        if ($compressCmd) {
+            $dumpBuilder->pipe($compressCmd);
+        }
         if ($hostsDifferentiate) {
             if ($this->getFromHost() !== '') {
                 $sshCommand = new SshCommand();
                 $sshCommand->setSshConfig($this->getSshConfig());
                 $sshCommand->setInto($this->getFromHost());
                 $sshCommand->setVerbosity($this->getVerbosity());
-                if ($compressCmd) {
-                    $dumpBuilder->pipe($compressCmd);
-                }
                 $sshCommand->setCommand($dumpBuilder);
                 $sshCommand->generate($shellBuilder);
-            } elseif ($compressCmd) {
-                $dumpBuilder->pipe($compressCmd);
             }
             $importBuilder = ShellBuilder::new();
             $importCommand = DockerCommandHelper::wrapCommand($this->getToDatabase(), $importCommand, false);
@@ -383,6 +386,15 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
         $sshCommand->setVerbosity($this->getVerbosity());
         $sshCommand->setCommand($dumpBuilder->pipe($importCommand));
         return $sshCommand->generate($shellBuilder);
+    }
+
+    private function getRemoveDefinerCommand(): ShellInterface
+    {
+        return ShellBuilder::command('sed')
+            ->addShortOption(
+                'e',
+                's/DEFINER[ ]*=[ ]*[^*]*\*/\*/; s/DEFINER[ ]*=[ ]*[^*]*PROCEDURE/PROCEDURE/; s/DEFINER[ ]*=[ ]*[^*]*FUNCTION/FUNCTION/'
+            );
     }
 
     private function getDatabaseCreateStatement(string $targetDatabase): string

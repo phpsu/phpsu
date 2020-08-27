@@ -21,6 +21,8 @@ final class Database implements ConfigElement
 
     /** @var string[] */
     private $excludes = [];
+    /** @var bool */
+    private $noDefiner = false;
 
     public function getName(): string
     {
@@ -91,6 +93,17 @@ final class Database implements ConfigElement
     public function addExclude(string $exclude): Database
     {
         $this->excludes[] = $exclude;
+        return $this;
+    }
+
+    public function shouldDefinerBeRemoved(): bool
+    {
+        return $this->noDefiner;
+    }
+
+    public function setRemoveDefinerFromDump(bool $removeIt): Database
+    {
+        $this->noDefiner = $removeIt;
         return $this;
     }
 }
