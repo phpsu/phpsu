@@ -16,7 +16,7 @@ final class DockerCommandHelper
      * @param ConfigElement $configElement
      * @param ShellInterface $command
      * @param bool $enableInteractive
-     * @param array $variables sets environment variables directly to the docker command
+     * @param array<string, string> $variables sets environment variables directly to the docker command
      * @return ShellInterface
      * @throws ShellBuilderException
      */
