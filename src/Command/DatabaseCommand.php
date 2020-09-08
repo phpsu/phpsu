@@ -283,8 +283,8 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
                     $from,
                     true
                 )
-                ->addShortOption('AN')
-                ->addShortOption('e', sprintf('"%s"', $sqlPart), false),
+                    ->addShortOption('AN')
+                    ->addShortOption('e', sprintf('"%s"', $sqlPart), false),
                 false
             );
             $dbBuilder->addVariable(
@@ -341,12 +341,15 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
             $to,
             true
         );
-        if ($this->getFromDatabase()->shouldDefinerBeRemoved()) {
-            $dumpBuilder->pipe($removeDefinerCommand);
-        }
-        if ($compressCmd) {
-            $dumpBuilder->pipe($compressCmd);
-        }
+        $dumpBuilder->if(
+            $this->getFromDatabase()->shouldDefinerBeRemoved(),
+            static function (ShellBuilder $builder) use ($removeDefinerCommand) {
+                return $builder->pipe($removeDefinerCommand);
+            }
+        )
+            ->if(!empty($compressCmd), static function (ShellBuilder $builder) use ($compressCmd) {
+                return $builder->pipe($compressCmd);
+            });
         if ($hostsDifferentiate) {
             if ($this->getFromHost() !== '') {
                 $sshCommand = new SshCommand();
@@ -359,26 +362,33 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
             $importBuilder = ShellBuilder::new();
             $importCommand = DockerCommandHelper::wrapCommand($this->getToDatabase(), $importCommand, false);
             if ($this->getToHost() !== '') {
-                $sshCommand = new SshCommand();
-                $sshCommand->setSshConfig($this->getSshConfig());
-                $sshCommand->setInto($this->getToHost());
-                $sshCommand->setVerbosity($this->getVerbosity());
-                if ($unCompressCmd) {
-                    $importBuilder->add($unCompressCmd)->pipe($importCommand);
-                } else {
-                    $importBuilder->add($importCommand);
-                }
-                $sshCommand->setCommand($importBuilder);
-                $importBuilder = $sshCommand->generate(ShellBuilder::new());
+                $importBuilder = (new SshCommand())
+                    ->setSshConfig($this->getSshConfig())
+                    ->setInto($this->getToHost())
+                    ->setVerbosity($this->getVerbosity())
+                    ->setCommand(
+                        $importBuilder->if(
+                            !empty($unCompressCmd),
+                            static function (ShellBuilder $builder) use ($unCompressCmd, $importCommand) {
+                                return $builder->add($unCompressCmd)->pipe($importCommand);
+                            },
+                            static function (ShellBuilder $builder) use ($importCommand) {
+                                return $builder->add($importCommand);
+                            }
+                        )
+                    )
+                    ->generate(ShellBuilder::new());
             } elseif ($unCompressCmd) {
                 $importBuilder->add($unCompressCmd)->pipe($importCommand);
             } else {
                 $importBuilder->add($importCommand);
             }
-            if (empty($shellBuilder->__toArray())) {
-                $shellBuilder->add($dumpBuilder);
-            }
-            return $shellBuilder->pipe($importBuilder);
+            return $shellBuilder->if(
+                empty($shellBuilder->__toArray()),
+                static function (ShellBuilder $builder) use ($dumpBuilder) {
+                    return $builder->add($dumpBuilder);
+                }
+            )->pipe($importBuilder);
         }
         $sshCommand = new SshCommand();
         $sshCommand->setSshConfig($this->getSshConfig());
