@@ -37,6 +37,44 @@ final class DatabaseCommandTest extends TestCase
         );
     }
 
+    public function testDatabaseCommandWithoutDefinerInstructionsGenerate(): void
+    {
+        $sshConfig = new SshConfig();
+        $sshConfig->setFile(new SplTempFileObject());
+        $database = new DatabaseCommand();
+        $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
+        $fromConnection->setRemoveDefinerFromDump(true);
+        $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
+        $database->setSshConfig($sshConfig)
+            ->setFromDatabase($fromConnection)
+            ->setFromHost('hostc')
+            ->setToDatabase($toConnection)
+            ->setToHost('');
+        $this->assertSame(
+            "ssh -F 'php://temp' 'hostc' 'mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat) | sed -e '\''s/DEFINER[ ]*=[ ]*[^*]*\*/\*/; s/DEFINER[ ]*=[ ]*[^*]*PROCEDURE/PROCEDURE/; s/DEFINER[ ]*=[ ]*[^*]*FUNCTION/FUNCTION/'\''' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            (string)$database->generate(ShellBuilder::new())
+        );
+    }
+
+    public function testDatabaseCommandWithoutDefinerInstructionsLocallyGenerate(): void
+    {
+        $sshConfig = new SshConfig();
+        $sshConfig->setFile(new SplTempFileObject());
+        $database = new DatabaseCommand();
+        $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
+        $fromConnection->setRemoveDefinerFromDump(true);
+        $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
+        $database->setSshConfig($sshConfig)
+            ->setFromDatabase($fromConnection)
+            ->setFromHost('')
+            ->setToDatabase($toConnection)
+            ->setToHost('');
+        $this->assertSame(
+            "mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='database' --user='root' --password='root' 'sequelmovie' | (echo 'CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;' && cat) | sed -e 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/; s/DEFINER[ ]*=[ ]*[^*]*PROCEDURE/PROCEDURE/; s/DEFINER[ ]*=[ ]*[^*]*FUNCTION/FUNCTION/' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            (string)$database->generate(ShellBuilder::new())
+        );
+    }
+
     public function testDatabaseCommandGenerateWithDocker(): void
     {
         $sshConfig = new SshConfig();

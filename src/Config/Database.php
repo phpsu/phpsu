@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+use Exception;
+
 use function array_merge;
 
 /**
  * @api
  */
-final class Database implements ConfigElement
+final class Database implements DockerTraitSupportInterface
 {
     use AddDockerTrait;
 
@@ -21,6 +23,8 @@ final class Database implements ConfigElement
 
     /** @var string[] */
     private $excludes = [];
+    /** @var bool */
+    private $noDefiner = false;
 
     public function getName(): string
     {
@@ -44,6 +48,7 @@ final class Database implements ConfigElement
     /**
      * @param string $url
      * @return $this
+     * @throws Exception
      */
     public function setUrl(string $url): Database
     {
@@ -51,6 +56,10 @@ final class Database implements ConfigElement
         return $this;
     }
 
+    /**
+     * @return DatabaseConnectionDetails
+     * @throws Exception
+     */
     public function getConnectionDetails(): DatabaseConnectionDetails
     {
         if ($this->isDockerEnabled() && $this->getContainer() === '') {
@@ -91,6 +100,17 @@ final class Database implements ConfigElement
     public function addExclude(string $exclude): Database
     {
         $this->excludes[] = $exclude;
+        return $this;
+    }
+
+    public function shouldDefinerBeRemoved(): bool
+    {
+        return $this->noDefiner;
+    }
+
+    public function setRemoveDefinerFromDump(bool $removeIt): Database
+    {
+        $this->noDefiner = $removeIt;
         return $this;
     }
 }

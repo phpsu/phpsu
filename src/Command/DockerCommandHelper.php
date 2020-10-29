@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PHPSu\Command;
 
 use PHPSu\Config\ConfigElement;
+use PHPSu\Config\DockerTraitSupportInterface;
 use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
 use PHPSu\ShellCommandBuilder\ShellCommand;
@@ -22,23 +23,25 @@ final class DockerCommandHelper
      */
     public static function wrapCommand(ConfigElement $configElement, ShellInterface $command, bool $enableInteractive, array $variables = []): ShellInterface
     {
-        // is docker support enabled in configuration, uses method_exists because interfaces on traits is not allowed
-        if (method_exists($configElement, 'isDockerEnabled') && method_exists($configElement, 'getContainer')) {
+        // interfaces on traits would make this much less configuration
+        if ($configElement instanceof DockerTraitSupportInterface) {
             if (!$configElement->isDockerEnabled()) {
                 return $command;
             }
             $builder = ShellBuilder::new()
                 ->createCommand('docker')
                 ->addArgument('exec')
-                ->addShortOption($enableInteractive ? 'it' : 'i');
-            foreach ($variables as $key => $variable) {
-                $builder->addShortOption('e', sprintf('%s=%s', $key, escapeshellarg($variable)));
-            }
-            $builder
+                ->addShortOption($enableInteractive ? 'it' : 'i')
+                ->if(!empty($variables), static function (ShellCommand $command) use ($variables) {
+                    foreach ($variables as $key => $variable) {
+                        $command->addShortOption('e', sprintf('%s=%s', $key, escapeshellarg($variable)));
+                    }
+                    return $command;
+                })
                 ->addArgument($configElement->getContainer())
                 ->addArgument($command, false)
                 ->addToBuilder();
-            if (method_exists($configElement, 'useSudo') && $configElement->useSudo()) {
+            if ($configElement->useSudo()) {
                 return ShellBuilder::command('sudo')->addArgument($builder, false)->addToBuilder();
             }
             return $builder;
