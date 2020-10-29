@@ -27,6 +27,19 @@ final class ProcessManagerTest extends TestCase
         $this->assertSame('Testing List2' . PHP_EOL, $pList2->getOutput());
     }
 
+    public function testProcessGetState(): void
+    {
+        $processManager = new ProcessManager();
+        $pList1 = Process::fromShellCommandline('echo "Testing List1" && sleep 0.1')->setName('list1');
+        $processManager->addProcess($pList1);
+        $processManager->start();
+        $pid = $pList1->getPid();
+        // forcefully kill process
+        $pList1->stop(0, 15);
+        static::expectExceptionMessage('No Process found with id: ' . $pid);
+        $processManager->getState($pid);
+    }
+
     public function testRunWithError(): void
     {
         $this->expectException(Exception::class);

@@ -101,6 +101,16 @@ final class GlobalConfig
     }
 
     /**
+     * @param string $database
+     * @return Database
+     * @throws Exception
+     */
+    public function getDatabase(string $database): Database
+    {
+        return $this->databases->get($database);
+    }
+
+    /**
      * @return AppInstance[]
      */
     public function getAppInstances(): array

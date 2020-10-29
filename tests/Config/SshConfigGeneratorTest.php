@@ -37,8 +37,15 @@ final class SshConfigGeneratorTest extends TestCase
             [$toA, $toB, $toCFromB],
             [$toA, $toCFromA],
         ], $paths);
+        $paths = $sshConfigGenerator->findAllPaths('hosta', 'hostc', $sshConnections);
+        $this->assertEquals([
+            [$toB, $toCFromB],
+            [$toCFromA],
+        ], $paths);
         $path = $sshConfigGenerator->findShortestPath('local', 'hostc', $sshConnections);
         $this->assertEquals([$toA, $toCFromA], $path);
+        $path = $sshConfigGenerator->findShortestPath('hosta', 'hostc', $sshConnections);
+        $this->assertEquals([$toCFromA], $path);
     }
 
     public function testSshConfigGeneratorGenerate(): void

@@ -21,7 +21,11 @@ final class OutputCallback
         $this->output = $output;
     }
 
-
+    /**
+     * @param Process<mixed> $process
+     * @param string $type
+     * @param string $data
+     */
     public function __invoke(Process $process, string $type, string $data): void
     {
         $output = $this->output;

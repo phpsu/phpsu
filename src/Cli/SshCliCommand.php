@@ -32,9 +32,9 @@ final class SshCliCommand extends AbstractCliCommand
             ->setDescription('create SSH Connection')
             ->setHelp('Connect to AppInstance via SSH.')
             ->addOption('dry-run', 'd', InputOption::VALUE_NONE, 'Only show commands that would be run.')
-            ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'Only show commands that would be run.', 'local')
+            ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'The Source AppInstance.', 'local')
             ->addArgument('destination', InputArgument::REQUIRED, 'The Destination AppInstance.')
-            ->addArgument('commands', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'The Destination AppInstance.', []);
+            ->addArgument('commands', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'Run commands on remote ssh', []);
     }
 
 

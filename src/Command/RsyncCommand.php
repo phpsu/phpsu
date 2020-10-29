@@ -15,7 +15,7 @@ use PHPSu\ShellCommandBuilder\ShellBuilder;
 /**
  * @internal
  */
-final class RsyncCommand implements CommandInterface
+final class RsyncCommand implements CommandInterface, GroupedCommandInterface
 {
     /** @var string */
     private $name;
@@ -219,7 +219,8 @@ final class RsyncCommand implements CommandInterface
             $sshCommand = new SshCommand();
             $sshCommand->setSshConfig($this->getSshConfig());
             $sshCommand->setInto($this->getSourceHost());
-            return $sshCommand->generate($shellBuilder, $command);
+            $sshCommand->setCommand($command);
+            return $sshCommand->generate($shellBuilder);
         }
         return $shellBuilder->add($command);
     }

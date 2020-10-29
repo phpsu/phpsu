@@ -27,6 +27,10 @@ final class Process extends \Symfony\Component\Process\Process
         return $this->name;
     }
 
+    /**
+     * @param string $name
+     * @return self<mixed>
+     */
     public function setName(string $name): Process
     {
         $this->name = $name;
@@ -44,14 +48,5 @@ final class Process extends \Symfony\Component\Process\Process
                 return $this->getExitCode() === 0 ? self::STATE_SUCCEEDED : self::STATE_ERRORED;
         }
         throw new LogicException('This should never happen');
-    }
-
-    /**
-     * @param int $flags A bit field of Process::ITER_* flags
-     * @return Generator<string>
-     */
-    public function getIterator($flags = 0): Generator
-    {
-        return parent::getIterator($flags);
     }
 }

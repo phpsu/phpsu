@@ -9,6 +9,7 @@ use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Config\TempSshConfigFile;
 use PHPSu\Options\SyncOptions;
+use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
 use PHPSu\ShellCommandBuilder\ShellInterface;
 use SplFileObject;
@@ -48,14 +49,34 @@ final class CommandGenerator
         return $this;
     }
 
-    public function sshCommand(string $destination, string $currentHost, ?ShellInterface $command): string
+    public function sshCommand(string $destination, string $currentHost, ?ShellInterface $command): ShellInterface
     {
         $sshConfig = SshConfig::fromGlobal($this->globalConfig, $currentHost);
         $sshConfig->setFile($this->getFile());
         $sshCommand = SshCommand::fromGlobal($this->globalConfig, $destination, $currentHost, $this->verbosity);
         $sshCommand->setSshConfig($sshConfig);
         $sshConfig->writeConfig();
-        return (string)$sshCommand->generate(ShellBuilder::new(), $command);
+        $sshCommand->setCommand($command);
+        return $sshCommand->generate(ShellBuilder::new());
+    }
+
+    /**
+     * @param string $instance
+     * @param string|null $database
+     * @param string|null $command
+     * @return ShellInterface
+     * @throws ShellBuilderException
+     * @throws Exception
+     */
+    public function mysqlCommand(string $instance, ?string $database, ?string $command): ShellInterface
+    {
+        $sshConfig = SshConfig::fromGlobal($this->globalConfig, $instance);
+        $sshConfig->setFile($this->getFile());
+        $mysqlCommand = MysqlCommand::fromGlobal($this->globalConfig, $instance, $database, $this->verbosity);
+        $mysqlCommand->setCommand($command);
+        $mysqlCommand->setSshConfig($sshConfig);
+        $sshConfig->writeConfig();
+        return $mysqlCommand->generate();
     }
 
     /**

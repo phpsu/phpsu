@@ -40,4 +40,12 @@ final class Databases
         }
         return $this->databases[$name];
     }
+
+    /**
+     * @return string[]
+     */
+    public function getDatabaseNames(): array
+    {
+        return array_keys($this->databases);
+    }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PHPSu\Process;
 
 use PHPSu\ShellCommandBuilder\Definition\Pattern;
+use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
 use PHPSu\ShellCommandBuilder\ShellInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @internal
  */
-final class CommandExecutor
+class CommandExecutor
 {
     /**
      * @param string[] $commands
@@ -36,9 +37,15 @@ final class CommandExecutor
         $manager->mustRun();
     }
 
-    public function passthru(string $command, OutputInterface $output): int
+    /**
+     * @param ShellInterface|string $command
+     * @param OutputInterface $output
+     * @return int
+     */
+    public function passthru($command, OutputInterface $output): int
     {
-        $process = Process::fromShellCommandline($command, null, null, null, null);
+        $process = Process::fromShellCommandline((string)$command);
+        $process->setTimeout(null);
         $process->setTty($output->isDecorated());
 
         $errorOutput = $output;
@@ -55,9 +62,15 @@ final class CommandExecutor
         });
     }
 
+    /**
+     * @param ShellInterface $command
+     * @return Process<mixed>
+     * @throws ShellBuilderException
+     */
     public function runCommand(ShellInterface $command): Process
     {
         $process = new Process(Pattern::split((string)$command));
+        $process->setTimeout(null);
         $process->run();
         return $process;
     }

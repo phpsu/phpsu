@@ -9,10 +9,9 @@ use PHPSu\ShellCommandBuilder\ShellBuilder;
 /**
  * Interface CommandInterface
  * @package PHPSu\Command
+ * @internal
  */
 interface CommandInterface
 {
-    public function getName(): string;
-
     public function generate(ShellBuilder $shellBuilder): ShellBuilder;
 }
