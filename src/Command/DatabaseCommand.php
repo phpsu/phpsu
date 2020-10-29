@@ -32,13 +32,13 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
     /** @var string[] */
     private $excludes = [];
 
-    /** @var DatabaseConnectionDetails */
-    private $fromConnectionDetails;
+    /** @var Database */
+    private $fromDatabase;
     /** @var string */
     private $fromHost;
 
-    /** @var DatabaseConnectionDetails */
-    private $toConnectionDetails;
+    /** @var Database */
+    private $toDatabase;
     /** @var string */
     private $toHost;
 
@@ -110,8 +110,8 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
         $result->setName('database:' . $fromDatabase->getName());
         $result->setFromHost($from->getHost() === $currentHost ? '' : $from->getHost());
         $result->setToHost($to->getHost() === $currentHost ? '' : $to->getHost());
-        $result->setFromConnectionDetails($fromDatabase->getConnectionDetails());
-        $result->setToConnectionDetails($toDatabase->getConnectionDetails());
+        $result->setFromDatabase($fromDatabase);
+        $result->setToDatabase($toDatabase);
         $result->setVerbosity($verbosity);
         $result->setCompression($compression);
         if (!$all) {
@@ -173,14 +173,14 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
         return $this;
     }
 
-    public function getFromConnectionDetails(): DatabaseConnectionDetails
+    public function getFromDatabase(): Database
     {
-        return $this->fromConnectionDetails;
+        return $this->fromDatabase;
     }
 
-    public function setFromConnectionDetails(DatabaseConnectionDetails $fromConnectionDetails): DatabaseCommand
+    public function setFromDatabase(Database $fromDatabase): DatabaseCommand
     {
-        $this->fromConnectionDetails = $fromConnectionDetails;
+        $this->fromDatabase = $fromDatabase;
         return $this;
     }
 
@@ -195,14 +195,14 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
         return $this;
     }
 
-    public function getToConnectionDetails(): DatabaseConnectionDetails
+    public function getToDatabase(): Database
     {
-        return $this->toConnectionDetails;
+        return $this->toDatabase;
     }
 
-    public function setToConnectionDetails(DatabaseConnectionDetails $toConnectionDetails): DatabaseCommand
+    public function setToDatabase(Database $toDatabase): DatabaseCommand
     {
-        $this->toConnectionDetails = $toConnectionDetails;
+        $this->toDatabase = $toDatabase;
         return $this;
     }
 
@@ -269,20 +269,23 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
     public function generate(ShellBuilder $shellBuilder): ShellBuilder
     {
         $hostsDifferentiate = $this->getFromHost() !== $this->getToHost();
-        $from = $this->getFromConnectionDetails();
-        $to = $this->getToConnectionDetails();
+        $from = $this->getFromDatabase()->getConnectionDetails();
+        $to = $this->getToDatabase()->getConnectionDetails();
         $tableInfo = false;
         $dbBuilder = ShellBuilder::new();
         if ($this->getExcludes()) {
             $sqlPart = $this->generateSqlQuery($from->getDatabase(), $this->getExcludes());
-            $command = $this->addArgumentsToShellCommand(
-                ShellBuilder::command('mysql'),
-                $from,
-                true
-            )
+            $command = DockerCommandHelper::wrapCommand(
+                $this->getFromDatabase(),
+                $this->addArgumentsToShellCommand(
+                    ShellBuilder::command('mysql'),
+                    $from,
+                    true
+                )
                 ->addShortOption('AN')
-                ->addShortOption('e', sprintf('"%s"', $sqlPart), false)
-            ;
+                ->addShortOption('e', sprintf('"%s"', $sqlPart), false),
+                false
+            );
             $dbBuilder->addVariable(
                 'TBLIST',
                 $command,
@@ -309,19 +312,25 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
         $dumpBuilder = ShellBuilder::new();
         if ($tableInfo) {
             $dumpCommand->addArgument('${TBLIST}', false);
+            $dumpCommand = DockerCommandHelper::wrapCommand(
+                $this->getFromDatabase(),
+                $dumpCommand,
+                false,
+                ['TBLIST' => '${TBLIST}']
+            );
             $dumpBuilder
                 ->add($dbBuilder)
                 ->and($dumpCommand);
         } else {
-            $dumpBuilder->add($dumpCommand);
+            $dumpBuilder->add(DockerCommandHelper::wrapCommand($this->getFromDatabase(), $dumpCommand, false));
         }
         $dumpBuilder
             ->pipe(
                 $dumpBuilder->createGroup()
-                ->createCommand('echo')
-                ->addArgument($this->getDatabaseCreateStatement($to->getDatabase()))
-                ->addToBuilder()
-                ->and('cat')
+                    ->createCommand('echo')
+                    ->addArgument($this->getDatabaseCreateStatement($to->getDatabase()))
+                    ->addToBuilder()
+                    ->and('cat')
             );
         $compressCmd = $this->getCompression()->getCompressCommand();
         $unCompressCmd = $this->getCompression()->getUnCompressCommand();
@@ -345,6 +354,7 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
                 $dumpBuilder->pipe($compressCmd);
             }
             $importBuilder = ShellBuilder::new();
+            $importCommand = DockerCommandHelper::wrapCommand($this->getToDatabase(), $importCommand, false);
             if ($this->getToHost() !== '') {
                 $sshCommand = new SshCommand();
                 $sshCommand->setSshConfig($this->getSshConfig());

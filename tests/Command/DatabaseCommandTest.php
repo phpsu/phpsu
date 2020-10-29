@@ -7,9 +7,12 @@ namespace PHPSu\Tests\Command;
 use PHPSu\Command\DatabaseCommand;
 use PHPSu\Config\Compression\Bzip2Compression;
 use PHPSu\Config\Compression\GzipCompression;
+use PHPSu\Config\Database;
 use PHPSu\Config\DatabaseConnectionDetails;
 use PHPSu\Config\SshConfig;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
+use PHPSu\ShellCommandBuilder\ShellCommand;
+use PHPSu\ShellCommandBuilder\ShellInterface;
 use PHPUnit\Framework\TestCase;
 use SplTempFileObject;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -21,10 +24,12 @@ final class DatabaseCommandTest extends TestCase
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
+        $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
+        $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
         $database->setSshConfig($sshConfig)
-            ->setFromConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
+            ->setFromDatabase($fromConnection)
             ->setFromHost('hostc')
-            ->setToConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'))
+            ->setToDatabase($toConnection)
             ->setToHost('');
         $this->assertSame(
             "ssh -F 'php://temp' 'hostc' 'mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
@@ -32,15 +37,170 @@ final class DatabaseCommandTest extends TestCase
         );
     }
 
+    public function testDatabaseCommandGenerateWithDocker(): void
+    {
+        $sshConfig = new SshConfig();
+        $sshConfig->setFile(new SplTempFileObject());
+        $database = new DatabaseCommand();
+        $fromConnection = (new Database())
+            ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
+            ->executeInDocker(true);
+        $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
+        $database->setSshConfig($sshConfig)
+            ->setFromDatabase($fromConnection)
+            ->setFromHost('hostc')
+            ->setToDatabase($toConnection)
+            ->setToHost('');
+        $dump = $this->getMysqlDumpCommand(['host' => '127.0.0.1', 'user' => 'root', 'password' => 'root', 'database' => 'sequelmovie'], 'sequelmovie2');
+        $builder = $this->getSshCommand()
+            ->addArgument(ShellBuilder::command('docker')
+                ->addArgument('exec')
+                ->addShortOption('i')
+                ->addArgument('database')
+                ->addArgument($dump, false))
+            ->addToBuilder()
+            ->pipe($this->getMysqlCommand(['host' => '127.0.0.1', 'user' => 'root', 'password' => 'root', 'database' => 'sequelmovie', 'port' => '2206']));
+        $generated = $database->generate(ShellBuilder::new());
+        $this->assertEquals((string)$builder, (string)$generated);
+    }
+
+    public function testDatabaseCommandGenerateWithDockerAndSudo(): void
+    {
+        $sshConfig = new SshConfig();
+        $sshConfig->setFile(new SplTempFileObject());
+        $database = new DatabaseCommand();
+        $fromConnection = (new Database())
+            ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
+            ->executeInDocker(true)
+            ->enableSudoForDocker(true);
+        $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
+        $database->setSshConfig($sshConfig)
+            ->setFromDatabase($fromConnection)
+            ->setFromHost('hostc')
+            ->setToDatabase($toConnection)
+            ->setToHost('');
+        $dump = $this->getMysqlDumpCommand(['host' => '127.0.0.1', 'user' => 'root', 'password' => 'root', 'database' => 'sequelmovie'], 'sequelmovie2');
+        $builder = $this->getSshCommand()
+            ->addArgument(ShellBuilder::command('sudo')
+                ->addArgument(
+                    ShellBuilder::command('docker')
+                        ->addArgument('exec')
+                        ->addShortOption('i')
+                        ->addArgument('database')
+                        ->addArgument($dump, false),
+                    false
+                ))
+            ->addToBuilder()
+            ->pipe($this->getMysqlCommand(['host' => '127.0.0.1', 'user' => 'root', 'password' => 'root', 'database' => 'sequelmovie', 'port' => '2206']));
+        $generated = $database->generate(ShellBuilder::new());
+        $this->assertEquals((string)$builder, (string)$generated);
+    }
+
+    public function testDatabaseCommandGenerateWithDockerOnBothSides(): void
+    {
+        $sshConfig = new SshConfig();
+        $sshConfig->setFile(new SplTempFileObject());
+        $database = new DatabaseCommand();
+        $fromConnection = (new Database())
+            ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
+            ->executeInDocker(true);
+        $toConnection = (new Database())
+            ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'))
+            ->setContainer('test')
+            ->executeInDocker(true);
+        $database->setSshConfig($sshConfig)
+            ->setFromDatabase($fromConnection)
+            ->setFromHost('hostc')
+            ->setToDatabase($toConnection)
+            ->setToHost('');
+        $dump = $this->getMysqlDumpCommand(['host' => '127.0.0.1', 'user' => 'root', 'password' => 'root', 'database' => 'sequelmovie'], 'sequelmovie2');
+        $builder = $this->getSshCommand()
+            ->addArgument(ShellBuilder::command('docker')
+                ->addArgument('exec')
+                ->addShortOption('i')
+                ->addArgument('database')
+                ->addArgument($dump, false))
+            ->addToBuilder()
+            ->pipe(ShellBuilder::command('docker')
+                ->addArgument('exec')
+                ->addShortOption('i')
+                ->addArgument('test')
+                ->addArgument(
+                    $this->getMysqlCommand(['host' => '127.0.0.1', 'user' => 'root', 'password' => 'root', 'database' => 'sequelmovie']),
+                    false
+                ));
+        $generated = $database->generate(ShellBuilder::new());
+        $this->assertEquals((string)$builder, (string)$generated);
+    }
+
+    /**
+     * @param string $host
+     * @return ShellCommand
+     * @throws \PHPSu\ShellCommandBuilder\Exception\ShellBuilderException
+     */
+    private function getSshCommand(string $host = 'hostc'): ShellCommand
+    {
+        return ShellBuilder::command('ssh')
+            ->addShortOption('F')
+            ->addArgument('php://temp')
+            ->addArgument($host);
+    }
+
+    /**
+     * @param array $db
+     * @param string $newDb
+     * @return ShellBuilder
+     * @throws \PHPSu\ShellCommandBuilder\Exception\ShellBuilderException
+     */
+    private function getMysqlDumpCommand(array $db, string $newDb): ShellBuilder
+    {
+        return ShellBuilder::command('mysqldump')
+            ->addOption('opt')
+            ->addOption('skip-comments')
+            ->addOption('single-transaction')
+            ->addOption('lock-tables', 'false', false, true)
+            ->addOption('host', $db['host'], true, true)
+            ->addOption('user', $db['user'], true, true)
+            ->addOption('password', $db['password'], true, true)
+            ->addArgument($db['database'])
+            ->addToBuilder()
+            ->pipe(
+                ShellBuilder::new()
+                    ->createGroup()
+                    ->createCommand('echo')
+                    ->addArgument(sprintf('CREATE DATABASE IF NOT EXISTS `%s`;USE `%s`;', $newDb, $newDb))
+                    ->addToBuilder()
+                    ->and('cat')
+            );
+    }
+
+    /**
+     * @param array $db
+     * @return \PHPSu\ShellCommandBuilder\ShellCommand
+     * @throws \PHPSu\ShellCommandBuilder\Exception\ShellBuilderException
+     */
+    private function getMysqlCommand(array $db): ShellCommand
+    {
+        $command = ShellBuilder::command('mysql')
+            ->addOption('host', $db['host'], true, true);
+        if (isset($db['port'])) {
+            $command->addOption('port', $db['port'], false, true);
+        }
+        return $command->addOption('user', $db['user'], true, true)
+            ->addOption('password', $db['password'], true, true);
+    }
+
     public function testDatabaseCommandGzip(): void
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
+        $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
+        $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
         $database->setSshConfig($sshConfig)
-            ->setFromConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
+            ->setFromDatabase($fromConnection)
             ->setFromHost('hostc')
-            ->setToConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'))
+            ->setToDatabase($toConnection)
             ->setToHost('')
             ->setCompression(new GzipCompression());
 
@@ -55,10 +215,12 @@ final class DatabaseCommandTest extends TestCase
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
+        $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
+        $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
         $database->setSshConfig($sshConfig)
-            ->setFromConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
+            ->setFromDatabase($fromConnection)
             ->setFromHost('hostc')
-            ->setToConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'))
+            ->setToDatabase($toConnection)
             ->setToHost('')
             ->setCompression(new Bzip2Compression());
 
@@ -73,10 +235,12 @@ final class DatabaseCommandTest extends TestCase
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
+        $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
+        $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
         $database->setSshConfig($sshConfig)
-            ->setFromConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
+            ->setFromDatabase($fromConnection)
             ->setFromHost('hostc')
-            ->setToConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'))
+            ->setToDatabase($toConnection)
             ->setToHost('')
             ->setVerbosity(OutputInterface::VERBOSITY_QUIET);
 
@@ -91,10 +255,12 @@ final class DatabaseCommandTest extends TestCase
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
+        $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
+        $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
         $database->setSshConfig($sshConfig)
-            ->setFromConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
+            ->setFromDatabase($fromConnection)
             ->setFromHost('hostc')
-            ->setToConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'))
+            ->setToDatabase($toConnection)
             ->setToHost('')
             ->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
 
@@ -109,10 +275,12 @@ final class DatabaseCommandTest extends TestCase
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
+        $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
+        $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
         $database->setSshConfig($sshConfig)
-            ->setFromConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
+            ->setFromDatabase($fromConnection)
             ->setFromHost('hostc')
-            ->setToConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'))
+            ->setToDatabase($toConnection)
             ->setToHost('')
             ->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
 
@@ -127,10 +295,12 @@ final class DatabaseCommandTest extends TestCase
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
+        $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
+        $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
         $database->setSshConfig($sshConfig)
-            ->setFromConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
+            ->setFromDatabase($fromConnection)
             ->setFromHost('hostc')
-            ->setToConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'))
+            ->setToDatabase($toConnection)
             ->setToHost('')
             ->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
 
@@ -139,15 +309,18 @@ final class DatabaseCommandTest extends TestCase
             (string)$database->generate(ShellBuilder::new())
         );
     }
+
     public function testDatabaseCommandPasswordWithSpecialCharacters(): void
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
+        $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromDetails('sequelmovie', 'root', 'root#password\'"_!', 'database'));
+        $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
         $database->setSshConfig($sshConfig)
-            ->setFromConnectionDetails(DatabaseConnectionDetails::fromDetails('sequelmovie', 'root', 'root#password\'"_!', 'database'))
+            ->setFromDatabase($fromConnection)
             ->setFromHost('hostc')
-            ->setToConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'))
+            ->setToDatabase($toConnection)
             ->setToHost('');
         $this->assertSame(
             "ssh -F 'php://temp' 'hostc' 'mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='\''database'\'' --user='\''root'\'' --password='\''root#password'\''\'\'''\''\"_!'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
@@ -161,13 +334,13 @@ final class DatabaseCommandTest extends TestCase
         $sshConfig->setFile(new SplTempFileObject());
         $database = new DatabaseCommand();
         $gzipCompression = new GzipCompression();
-        $fromConnectionDetails = DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie');
-        $toConnectionDetails = DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2');
+        $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
+        $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
         $database->setName('databaseName')
             ->setSshConfig($sshConfig)
-            ->setFromConnectionDetails($fromConnectionDetails)
+            ->setFromDatabase($fromConnection)
             ->setFromHost('hostc')
-            ->setToConnectionDetails($toConnectionDetails)
+            ->setToDatabase($toConnection)
             ->setToHost('')
             ->setVerbosity(OutputInterface::VERBOSITY_DEBUG)
             ->setExcludes(['exclude1', 'exclude2'])
@@ -176,9 +349,9 @@ final class DatabaseCommandTest extends TestCase
         $this->assertSame('databaseName', $database->getName());
         $this->assertSame($sshConfig, $database->getSshConfig());
         $this->assertSame(['exclude1', 'exclude2'], $database->getExcludes());
-        $this->assertSame($fromConnectionDetails, $database->getFromConnectionDetails());
+        $this->assertSame($fromConnection, $database->getFromDatabase());
         $this->assertSame('hostc', $database->getFromHost());
-        $this->assertSame($toConnectionDetails, $database->getToConnectionDetails());
+        $this->assertSame($toConnection, $database->getToDatabase());
         $this->assertSame('', $database->getToHost());
         $this->assertSame(OutputInterface::VERBOSITY_DEBUG, $database->getVerbosity());
         $this->assertSame($gzipCompression, $database->getCompression());

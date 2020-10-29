@@ -108,7 +108,10 @@ final class MysqlCommand implements CommandInterface
         } else {
             $ssh->addOption('t', '', true);
         }
-        $ssh->setCommand($mysql);
+
+//      Disable autocomplete for faster mysql-connection
+//      $mysql->addShortOption('A');
+        $ssh->setCommand(DockerCommandHelper::wrapCommand($this->database, $mysql, empty($this->command)));
         return $ssh->generate($shellBuilder);
     }
 }
