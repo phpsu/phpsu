@@ -31,14 +31,14 @@ jobs:
           coverage: xdebug
 
       - name: Install dependencies
-        run: composer install
-        run: composer require symfony/process:${{ matrix.symfony-version }} symfony/console:${{ matrix.symfony-version }}
+      - run: composer install
+      - run: composer require symfony/process:${{ matrix.symfony-version }} symfony/console:${{ matrix.symfony-version }}
 
       - name: Execute tests
-        run: vendor/bin/grumphp run
-        run: composer test
-        run: composer infection
-        run: composer phpstan
+      - run: vendor/bin/grumphp run
+      - run: composer test
+      - run: composer infection
+      - run: composer phpstan
       - uses: codecov/codecov-action@v1
         with:
           file: ./tests/test-results/coverage.xml
