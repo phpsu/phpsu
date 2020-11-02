@@ -59,7 +59,7 @@
     "rector/rector-prefixed": "^0.7.14",
     "spatie/phpunit-watcher": "^1.22",
     "phpstan/phpstan": "^0.12.18",
-    "infection/infection": "^0.15.3",
+    "infection/infection": "^0.15.3 || ^0.18.2 || ^0.19.2",
     "phpunit/php-invoker": "^2.0 | ^3.0",
     "phpunit/phpunit": "^8.5 || ^9.0"
   },
