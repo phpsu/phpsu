@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Cli;
 
 use PHPSu\Cli\SyncCliCommand;
+use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +18,7 @@ class SyncCliCommandTest extends TestCase
 
     public function testSyncCliCommandExecute(): void
     {
-        $command = new SyncCliCommand($this->createConfig(), new Controller($this->createConfig()));
+        $command = new SyncCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig())));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));
@@ -38,7 +39,7 @@ class SyncCliCommandTest extends TestCase
 
     public function testSyncCliCommandExecuteReversed(): void
     {
-        $command = new SyncCliCommand($this->createConfig(), new Controller($this->createConfig()));
+        $command = new SyncCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig())));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));

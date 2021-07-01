@@ -6,6 +6,7 @@ use PHPSu\Cli\MysqlCliCommand;
 use PHPSu\Cli\InfoCliCommand;
 use PHPSu\Cli\SshCliCommand;
 use PHPSu\Cli\SyncCliCommand;
+use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\ConfigurationLoader;
 use PHPSu\Config\ConfigurationLoaderInterface;
 use PHPSu\Config\GlobalConfig;
@@ -28,7 +29,8 @@ return [
         SshCliCommand::class,
         SyncCliCommand::class,
     ],
-    ControllerInterface::class => create(Controller::class)->constructor(get(GlobalConfig::class)),
+    CommandGenerator::class => create(CommandGenerator::class)->constructor(get(GlobalConfig::class)),
+    ControllerInterface::class => create(Controller::class)->constructor(get(CommandGenerator::class)),
     ConfigurationLoaderInterface::class => create(ConfigurationLoader::class)->constructor(get('config')),
     GlobalConfig::class => factory(static function (ContainerInterface $container): GlobalConfig {
         return $container->get(ConfigurationLoaderInterface::class)->getConfig();

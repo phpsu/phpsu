@@ -6,6 +6,7 @@ namespace PHPSu\Tests\Cli;
 
 use Exception;
 use PHPSu\Cli\SshCliCommand;
+use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
 use PHPSu\ControllerInterface;
@@ -22,7 +23,7 @@ class SshCliCommandTest extends TestCase
 
     public function testSshCliCommandDryRun(): void
     {
-        $command = new SshCliCommand($this->createConfig(), new Controller($this->createConfig()));
+        $command = new SshCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig())));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));
@@ -40,7 +41,7 @@ class SshCliCommandTest extends TestCase
 
     public function testSshCliCommandDryRunMultipleCommands(): void
     {
-        $command = new SshCliCommand($this->createConfig(), new Controller($this->createConfig()));
+        $command = new SshCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig())));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));
@@ -59,7 +60,7 @@ class SshCliCommandTest extends TestCase
 
     public function testSshCliCommandDryRunInteractive(): void
     {
-        $command = new SshCliCommand($this->createConfig(), new Controller($this->createConfig()));
+        $command = new SshCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig())));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));

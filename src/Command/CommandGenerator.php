@@ -27,12 +27,17 @@ final class CommandGenerator
     /** @var GlobalConfig */
     private $globalConfig;
     /** @var int */
-    private $verbosity;
+    private $verbosity = OutputInterface::VERBOSITY_NORMAL;
 
-    public function __construct(GlobalConfig $globalConfig, int $verbosity = OutputInterface::VERBOSITY_NORMAL)
+    public function __construct(GlobalConfig $globalConfig)
     {
         $this->globalConfig = $globalConfig;
+    }
+    
+    public function setVerbosity(int $verbosity): self
+    {
         $this->verbosity = $verbosity;
+        return $this;
     }
 
     public function getFile(): SplFileObject

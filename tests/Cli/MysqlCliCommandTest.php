@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Cli;
 
 use PHPSu\Cli\MysqlCliCommand;
+use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
@@ -21,7 +22,7 @@ final class MysqlCliCommandTest extends TestCase
 {
     public function testMysqlCliCommandDryRunMultipleCommands(): void
     {
-        $command = new MysqlCliCommand($this->createConfig(), new Controller($this->createConfig()));
+        $command = new MysqlCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig())));
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
 
         $commandTester = new CommandTester($command);
@@ -50,7 +51,7 @@ final class MysqlCliCommandTest extends TestCase
 
     public function testMysqlCliCommandDryRunInteractiveForInstance(): void
     {
-        $command = new MysqlCliCommand($this->createConfig(), new Controller($this->createConfig()));
+        $command = new MysqlCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig())));
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
 
         $commandTester = new CommandTester($command);
@@ -85,7 +86,7 @@ final class MysqlCliCommandTest extends TestCase
         $config->getAppInstance('production')
             ->addDatabase('beta', 'testtest', 'root', 'pass', 'a');
 
-        $command = new MysqlCliCommand($config, new Controller($config));
+        $command = new MysqlCliCommand($config, new Controller(new CommandGenerator($config)));
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
 
         $commandTester = new CommandTester($command);

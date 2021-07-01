@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Cli;
 
 use PHPSu\Cli\InfoCliCommand;
+use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
 use PHPUnit\Framework\TestCase;
@@ -15,7 +16,7 @@ class InfoCliCommandTest extends TestCase
     public function testPrintDependencyVersionsLocally(): void
     {
         $config = new GlobalConfig();
-        $command = new InfoCliCommand($config, new Controller($config));
+        $command = new InfoCliCommand($config, new Controller(new CommandGenerator($config)));
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);

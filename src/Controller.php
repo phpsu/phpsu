@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PHPSu;
 
 use PHPSu\Command\CommandGenerator;
-use PHPSu\Config\GlobalConfig;
 use PHPSu\Options\SshOptions;
 use PHPSu\Options\SyncOptions;
 use PHPSu\Options\MysqlOptions;
@@ -23,18 +22,20 @@ final class Controller implements ControllerInterface
 
     /** @var CommandExecutor */
     private $executor;
-    /** @var GlobalConfig */
-    private $config;
+    /** @var CommandGenerator */
+    private $commandGenerator;
 
-    public function __construct(GlobalConfig $config, CommandExecutor $commandExecutor = null)
+    public function __construct(CommandGenerator $commandGenerator, CommandExecutor $commandExecutor = null)
     {
-        $this->config = $config;
         $this->executor = $commandExecutor ?? new CommandExecutor();
+        $this->commandGenerator = $commandGenerator;
     }
 
     public function ssh(OutputInterface $output, SshOptions $options): int
     {
-        $sshCommand = (new CommandGenerator($this->config, $output->getVerbosity()))->sshCommand($options->getDestination(), $options->getCurrentHost(), $options->getCommand());
+        $sshCommand = $this->commandGenerator
+            ->setVerbosity($output->getVerbosity())
+            ->sshCommand($options->getDestination(), $options->getCurrentHost(), $options->getCommand());
         if ($options->isDryRun()) {
             $output->writeln((string)$sshCommand);
             return 0;
@@ -44,7 +45,9 @@ final class Controller implements ControllerInterface
 
     public function mysql(OutputInterface $output, MysqlOptions $options): int
     {
-        $mysqlCommand = (new CommandGenerator($this->config, $output->getVerbosity()))->mysqlCommand(
+        $mysqlCommand = $this->commandGenerator
+            ->setVerbosity($output->getVerbosity())
+            ->mysqlCommand(
             $options->getAppInstance(),
             $options->getDatabase(),
             $options->getCommand()
@@ -58,7 +61,9 @@ final class Controller implements ControllerInterface
 
     public function sync(OutputInterface $output, SyncOptions $options): void
     {
-        $commands = (new CommandGenerator($this->config, $output->getVerbosity()))->syncCommands($options);
+        $commands = $this->commandGenerator
+            ->setVerbosity($output->getVerbosity())
+            ->syncCommands($options);
 
         if ($options->isDryRun()) {
             foreach ($commands as $commandName => $command) {
