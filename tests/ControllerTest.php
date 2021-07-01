@@ -25,8 +25,8 @@ final class ControllerTest extends TestCase
         $config = new GlobalConfig();
         $config->addAppInstance('production', 'serverEu', '/var/www/prod');
         $config->addAppInstance('local');
-        $controller = new Controller();
-        $controller->ssh($output, $config, (new SshOptions('production'))->setDryRun(true));
+        $controller = new Controller($config);
+        $controller->ssh($output, (new SshOptions('production'))->setDryRun(true));
         $this->assertSame("ssh -F '.phpsu/config/ssh_config' 'serverEu' -t 'cd '\''/var/www/prod'\'' ; bash --login'\n", $output->fetch());
     }
 
@@ -36,8 +36,8 @@ final class ControllerTest extends TestCase
         $config = new GlobalConfig();
         $config->addAppInstance('production', 'serverEu', '/var/www/prod');
         $config->addAppInstance('local');
-        $controller = new Controller();
-        $controller->sync($output, $config, (new SyncOptions('production'))->setDryRun(true)->setAll(true));
+        $controller = new Controller($config);
+        $controller->sync($output, (new SyncOptions('production'))->setDryRun(true)->setAll(true));
         $this->assertSame('', $output->fetch());
     }
 
@@ -48,8 +48,8 @@ final class ControllerTest extends TestCase
         $config->addAppInstance('local');
         $executor = $this->createMock(CommandExecutor::class);
         $executor->method('passthru')->willReturn(0);
-        $controller = new Controller($executor);
-        $command = $controller->ssh(new BufferedOutput(), $config, (new SshOptions('production')));
+        $controller = new Controller($config, $executor);
+        $command = $controller->ssh(new BufferedOutput(), (new SshOptions('production')));
         $this->assertEquals(0, $command);
     }
 
@@ -58,13 +58,13 @@ final class ControllerTest extends TestCase
         $config = new GlobalConfig();
         $config->addAppInstance('local');
         $config->addDatabase('test', 'web', 'user', '#!;~"', '99.88.77.123');
-        $controller = new Controller();
+        $controller = new Controller($config);
         $options = new MysqlOptions();
         $options->setDryRun(true)
             ->setDatabase('test')
             ->setAppInstance('local');
         $output = new BufferedOutput();
-        $controller->mysql($output, $config, $options);
+        $controller->mysql($output, $options);
         $fetch = trim($output->fetch());
         static::assertEquals('mysql --user=\'user\' --password=\'#!;~"\' --host=99.88.77.123 --port=3306 \'web\'', $fetch);
     }
@@ -78,13 +78,13 @@ final class ControllerTest extends TestCase
         $instance->addDatabase('test2', 'web', 'user', '#!;~"', '99.88.77.123');
         $executor = $this->createMock(CommandExecutor::class);
         $executor->method('passthru')->willReturn(11);
-        $controller = new Controller($executor);
+        $controller = new Controller($config, $executor);
         $options = new MysqlOptions();
         $options
             ->setDatabase('test2')
             ->setCommand('SELECT * FROM web')
             ->setAppInstance('production');
-        static::assertEquals(11, $controller->mysql(new BufferedOutput(), $config, $options));
+        static::assertEquals(11, $controller->mysql(new BufferedOutput(), $options));
     }
 
     public function testMysqlCommandInDockerDryRun(): void
@@ -98,7 +98,7 @@ final class ControllerTest extends TestCase
             ->setAppInstance('local')
             ->setDryRun(true);
         $output = new BufferedOutput();
-        (new Controller())->mysql($output, $config, $options);
+        (new Controller($config))->mysql($output, $options);
         $fetch = trim($output->fetch());
         static::assertEquals('docker \'exec\' -it \'web\' mysql --user=\'user\' --password=\'#!;~"\' --host=127.0.0.1 --port=3306 \'web\'', $fetch);
     }
@@ -114,8 +114,8 @@ final class ControllerTest extends TestCase
             ->addDatabase('database', 'test1234', 'root', 'root');
 
         $output = new BufferedOutput();
-        $controller = new Controller();
-        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
+        $controller = new Controller($config);
+        $controller->sync($output, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'filesystem:fileadmin',
             "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
@@ -137,8 +137,8 @@ final class ControllerTest extends TestCase
             ->addDatabaseByUrl('database', 'mysql://root:root@127.0.0.1/test1234');
 
         $output = new BufferedOutput();
-        $controller = new Controller();
-        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
+        $controller = new Controller($config);
+        $controller->sync($output, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'filesystem:fileadmin',
             "rsync -az --exclude '*.mp4' --exclude '*.mp3' --exclude '*.zip' --exclude '*.rar' -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
@@ -165,8 +165,8 @@ final class ControllerTest extends TestCase
             ->addExclude('/c/');
 
         $output = new BufferedOutput();
-        $controller = new Controller();
-        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
+        $controller = new Controller($config);
+        $controller->sync($output, (new SyncOptions('testing'))->setDryRun(true));
         $lines = [
             'database:database',
             "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'TBLIST=`mysql --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' -AN -e \"SET group_concat_max_len = 51200; SELECT GROUP_CONCAT(table_name separator '\'' '\'') FROM information_schema.tables WHERE table_schema='\''testdb'\'' AND table_name NOT REGEXP '\''cache'\'' AND table_name NOT REGEXP '\''c'\'' AND table_name NOT IN('\''table1'\'','\''table2'\'','\''table4'\'','\''table3'\'')\"` && mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' \${TBLIST} | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql --host='127.0.0.1' --user='root' --password='root'",
@@ -189,8 +189,8 @@ final class ControllerTest extends TestCase
             ->addExclude('table1');
 
         $output = new BufferedOutput();
-        $controller = new Controller();
-        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
+        $controller = new Controller($config);
+        $controller->sync($output, (new SyncOptions('testing'))->setDryRun(true));
         $lines = "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'TBLIST=`docker '\''exec'\'' -i '\''test'\'' mysql --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' -AN -e \"SET group_concat_max_len = 51200; SELECT GROUP_CONCAT(table_name separator '\'' '\'') FROM information_schema.tables WHERE table_schema='\''testdb'\'' AND table_name NOT IN('\''table1'\'')\"` && docker '\''exec'\'' -i -e '\''TBLIST='\''\'\'''\''\${TBLIST}'\''\'\'''\'''\'' '\''test'\'' mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' \${TBLIST} | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql --host='127.0.0.1' --user='root' --password='root'";
         static::assertSame($lines, trim(explode("\n", $output->fetch())[1]));
     }
@@ -206,8 +206,8 @@ final class ControllerTest extends TestCase
             ->addDatabaseByUrl('database', 'mysql://root:root@127.0.0.1/test1234')->addExclude('table1')->addExclude('table1');
 
         $output = new BufferedOutput();
-        $controller = new Controller();
-        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true));
+        $controller = new Controller($config);
+        $controller->sync($output, (new SyncOptions('testing'))->setDryRun(true)->setAll(true));
         $lines = [
             'filesystem:fileadmin',
             "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
@@ -229,8 +229,8 @@ final class ControllerTest extends TestCase
             ->addDatabaseByUrl('database', 'mysql://root:root@127.0.0.1/test1234')->addExclude('table1')->addExclude('table1');
 
         $output = new BufferedOutput();
-        $controller = new Controller();
-        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoDatabases(true));
+        $controller = new Controller($config);
+        $controller->sync($output, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoDatabases(true));
         $lines = [
             'filesystem:fileadmin',
             "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
@@ -250,8 +250,8 @@ final class ControllerTest extends TestCase
             ->addDatabaseByUrl('database', 'mysql://root:root@127.0.0.1/test1234')->addExclude('table1')->addExclude('table1');
 
         $output = new BufferedOutput();
-        $controller = new Controller();
-        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
+        $controller = new Controller($config);
+        $controller->sync($output, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
         $lines = [
             'database:database',
             "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql --host='127.0.0.1' --user='root' --password='root'",
@@ -270,8 +270,8 @@ final class ControllerTest extends TestCase
             ->addDatabaseByUrl('database', 'mysql://root:root@127.0.0.1/test1234')->addExclude('table1')->addExclude('table1');
 
         $output = new BufferedOutput();
-        $controller = new Controller();
-        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
+        $controller = new Controller($config);
+        $controller->sync($output, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
         $lines = [
             'database:database',
             "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql --host='127.0.0.1' --user='root' --password='root'",
@@ -292,8 +292,8 @@ final class ControllerTest extends TestCase
             ->addDatabaseByUrl('database2', 'mysql://root:root@127.0.0.1/test1234_2');
 
         $output = new BufferedOutput();
-        $controller = new Controller();
-        $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
+        $controller = new Controller($config);
+        $controller->sync($output, (new SyncOptions('testing'))->setDryRun(true)->setAll(true)->setNoFiles(true));
         $lines = [
             'database:database',
             "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)' | mysql --host='127.0.0.1' --user='root' --password='root'",
@@ -314,8 +314,8 @@ final class ControllerTest extends TestCase
         $log = new BufferedOutput();
         $syncOptions = new SyncOptions('production');
         $syncOptions->setDryRun(true);
-        $phpsu = new Controller();
-        $phpsu->sync($log, $config, $syncOptions);
+        $phpsu = new Controller($config);
+        $phpsu->sync($log, $syncOptions);
 
         $this->assertSame('filesystem:var/storage' . PHP_EOL . 'rsync -az \'testProduction/var/storage/\' \'testLocal/var/storage/\'' . PHP_EOL, $log->fetch());
     }
@@ -325,12 +325,12 @@ final class ControllerTest extends TestCase
         $config = new GlobalConfig();
         $config->addAppInstance('production', 'localhost', __DIR__);
         $config->addAppInstance('local');
-        $controller = new Controller();
+        $controller = new Controller($config);
         $syncOptions = new SyncOptions('production');
         $syncOptions->setNoDatabases(true);
         $syncOptions->setNoFiles(true);
         $output = new BufferedConsoleOutput();
-        $controller->sync($output, $config, $syncOptions);
+        $controller->sync($output, $syncOptions);
         rewind($output->getStream());
         $this->assertSame("--------------------\n", stream_get_contents($output->getStream()), 'Asserting result empty since config is empty as well');
     }
@@ -340,26 +340,26 @@ final class ControllerTest extends TestCase
         $config = new GlobalConfig();
         $config->addAppInstance('production', 'localhost', __DIR__);
         $config->addAppInstance('local');
-        $controller = new Controller();
+        $controller = new Controller($config);
         $syncOptions = new SyncOptions('local');
         $syncOptions->setSource('local');
         $syncOptions->setNoDatabases(true);
         $syncOptions->setNoFiles(true);
         $syncOptions->setDestination('production');
         $output = new BufferedOutput();
-        $controller->sync($output, $config, $syncOptions);
+        $controller->sync($output, $syncOptions);
         $this->assertSame('', $output->fetch(), 'Excepting sync to do nothing');
     }
 
     public function testSshOutputPassthruExecution(): void
     {
-        $controller = new Controller();
         $config = new GlobalConfig();
+        $controller = new Controller($config);
         $config->addAppInstance('production', '127.0.0.1', __DIR__);
         $config->addAppInstance('local');
         $sshOptions = (new SshOptions('typo'))->setDestination('local');
         $output = new BufferedOutput();
         $this->expectExceptionMessage('the found host and the current Host are the same');
-        $controller->ssh($output, $config, $sshOptions);
+        $controller->ssh($output, $sshOptions);
     }
 }

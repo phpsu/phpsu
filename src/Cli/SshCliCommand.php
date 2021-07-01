@@ -83,7 +83,6 @@ final class SshCliCommand extends AbstractCliCommand
         }
         return $this->controller->ssh(
             $output,
-            $this->configurationLoader->getConfig(),
             (new SshOptions($destination))
                 ->setCurrentHost($currentHost)
                 ->setCommand($builder)
@@ -97,7 +96,7 @@ final class SshCliCommand extends AbstractCliCommand
     private function getAppInstancesWithHost(): array
     {
         if ($this->instances === null) {
-            $this->instances = $this->configurationLoader->getConfig()->getAppInstanceNames(static function (AppInstance $instance) {
+            $this->instances = $this->config->getAppInstanceNames(static function (AppInstance $instance) {
                 return $instance->getHost() !== '';
             });
         }

@@ -6,7 +6,6 @@ namespace PHPSu\Tests\Cli;
 
 use Exception;
 use PHPSu\Cli\SshCliCommand;
-use PHPSu\Config\ConfigurationLoaderInterface;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
 use PHPSu\ControllerInterface;
@@ -23,9 +22,7 @@ class SshCliCommandTest extends TestCase
 
     public function testSshCliCommandDryRun(): void
     {
-        $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
-
-        $command = new SshCliCommand($mockConfigurationLoader, new Controller());
+        $command = new SshCliCommand($this->createConfig(), new Controller($this->createConfig()));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));
@@ -43,9 +40,7 @@ class SshCliCommandTest extends TestCase
 
     public function testSshCliCommandDryRunMultipleCommands(): void
     {
-        $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
-
-        $command = new SshCliCommand($mockConfigurationLoader, new Controller());
+        $command = new SshCliCommand($this->createConfig(), new Controller($this->createConfig()));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));
@@ -64,9 +59,7 @@ class SshCliCommandTest extends TestCase
 
     public function testSshCliCommandDryRunInteractive(): void
     {
-        $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
-
-        $command = new SshCliCommand($mockConfigurationLoader, new Controller());
+        $command = new SshCliCommand($this->createConfig(), new Controller($this->createConfig()));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));
@@ -87,7 +80,6 @@ class SshCliCommandTest extends TestCase
     public function testSshCliCommandExecute(): void
     {
         $globalConfig = $this->createConfig();
-        $mockConfigurationLoader = $this->createMockConfigurationLoader($globalConfig);
 
         /** @var MockObject|ControllerInterface $mockController */
         $mockController = $this->createMock(ControllerInterface::class);
@@ -95,12 +87,11 @@ class SshCliCommandTest extends TestCase
             ->method('ssh')
             ->with(
                 $this->isInstanceOf(OutputInterface::class),
-                $this->equalTo($globalConfig),
                 $this->equalTo(new SshOptions('production'))
             )
             ->willReturn(208);
 
-        $command = new SshCliCommand($mockConfigurationLoader, $mockController);
+        $command = new SshCliCommand($globalConfig, $mockController);
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));
@@ -118,12 +109,11 @@ class SshCliCommandTest extends TestCase
     public function testSshCliCommandExecuteWithNoAppInstancesConfigured(): void
     {
         $globalConfig = $this->createConfigNoAppInstance();
-        $mockConfigurationLoader = $this->createMockConfigurationLoader($globalConfig);
 
         /** @var MockObject|ControllerInterface $mockController */
         $mockController = $this->createMock(ControllerInterface::class);
 
-        $command = new SshCliCommand($mockConfigurationLoader, $mockController);
+        $command = new SshCliCommand($globalConfig, $mockController);
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
         $commandTester = new CommandTester($command);
 
@@ -151,19 +141,5 @@ class SshCliCommandTest extends TestCase
         $globalConfig = new GlobalConfig();
         $globalConfig->addSshConnection('us', 'ssh://user@us');
         return $globalConfig;
-    }
-
-    /**
-     * @param GlobalConfig $config
-     * @return ConfigurationLoaderInterface|MockObject
-     */
-    private function createMockConfigurationLoader(GlobalConfig $config)
-    {
-        /** @var MockObject|ConfigurationLoaderInterface $mockConfigurationLoader */
-        $mockConfigurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
-        $mockConfigurationLoader->expects($this->atLeastOnce())
-            ->method('getConfig')
-            ->willReturn($config);
-        return $mockConfigurationLoader;
     }
 }

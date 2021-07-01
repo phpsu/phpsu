@@ -52,7 +52,8 @@
     "symfony/process": "^4.0 | ^5.0",
     "php": "^7.2 || ~8.0.0",
     "ext-json": "*",
-    "phpsu/shellcommandbuilder": "^2.0"
+    "phpsu/shellcommandbuilder": "^2.0",
+    "php-di/php-di": "^6.3"
   },
   "require-dev": {
     "pluswerk/grumphp-config": "^4.0",

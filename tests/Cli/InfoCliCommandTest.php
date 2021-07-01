@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Cli;
 
 use PHPSu\Cli\InfoCliCommand;
-use PHPSu\Config\ConfigurationLoader;
+use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -14,7 +14,8 @@ class InfoCliCommandTest extends TestCase
 {
     public function testPrintDependencyVersionsLocally(): void
     {
-        $command = new InfoCliCommand(new ConfigurationLoader(), new Controller());
+        $config = new GlobalConfig();
+        $command = new InfoCliCommand($config, new Controller($config));
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);

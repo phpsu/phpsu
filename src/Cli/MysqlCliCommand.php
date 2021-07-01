@@ -23,7 +23,6 @@ final class MysqlCliCommand extends AbstractCliCommand
     /** @var null|string[] */
     private $instances;
 
-
     protected function configure(): void
     {
         $this->setName('mysql')
@@ -84,7 +83,6 @@ final class MysqlCliCommand extends AbstractCliCommand
         assert(is_string($instance) && is_string($mysqlCommand));
         return $this->controller->mysql(
             $output,
-            $this->configurationLoader->getConfig(),
             (new MysqlOptions())
                 ->setAppInstance($instance)
                 ->setCommand($mysqlCommand)
@@ -101,7 +99,7 @@ final class MysqlCliCommand extends AbstractCliCommand
     private function getAppInstancesWithHost(): array
     {
         if ($this->instances === null) {
-            $this->instances = $this->configurationLoader->getConfig()->getAppInstanceNames();
+            $this->instances = $this->config->getAppInstanceNames();
         }
         return $this->instances;
     }
@@ -112,6 +110,6 @@ final class MysqlCliCommand extends AbstractCliCommand
      */
     private function getDatabasesForAppInstance(string $appInstance): array
     {
-        return $this->configurationLoader->getConfig()->getAppInstance($appInstance)->getDatabaseNames();
+        return $this->config->getAppInstance($appInstance)->getDatabaseNames();
     }
 }

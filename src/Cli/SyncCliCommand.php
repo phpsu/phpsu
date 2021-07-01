@@ -33,8 +33,7 @@ final class SyncCliCommand extends AbstractCliCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $configuration = $this->configurationLoader->getConfig();
-        $instances = $configuration->getAppInstanceNames();
+        $instances = $this->config->getAppInstanceNames();
         /** @var string $source */
         $source = $this->getArgument($input, 'source');
         /** @var string $destination */
@@ -52,9 +51,9 @@ final class SyncCliCommand extends AbstractCliCommand
             ->setNoFiles((bool)$input->getOption('no-fs'))
             ->setNoDatabases((bool)$input->getOption('no-db'));
 
-        $this->controller->checkSshConnection($output, $configuration, $options);
+        $this->controller->checkSshConnection($output, $options);
 
-        $this->controller->sync($output, $configuration, $options);
+        $this->controller->sync($output, $options);
 
         return 0;
     }

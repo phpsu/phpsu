@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Cli;
 
-use PHPSu\Config\ConfigurationLoaderInterface;
+use PHPSu\Config\GlobalConfig;
 use PHPSu\ControllerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,15 +14,15 @@ use Symfony\Component\Console\Input\InputInterface;
  */
 abstract class AbstractCliCommand extends Command
 {
-    /** @var ConfigurationLoaderInterface */
-    protected $configurationLoader;
+    /** @var GlobalConfig */
+    protected $config;
     /** @var ControllerInterface */
     protected $controller;
 
-    public function __construct(ConfigurationLoaderInterface $configurationLoader, ControllerInterface $controller)
+    public function __construct(GlobalConfig $config, ControllerInterface $controller)
     {
         parent::__construct();
-        $this->configurationLoader = $configurationLoader;
+        $this->config = $config;
         $this->controller = $controller;
     }
 

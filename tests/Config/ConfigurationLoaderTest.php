@@ -29,6 +29,16 @@ final class ConfigurationLoaderTest extends TestCase
         $this->assertEquals($expectedConfig, $configurationLoader->getConfig());
     }
 
+    public function testGetConfigViaConfigurationLoaderWithDifferentName(): void
+    {
+        $configurationLoader = new ConfigurationLoader('alternative-config.php');
+        $expectedConfig = new GlobalConfig();
+        $expectedConfig->addFilesystem('var/storage', 'var/storage');
+        $expectedConfig->addAppInstance('production', '', 'testProduction');
+        $expectedConfig->addAppInstance('local', '', 'testLocal');
+        $this->assertEquals($expectedConfig, $configurationLoader->getConfig());
+    }
+
     public function testConfigNotFoundException(): void
     {
         chdir(__DIR__ . '/../fixtures/dir-without-phpsu-config');

@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Cli;
 
 use PHPSu\Cli\MysqlCliCommand;
-use PHPSu\Cli\SshCliCommand;
-use PHPSu\Config\ConfigurationLoaderInterface;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -24,9 +21,7 @@ final class MysqlCliCommandTest extends TestCase
 {
     public function testMysqlCliCommandDryRunMultipleCommands(): void
     {
-        $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
-
-        $command = new MysqlCliCommand($mockConfigurationLoader, new Controller());
+        $command = new MysqlCliCommand($this->createConfig(), new Controller($this->createConfig()));
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
 
         $commandTester = new CommandTester($command);
@@ -55,9 +50,7 @@ final class MysqlCliCommandTest extends TestCase
 
     public function testMysqlCliCommandDryRunInteractiveForInstance(): void
     {
-        $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
-
-        $command = new MysqlCliCommand($mockConfigurationLoader, new Controller());
+        $command = new MysqlCliCommand($this->createConfig(), new Controller($this->createConfig()));
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
 
         $commandTester = new CommandTester($command);
@@ -91,9 +84,8 @@ final class MysqlCliCommandTest extends TestCase
         $config = $this->createConfig();
         $config->getAppInstance('production')
             ->addDatabase('beta', 'testtest', 'root', 'pass', 'a');
-        $mockConfigurationLoader = $this->createMockConfigurationLoader($config);
 
-        $command = new MysqlCliCommand($mockConfigurationLoader, new Controller());
+        $command = new MysqlCliCommand($config, new Controller($config));
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
 
         $commandTester = new CommandTester($command);
@@ -133,19 +125,5 @@ final class MysqlCliCommandTest extends TestCase
         $globalConfig->addAppInstance('production', 'us', '/var/www/')
             ->addDatabase('test', 'a', 'n', 'c', 'd');
         return $globalConfig;
-    }
-
-    /**
-     * @param GlobalConfig $config
-     * @return ConfigurationLoaderInterface|MockObject
-     */
-    private function createMockConfigurationLoader(GlobalConfig $config)
-    {
-        /** @var MockObject|ConfigurationLoaderInterface $mockConfigurationLoader */
-        $mockConfigurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
-        $mockConfigurationLoader->expects($this->atLeastOnce())
-            ->method('getConfig')
-            ->willReturn($config);
-        return $mockConfigurationLoader;
     }
 }

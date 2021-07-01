@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Cli;
 
 use PHPSu\Cli\SyncCliCommand;
-use PHPSu\Config\ConfigurationLoaderInterface;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -19,9 +17,7 @@ class SyncCliCommandTest extends TestCase
 
     public function testSyncCliCommandExecute(): void
     {
-        $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
-
-        $command = new SyncCliCommand($mockConfigurationLoader, new Controller());
+        $command = new SyncCliCommand($this->createConfig(), new Controller($this->createConfig()));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));
@@ -42,9 +38,7 @@ class SyncCliCommandTest extends TestCase
 
     public function testSyncCliCommandExecuteReversed(): void
     {
-        $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
-
-        $command = new SyncCliCommand($mockConfigurationLoader, new Controller());
+        $command = new SyncCliCommand($this->createConfig(), new Controller($this->createConfig()));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));
@@ -74,19 +68,5 @@ class SyncCliCommandTest extends TestCase
         $globalConfig->addAppInstance('production', 'us', '/var/www/');
         $globalConfig->addAppInstance('local');
         return $globalConfig;
-    }
-
-    /**
-     * @param GlobalConfig $config
-     * @return ConfigurationLoaderInterface|MockObject
-     */
-    private function createMockConfigurationLoader(GlobalConfig $config)
-    {
-        /** @var MockObject|ConfigurationLoaderInterface $mockConfigurationLoader */
-        $mockConfigurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
-        $mockConfigurationLoader->expects($this->atLeastOnce())
-            ->method('getConfig')
-            ->willReturn($config);
-        return $mockConfigurationLoader;
     }
 }
