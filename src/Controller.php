@@ -83,20 +83,21 @@ final class Controller implements ControllerInterface
     public function checkSshConnection(OutputInterface $output, SyncOptions $options): void
     {
         if ($options->getSource() !== 'local') {
-            $sshOptionSource = new SshOptions($options->getSource());
-            $sshOptionSource->setDryRun($options->isDryRun());
-            $command = ShellBuilder::command('echo')
-                ->addArgument(sprintf('ssh connection to %s is working', $sshOptionSource->getDestination()));
-            $sshOptionSource->setCommand($command);
-            $this->ssh($output, $sshOptionSource);
+            $this->establishSshConnection($output, $options->getSource(), $options->isDryRun());
         }
         if ($options->getDestination() !== 'local') {
-            $sshOptionDestination = new SshOptions($options->getDestination());
-            $sshOptionDestination->setDryRun($options->isDryRun());
-            $command = ShellBuilder::command('echo')
-                ->addArgument(sprintf('ssh connection to %s is working', $sshOptionDestination->getDestination()));
-            $sshOptionDestination->setCommand($command);
-            $this->ssh($output, $sshOptionDestination);
+            $this->establishSshConnection($output, $options->getDestination(), $options->isDryRun());
         }
+    }
+
+    private function establishSshConnection(OutputInterface $output, string $source, bool $dryRun): void
+    {
+        $sshOptions = new SshOptions($source);
+        $sshOptions->setDryRun($dryRun);
+        $sshOptions->setCommand(
+            ShellBuilder::command('echo')
+                ->addArgument(sprintf('ssh connection to %s is working', $source))
+        );
+        $this->ssh($output, $sshOptions);
     }
 }
