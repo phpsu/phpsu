@@ -48,10 +48,10 @@ final class Controller implements ControllerInterface
         $mysqlCommand = $this->commandGenerator
             ->setVerbosity($output->getVerbosity())
             ->mysqlCommand(
-            $options->getAppInstance(),
-            $options->getDatabase(),
-            $options->getCommand()
-        );
+                $options->getAppInstance(),
+                $options->getDatabase(),
+                $options->getCommand()
+            );
         if ($options->isDryRun()) {
             $output->writeln((string)$mysqlCommand);
             return 0;

@@ -33,7 +33,7 @@ final class CommandGenerator
     {
         $this->globalConfig = $globalConfig;
     }
-    
+
     public function setVerbosity(int $verbosity): self
     {
         $this->verbosity = $verbosity;
