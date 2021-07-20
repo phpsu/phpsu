@@ -34,6 +34,7 @@
     "test": "vendor/bin/phpunit -c tests/phpunit.xml --testdox --color=always",
     "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox",
     "infection": "vendor/bin/infection --threads=4 --only-covered --min-msi=89 --min-covered-msi=89 --ansi",
+    "infection8.0": "XDEBUG_MODE=coverage vendor/bin/infection --threads=4 --only-covered --min-msi=89 --min-covered-msi=89 --ansi",
     "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon --level max src --ansi"
   },
   "autoload": {
@@ -56,11 +57,11 @@
     "php-di/php-di": "^6.3"
   },
   "require-dev": {
-    "pluswerk/grumphp-config": "^4.0",
-    "rector/rector-prefixed": "^0.7.14",
+    "pluswerk/grumphp-config": "^4.0 | ^5.0",
+    "rector/rector-prefixed": "^0.7 | ^0.10",
     "spatie/phpunit-watcher": "^1.22",
     "phpstan/phpstan": "^0.12.18",
-    "infection/infection": "^0.15.3",
+    "infection/infection": "^0.15.3 | ^0.20",
     "phpunit/php-invoker": "^2.0 | ^3.0",
     "phpunit/phpunit": "^8.5 || ^9.0"
   },

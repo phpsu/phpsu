@@ -15,7 +15,7 @@ use Symfony\Component\Console\Application;
  */
 final class Kernel
 {
-    /** @var Container $container */
+    /** @var Container|null $container */
     protected static $container;
 
     public function __construct()
@@ -31,6 +31,7 @@ final class Kernel
         if (!self::$container) {
             new self();
         }
+        assert(self::$container instanceof Container);
         return self::$container;
     }
 
