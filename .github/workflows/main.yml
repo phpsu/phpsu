@@ -1,4 +1,4 @@
-on: [push]
+on: [push, pull_request]
 name: Test
 jobs:
   roave_bc_check:
@@ -10,3 +10,45 @@ jobs:
         run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
       - name: Roave BC Check
         uses: docker://nyholm/roave-bc-check-ga
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [
+          # ['7.2', 'v1', '^4.4.0'],
+          ['7.3', 'v1', '^5.0'],
+          ['7.4', 'v2', '^5.0'],
+          ['8.0', 'v2', '^5.0'],
+        ]
+    name: PHP ${{ matrix.php[0] }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Cache dependenciess
+        uses: actions/cache@v2
+        with:
+          path: ~/.composer/cache/files
+          key: dependencies-php-${{ matrix.php[0] }}-composer-${{ hashFiles('composer.json') }}
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php[0] }}
+          extensions: mbstring, zip, xml, ctype, iconv, intl, pdo_sqlite, mysql
+          coverage: xdebug
+          tools: composer:${{ matrix.php[1] }}, phpunit
+      - name: Install dependencies for Symfony ${{ matrix.php[2] }}
+        run: |
+          composer install
+          composer require symfony/process:${{ matrix.php[2] }} symfony/console:${{ matrix.php[2] }}
+      - name: Execute tests
+        run: |
+          apt install -y mariadb-client rsync ssh
+          vendor/bin/grumphp run
+          composer test
+          composer infection
+          composer phpstan
+      - uses: codecov/codecov-action@v1
+        with:
+          file: ./tests/test-results/coverage.xml

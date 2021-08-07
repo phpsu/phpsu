@@ -1,6 +1,12 @@
 imports:
   - { resource: vendor/pluswerk/grumphp-config/grumphp.yml }
 
+grumphp:
+  tasks:
+    phpstan:
+      level: "max"
+      configuration: "phpstan.neon"
+      ignore_patterns: ["tests", ".phpstorm.meta.php"]
 
 parameters:
   convention.jsonlint_ignore_pattern:
