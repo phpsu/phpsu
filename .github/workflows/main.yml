@@ -13,6 +13,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    container:
+      image: kanti/buildy:${{ matrix.php[0] }}
+      options: -t
     strategy:
       fail-fast: true
       matrix:
