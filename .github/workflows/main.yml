@@ -34,20 +34,13 @@ jobs:
         with:
           path: ~/.composer/cache/files
           key: dependencies-php-${{ matrix.php[0] }}-composer-${{ hashFiles('composer.json') }}
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php[0] }}
-          extensions: mbstring, zip, xml, ctype, iconv, intl, pdo_sqlite, mysql
-          coverage: xdebug
-          tools: composer:${{ matrix.php[1] }}, phpunit
       - name: Install dependencies for Symfony ${{ matrix.php[2] }}
         run: |
           composer install
           composer require symfony/process:${{ matrix.php[2] }} symfony/console:${{ matrix.php[2] }}
       - name: Execute tests
         run: |
-          sudo apt-get update && sudo apt-get install -y mysql-client
+          # sudo apt-get update && sudo apt-get install -y mysql-client
           vendor/bin/grumphp run
           composer test
           composer infection
