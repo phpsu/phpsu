@@ -20,7 +20,7 @@ jobs:
       fail-fast: true
       matrix:
         php: [
-          ['7.2', 'v1', '^4.4.0'],
+          # ['7.2', 'v1', '^4.4.0'],
           ['7.3', 'v1', '^5.0'],
           ['7.4', 'v2', '^5.0'],
           ['8.0', 'v2', '^5.0'],
@@ -38,7 +38,7 @@ jobs:
         if: ${{ matrix.php[1] == 'v1' }}
         run: |
           composer1 install
-          composer1 require symfony/process:${{ matrix.php[2] }} symfony/console:${{ matrix.php[2] }} symfony/event-dispatcher:${{ matrix.php[2] }} spatie/phpunit-watcher:1.23.0
+          composer1 require symfony/process:${{ matrix.php[2] }} symfony/console:${{ matrix.php[2] }}
       - name: Install dependencies for Symfony ${{ matrix.php[2] }}
         if: ${{ matrix.php[1] == 'v2' }}
         run: |
