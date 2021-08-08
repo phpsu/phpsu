@@ -45,13 +45,12 @@ jobs:
         run: |
           composer2 install
           composer2 require symfony/process:${{ matrix.php[2] }} symfony/console:${{ matrix.php[2] }}
-      #- uses: Yuri6037/Action-FakeTTY@v1
       - name: Execute tests
         run: |
           vendor/bin/grumphp run
           script -q -e -c "/usr/local/bin/composer test"
-          composer infection
-          composer phpstan
+          script -q -e -c "/usr/local/bin/composer infection"
+          script -q -e -c "/usr/local/bin/composer phpstan"
       - uses: codecov/codecov-action@v1
         with:
           file: ./tests/test-results/coverage.xml
