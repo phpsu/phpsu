@@ -14,7 +14,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: kanti/buildy:${{ matrix.php[0] }}
+      image: pluswerk/php-dev:${{ matrix.php[0] }}
       options: -t
     strategy:
       fail-fast: true
@@ -42,11 +42,10 @@ jobs:
       - name: Install dependencies for Symfony ${{ matrix.php[2] }}
         if: ${{ matrix.php[1] == 'v2' }}
         run: |
-          composer install
-          composer require symfony/process:${{ matrix.php[2] }} symfony/console:${{ matrix.php[2] }}
+          composer2 install
+          composer2 require symfony/process:${{ matrix.php[2] }} symfony/console:${{ matrix.php[2] }}
       - name: Execute tests
         run: |
-          # sudo apt-get update && sudo apt-get install -y mysql-client
           vendor/bin/grumphp run
           composer test
           composer infection
