@@ -49,7 +49,7 @@ jobs:
         run: |
           vendor/bin/grumphp run
           script -q -e -c "/usr/local/bin/composer test"
-          script -q -e -c "/usr/local/bin/composer infection"
+          script -q -e -c "/usr/local/bin/composer infection8.0"
           script -q -e -c "/usr/local/bin/composer phpstan"
       - uses: codecov/codecov-action@v1
         with:
