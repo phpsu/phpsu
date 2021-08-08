@@ -35,6 +35,12 @@ jobs:
           path: ~/.composer/cache/files
           key: dependencies-php-${{ matrix.php[0] }}-composer-${{ hashFiles('composer.json') }}
       - name: Install dependencies for Symfony ${{ matrix.php[2] }}
+        if: ${{ matrix.php[1] == 'v1' }}
+        run: |
+          composer1 install
+          composer1 require symfony/process:${{ matrix.php[2] }} symfony/console:${{ matrix.php[2] }}
+      - name: Install dependencies for Symfony ${{ matrix.php[2] }}
+        if: ${{ matrix.php[1] == 'v2' }}
         run: |
           composer install
           composer require symfony/process:${{ matrix.php[2] }} symfony/console:${{ matrix.php[2] }}
