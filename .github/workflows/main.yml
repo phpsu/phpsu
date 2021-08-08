@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: pluswerk/php-dev:nginx-${{ matrix.php[0] }}
-      options: -t --user 1000
+      options: -t --user 1000 --workdir=/app
     strategy:
       fail-fast: true
       matrix:
