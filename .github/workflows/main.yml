@@ -44,7 +44,7 @@ jobs:
           composer require symfony/process:${{ matrix.php[2] }} symfony/console:${{ matrix.php[2] }}
       - name: Execute tests
         run: |
-          apt install -y mariadb-client rsync ssh
+          sudo apt install -y mariadb-client rsync ssh
           vendor/bin/grumphp run
           composer test
           composer infection

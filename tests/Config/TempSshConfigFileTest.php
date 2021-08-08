@@ -28,7 +28,6 @@ final class TempSshConfigFileTest extends TestCase
 
     public function testConstructDifferentFolder(): void
     {
-        $this->markTestSkipped('this test is risky because it only works in non-root environment');
         $reflection = new \ReflectionClass(TempSshConfigFile::class);
         $property = $reflection->getProperty('fileName');
         $property->setAccessible(true);
