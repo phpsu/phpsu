@@ -26,28 +26,19 @@ use function strlen;
  */
 final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
 {
-    /** @var string */
-    private $name;
-    /** @var SshConfig */
-    private $sshConfig;
+    private string $name;
+    private SshConfig $sshConfig;
     /** @var string[] */
-    private $excludes = [];
+    private array $excludes = [];
 
-    /** @var Database */
-    private $fromDatabase;
-    /** @var string */
-    private $fromHost;
+    private Database $fromDatabase;
+    private string $fromHost;
 
-    /** @var Database */
-    private $toDatabase;
-    /** @var string */
-    private $toHost;
+    private Database $toDatabase;
+    private string $toHost;
 
-    /** @var int */
-    private $verbosity = OutputInterface::VERBOSITY_NORMAL;
-
-    /** @var CompressionInterface */
-    private $compression;
+    private int $verbosity = OutputInterface::VERBOSITY_NORMAL;
+    private CompressionInterface $compression;
 
     public function __construct()
     {
@@ -262,11 +253,6 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
         return $command;
     }
 
-    /**
-     * @param ShellBuilder $shellBuilder
-     * @return ShellBuilder
-     * @throws ShellBuilderException
-     */
     public function generate(ShellBuilder $shellBuilder): ShellBuilder
     {
         $hostsDifferentiate = $this->getFromHost() !== $this->getToHost();

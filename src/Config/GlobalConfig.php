@@ -14,14 +14,10 @@ final class GlobalConfig
     use AddFilesystemTrait;
     use AddDatabaseTrait;
 
-    /** @var SshConnections */
-    private $sshConnections;
-
-    /** @var AppInstances */
-    private $appInstances;
-
+    private SshConnections $sshConnections;
+    private AppInstances $appInstances;
     /** @var array<string, string> */
-    private $defaultSshConfig = [
+    private array $defaultSshConfig = [
         'ForwardAgent' => 'yes',
         'ServerAliveInterval' => '120'
     ];
@@ -100,11 +96,6 @@ final class GlobalConfig
         return $this->databases->getAll();
     }
 
-    /**
-     * @param string $database
-     * @return Database
-     * @throws Exception
-     */
     public function getDatabase(string $database): Database
     {
         return $this->databases->get($database);

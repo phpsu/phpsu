@@ -14,19 +14,19 @@ use InvalidArgumentException;
 final class ProcessManager
 {
     /** @var Process[] */
-    private $processes = [];
+    private array $processes = [];
 
     /** @var string[] */
-    private $processStates = [];
+    private array $processStates = [];
 
     /** @var Closure[] */
-    private $outputCallbacks = [];
+    private array $outputCallbacks = [];
 
     /** @var Closure[] */
-    private $stateChangeCallbacks = [];
+    private array $stateChangeCallbacks = [];
 
     /** @var Closure[] */
-    private $tickCallbacks = [];
+    private array $tickCallbacks = [];
 
     public function addOutputCallback(callable $callback): ProcessManager
     {

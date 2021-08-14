@@ -14,10 +14,8 @@ use PHPSu\ShellCommandBuilder\ShellBuilder;
  */
 final class EnvironmentUtility
 {
-    /** @var CommandExecutor */
-    private $commandExecutor;
-    /** @var string */
-    private $phpsuRootPath;
+    private CommandExecutor $commandExecutor;
+    private string $phpsuRootPath;
 
     public function __construct(CommandExecutor $executor = null)
     {
@@ -105,9 +103,7 @@ final class EnvironmentUtility
         if (json_last_error() !== JSON_ERROR_NONE) {
             return null;
         }
-        // support both composer 1.0 and composer 2.0
-        $installations = $activeInstallations->packages ?? $activeInstallations;
-        foreach ($installations as $installed) {
+        foreach ($activeInstallations->packages as $installed) {
             if ($installed->name === $packageName) {
                 return $installed->version;
             }

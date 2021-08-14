@@ -9,20 +9,13 @@ namespace PHPSu\Options;
  */
 final class SyncOptions
 {
-    /** @var string */
-    private $source;
-    /** @var string */
-    private $destination = 'local';
-    /** @var string */
-    private $currentHost = 'local';
-    /** @var bool */
-    private $dryRun = false;
-    /** @var bool */
-    private $all = false;
-    /** @var bool */
-    private $noFiles = false;
-    /** @var bool */
-    private $noDatabases = false;
+    private string $source;
+    private string $destination = 'local';
+    private string $currentHost = 'local';
+    private bool $dryRun = false;
+    private bool $all = false;
+    private bool $noFiles = false;
+    private bool $noDatabases = false;
 
     public function __construct(string $source)
     {

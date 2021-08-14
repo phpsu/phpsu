@@ -11,12 +11,10 @@ use function array_merge;
  */
 final class FileSystem implements ConfigElement
 {
-    /** @var string */
-    private $name;
-    /** @var string */
-    private $path;
+    private string $name;
+    private string $path;
     /** @var string[] */
-    private $excludes = [];
+    private array $excludes = [];
 
     public function getName(): string
     {
@@ -41,7 +39,7 @@ final class FileSystem implements ConfigElement
     }
 
     /**
-     * @return array<string>
+     * @return string[]
      */
     public function getExcludes(): array
     {
@@ -49,7 +47,7 @@ final class FileSystem implements ConfigElement
     }
 
     /**
-     * @param array<string> $excludes
+     * @param string[] $excludes
      * @return FileSystem
      * @return FileSystem
      */

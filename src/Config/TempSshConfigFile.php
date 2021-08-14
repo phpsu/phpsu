@@ -12,8 +12,7 @@ use SplFileObject;
  */
 final class TempSshConfigFile extends SplFileObject
 {
-    /** @var string */
-    private static $fileName = '.phpsu/config/ssh_config';
+    private static string $fileName = '.phpsu/config/ssh_config';
 
     public function __construct()
     {

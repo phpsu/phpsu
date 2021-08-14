@@ -12,10 +12,8 @@ use SplFileObject;
 final class SshConfig
 {
     /** @var SshConfigHost[] */
-    private $hosts = [];
-
-    /** @var SplFileObject */
-    private $file;
+    private array $hosts = [];
+    private SplFileObject $file;
 
     public static function fromGlobal(GlobalConfig $global, string $currentHost): SshConfig
     {

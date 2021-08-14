@@ -12,7 +12,7 @@ use Exception;
 final class AppInstances
 {
     /** @var AppInstance[] */
-    private $instances = [];
+    private array $instances = [];
 
     public function add(AppInstance $appInstance): AppInstances
     {

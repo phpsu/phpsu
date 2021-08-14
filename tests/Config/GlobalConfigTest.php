@@ -104,26 +104,6 @@ final class GlobalConfigTest extends TestCase
         $this->assertArrayHasKey('serverEu', $result);
     }
 
-    public function testAddDatabaseByUrlDeprecating(): void
-    {
-        $global = static::getGlobalConfig();
-        $this->expectDeprecationMessage('PHPSu\Config\GlobalConfig->addDatabase with an Url as second parameter has been renamed to addDatabaseByUrl. method addDatabase will lose this functionality in a future release.');
-        $global->addDatabase('name', 'mysql://user:pw@host:3307/database');
-    }
-
-    public function testAddDatabaseByUrlDeprecatingFull(): void
-    {
-        $oldErrorReporting = error_reporting();
-        error_reporting($oldErrorReporting & ~E_USER_DEPRECATED);
-        $global = static::getGlobalConfig();
-        try {
-            $url = $global->addDatabase('name', 'mysql://user:pw@host:3307/database')->getUrl();
-            $this->assertSame('mysql://user:pw@host:3307/database', $url);
-        } finally {
-            error_reporting($oldErrorReporting);
-        }
-    }
-
     public static function getGlobalConfig(): GlobalConfig
     {
         $global = new GlobalConfig();

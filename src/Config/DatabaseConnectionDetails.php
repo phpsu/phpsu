@@ -12,16 +12,11 @@ use InvalidArgumentException;
  */
 final class DatabaseConnectionDetails
 {
-    /** @var string */
-    private $user;
-    /** @var string */
-    private $password;
-    /** @var string */
-    private $host;
-    /** @var int */
-    private $port;
-    /** @var string */
-    private $database;
+    private string $user;
+    private string $password;
+    private string $host;
+    private int $port;
+    private string $database;
 
     private function __construct()
     {

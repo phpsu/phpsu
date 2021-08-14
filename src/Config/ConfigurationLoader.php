@@ -11,8 +11,7 @@ use RuntimeException;
  */
 final class ConfigurationLoader implements ConfigurationLoaderInterface
 {
-    /** @var ?GlobalConfig */
-    private $config;
+    private ?GlobalConfig $config = null;
 
     public function getConfig(): GlobalConfig
     {

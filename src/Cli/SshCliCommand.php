@@ -23,8 +23,7 @@ use function in_array;
 final class SshCliCommand extends AbstractCliCommand
 {
     /** @var null|string[] */
-    private $instances;
-
+    private ?array $instances = null;
 
     protected function configure(): void
     {
@@ -37,7 +36,6 @@ final class SshCliCommand extends AbstractCliCommand
             ->addArgument('commands', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'Run commands on remote ssh', []);
     }
 
-
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         /** @var string $default */
@@ -48,12 +46,6 @@ final class SshCliCommand extends AbstractCliCommand
         );
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return void
-     * @throws Exception
-     */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $default = $input->hasArgument('destination') ? $this->getArgument($input, 'destination') : '';

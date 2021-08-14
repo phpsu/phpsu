@@ -12,7 +12,7 @@ use Exception;
 final class FileSystems
 {
     /** @var FileSystem[] */
-    private $fileSystems = [];
+    private array $fileSystems = [];
 
     /**
      * @param FileSystem $fileSystem

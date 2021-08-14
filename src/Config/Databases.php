@@ -12,7 +12,7 @@ use Exception;
 final class Databases
 {
     /** @var Database[] */
-    private $databases = [];
+    private array $databases = [];
 
     public function add(Database $database): Databases
     {

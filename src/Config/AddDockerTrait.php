@@ -11,18 +11,11 @@ namespace PHPSu\Config;
  */
 trait AddDockerTrait
 {
-    /** @var bool */
-    protected $executeInDocker = false;
-    /** @var bool */
-    protected $isSudoEnabled = false;
-    /** @var string */
-    protected $container = '';
+    protected bool $executeInDocker = false;
+    protected bool $isSudoEnabled = false;
+    protected string $container = '';
 
-    /**
-     * @param bool $enable
-     * @return static
-     */
-    public function executeInDocker(bool $enable)
+    public function executeInDocker(bool $enable): self
     {
         $this->executeInDocker = $enable;
         return $this;
@@ -33,11 +26,7 @@ trait AddDockerTrait
         return $this->executeInDocker;
     }
 
-    /**
-     * @param string $containerName
-     * @return $this
-     */
-    public function setContainer(string $containerName)
+    public function setContainer(string $containerName): self
     {
         $this->container = $containerName;
         return $this;
@@ -48,11 +37,7 @@ trait AddDockerTrait
         return $this->container;
     }
 
-    /**
-     * @param bool $isSudoEnabled
-     * @return static
-     */
-    public function enableSudoForDocker(bool $isSudoEnabled)
+    public function enableSudoForDocker(bool $isSudoEnabled): self
     {
         $this->isSudoEnabled = $isSudoEnabled;
         return $this;
