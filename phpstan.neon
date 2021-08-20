@@ -1,4 +1,6 @@
 parameters:
-	reportUnmatchedIgnoredErrors: false
-	ignoreErrors:
-		- '#Access to an undefined property PHPSu\\Config\\SshConfig::\$[a-zA-Z0-9_\*]+#'
+    parallel:
+        maximumNumberOfProcesses: 4
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - '#Access to an undefined property PHPSu\\Config\\SshConfig::\$[a-zA-Z0-9_\*]+#'

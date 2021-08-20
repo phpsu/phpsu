@@ -113,7 +113,9 @@ final class GlobalConfigTest extends TestCase
         $global->addSshConnectionObject((new SshConnection())->setHost('serverEu')->setUrl('user@server.eu'));
         $global->addAppInstanceObject((new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production'));
         $global->addAppInstanceObject((new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing'));
-        $global->addAppInstance('local', 'local', getcwd());
+        $cwd = getcwd();
+        assert(is_string($cwd));
+        $global->addAppInstance('local', 'local', $cwd);
         return $global;
     }
 }

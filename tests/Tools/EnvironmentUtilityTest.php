@@ -102,7 +102,7 @@ final class EnvironmentUtilityTest extends TestCase
     private function getEnvironmentUtility(?ShellInterface $command): EnvironmentUtility
     {
         $executor = new class extends CommandExecutor {
-            public static $command;
+            public static ?ShellInterface $command;
 
             public function runCommand(ShellInterface $command): Process
             {

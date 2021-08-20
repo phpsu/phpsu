@@ -37,6 +37,7 @@ final class ProcessManagerTest extends TestCase
         // forcefully kill process
         $pList1->stop(0, 15);
         static::expectExceptionMessage('No Process found with id: ' . $pid);
+        assert($pid !== null);
         $processManager->getState($pid);
     }
 

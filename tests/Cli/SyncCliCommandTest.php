@@ -20,7 +20,7 @@ class SyncCliCommandTest extends TestCase
     public function testSyncCliCommandExecute(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
-
+        assert($mockConfigurationLoader instanceof ConfigurationLoaderInterface);
         $command = new SyncCliCommand($mockConfigurationLoader, new Controller());
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
@@ -43,7 +43,7 @@ class SyncCliCommandTest extends TestCase
     public function testSyncCliCommandExecuteReversed(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
-
+        assert($mockConfigurationLoader instanceof ConfigurationLoaderInterface);
         $command = new SyncCliCommand($mockConfigurationLoader, new Controller());
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
@@ -84,6 +84,7 @@ class SyncCliCommandTest extends TestCase
     {
         /** @var MockObject|ConfigurationLoaderInterface $mockConfigurationLoader */
         $mockConfigurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
+        assert(method_exists($mockConfigurationLoader, 'expects'));
         $mockConfigurationLoader->expects($this->atLeastOnce())
             ->method('getConfig')
             ->willReturn($config);

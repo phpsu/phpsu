@@ -34,7 +34,7 @@
     "test": "vendor/bin/phpunit -c tests/phpunit.xml --testdox --color=always",
     "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox",
     "infection": "vendor/bin/infection --threads=4 --only-covered --min-msi=89 --min-covered-msi=89 --ansi",
-    "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon --level max src --ansi"
+    "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon --level max src tests --ansi"
   },
   "autoload": {
     "psr-4": {

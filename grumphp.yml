@@ -7,7 +7,7 @@ grumphp:
     phpstan:
       level: "max"
       configuration: "phpstan.neon"
-      ignore_patterns: ["tests", ".phpstorm.meta.php"]
+      ignore_patterns: [".phpstorm.meta.php"]
 
 parameters:
   convention.jsonlint_ignore_pattern:

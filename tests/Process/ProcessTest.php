@@ -14,7 +14,9 @@ class ProcessTest extends TestCase
     public function testImpossibleStateException(): void
     {
         $process = Process::fromShellCommandline('');
-        $reflection =  (new ReflectionClass($process))->getParentClass()->getProperty('status');
+        $reflectionClass =  (new ReflectionClass($process))->getParentClass();
+        assert($reflectionClass instanceof ReflectionClass);
+        $reflection = $reflectionClass->getProperty('status');
         $reflection->setAccessible(true);
         $reflection->setValue($process, -1);
         $this->assertSame(-1, $process->getStatus());
