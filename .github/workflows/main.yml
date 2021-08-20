@@ -33,7 +33,7 @@ jobs:
         run: composer install
       - name: Execute tests
         run: |
-          echo "xdebug.mode=coverage" > /opt/docker/etc/php/php.webdevops.ini
+          echo "xdebug.mode=coverage\nmemory_limit = -1" > /opt/docker/etc/php/php.webdevops.ini
           vendor/bin/grumphp run
           script -q -e -c "/usr/local/bin/composer test"
           script -q -e -c "/usr/local/bin/composer infection"
