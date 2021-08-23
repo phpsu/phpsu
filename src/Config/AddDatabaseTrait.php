@@ -14,7 +14,7 @@ trait AddDatabaseTrait
         return $this;
     }
 
-    public function addDatabase(string $name, string $database, string $user = '', string $password = '', string $host = '127.0.0.1', int $port = 3306): Database
+    public function addDatabase(string $name, string $database, string $user, string $password, string $host = '127.0.0.1', int $port = 3306): Database
     {
         $databaseObject = new Database();
         $connectionDetails = DatabaseConnectionDetails::fromDetails($database, $user, $password, $host, $port);
