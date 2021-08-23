@@ -48,7 +48,7 @@
   },
   "minimum-stability": "stable",
   "require": {
-    "php": "^7.4 || ^8.0.0",
+    "php": "^7.4 || ~8.0.0",
     "ext-json": "*",
     "composer-runtime-api": "^2.0.0",
     "phpsu/shellcommandbuilder": "^2.0",
