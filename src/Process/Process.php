@@ -19,8 +19,7 @@ final class Process extends \Symfony\Component\Process\Process
     public const STATE_SUCCEEDED = 'succeeded';
     public const STATE_ERRORED = 'errored';
 
-    /** @var string */
-    private $name = '';
+    private string $name = '';
 
     public function getName(): string
     {

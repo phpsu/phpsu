@@ -185,7 +185,7 @@ final class DatabaseCommandTest extends TestCase
     }
 
     /**
-     * @param array $db
+     * @param array<string, string|int> $db
      * @param string $newDb
      * @return ShellBuilder
      * @throws \PHPSu\ShellCommandBuilder\Exception\ShellBuilderException
@@ -213,7 +213,7 @@ final class DatabaseCommandTest extends TestCase
     }
 
     /**
-     * @param array $db
+     * @param array<string, string|int> $db
      * @return \PHPSu\ShellCommandBuilder\ShellCommand
      * @throws \PHPSu\ShellCommandBuilder\Exception\ShellBuilderException
      */

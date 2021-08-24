@@ -19,32 +19,18 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 final class SshCommand
 {
-    /** @var SshConfig */
-    private $sshConfig;
-    /** @var string */
-    private $into;
-    /** @var string */
-    private $path = '';
-    /** @var int */
-    private $verbosity = OutputInterface::VERBOSITY_NORMAL;
-    /** @var ShellInterface|null */
-    private $command = null;
-    /** @var ShellCommand */
-    private $shellCommand;
+    private SshConfig $sshConfig;
+    private string $into;
+    private string $path = '';
+    private int $verbosity = OutputInterface::VERBOSITY_NORMAL;
+    private ?ShellInterface $command = null;
+    private ShellCommand $shellCommand;
 
     public function __construct()
     {
         $this->shellCommand = ShellBuilder::command('ssh');
     }
 
-    /**
-     * @param GlobalConfig $global
-     * @param string $connectionName
-     * @param string $currentHost
-     * @param int $verbosity
-     * @return SshCommand
-     * @throws Exception
-     */
     public static function fromGlobal(GlobalConfig $global, string $connectionName, string $currentHost, int $verbosity): SshCommand
     {
         $host = $global->getHostName($connectionName);
@@ -129,11 +115,6 @@ final class SshCommand
         return $this;
     }
 
-    /**
-     * @param ShellBuilder $shellBuilder
-     * @return ShellBuilder
-     * @throws ShellBuilderException|Exception
-     */
     public function generate(ShellBuilder $shellBuilder): ShellBuilder
     {
         $command = $this->command;

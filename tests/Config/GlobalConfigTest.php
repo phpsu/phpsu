@@ -104,26 +104,6 @@ final class GlobalConfigTest extends TestCase
         $this->assertArrayHasKey('serverEu', $result);
     }
 
-    public function testAddDatabaseByUrlDeprecating(): void
-    {
-        $global = static::getGlobalConfig();
-        $this->expectDeprecationMessage('PHPSu\Config\GlobalConfig->addDatabase with an Url as second parameter has been renamed to addDatabaseByUrl. method addDatabase will lose this functionality in a future release.');
-        $global->addDatabase('name', 'mysql://user:pw@host:3307/database');
-    }
-
-    public function testAddDatabaseByUrlDeprecatingFull(): void
-    {
-        $oldErrorReporting = error_reporting();
-        error_reporting($oldErrorReporting & ~E_USER_DEPRECATED);
-        $global = static::getGlobalConfig();
-        try {
-            $url = $global->addDatabase('name', 'mysql://user:pw@host:3307/database')->getUrl();
-            $this->assertSame('mysql://user:pw@host:3307/database', $url);
-        } finally {
-            error_reporting($oldErrorReporting);
-        }
-    }
-
     public static function getGlobalConfig(): GlobalConfig
     {
         $global = new GlobalConfig();
@@ -133,7 +113,9 @@ final class GlobalConfigTest extends TestCase
         $global->addSshConnectionObject((new SshConnection())->setHost('serverEu')->setUrl('user@server.eu'));
         $global->addAppInstanceObject((new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production'));
         $global->addAppInstanceObject((new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing'));
-        $global->addAppInstance('local', 'local', getcwd());
+        $cwd = getcwd();
+        assert(is_string($cwd));
+        $global->addAppInstance('local', 'local', $cwd);
         return $global;
     }
 }

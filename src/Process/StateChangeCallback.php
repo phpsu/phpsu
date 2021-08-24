@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PHPSu\Process;
 
 use LogicException;
-use PHPSu\Tools\EnvironmentUtility;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
@@ -14,11 +13,9 @@ use Symfony\Component\Console\Output\ConsoleSectionOutput;
  */
 final class StateChangeCallback
 {
-    /** @var OutputInterface */
-    private $output;
-
+    private OutputInterface $output;
     /** @var Spinner[] */
-    private $processSpinners = [];
+    private array $processSpinners = [];
 
     public function __construct(OutputInterface $output)
     {

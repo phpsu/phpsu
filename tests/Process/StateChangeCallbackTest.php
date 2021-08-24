@@ -66,6 +66,7 @@ final class StateChangeCallbackTest extends TestCase
     {
         $sections = [];
         $outputStream = fopen('php://memory', 'rwb');
+        assert(is_resource($outputStream));
         $output = new ConsoleSectionOutput($outputStream, $sections, OutputInterface::VERBOSITY_NORMAL, true, new OutputFormatter());
         $manager = new ProcessManager();
         $callback = new StateChangeCallback($output);
@@ -78,6 +79,7 @@ final class StateChangeCallbackTest extends TestCase
     {
         $sections = [];
         $outputStream = fopen('php://memory', 'rwb');
+        assert(is_resource($outputStream));
         $output = new ConsoleSectionOutput($outputStream, $sections, OutputInterface::VERBOSITY_NORMAL, true, new OutputFormatter());
         $manager = new ProcessManager();
         $process = Process::fromShellCommandline('sleep 1')->setName('sleepProcess');
@@ -92,6 +94,7 @@ final class StateChangeCallbackTest extends TestCase
     {
         $sections = [];
         $outputStream = fopen('php://memory', 'rwb');
+        assert(is_resource($outputStream));
         $output = new ConsoleSectionOutput($outputStream, $sections, OutputInterface::VERBOSITY_NORMAL, true, new OutputFormatter());
         $manager = new ProcessManager();
         $process = Process::fromShellCommandline('sleep 1')->setName('sleepProcess');
@@ -115,6 +118,7 @@ final class StateChangeCallbackTest extends TestCase
     {
         $sections = [];
         $outputStream = fopen('php://memory', 'rwb');
+        assert(is_resource($outputStream));
         $output = new ConsoleSectionOutput($outputStream, $sections, OutputInterface::VERBOSITY_NORMAL, true, new OutputFormatter());
         $manager = new ProcessManager();
         $process = Process::fromShellCommandline('sleep 1')->setName('sleepProcess');
@@ -157,7 +161,13 @@ final class StateChangeCallbackTest extends TestCase
         );
     }
 
-    public function setPrivateProperty($object, string $propertyName, $value): void
+    /**
+     * @param ProcessManager $object
+     * @param string $propertyName
+     * @param mixed $value
+     * @throws \ReflectionException
+     */
+    public function setPrivateProperty(ProcessManager $object, string $propertyName, $value): void
     {
         $property = (new ReflectionClass($object))->getProperty($propertyName);
         $property->setAccessible(true);

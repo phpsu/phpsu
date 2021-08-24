@@ -100,7 +100,7 @@ namespace PHPSu\Config;
 final class SshConfigHost
 {
     /** @var array<string, string> */
-    private $options = [];
+    private array $options = [];
 
     public function __isset(string $name): bool
     {

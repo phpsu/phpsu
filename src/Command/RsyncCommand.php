@@ -17,28 +17,20 @@ use PHPSu\ShellCommandBuilder\ShellBuilder;
  */
 final class RsyncCommand implements CommandInterface, GroupedCommandInterface
 {
-    /** @var string */
-    private $name;
-    /** @var SshConfig */
-    private $sshConfig;
+    private string $name;
+    private SshConfig $sshConfig;
     /** @var array<string> */
-    private $shortOptions = ['az'];
+    private array $shortOptions = ['az'];
     /** @var array<string> */
-    private $options = [];
+    private array $options = [];
+    private string $sourceHost = '';
+    private string $sourcePath;
 
-    /** @var string */
-    private $sourceHost = '';
-    /** @var string */
-    private $sourcePath;
-
-    /** @var string */
-    private $destinationHost = '';
-    /** @var string */
-    private $toPath;
+    private string $destinationHost = '';
+    private string $toPath;
     /** @var array<string> */
-    private $excludeList = [];
-    /** @var string */
-    private $verbosity = '';
+    private array $excludeList = [];
+    private string $verbosity = '';
 
     /**
      * @param GlobalConfig $global

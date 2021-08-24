@@ -17,8 +17,9 @@ use Symfony\Component\Console\Output\ConsoleSectionOutput;
  */
 final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputInterface
 {
-    private $stderr;
-    private $consoleSectionOutputs = [];
+    private OutputInterface $stderr;
+    /** @var mixed[] */
+    private array $consoleSectionOutputs = [];
 
     /**
      * @param int                           $verbosity The verbosity level (one of the VERBOSITY constants in OutputInterface)
@@ -48,7 +49,7 @@ final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputI
     /**
      * {@inheritdoc}
      */
-    public function setDecorated($decorated): void
+    public function setDecorated(bool $decorated): void
     {
         parent::setDecorated($decorated);
         $this->stderr->setDecorated($decorated);
@@ -66,7 +67,7 @@ final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputI
     /**
      * {@inheritdoc}
      */
-    public function setVerbosity($level): void
+    public function setVerbosity(int $level): void
     {
         parent::setVerbosity($level);
         $this->stderr->setVerbosity($level);
@@ -93,7 +94,9 @@ final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputI
      */
     private function openOutputStream()
     {
-        return fopen('php://memory', 'rwb+');
+        $resource = fopen('php://memory', 'rwb+');
+        assert(is_resource($resource));
+        return $resource;
     }
 
     /**
@@ -101,6 +104,8 @@ final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputI
      */
     private function openErrorStream()
     {
-        return fopen('php://memory', 'rwb+');
+        $resource = fopen('php://memory', 'rwb+');
+        assert(is_resource($resource));
+        return $resource;
     }
 }

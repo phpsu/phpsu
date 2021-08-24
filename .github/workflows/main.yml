@@ -1,4 +1,4 @@
-on: [push]
+on: [push, pull_request]
 name: Test
 jobs:
   roave_bc_check:
@@ -10,3 +10,34 @@ jobs:
         run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
       - name: Roave BC Check
         uses: docker://nyholm/roave-bc-check-ga
+
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: pluswerk/php-dev:nginx-${{ matrix.php }}
+      options: -t
+    strategy:
+      fail-fast: true
+      matrix:
+        php: ['7.4', '8.0']
+    name: PHP ${{ matrix.php }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Cache dependenciess
+        uses: actions/cache@v2
+        with:
+          path: ~/.composer/cache/files
+          key: dependencies-php-${{ matrix.php[0] }}-composer-${{ hashFiles('composer.json') }}
+      - name: Install dependencies for Symfony ${{ matrix.php }}
+        run: composer install
+      - name: Execute tests
+        run: |
+          echo "xdebug.mode=coverage\nmemory_limit = -1" > /opt/docker/etc/php/php.webdevops.ini
+          vendor/bin/grumphp run
+          script -q -e -c "/usr/local/bin/composer test"
+          script -q -e -c "/usr/local/bin/composer infection"
+          script -q -e -c "/usr/local/bin/composer phpstan"
+      - uses: codecov/codecov-action@v1
+        with:
+          file: ./tests/test-results/coverage.xml

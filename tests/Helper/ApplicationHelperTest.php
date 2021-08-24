@@ -40,6 +40,11 @@ class ApplicationHelperTest extends TestCase
         $this->callPrivateMethod('getPhpSuVersionFromGitFolder', self::GIT_PATH . '/no_head');
     }
 
+    /**
+     * @param string $method
+     * @return mixed
+     * @throws \ReflectionException
+     */
     private function callPrivateMethod(string $method)
     {
         $object = new ApplicationHelper();

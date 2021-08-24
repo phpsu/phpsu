@@ -12,14 +12,10 @@ use PHPSu\ShellCommandBuilder\ShellInterface;
  */
 final class SshOptions
 {
-    /** @var string */
-    private $destination;
-    /** @var string */
-    private $currentHost = 'local';
-    /** @var ShellInterface */
-    private $command;
-    /** @var bool */
-    private $dryRun = false;
+    private string $destination;
+    private string $currentHost = 'local';
+    private ShellInterface $command;
+    private bool $dryRun = false;
 
     public function __construct(string $destination)
     {

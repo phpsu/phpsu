@@ -10,7 +10,6 @@ use PHPSu\Options\SshOptions;
 use PHPSu\Options\SyncOptions;
 use PHPSu\Options\MysqlOptions;
 use PHPSu\Process\CommandExecutor;
-use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,8 +21,7 @@ final class Controller implements ControllerInterface
 {
     public const PHPSU_ROOT_PATH = __DIR__ . '/../';
 
-    /** @var CommandExecutor */
-    private $executor;
+    private CommandExecutor $executor;
 
     public function __construct(CommandExecutor $commandExecutor = null)
     {
@@ -40,13 +38,6 @@ final class Controller implements ControllerInterface
         return $this->executor->passthru($sshCommand, $output);
     }
 
-    /**
-     * @param OutputInterface $output
-     * @param GlobalConfig $config
-     * @param MysqlOptions $options
-     * @return int
-     * @throws ShellBuilderException
-     */
     public function mysql(OutputInterface $output, GlobalConfig $config, MysqlOptions $options): int
     {
         $mysqlCommand = (new CommandGenerator($config, $output->getVerbosity()))->mysqlCommand(
