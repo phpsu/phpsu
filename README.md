@@ -101,11 +101,6 @@ $globalConfig->addAppInstance('local')
 return $globalConfig;
 ````
 
-> Hint:
-> If you ever need or want to rename the configuration file for phpsu, you can do this by providing 
-> an environment variable `PHPSU_CONFIG_FILE` and setting it to the file name including the file ending
-> example: `PHPSU_CONFIG_FILE=alternative-config.php`
-
 ## CLI Examples
 
 ````bash
