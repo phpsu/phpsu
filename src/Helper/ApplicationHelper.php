@@ -15,36 +15,23 @@ use function strpos;
  */
 final class ApplicationHelper
 {
-    /**
-     * @return string
-     */
     public function getCurrentPHPSUVersion(): string
     {
         $gitPath = Controller::PHPSU_ROOT_PATH . '/.git/';
         return $this->getPhpSuVersionFromGlobals() ?? $this->getPhpSuVersionFromVendor() ?? $this->getPhpSuVersionFromGitFolder($gitPath) ?? 'development';
     }
 
-    /**
-     * @return string|null
-     */
     private function getPhpSuVersionFromGlobals(): ?string
     {
         $pharVersion = '@phpsu_version@';
         return strpos($pharVersion, '@') === 0 ? null : $pharVersion;
     }
 
-    /**
-     * @return string|null
-     */
     private function getPhpSuVersionFromVendor(): ?string
     {
         return (new EnvironmentUtility())->getInstalledPackageVersion('phpsu/phpsu');
     }
 
-    /**
-     * @param string $gitPath
-     * @return string|null
-     */
     private function getPhpSuVersionFromGitFolder(string $gitPath): ?string
     {
         if (!file_exists($gitPath)) {

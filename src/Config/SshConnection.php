@@ -11,14 +11,12 @@ use InvalidArgumentException;
  */
 final class SshConnection implements ConfigElement
 {
-    /** @var string */
-    private $host;
-    /** @var SshUrl */
-    private $url;
+    private string $host;
+    private SshUrl $url;
     /** @var string[] */
-    private $options = [];
+    private array $options = [];
     /** @var string[] */
-    private $from = [];
+    private array $from = [];
 
     public function getHost(): string
     {

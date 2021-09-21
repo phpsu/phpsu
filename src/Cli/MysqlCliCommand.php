@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PHPSu\Cli;
 
-use Exception;
 use PHPSu\Helper\StringHelper;
 use PHPSu\Options\MysqlOptions;
 use Symfony\Component\Console\Input\InputArgument;
@@ -21,7 +20,7 @@ use function in_array;
 final class MysqlCliCommand extends AbstractCliCommand
 {
     /** @var null|string[] */
-    private $instances;
+    private ?array $instances = null;
 
     protected function configure(): void
     {
@@ -44,12 +43,6 @@ final class MysqlCliCommand extends AbstractCliCommand
         );
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return void
-     * @throws Exception
-     */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $default = $input->hasArgument('instance') ? $this->getArgument($input, 'instance') : '';

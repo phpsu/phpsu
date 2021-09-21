@@ -15,6 +15,7 @@ use PHPSu\Process\CommandExecutor;
 use PHPSu\Tests\TestHelper\BufferedConsoleOutput;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 final class ControllerTest extends TestCase
 {
@@ -306,6 +307,7 @@ final class ControllerTest extends TestCase
     public function testPhpApiReadmeExample(): void
     {
         $oldCwd = getcwd();
+        assert(is_string($oldCwd));
         chdir(__DIR__ . '/fixtures');
         $config = (new ConfigurationLoader())->getConfig();
         chdir($oldCwd);

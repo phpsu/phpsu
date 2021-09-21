@@ -9,7 +9,6 @@ use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Config\TempSshConfigFile;
 use PHPSu\Options\SyncOptions;
-use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
 use PHPSu\ShellCommandBuilder\ShellInterface;
 use SplFileObject;
@@ -22,12 +21,9 @@ use function in_array;
  */
 final class CommandGenerator
 {
-    /** @var SplFileObject|null */
-    private $file;
-    /** @var GlobalConfig */
-    private $globalConfig;
-    /** @var int */
-    private $verbosity = OutputInterface::VERBOSITY_NORMAL;
+    private ?SplFileObject $file = null;
+    private GlobalConfig $globalConfig;
+    private int $verbosity = OutputInterface::VERBOSITY_NORMAL;
 
     public function __construct(GlobalConfig $globalConfig)
     {
@@ -65,14 +61,6 @@ final class CommandGenerator
         return $sshCommand->generate(ShellBuilder::new());
     }
 
-    /**
-     * @param string $instance
-     * @param string|null $database
-     * @param string|null $command
-     * @return ShellInterface
-     * @throws ShellBuilderException
-     * @throws Exception
-     */
     public function mysqlCommand(string $instance, ?string $database, ?string $command): ShellInterface
     {
         $sshConfig = SshConfig::fromGlobal($this->globalConfig, $instance);

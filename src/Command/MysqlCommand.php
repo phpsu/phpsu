@@ -20,25 +20,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 final class MysqlCommand implements CommandInterface
 {
-    /** @var null|string */
-    private $command;
-    /** @var SshConfig */
-    private $sshConfig;
-    /** @var Database */
-    private $database;
-    /** @var string */
-    private $host;
-    /** @var int */
-    private $verbosity;
+    private ?string $command = null;
+    private SshConfig $sshConfig;
+    private Database $database;
+    private string $host;
+    private int $verbosity;
 
-    /**
-     * @param GlobalConfig $global
-     * @param string $whichInstance
-     * @param string|null $database
-     * @param int $verbosity
-     * @return MysqlCommand
-     * @throws Exception
-     */
     public static function fromGlobal(GlobalConfig $global, string $whichInstance, ?string $database = null, int $verbosity = OutputInterface::VERBOSITY_NORMAL): self
     {
         $command = new self();
@@ -57,10 +44,6 @@ final class MysqlCommand implements CommandInterface
         return $command;
     }
 
-    /**
-     * @param string|null $command
-     * @return MysqlCommand
-     */
     public function setCommand(?string $command): MysqlCommand
     {
         $this->command = $command;
@@ -79,12 +62,6 @@ final class MysqlCommand implements CommandInterface
         return $this;
     }
 
-    /**
-     * @param ShellBuilder|null $shellBuilder
-     * @return ShellBuilder
-     * @throws ShellBuilderException
-     * @throws Exception
-     */
     public function generate(ShellBuilder $shellBuilder = null): ShellBuilder
     {
         $shellBuilder = $shellBuilder ?? ShellBuilder::new();

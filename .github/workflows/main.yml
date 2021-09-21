@@ -14,18 +14,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: pluswerk/php-dev:nginx-${{ matrix.php[0] }}
+      image: pluswerk/php-dev:nginx-${{ matrix.php }}
       options: -t
     strategy:
       fail-fast: true
       matrix:
-        php: [
-          # ['7.2', 'v1', '^4.4.0'],
-          ['7.3', 'v1', '^5.0'],
-          ['7.4', 'v2', '^5.0'],
-          ['8.0', 'v2', '^5.0'],
-        ]
-    name: PHP ${{ matrix.php[0] }}
+        php: ['7.4', '8.0']
+    name: PHP ${{ matrix.php }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -34,19 +29,11 @@ jobs:
         with:
           path: ~/.composer/cache/files
           key: dependencies-php-${{ matrix.php[0] }}-composer-${{ hashFiles('composer.json') }}
-      - name: Install dependencies for Symfony ${{ matrix.php[2] }}
-        if: ${{ matrix.php[1] == 'v1' }}
-        run: |
-          composer1 install
-          composer1 require symfony/process:${{ matrix.php[2] }} symfony/console:${{ matrix.php[2] }}
-      - name: Install dependencies for Symfony ${{ matrix.php[2] }}
-        if: ${{ matrix.php[1] == 'v2' }}
-        run: |
-          composer2 install
-          composer2 require symfony/process:${{ matrix.php[2] }} symfony/console:${{ matrix.php[2] }}
+      - name: Install dependencies for Symfony ${{ matrix.php }}
+        run: composer install
       - name: Execute tests
         run: |
-          echo "xdebug.mode=coverage" > /opt/docker/etc/php/php.webdevops.ini
+          echo "xdebug.mode=coverage\nmemory_limit = -1" > /opt/docker/etc/php/php.webdevops.ini
           vendor/bin/grumphp run
           script -q -e -c "/usr/local/bin/composer test"
           script -q -e -c "/usr/local/bin/composer infection"

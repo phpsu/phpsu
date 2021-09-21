@@ -6,8 +6,7 @@ namespace PHPSu\Config;
 
 trait AddFilesystemTrait
 {
-    /** @var FileSystems */
-    private $fileSystems;
+    private FileSystems $fileSystems;
 
     public function addFilesystemObject(FileSystem $fileSystem): self
     {

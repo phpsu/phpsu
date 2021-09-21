@@ -10,12 +10,13 @@ use PHPUnit\Framework\TestCase;
 
 final class ConfigurationLoaderTest extends TestCase
 {
-    /** @var string */
-    private $oldCwd;
+    private string $oldCwd;
 
     public function setUp(): void
     {
-        $this->oldCwd = getcwd();
+        $cwd = getcwd();
+        assert(is_string($cwd));
+        $this->oldCwd = $cwd;
         chdir(__DIR__ . '/../fixtures');
     }
 

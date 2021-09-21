@@ -79,6 +79,8 @@ final class CommandGeneratorTest extends TestCase
                 ->addOption('port', '3306', false, true)
                 ->addArgument('appDatabase')
             )->addToBuilder();
+        assert($comparisonObject instanceof ShellBuilder);
+        assert($mysqlCommand instanceof ShellBuilder);
         static::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
     }
 
@@ -101,6 +103,8 @@ final class CommandGeneratorTest extends TestCase
                     ->addArgument('appDatabase')
                     ->addShortOption('e', 'SELECT * FROM tablex')
             )->addToBuilder();
+        assert($comparisonObject instanceof ShellBuilder);
+        assert($mysqlCommand instanceof ShellBuilder);
         static::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
     }
 
@@ -117,6 +121,8 @@ final class CommandGeneratorTest extends TestCase
             ->addOption('port', '3307', false, true)
             ->addArgument('database')
             ->addShortOption('e', 'SELECT * FROM tablex')->addToBuilder();
+        assert($comparisonObject instanceof ShellBuilder);
+        assert($mysqlCommand instanceof ShellBuilder);
         static::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
     }
 

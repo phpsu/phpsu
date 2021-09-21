@@ -15,14 +15,11 @@ final class AppInstance
     use AddFilesystemTrait;
     use AddDatabaseTrait;
 
-    /** @var string */
-    private $name;
-    /** @var string */
-    private $host = '';
-    /** @var string */
-    private $path = '';
+    private string $name;
+    private string $host = '';
+    private string $path = '';
     /** @var CompressionInterface[] */
-    private $compressions = [];
+    private array $compressions = [];
 
     public function __construct()
     {

@@ -20,10 +20,8 @@ final class Controller implements ControllerInterface
 {
     public const PHPSU_ROOT_PATH = __DIR__ . '/../';
 
-    /** @var CommandExecutor */
-    private $executor;
-    /** @var CommandGenerator */
-    private $commandGenerator;
+    private CommandExecutor $executor;
+    private CommandGenerator $commandGenerator;
 
     public function __construct(CommandGenerator $commandGenerator, CommandExecutor $commandExecutor = null)
     {

@@ -14,10 +14,8 @@ use Symfony\Component\Console\Input\InputInterface;
  */
 abstract class AbstractCliCommand extends Command
 {
-    /** @var GlobalConfig */
-    protected $config;
-    /** @var ControllerInterface */
-    protected $controller;
+    protected GlobalConfig $config;
+    protected ControllerInterface $controller;
 
     public function __construct(GlobalConfig $config, ControllerInterface $controller)
     {

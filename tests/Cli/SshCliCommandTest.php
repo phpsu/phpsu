@@ -84,6 +84,7 @@ class SshCliCommandTest extends TestCase
 
         /** @var MockObject|ControllerInterface $mockController */
         $mockController = $this->createMock(ControllerInterface::class);
+        assert(method_exists($mockController, 'expects'));
         $mockController->expects($this->once())
             ->method('ssh')
             ->with(
@@ -91,7 +92,7 @@ class SshCliCommandTest extends TestCase
                 $this->equalTo(new SshOptions('production'))
             )
             ->willReturn(208);
-
+        assert($mockController instanceof ControllerInterface);
         $command = new SshCliCommand($globalConfig, $mockController);
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
@@ -113,7 +114,7 @@ class SshCliCommandTest extends TestCase
 
         /** @var MockObject|ControllerInterface $mockController */
         $mockController = $this->createMock(ControllerInterface::class);
-
+        assert($mockController instanceof ControllerInterface);
         $command = new SshCliCommand($globalConfig, $mockController);
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
         $commandTester = new CommandTester($command);
