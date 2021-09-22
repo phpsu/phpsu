@@ -8,6 +8,7 @@ use PHPSu\Cli\SyncCliCommand;
 use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
+use PHPSu\Process\CommandExecutor;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -18,7 +19,7 @@ class SyncCliCommandTest extends TestCase
 
     public function testSyncCliCommandExecute(): void
     {
-        $command = new SyncCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig())));
+        $command = new SyncCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig()), new CommandExecutor()));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));
@@ -39,7 +40,7 @@ class SyncCliCommandTest extends TestCase
 
     public function testSyncCliCommandExecuteReversed(): void
     {
-        $command = new SyncCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig())));
+        $command = new SyncCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig()), new CommandExecutor()));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));

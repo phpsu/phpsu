@@ -35,11 +35,11 @@ final class SyncCliCommand extends AbstractCliCommand
     {
         $instances = $this->config->getAppInstanceNames();
         /** @var string $source */
-        $source = $this->getArgument($input, 'source');
+        $source = $input->getArgument('source');
         /** @var string $destination */
-        $destination = $this->getArgument($input, 'destination');
+        $destination = $input->getArgument('destination');
         /** @var string $currentHost */
-        $currentHost = $this->getOption($input, 'from');
+        $currentHost = $input->getOption('from');
 
         $source = StringHelper::findStringInArray($source, $instances) ?: $source;
         $destination = StringHelper::findStringInArray($destination, $instances) ?: $destination;

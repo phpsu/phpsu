@@ -25,6 +25,7 @@ final class SshCommand
     private int $verbosity = OutputInterface::VERBOSITY_NORMAL;
     private ?ShellInterface $command = null;
     private ShellCommand $shellCommand;
+    private bool $runLocally = false;
 
     public function __construct()
     {
@@ -34,10 +35,10 @@ final class SshCommand
     public static function fromGlobal(GlobalConfig $global, string $connectionName, string $currentHost, int $verbosity): SshCommand
     {
         $host = $global->getHostName($connectionName);
+        $result = new self();
         if ($currentHost === $host) {
-            throw new Exception(sprintf('the found host and the current Host are the same: %s', $host));
+            $result->runLocally = true;
         }
-        $result = new static();
         $result->setInto($host);
         $result->setVerbosity($verbosity);
         if (isset($global->getAppInstances()[$connectionName])) {
@@ -118,6 +119,12 @@ final class SshCommand
     public function generate(ShellBuilder $shellBuilder): ShellBuilder
     {
         $command = $this->command;
+        if ($this->runLocally) {
+            if ($command === null) {
+                throw new Exception('Running a command locally requires a command');
+            }
+            return ShellBuilder::new()->add($command);
+        }
         if ($this->getInto() === '') {
             return $command !== null ? $shellBuilder->add($command) : $shellBuilder;
         }

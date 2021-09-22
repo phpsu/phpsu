@@ -15,8 +15,7 @@ use Symfony\Component\Console\Application;
  */
 final class Kernel
 {
-    /** @var Container|null $container */
-    protected static $container;
+    protected static ?Container $container = null;
 
     public function __construct()
     {

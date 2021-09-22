@@ -4,52 +4,54 @@ declare(strict_types=1);
 
 namespace PHPSu\Tools;
 
-use PHPSu\Controller;
+use PHPSu\Command\CommandGenerator;
 use PHPSu\Exceptions\CommandExecutionException;
 use PHPSu\Process\CommandExecutor;
+use PHPSu\Process\Process;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
+use PHPSu\ShellCommandBuilder\ShellInterface;
 
 /**
  * @internal
  */
 final class EnvironmentUtility
 {
+    private CommandGenerator $commandGenerator;
     private CommandExecutor $commandExecutor;
-    private string $phpsuRootPath;
 
-    public function __construct(CommandExecutor $executor = null)
+    public function __construct(CommandGenerator $commandGenerator, CommandExecutor $executor)
     {
-        $this->commandExecutor = $executor ?? new CommandExecutor();
-        $this->phpsuRootPath = Controller::PHPSU_ROOT_PATH;
+        $this->commandGenerator = $commandGenerator;
+        $this->commandExecutor = $executor;
     }
 
-    public function isRsyncInstalled(): bool
+    public function isRsyncInstalled(string $destination = '', string $current = ''): bool
     {
-        return $this->isCommandInstalled('rsync');
+        return $this->isCommandInstalled('rsync', $destination, $current);
     }
 
-    public function isMysqlDumpInstalled(): bool
+    public function isMysqlDumpInstalled(string $destination = '', string $current = ''): bool
     {
-        return $this->isCommandInstalled('mysqldump');
+        return $this->isCommandInstalled('mysqldump', $destination, $current);
     }
 
-    public function isSshInstalled(): bool
+    public function isSshInstalled(string $destination = '', string $current = ''): bool
     {
-        return $this->isCommandInstalled('ssh');
+        return $this->isCommandInstalled('ssh', $destination, $current);
     }
 
-    public function isCommandInstalled(string $command): bool
+    public function isCommandInstalled(string $command, string $destination = '', string $current = ''): bool
     {
-        $output = $this->commandExecutor->runCommand(ShellBuilder::command($command));
+        $output = $this->runCommand(ShellBuilder::command($command), $destination, $current);
         if ($output->getExitCode() === 127) {
             return false;
         }
         return stripos(trim($output->getErrorOutput()), 'not found') === false;
     }
 
-    public function getRsyncVersion(): string
+    public function getRsyncVersion(string $destination = '', string $current = ''): string
     {
-        $command = $this->commandExecutor->runCommand(ShellBuilder::command('rsync')->addOption('version'));
+        $command = $this->runCommand(ShellBuilder::command('rsync')->addOption('version'), $destination, $current);
         if (empty($command->getOutput()) && $this->isRsyncInstalled()) {
             throw new CommandExecutionException('Result of rsync --version was empty');
         }
@@ -57,9 +59,9 @@ final class EnvironmentUtility
         return trim($result[1]);
     }
 
-    public function getSshVersion(): string
+    public function getSshVersion(string $destination = '', string $current = ''): string
     {
-        $command = $this->commandExecutor->runCommand(ShellBuilder::command('ssh')->addShortOption('V'));
+        $command = $this->runCommand(ShellBuilder::command('ssh')->addShortOption('V'), $destination, $current);
         if (empty($command->getOutput()) && $command->getExitCode() !== 0) {
             throw new CommandExecutionException('Result of ssh -V was empty');
         }
@@ -72,10 +74,10 @@ final class EnvironmentUtility
     /**
      * @return array<string, string>
      */
-    public function getMysqlDumpVersion(): array
+    public function getMysqlDumpVersion(string $destination = '', string $current = ''): array
     {
         $command = ShellBuilder::command('mysqldump')->addShortOption('V');
-        $output = $this->commandExecutor->runCommand($command)->getOutput();
+        $output = $this->runCommand($command, $destination, $current)->getOutput();
         if (empty($output) && $this->isMysqlDumpInstalled()) {
             throw new CommandExecutionException(sprintf('Result of %s was empty', (string)$command));
         }
@@ -92,32 +94,9 @@ final class EnvironmentUtility
         ];
     }
 
-    /**
-     * @param string $packageName
-     * @return string|null
-     */
-    public function getInstalledPackageVersion(string $packageName): ?string
+    private function runCommand(ShellInterface $command, string $destination = '', string $current = ''): Process
     {
-        $contents = file_get_contents($this->spotVendorPath() . '/composer/installed.json') ?: '';
-        $activeInstallations = json_decode($contents, false);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return null;
-        }
-        foreach ($activeInstallations->packages as $installed) {
-            if ($installed->name === $packageName) {
-                return $installed->version;
-            }
-        }
-        return null;
-    }
-
-    private function spotVendorPath(): string
-    {
-        if (file_exists($this->phpsuRootPath . '/../../autoload.php')) {
-            // installed via composer require
-            return $this->phpsuRootPath . '/../../';
-        }
-        // in dev installation
-        return $this->phpsuRootPath . '/vendor/';
+        $output = $this->commandGenerator->sshCommand($destination, $current, $command);
+        return $this->commandExecutor->runCommand($output);
     }
 }

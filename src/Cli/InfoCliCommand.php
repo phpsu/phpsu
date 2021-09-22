@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Cli;
 
+use PHPSu\Kernel;
 use PHPSu\Tools\EnvironmentUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -35,16 +36,18 @@ final class InfoCliCommand extends AbstractCliCommand
 
     public function printDependencyVersions(OutputInterface $output, SymfonyStyle $symfonyStyle): void
     {
-        $environmentUtility = new EnvironmentUtility();
-        $output->writeln('<info>Locally installed</info>');
-        $symfonyStyle->table(
-            ['Dependency', 'Installed', 'Version'],
-            [
-                ['rsync', $environmentUtility->isRsyncInstalled() ? '✔' : '✘', $environmentUtility->getRsyncVersion()],
-                ['mysql-distribution', $environmentUtility->isMysqlDumpInstalled() ? '✔' : '✘', $environmentUtility->getMysqlDumpVersion()['mysqlVersion']],
-                ['mysqldump', $environmentUtility->isMysqlDumpInstalled() ? '✔' : '✘', $environmentUtility->getMysqlDumpVersion()['dumpVersion']],
-                ['ssh', $environmentUtility->isSshInstalled() ? '✔' : '✘', $environmentUtility->getSshVersion()]
-            ]
-        );
+        $environmentUtility = Kernel::getContainer()->get(EnvironmentUtility::class);
+        foreach ($this->config->getAppInstanceNames() as $instanceName) {
+            $output->writeln(sprintf('<info>Installed on %s</info>', $instanceName));
+            $symfonyStyle->table(
+                ['Dependency', 'Installed', 'Version'],
+                [
+                    ['rsync', $environmentUtility->isRsyncInstalled() ? '✔' : '✘', $environmentUtility->getRsyncVersion($instanceName)],
+                    ['mysql-distribution', $environmentUtility->isMysqlDumpInstalled() ? '✔' : '✘', $environmentUtility->getMysqlDumpVersion($instanceName)['mysqlVersion']],
+                    ['mysqldump', $environmentUtility->isMysqlDumpInstalled() ? '✔' : '✘', $environmentUtility->getMysqlDumpVersion($instanceName)['dumpVersion']],
+                    ['ssh', $environmentUtility->isSshInstalled() ? '✔' : '✘', $environmentUtility->getSshVersion($instanceName)]
+                ]
+            );
+        }
     }
 }

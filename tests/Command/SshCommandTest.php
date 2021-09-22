@@ -85,11 +85,21 @@ final class SshCommandTest extends TestCase
 
     public function testSameException(): void
     {
-        $this->expectExceptionMessage("the found host and the current Host are the same: same");
-        $this->expectException(\Exception::class);
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
-        $this->expectExceptionMessage('the found host and the current Host are the same: same');
-        SshCommand::fromGlobal(new GlobalConfig(), 'same', 'same', OutputInterface::VERBOSITY_NORMAL);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Running a command locally requires a command');
+        $command = SshCommand::fromGlobal(new GlobalConfig(), 'same', 'same', OutputInterface::VERBOSITY_NORMAL);
+        $command->generate(new ShellBuilder());
+    }
+
+    public function testLocalCommand(): void
+    {
+        $sshConfig = new SshConfig();
+        $sshConfig->setFile(new SplTempFileObject());
+        $command = SshCommand::fromGlobal(new GlobalConfig(), 'same', 'same', OutputInterface::VERBOSITY_NORMAL);
+        $command->setCommand(ShellBuilder::command('echo'));
+        $result = $command->generate(new ShellBuilder());
+        self::assertSame('echo', (string)$result);
     }
 }

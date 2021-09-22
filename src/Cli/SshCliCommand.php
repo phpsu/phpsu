@@ -39,7 +39,7 @@ final class SshCliCommand extends AbstractCliCommand
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         /** @var string $default */
-        $default = $input->hasArgument('destination') ? $this->getArgument($input, 'destination') ?? '' : '';
+        $default = $input->hasArgument('destination') ? $input->getArgument('destination') ?? '' : '';
         $input->setArgument(
             'destination',
             StringHelper::findStringInArray($default, $this->getAppInstancesWithHost()) ?: $default
@@ -48,7 +48,7 @@ final class SshCliCommand extends AbstractCliCommand
 
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
-        $default = $input->hasArgument('destination') ? $this->getArgument($input, 'destination') : '';
+        $default = $input->hasArgument('destination') ? $input->getArgument('destination') : '';
         if (empty($this->getAppInstancesWithHost())) {
             throw new Exception('You need to define at least one AppInstance besides local');
         }
@@ -64,11 +64,11 @@ final class SshCliCommand extends AbstractCliCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var string $destination */
-        $destination = $this->getArgument($input, 'destination');
+        $destination = $input->getArgument('destination');
         /** @var string $currentHost */
-        $currentHost = $this->getOption($input, 'from');
+        $currentHost = $input->getOption('from');
         /** @var array<string> $commandArray */
-        $commandArray = $this->getArgument($input, 'commands');
+        $commandArray = $input->getArgument('commands');
         $builder = ShellBuilder::new();
         foreach ($commandArray as $command) {
             $builder->addSingle($command, true);
@@ -88,9 +88,7 @@ final class SshCliCommand extends AbstractCliCommand
     private function getAppInstancesWithHost(): array
     {
         if ($this->instances === null) {
-            $this->instances = $this->config->getAppInstanceNames(static function (AppInstance $instance) {
-                return $instance->getHost() !== '';
-            });
+            $this->instances = $this->config->getAppInstanceNames();
         }
         return $this->instances;
     }

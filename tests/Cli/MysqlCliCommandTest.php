@@ -8,6 +8,7 @@ use PHPSu\Cli\MysqlCliCommand;
 use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
+use PHPSu\Process\CommandExecutor;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\HelperSet;
@@ -22,7 +23,7 @@ final class MysqlCliCommandTest extends TestCase
 {
     public function testMysqlCliCommandDryRunMultipleCommands(): void
     {
-        $command = new MysqlCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig())));
+        $command = new MysqlCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig()), new CommandExecutor()));
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
 
         $commandTester = new CommandTester($command);
@@ -51,7 +52,7 @@ final class MysqlCliCommandTest extends TestCase
 
     public function testMysqlCliCommandDryRunInteractiveForInstance(): void
     {
-        $command = new MysqlCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig())));
+        $command = new MysqlCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig()), new CommandExecutor()));
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
 
         $commandTester = new CommandTester($command);
@@ -86,7 +87,7 @@ final class MysqlCliCommandTest extends TestCase
         $config->getAppInstance('production')
             ->addDatabase('beta', 'testtest', 'root', 'pass', 'a');
 
-        $command = new MysqlCliCommand($config, new Controller(new CommandGenerator($config)));
+        $command = new MysqlCliCommand($config, new Controller(new CommandGenerator($config), new CommandExecutor()));
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
 
         $commandTester = new CommandTester($command);

@@ -120,33 +120,6 @@ final class EnvironmentUtilityTest extends TestCase
         return $environmentUtility;
     }
 
-    /**
-     * @throws ReflectionException
-     */
-    public function testGetInstalledPackageVersionAutoloadDirForComposer20(): void
-    {
-        $environmentUtility = new EnvironmentUtility();
-        $reflection = new ReflectionClass($environmentUtility);
-        $property = $reflection->getProperty('phpsuRootPath');
-        $property->setAccessible(true);
-        $property->setValue($environmentUtility, __DIR__ . '/../fixtures/installed/autoload/vendor/phpsu/phpsu');
-        $version = $environmentUtility->getInstalledPackageVersion('phpsu/phpsu');
-        static::assertEquals('1.2.3', $version);
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    public function testGetInstalledPackageVersionInvalidJson(): void
-    {
-        $environmentUtility = new EnvironmentUtility();
-        $reflection = new ReflectionClass($environmentUtility);
-        $property = $reflection->getProperty('phpsuRootPath');
-        $property->setAccessible(true);
-        $property->setValue($environmentUtility, __DIR__ . '/../fixtures/installed/invalidJson');
-        static::assertNull($environmentUtility->getInstalledPackageVersion('phpsu/phpsu'));
-    }
-
     public function testGetInstalledRsyncVersionOrExpectExceptionIfNotInstalled(): void
     {
         if ((new EnvironmentUtility())->isRsyncInstalled()) {

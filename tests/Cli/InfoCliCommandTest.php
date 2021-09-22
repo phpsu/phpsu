@@ -8,6 +8,7 @@ use PHPSu\Cli\InfoCliCommand;
 use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
+use PHPSu\Process\CommandExecutor;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -16,7 +17,7 @@ class InfoCliCommandTest extends TestCase
     public function testPrintDependencyVersionsLocally(): void
     {
         $config = new GlobalConfig();
-        $command = new InfoCliCommand($config, new Controller(new CommandGenerator($config)));
+        $command = new InfoCliCommand($config, new Controller(new CommandGenerator($config), new CommandExecutor()));
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);

@@ -11,6 +11,7 @@ use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
 use PHPSu\ControllerInterface;
 use PHPSu\Options\SshOptions;
+use PHPSu\Process\CommandExecutor;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\HelperSet;
@@ -23,7 +24,7 @@ class SshCliCommandTest extends TestCase
 
     public function testSshCliCommandDryRun(): void
     {
-        $command = new SshCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig())));
+        $command = new SshCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig()), new CommandExecutor()));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));
@@ -41,7 +42,7 @@ class SshCliCommandTest extends TestCase
 
     public function testSshCliCommandDryRunMultipleCommands(): void
     {
-        $command = new SshCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig())));
+        $command = new SshCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig()), new CommandExecutor()));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));
@@ -60,7 +61,7 @@ class SshCliCommandTest extends TestCase
 
     public function testSshCliCommandDryRunInteractive(): void
     {
-        $command = new SshCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig())));
+        $command = new SshCliCommand($this->createConfig(), new Controller(new CommandGenerator($this->createConfig()), new CommandExecutor()));
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
         ]));

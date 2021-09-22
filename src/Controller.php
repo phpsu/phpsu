@@ -18,14 +18,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 final class Controller implements ControllerInterface
 {
-    public const PHPSU_ROOT_PATH = __DIR__ . '/../';
-
     private CommandExecutor $executor;
     private CommandGenerator $commandGenerator;
 
-    public function __construct(CommandGenerator $commandGenerator, CommandExecutor $commandExecutor = null)
+    public function __construct(CommandGenerator $commandGenerator, CommandExecutor $commandExecutor)
     {
-        $this->executor = $commandExecutor ?? new CommandExecutor();
+        $this->executor = $commandExecutor;
         $this->commandGenerator = $commandGenerator;
     }
 
