@@ -80,8 +80,8 @@ final class MysqlCliCommandTest extends TestCase
             );
 
         $output = $commandTester->getDisplay();
-//        $this->assertStringContainsString('Please select one of the AppInstances', $output);
-//        $this->assertStringContainsString('You selected: production', $output);
+        $this->assertStringContainsString('Please select one of the AppInstances', $output);
+        $this->assertStringContainsString('You selected: production', $output);
         $this->assertStringContainsString((string)$compareWith, $output);
         $this->assertSame(0, $commandTester->getStatusCode());
     }
@@ -130,7 +130,10 @@ final class MysqlCliCommandTest extends TestCase
     {
         $globalConfig = new GlobalConfig();
         $globalConfig->addSshConnection('us', 'ssh://user@us');
+        $globalConfig->addSshConnection('us2', 'ssh://user@us');
         $globalConfig->addAppInstance('production', 'us', '/var/www/')
+            ->addDatabase('test', 'a', 'n', 'c', 'd');
+        $globalConfig->addAppInstance('testing', 'us2', '/var/www/')
             ->addDatabase('test', 'a', 'n', 'c', 'd');
         return $globalConfig;
     }

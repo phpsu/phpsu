@@ -25,7 +25,7 @@ composer require --dev phpsu/phpsu
 
 #### Via Composer, with conflicting versions
 
-If you have problems with conflicting versions eg. symfony:2.* you can use the [composer-bin-plugin].
+If you have problems with conflicting versions eg. symfony:<5 you can use the [composer-bin-plugin].
 
 ````bash
 composer require --dev bamarni/composer-bin-plugin
@@ -57,9 +57,10 @@ you can execute any phpsu command via something like this:
 
 The following versions of PHP are supported by this version.
 
-* PHP `7.2`, `7.3`, `7.4`, `8.0`
-* Compatible and continuously tested with symfony `4.3` and `5.0`
-* for older versions go to [version 1.1.0](https://github.com/phpsu/phpsu/tree/1.1.0)
+* PHP `7.4`, `8.0`, `8.1`
+* Compatible and continuously tested with symfony `5`
+* for older versions go to [version 2.3.0](https://github.com/phpsu/phpsu/tree/2.3.0)
+* or [version 1.1.0](https://github.com/phpsu/phpsu/tree/1.1.0)
 
 Required for synchronisation are:
 * ``ssh`` on execution System
@@ -89,14 +90,12 @@ $globalConfig->addFilesystem('Image Uploads', 'var/storage')
     ->addExcludes(['*.jpg', '*.gif']);
 $globalConfig->addSshConnection('hostA', 'ssh://user@localhost:2208');
 $globalConfig->addAppInstance('production', 'hostA', '/var/www/')
-    ->setCompressions(new \PHPSu\Config\Compression\GzipCompression())
     ->addDatabase('app', 'production01db', 'root', 'password', '127.0.0.1', 3307)
     ->addExclude('one_single_table_name')
     ->addExclude('/cache/')
     ->addExclude('/session$/')
     ->addExcludes(['/log/']);
 $globalConfig->addAppInstance('local')
-    ->setCompressions(new \PHPSu\Config\Compression\GzipCompression())
     ->addDatabase('app', 'testingLocal', 'root', 'root');
 return $globalConfig;
 ````

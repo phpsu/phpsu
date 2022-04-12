@@ -106,7 +106,7 @@ final class EnvironmentUtilityTest extends TestCase
 
             public function runCommand(ShellInterface $command): Process
             {
-                $process = Process::fromShellCommandline((string)self::$command ?? '');
+                $process = Process::fromShellCommandline((string)(self::$command ?? ''));
                 $process->run();
                 return $process;
             }

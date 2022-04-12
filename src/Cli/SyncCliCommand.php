@@ -16,7 +16,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 final class SyncCliCommand extends AbstractCliCommand
 {
-
     protected function configure(): void
     {
         $this->setName('sync')

@@ -31,6 +31,7 @@ abstract class AbstractCliCommand extends Command
      */
     public function getArgument(InputInterface $input, string $argumentName)
     {
+        // @phpstan-ignore-next-line
         return $input->getArgument($argumentName);
     }
 
@@ -41,6 +42,7 @@ abstract class AbstractCliCommand extends Command
      */
     public function getOption(InputInterface $input, string $argumentName)
     {
+        // @phpstan-ignore-next-line
         return $input->getOption($argumentName);
     }
 }

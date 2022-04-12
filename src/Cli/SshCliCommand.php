@@ -9,6 +9,7 @@ use PHPSu\Config\AppInstance;
 use PHPSu\Helper\StringHelper;
 use PHPSu\Options\SshOptions;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -55,7 +56,9 @@ final class SshCliCommand extends AbstractCliCommand
         if (!in_array($default, $this->getAppInstancesWithHost(), true)) {
             $question = new ChoiceQuestion('Please select one of the AppInstances', $this->getAppInstancesWithHost());
             $question->setErrorMessage('AppInstance %s not found in Config.');
-            $destination = $this->getHelper('question')->ask($input, $output, $question);
+            $questionHelper = $this->getHelper('question');
+            assert($questionHelper instanceof QuestionHelper);
+            $destination = $questionHelper->ask($input, $output, $question);
             $output->writeln('You selected: ' . $destination);
             $input->setArgument('destination', $destination);
         }

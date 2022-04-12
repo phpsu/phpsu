@@ -20,7 +20,6 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class SshCliCommandTest extends TestCase
 {
-
     public function testSshCliCommandDryRun(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
@@ -78,8 +77,8 @@ class SshCliCommandTest extends TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-//        $this->assertStringContainsString('Please select one of the AppInstances', $output);
-//        $this->assertStringContainsString('You selected: production', $output);
+        $this->assertStringContainsString('Please select one of the AppInstances', $output);
+        $this->assertStringContainsString('You selected: production', $output);
         $this->assertStringContainsString("ssh -F '.phpsu/config/ssh_config' 'us' -t 'cd '\''/var/www/'\'' ; bash --login'\n", $output);
         $this->assertSame(0, $commandTester->getStatusCode());
     }
@@ -140,7 +139,9 @@ class SshCliCommandTest extends TestCase
     {
         $globalConfig = new GlobalConfig();
         $globalConfig->addSshConnection('us', 'ssh://user@us');
+        $globalConfig->addSshConnection('us2', 'ssh://user@us');
         $globalConfig->addAppInstance('production', 'us', '/var/www/');
+        $globalConfig->addAppInstance('testing', 'us2', '/var/www/');
         return $globalConfig;
     }
 

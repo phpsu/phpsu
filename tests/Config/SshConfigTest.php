@@ -6,12 +6,12 @@ namespace PHPSu\Tests\Config;
 
 use PHPSu\Config\SshConfig;
 use PHPSu\Config\SshConfigHost;
+use PHPSu\Tests\Command\CommandGeneratorTest;
 use PHPUnit\Framework\TestCase;
 use SplTempFileObject;
 
 final class SshConfigTest extends TestCase
 {
-
     public function testWriteConfig(): void
     {
         $sshConfig = new SshConfig();
@@ -62,6 +62,6 @@ Host *
 
 
 SSH_CONFIG;
-        $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+        $this->assertSame($expectedSshConfigString, CommandGeneratorTest::implodeTempFile($file));
     }
 }

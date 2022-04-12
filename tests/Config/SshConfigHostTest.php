@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 final class SshConfigHostTest extends TestCase
 {
-
     public function testSetIssetGet(): void
     {
         $sshConfigHost = new SshConfigHost();

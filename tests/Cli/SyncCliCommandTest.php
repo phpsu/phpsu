@@ -16,7 +16,6 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class SyncCliCommandTest extends TestCase
 {
-
     public function testSyncCliCommandExecute(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());

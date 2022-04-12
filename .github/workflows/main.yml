@@ -1,4 +1,4 @@
-on: [push, pull_request]
+on: [push, pull_request, release]
 name: Test
 jobs:
   roave_bc_check:
@@ -17,9 +17,8 @@ jobs:
       image: pluswerk/php-dev:nginx-${{ matrix.php }}
       options: -t
     strategy:
-      fail-fast: true
       matrix:
-        php: ['7.4', '8.0']
+        php: ['7.4', '8.0', '8.1']
     name: PHP ${{ matrix.php }}
     steps:
       - name: Checkout code
@@ -29,15 +28,44 @@ jobs:
         with:
           path: ~/.composer/cache/files
           key: dependencies-php-${{ matrix.php[0] }}-composer-${{ hashFiles('composer.json') }}
-      - name: Install dependencies for Symfony ${{ matrix.php }}
-        run: composer install
-      - name: Execute tests
-        run: |
-          echo "xdebug.mode=coverage\nmemory_limit = -1" > /opt/docker/etc/php/php.webdevops.ini
-          vendor/bin/grumphp run
-          script -q -e -c "/usr/local/bin/composer test"
-          script -q -e -c "/usr/local/bin/composer infection"
-          script -q -e -c "/usr/local/bin/composer phpstan"
+      - run: composer install
+      - run: vendor/bin/grumphp run
+      - run: script -q -e -c "composer test"
+      - run: script -q -e -c "composer infection"
+      - run: composer phpstan
       - uses: codecov/codecov-action@v1
         with:
           file: ./tests/test-results/coverage.xml
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: little-core-labs/get-git-tag@v3.0.1
+        id: tag
+      -
+        name: Build (and push) to docker hub
+        id: docker_build_latest
+        uses: docker/build-push-action@v2
+        with:
+          push: ${{ startsWith(github.ref, 'refs/tags/') }}
+          tags: phpsu/phpsu:latest,phpsu/phpsu:${{ steps.date.outputs.date }},phpsu/phpsu:${{ steps.tag.outputs.tag || '0' }}-${{ steps.date.outputs.date }},phpsu/phpsu:${{ steps.tag.outputs.tag || '0' }}-${{ steps.date.outputs.date }}
+      -
+        name: Image digest
+        run: |
+          echo ${{ steps.docker_build.outputs.digest }}
+          echo ${{ steps.docker_build_dev.outputs.digest }}

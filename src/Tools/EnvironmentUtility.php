@@ -8,6 +8,7 @@ use PHPSu\Controller;
 use PHPSu\Exceptions\CommandExecutionException;
 use PHPSu\Process\CommandExecutor;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
+use stdClass;
 
 /**
  * @internal
@@ -100,6 +101,9 @@ final class EnvironmentUtility
     {
         $contents = file_get_contents($this->spotVendorPath() . '/composer/installed.json') ?: '';
         $activeInstallations = json_decode($contents, false);
+        if (!($activeInstallations instanceof stdClass)) {
+            return null;
+        }
         if (json_last_error() !== JSON_ERROR_NONE) {
             return null;
         }

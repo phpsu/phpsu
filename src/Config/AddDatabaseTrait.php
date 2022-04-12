@@ -4,16 +4,25 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+/**
+ * @internal
+ */
 trait AddDatabaseTrait
 {
     private Databases $databases;
 
+    /**
+     * @api
+     */
     public function addDatabaseObject(Database $database): self
     {
         $this->databases->add($database);
         return $this;
     }
 
+    /**
+     * @api
+     */
     public function addDatabase(string $name, string $database, string $user, string $password, string $host = '127.0.0.1', int $port = 3306): Database
     {
         $databaseObject = new Database();
@@ -23,6 +32,9 @@ trait AddDatabaseTrait
         return $databaseObject;
     }
 
+    /**
+     * @api
+     */
     public function addDatabaseByUrl(string $name, string $url): Database
     {
         $database = new Database();

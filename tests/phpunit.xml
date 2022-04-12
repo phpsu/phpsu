@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
     bootstrap="phpunit-bootstrap.php"
     convertErrorsToExceptions="true"
     convertNoticesToExceptions="true"
@@ -15,22 +17,24 @@
     timeoutForMediumTests="1"
     timeoutForSmallTests="1"
     colors="true">
+  <coverage>
+    <include>
+      <directory suffix=".php">../src/</directory>
+    </include>
+    <report>
+      <clover outputFile="test-results/coverage.xml"/>
+      <html outputDirectory="test-results/report" lowUpperBound="49" highLowerBound="89"/>
+      <text outputFile="test-results/report.txt" showUncoveredFiles="false"/>
+    </report>
+  </coverage>
   <testsuites>
     <testsuite name="All">
       <directory suffix="Test.php">../tests/</directory>
     </testsuite>
   </testsuites>
-  <filter>
-    <whitelist>
-      <directory suffix=".php">../src/</directory>
-    </whitelist>
-  </filter>
   <logging>
-    <log type="coverage-html" target="test-results/report" lowUpperBound="49" highLowerBound="89"/>
-    <log type="coverage-clover" target="test-results/coverage.xml"/>
-    <log type="coverage-text" target="test-results/report.txt" showUncoveredFiles="false"/>
-    <log type="junit" target="test-results/logfile.xml"/>
-    <log type="testdox-html" target="test-results/testdox.html"/>
-    <log type="testdox-text" target="test-results/testdox.txt"/>
+    <junit outputFile="test-results/logfile.xml"/>
+    <testdoxHtml outputFile="test-results/testdox.html"/>
+    <testdoxText outputFile="test-results/testdox.txt"/>
   </logging>
 </phpunit>

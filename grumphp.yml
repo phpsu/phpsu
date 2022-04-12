@@ -5,7 +5,7 @@ imports:
 grumphp:
   tasks:
     phpstan:
-      level: "max"
+      level: ~
       configuration: "phpstan.neon"
       ignore_patterns: [".phpstorm.meta.php"]
 

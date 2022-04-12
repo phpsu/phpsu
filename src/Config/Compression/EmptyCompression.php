@@ -9,7 +9,6 @@ namespace PHPSu\Config\Compression;
  */
 final class EmptyCompression implements CompressionInterface
 {
-
     public function getCompressCommand(): string
     {
         return '';

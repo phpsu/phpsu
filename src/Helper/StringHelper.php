@@ -22,7 +22,7 @@ final class StringHelper
     public static function splitString(string $string, int $maxLength): array
     {
         $exploded = explode(' ', $string);
-        $full = array_shift($exploded) ?? '';
+        $full = array_shift($exploded);
         while (count($exploded)) {
             $part = array_shift($exploded);
             if (strlen($full . ' ' . $part) > $maxLength) {

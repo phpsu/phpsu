@@ -22,9 +22,9 @@ tools:
     php_analyzer: true
     php_code_sniffer:
         config:
-            standard: PSR2
+            standard: PSR12
         filter:
-            paths: ['src']
+            paths: ['src', 'tests']
     php_loc:
         enabled: true
         excluded_dirs: [vendor, tests]

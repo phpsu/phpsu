@@ -15,7 +15,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class RsyncCommandTest extends TestCase
 {
-
     public function testRsyncWithAppInstance(): void
     {
         $sshConfig = new SshConfig();
