@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Command;
 
+use Exception;
 use GrumPHP\Task\Shell;
 use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\AppInstance;
@@ -15,6 +16,7 @@ use PHPSu\Config\SshConnection;
 use PHPSu\Options\SyncOptions;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
 use PHPUnit\Framework\TestCase;
+use SplFileObject;
 use SplTempFileObject;
 
 final class CommandGeneratorTest extends TestCase
@@ -79,6 +81,8 @@ final class CommandGeneratorTest extends TestCase
                 ->addOption('port', '3306', false, true)
                 ->addArgument('appDatabase')
             )->addToBuilder();
+        assert($comparisonObject instanceof ShellBuilder);
+        assert($mysqlCommand instanceof ShellBuilder);
         static::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
     }
 
@@ -101,6 +105,8 @@ final class CommandGeneratorTest extends TestCase
                     ->addArgument('appDatabase')
                     ->addShortOption('e', 'SELECT * FROM tablex')
             )->addToBuilder();
+        assert($comparisonObject instanceof ShellBuilder);
+        assert($mysqlCommand instanceof ShellBuilder);
         static::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
     }
 
@@ -117,13 +123,15 @@ final class CommandGeneratorTest extends TestCase
             ->addOption('port', '3307', false, true)
             ->addArgument('database')
             ->addShortOption('e', 'SELECT * FROM tablex')->addToBuilder();
+        assert($comparisonObject instanceof ShellBuilder);
+        assert($mysqlCommand instanceof ShellBuilder);
         static::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
     }
 
     public function testFromAndToSameDisallowed(): void
     {
         $this->expectExceptionMessage("Source and Destination are Identical: same");
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $globalConfig = static::getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $this->expectExceptionMessage('Source and Destination are Identical: same');
@@ -157,7 +165,7 @@ Host *
 
 
 SSH_CONFIG;
-        $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+        $this->assertSame($expectedSshConfigString, self::implodeTempFile($file));
     }
 
     public function testProductionToTestingFromAnyThere(): void
@@ -187,7 +195,7 @@ Host *
 
 
 SSH_CONFIG;
-        $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+        $this->assertSame($expectedSshConfigString, self::implodeTempFile($file));
     }
 
     public function testLocalToLocal2FromAnyThere(): void
@@ -217,7 +225,7 @@ Host *
 
 
 SSH_CONFIG;
-        $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+        $this->assertSame($expectedSshConfigString, self::implodeTempFile($file));
     }
 
     public function testProductionToStagingFromAnyThere(): void
@@ -247,7 +255,7 @@ Host *
 
 
 SSH_CONFIG;
-        $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+        $this->assertSame($expectedSshConfigString, self::implodeTempFile($file));
     }
 
     public function testProductionToStagingFromStaging(): void
@@ -273,7 +281,7 @@ Host *
 
 
 SSH_CONFIG;
-        $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+        $this->assertSame($expectedSshConfigString, self::implodeTempFile($file));
     }
 
     public function testProductionToStagingFromStagingError(): void
@@ -309,7 +317,7 @@ Host *
 
 
 SSH_CONFIG;
-        $this->assertSame($expectedSshConfigString, implode('', iterator_to_array($file)));
+        $this->assertSame($expectedSshConfigString, self::implodeTempFile($file));
     }
 
     public function testGzipCompression(): void
@@ -328,5 +336,12 @@ SSH_CONFIG;
             'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' '/var/www/staging/uploads/' 'serverEu:/var/www/production/uploads/'",
             'database:app' => "mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='host' --port=3307 --user='user' --password='pw' 'database' | (echo 'CREATE DATABASE IF NOT EXISTS `appDatabase`;USE `appDatabase`;' && cat) | gzip | ssh -F 'php://temp' 'serverEu' 'gunzip | mysql --host='\''appHost'\'' --user='\''root'\'' --password='\''root'\'''",
         ], $result);
+    }
+
+    public static function implodeTempFile(SplFileObject $file): string
+    {
+        /** @var string[] $array */
+        $array = iterator_to_array($file);
+        return implode('', $array);
     }
 }

@@ -8,16 +8,15 @@ use PHPSu\Controller;
 use PHPSu\Exceptions\CommandExecutionException;
 use PHPSu\Process\CommandExecutor;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
+use stdClass;
 
 /**
  * @internal
  */
 final class EnvironmentUtility
 {
-    /** @var CommandExecutor */
-    private $commandExecutor;
-    /** @var string */
-    private $phpsuRootPath;
+    private CommandExecutor $commandExecutor;
+    private string $phpsuRootPath;
 
     public function __construct(CommandExecutor $executor = null)
     {
@@ -102,12 +101,13 @@ final class EnvironmentUtility
     {
         $contents = file_get_contents($this->spotVendorPath() . '/composer/installed.json') ?: '';
         $activeInstallations = json_decode($contents, false);
+        if (!($activeInstallations instanceof stdClass)) {
+            return null;
+        }
         if (json_last_error() !== JSON_ERROR_NONE) {
             return null;
         }
-        // support both composer 1.0 and composer 2.0
-        $installations = $activeInstallations->packages ?? $activeInstallations;
-        foreach ($installations as $installed) {
+        foreach ($activeInstallations->packages as $installed) {
             if ($installed->name === $packageName) {
                 return $installed->version;
             }

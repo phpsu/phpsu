@@ -14,10 +14,8 @@ use Symfony\Component\Console\Input\InputInterface;
  */
 abstract class AbstractCliCommand extends Command
 {
-    /** @var ConfigurationLoaderInterface */
-    protected $configurationLoader;
-    /** @var ControllerInterface */
-    protected $controller;
+    protected ConfigurationLoaderInterface $configurationLoader;
+    protected ControllerInterface $controller;
 
     public function __construct(ConfigurationLoaderInterface $configurationLoader, ControllerInterface $controller)
     {
@@ -33,6 +31,7 @@ abstract class AbstractCliCommand extends Command
      */
     public function getArgument(InputInterface $input, string $argumentName)
     {
+        // @phpstan-ignore-next-line
         return $input->getArgument($argumentName);
     }
 
@@ -43,6 +42,7 @@ abstract class AbstractCliCommand extends Command
      */
     public function getOption(InputInterface $input, string $argumentName)
     {
+        // @phpstan-ignore-next-line
         return $input->getOption($argumentName);
     }
 }

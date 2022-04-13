@@ -22,12 +22,9 @@ use function in_array;
  */
 final class CommandGenerator
 {
-    /** @var SplFileObject|null */
-    private $file;
-    /** @var GlobalConfig */
-    private $globalConfig;
-    /** @var int */
-    private $verbosity;
+    private ?SplFileObject $file = null;
+    private GlobalConfig $globalConfig;
+    private int $verbosity;
 
     public function __construct(GlobalConfig $globalConfig, int $verbosity = OutputInterface::VERBOSITY_NORMAL)
     {
@@ -60,14 +57,6 @@ final class CommandGenerator
         return $sshCommand->generate(ShellBuilder::new());
     }
 
-    /**
-     * @param string $instance
-     * @param string|null $database
-     * @param string|null $command
-     * @return ShellInterface
-     * @throws ShellBuilderException
-     * @throws Exception
-     */
     public function mysqlCommand(string $instance, ?string $database, ?string $command): ShellInterface
     {
         $sshConfig = SshConfig::fromGlobal($this->globalConfig, $instance);

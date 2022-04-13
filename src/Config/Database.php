@@ -15,16 +15,11 @@ final class Database implements DockerTraitSupportInterface
 {
     use AddDockerTrait;
 
-    /** @var string */
-    private $name;
-
-    /** @var DatabaseConnectionDetails */
-    private $connectionDetails;
-
+    private string $name;
+    private DatabaseConnectionDetails $connectionDetails;
     /** @var string[] */
-    private $excludes = [];
-    /** @var bool */
-    private $noDefiner = false;
+    private array $excludes = [];
+    private bool $noDefiner = false;
 
     public function getName(): string
     {
@@ -38,6 +33,7 @@ final class Database implements DockerTraitSupportInterface
     }
 
     /**
+     * todo: remove
      * @deprecated will be removed in 3.0
      */
     public function getUrl(): string
@@ -45,21 +41,12 @@ final class Database implements DockerTraitSupportInterface
         return $this->connectionDetails->__toString();
     }
 
-    /**
-     * @param string $url
-     * @return $this
-     * @throws Exception
-     */
     public function setUrl(string $url): Database
     {
         $this->connectionDetails = DatabaseConnectionDetails::fromUrlString($url);
         return $this;
     }
 
-    /**
-     * @return DatabaseConnectionDetails
-     * @throws Exception
-     */
     public function getConnectionDetails(): DatabaseConnectionDetails
     {
         if ($this->isDockerEnabled() && $this->getContainer() === '') {
@@ -79,7 +66,7 @@ final class Database implements DockerTraitSupportInterface
     }
 
     /**
-     * @return array<string>
+     * @return string[]
      */
     public function getExcludes(): array
     {
@@ -87,7 +74,7 @@ final class Database implements DockerTraitSupportInterface
     }
 
     /**
-     * @param array<string> $excludes
+     * @param string[] $excludes
      * @return Database
      * @return Database
      */

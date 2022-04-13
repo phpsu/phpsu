@@ -100,7 +100,7 @@ namespace PHPSu\Config;
 final class SshConfigHost
 {
     /** @var array<string, string> */
-    private $options = [];
+    private array $options = [];
 
     public function __isset(string $name): bool
     {
@@ -112,10 +112,14 @@ final class SshConfigHost
         return $this->options[$name];
     }
 
-
-    public function __set(string $name, string $config): void
+    /**
+     * @param string $name
+     * @param string|int $config
+     * @return void
+     */
+    public function __set(string $name, $config): void
     {
-        $this->options[$name] = $config;
+        $this->options[$name] = (string)$config;
     }
 
     /**

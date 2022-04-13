@@ -12,14 +12,10 @@ use InvalidArgumentException;
  */
 final class SshUrl
 {
-    /** @var string */
-    private $user;
-    /** @var string */
-    private $password;
-    /** @var string */
-    private $host;
-    /** @var int */
-    private $port;
+    private string $user;
+    private string $password;
+    private string $host;
+    private int $port;
 
     public function __construct(string $url)
     {

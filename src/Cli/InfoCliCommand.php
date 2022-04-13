@@ -15,7 +15,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 final class InfoCliCommand extends AbstractCliCommand
 {
-
     public function configure(): void
     {
         $this->setName('info')

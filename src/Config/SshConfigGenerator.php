@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+use Exception;
+
 /**
  * @internal
  */
@@ -14,6 +16,7 @@ final class SshConfigGenerator
      * @param string $destination
      * @param SshConnections $sshConnections
      * @return SshConnection[]
+     * @throws Exception
      */
     public function findShortestPath(string $source, string $destination, SshConnections $sshConnections): array
     {
@@ -31,11 +34,13 @@ final class SshConfigGenerator
         }
         return $shortest;
     }
+
     /**
      * @param string $source
      * @param string $destination
      * @param SshConnections $sshConnections
      * @return SshConnection[][]
+     * @throws Exception
      */
     public function findAllPaths(string $source, string $destination, SshConnections $sshConnections): array
     {
@@ -61,6 +66,7 @@ final class SshConfigGenerator
      * @param array<string, string> $defaultSshConfig
      * @param string $currentHost
      * @return SshConfig
+     * @throws Exception
      */
     public function generate(SshConnections $sshConnections, array $defaultSshConfig, string $currentHost): SshConfig
     {
@@ -90,7 +96,7 @@ final class SshConfigGenerator
             foreach ($defaultSshConfig as $key => $value) {
                 $host->{$key} = $value;
             }
-            $sshConfig->{'*'} = $host;
+            $sshConfig->__set('*', $host);
         }
         return $sshConfig;
     }

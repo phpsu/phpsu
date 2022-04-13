@@ -12,10 +12,10 @@ use Exception;
 final class SshConnections
 {
     /** @var SshConnection[] */
-    private $connections = [];
+    private array $connections = [];
 
     /** @var ?array<string, array<string, SshConnection>> */
-    private $compiled;
+    private ?array $compiled = null;
 
 
     public function addConnections(SshConnection ...$sshConnections): void
@@ -39,6 +39,7 @@ final class SshConnections
 
     /**
      * @return array<string, array<string, SshConnection>>
+     * @throws Exception
      */
     private function getCompiled(): array
     {
@@ -79,6 +80,7 @@ final class SshConnections
 
     /**
      * @return array<int, int|string>
+     * @throws Exception
      */
     public function getAllHosts(): array
     {
@@ -89,6 +91,7 @@ final class SshConnections
     /**
      * @param string $to
      * @return array<string, SshConnection>
+     * @throws Exception
      */
     public function getPossibilities(string $to): array
     {

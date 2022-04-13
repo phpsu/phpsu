@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace PHPSu\Cli;
 
-use Exception;
 use PHPSu\Helper\StringHelper;
 use PHPSu\Options\MysqlOptions;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,8 +21,7 @@ use function in_array;
 final class MysqlCliCommand extends AbstractCliCommand
 {
     /** @var null|string[] */
-    private $instances;
-
+    private ?array $instances = null;
 
     protected function configure(): void
     {
@@ -45,12 +44,6 @@ final class MysqlCliCommand extends AbstractCliCommand
         );
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return void
-     * @throws Exception
-     */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $default = $input->hasArgument('instance') ? $this->getArgument($input, 'instance') : '';
@@ -58,7 +51,9 @@ final class MysqlCliCommand extends AbstractCliCommand
         if (!in_array($default, $appInstancesWithHost, true)) {
             $question = new ChoiceQuestion('Please select one of the AppInstances', $appInstancesWithHost);
             $question->setErrorMessage('AppInstance %s not found in Config.');
-            $destination = $this->getHelper('question')->ask($input, $output, $question);
+            $questionHelper = $this->getHelper('question');
+            assert($questionHelper instanceof QuestionHelper);
+            $destination = $questionHelper->ask($input, $output, $question);
             $output->writeln('You selected: ' . $destination);
             $input->setArgument('instance', $destination);
         }
@@ -69,7 +64,9 @@ final class MysqlCliCommand extends AbstractCliCommand
         if (count($databases) > 1 && !in_array($default, $databases, true)) {
             $question = new ChoiceQuestion('Please select one of the Databases', $databases);
             $question->setErrorMessage('Database %s not found in Config.');
-            $database = $this->getHelper('question')->ask($input, $output, $question);
+            $questionHelper = $this->getHelper('question');
+            assert($questionHelper instanceof QuestionHelper);
+            $database = $questionHelper->ask($input, $output, $question);
             $output->writeln('You selected: ' . $database);
             $input->setOption('database', $database);
         }

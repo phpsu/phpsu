@@ -12,7 +12,12 @@
   "homepage": "https://phpsu.de/",
   "config": {
     "optimize-autoloader": true,
-    "process-timeout": 0
+    "process-timeout": 0,
+    "allow-plugins": {
+      "phpro/grumphp": true,
+      "infection/extension-installer": true,
+      "pluswerk/grumphp-config": true
+    }
   },
   "authors": [
     {
@@ -31,10 +36,10 @@
     "phpsu"
   ],
   "scripts": {
-    "test": "vendor/bin/phpunit -c tests/phpunit.xml --testdox --color=always",
+    "test": "XDEBUG_MODE=coverage vendor/bin/phpunit -c tests/phpunit.xml --testdox --color=always",
     "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox",
-    "infection": "vendor/bin/infection --threads=4 --only-covered --min-msi=89 --min-covered-msi=89 --ansi",
-    "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon --level max src --ansi"
+    "infection": "XDEBUG_MODE=coverage vendor/bin/infection --threads=4 --only-covered --min-msi=89 --min-covered-msi=89 --ansi",
+    "phpstan": "vendor/bin/phpstan  --ansi"
   },
   "autoload": {
     "psr-4": {
@@ -48,20 +53,21 @@
   },
   "minimum-stability": "stable",
   "require": {
-    "symfony/console": "^4.0 | ^5.0",
-    "symfony/process": "^4.0 | ^5.0",
-    "php": "^7.2 || ~8.0.0",
+    "php": "~7.4.0 || ~8.0.0 || ~8.1.0",
     "ext-json": "*",
-    "phpsu/shellcommandbuilder": "^2.0"
+    "composer-runtime-api": "^2.0.0",
+    "phpsu/shellcommandbuilder": "^2.0",
+    "symfony/console": "^5.0",
+    "symfony/process": "^5.0"
   },
   "require-dev": {
-    "pluswerk/grumphp-config": "^4.0",
-    "rector/rector-prefixed": "^0.7.14",
-    "spatie/phpunit-watcher": "^1.22",
-    "phpstan/phpstan": "^0.12.18",
-    "infection/infection": "^0.15.3",
-    "phpunit/php-invoker": "^2.0 | ^3.0",
-    "phpunit/phpunit": "^8.5 || ^9.0"
+    "pluswerk/grumphp-config": "^5.0",
+    "rector/rector": "^0.12.20",
+    "spatie/phpunit-watcher": "^1.23",
+    "phpstan/phpstan": "^1.5.4",
+    "infection/infection": "^0.24.0",
+    "phpunit/php-invoker": "^3.1",
+    "phpunit/phpunit": "^9.0"
   },
   "suggest": {
     "bamarni/composer-bin-plugin": "Dependency-Independent use of phpsu"

@@ -24,6 +24,7 @@ class ApplicationHelperTest extends TestCase
     {
         $versionString = $this->callPrivateMethod('getPhpSuVersionFromGitFolder', self::GIT_PATH);
         $this->assertIsString($versionString);
+        assert(is_string($versionString)); # dumb phpstan :(
         $this->assertNotEmpty($versionString);
         $this->assertStringNotContainsString('ref: ', $versionString);
         $this->assertEquals('main', $versionString);
@@ -40,6 +41,11 @@ class ApplicationHelperTest extends TestCase
         $this->callPrivateMethod('getPhpSuVersionFromGitFolder', self::GIT_PATH . '/no_head');
     }
 
+    /**
+     * @param string $method
+     * @return mixed
+     * @throws \ReflectionException
+     */
     private function callPrivateMethod(string $method)
     {
         $object = new ApplicationHelper();

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Process;
 
+use Closure;
 use Exception;
 use PHPSu\Process\Process;
 use PHPSu\Process\ProcessManager;
@@ -37,6 +38,7 @@ final class ProcessManagerTest extends TestCase
         // forcefully kill process
         $pList1->stop(0, 15);
         static::expectExceptionMessage('No Process found with id: ' . $pid);
+        assert($pid !== null);
         $processManager->getState($pid);
     }
 
@@ -89,7 +91,10 @@ final class ProcessManagerTest extends TestCase
         });
         $property = (new ReflectionClass($processManager))->getProperty('outputCallbacks');
         $property->setAccessible(true);
-        foreach ($property->getValue($processManager) as $callback) {
+        $callbacks = $property->getValue($processManager);
+        assert(is_array($callbacks));
+        foreach ($callbacks as $callback) {
+            assert($callback instanceof Closure);
             $this->assertTrue($callback());
         }
     }
@@ -102,7 +107,10 @@ final class ProcessManagerTest extends TestCase
         });
         $property = (new ReflectionClass($processManager))->getProperty('stateChangeCallbacks');
         $property->setAccessible(true);
-        foreach ($property->getValue($processManager) as $callback) {
+        $callbacks = $property->getValue($processManager);
+        assert(is_array($callbacks));
+        foreach ($callbacks as $callback) {
+            assert($callback instanceof Closure);
             $this->assertTrue($callback());
         }
     }
@@ -115,7 +123,10 @@ final class ProcessManagerTest extends TestCase
         });
         $property = (new ReflectionClass($processManager))->getProperty('tickCallbacks');
         $property->setAccessible(true);
-        foreach ($property->getValue($processManager) as $callback) {
+        $callbacks = $property->getValue($processManager);
+        assert(is_array($callbacks));
+        foreach ($callbacks as $callback) {
+            assert($callback instanceof Closure);
             $this->assertTrue($callback());
         }
     }

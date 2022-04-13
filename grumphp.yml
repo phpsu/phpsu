@@ -2,6 +2,13 @@ imports:
   - { resource: vendor/pluswerk/grumphp-config/grumphp.yml }
 
 
+grumphp:
+  tasks:
+    phpstan:
+      level: ~
+      configuration: "phpstan.neon"
+      ignore_patterns: [".phpstorm.meta.php"]
+
 parameters:
   convention.jsonlint_ignore_pattern:
     - "tests/fixtures/installed/invalidJson/vendor/composer/installed.json"

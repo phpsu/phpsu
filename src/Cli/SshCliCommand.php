@@ -9,6 +9,7 @@ use PHPSu\Config\AppInstance;
 use PHPSu\Helper\StringHelper;
 use PHPSu\Options\SshOptions;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -23,8 +24,7 @@ use function in_array;
 final class SshCliCommand extends AbstractCliCommand
 {
     /** @var null|string[] */
-    private $instances;
-
+    private ?array $instances = null;
 
     protected function configure(): void
     {
@@ -37,7 +37,6 @@ final class SshCliCommand extends AbstractCliCommand
             ->addArgument('commands', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'Run commands on remote ssh', []);
     }
 
-
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         /** @var string $default */
@@ -48,12 +47,6 @@ final class SshCliCommand extends AbstractCliCommand
         );
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return void
-     * @throws Exception
-     */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $default = $input->hasArgument('destination') ? $this->getArgument($input, 'destination') : '';
@@ -63,7 +56,9 @@ final class SshCliCommand extends AbstractCliCommand
         if (!in_array($default, $this->getAppInstancesWithHost(), true)) {
             $question = new ChoiceQuestion('Please select one of the AppInstances', $this->getAppInstancesWithHost());
             $question->setErrorMessage('AppInstance %s not found in Config.');
-            $destination = $this->getHelper('question')->ask($input, $output, $question);
+            $questionHelper = $this->getHelper('question');
+            assert($questionHelper instanceof QuestionHelper);
+            $destination = $questionHelper->ask($input, $output, $question);
             $output->writeln('You selected: ' . $destination);
             $input->setArgument('destination', $destination);
         }
