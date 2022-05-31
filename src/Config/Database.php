@@ -19,7 +19,7 @@ final class Database implements DockerTraitSupportInterface
     private DatabaseConnectionDetails $connectionDetails;
     /** @var string[] */
     private array $excludes = [];
-    private bool $noDefiner = false;
+    private bool $noDefiner = true;
 
     public function getName(): string
     {

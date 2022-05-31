@@ -26,13 +26,13 @@ final class CommandGeneratorTest extends TestCase
         $globalConfig = new GlobalConfig();
         $globalConfig->addFilesystemObject((new FileSystem())->setName('fileadmin')->setPath('fileadmin'));
         $globalConfig->addFilesystemObject((new FileSystem())->setName('uploads')->setPath('uploads'));
-        $globalConfig->addDatabaseObject((new Database())->setName('app')->setUrl('mysql://user:pw@host:3307/database'));
+        $globalConfig->addDatabaseObject((new Database())->setName('app')->setUrl('mysql://user:pw@host:3307/database')->setRemoveDefinerFromDump(false));
         $globalConfig->addSshConnection('serverEu', 'user@server.eu');
         $globalConfig->addSshConnectionObject((new SshConnection())->setHost('stagingServer')->setUrl('staging@stagingServer.server.eu'));
         $globalConfig->addAppInstanceObject((new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production')->addFilesystemObject(
             (new FileSystem())->setName('fileadmin')->setPath('fileadmin2')
         )->addDatabaseObject(
-            (new Database())->setName('app')->setUrl('mysql://root:root@appHost/appDatabase')
+            (new Database())->setName('app')->setUrl('mysql://root:root@appHost/appDatabase')->setRemoveDefinerFromDump(false)
         ));
         $globalConfig->addAppInstanceObject((new AppInstance())->setName('staging')->setHost('stagingServer')->setPath('/var/www/staging'));
         $globalConfig->addAppInstanceObject((new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing'));
