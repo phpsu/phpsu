@@ -431,7 +431,7 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
     {
         $whereCondition = $this->getExcludeSqlPart($excludes);
         return <<<SQL
-SET group_concat_max_len = 51200; SELECT GROUP_CONCAT(table_name separator ' ') FROM information_schema.tables WHERE table_schema='${database}'${whereCondition}
+SET group_concat_max_len = 51200; SELECT GROUP_CONCAT(table_name separator ' ') FROM information_schema.tables WHERE table_schema='$database'$whereCondition
 SQL;
     }
 }
