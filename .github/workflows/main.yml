@@ -17,6 +17,7 @@ jobs:
       image: pluswerk/php-dev:nginx-${{ matrix.php }}
       options: -t
     strategy:
+      fail-fast: false
       matrix:
         php: ['7.4', '8.0', '8.1', '8.2']
     name: PHP ${{ matrix.php }}
