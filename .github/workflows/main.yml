@@ -8,8 +8,12 @@ jobs:
       - uses: actions/checkout@master
       - name: fetch tags
         run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
-      - name: Roave BC Check
-        uses: docker://nyholm/roave-bc-check-ga
+      - name: "Roave BC Check"
+        uses: "addnab/docker-run-action@v3"
+        with:
+          image: "nyholm/roave-bc-check-ga"
+          options: "--env GITHUB_REPOSITORY=${{ github.repository }} --user 1001 --volume ${{ github.workspace }}:/app"
+          run: "/entrypoint.sh"
 
   test:
     runs-on: ubuntu-latest
@@ -20,7 +24,11 @@ jobs:
       fail-fast: false
       matrix:
         php: ['7.4', '8.0', '8.1', '8.2']
-    name: PHP ${{ matrix.php }}
+        symfony: ['5', '6']
+        exclude:
+          - symfony: '6'
+            php: '7.4'
+    name: 'PHP ${{ matrix.php }} + Symfony: ${{ matrix.symfony }}'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -28,8 +36,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.composer/cache/files
-          key: dependencies-php-${{ matrix.php[0] }}-composer-${{ hashFiles('composer.json') }}
-      - run: composer install
+          key: dependencies-php-${{ matrix.php }}-symfony-${{ matrix.symfony }}-composer-${{ hashFiles('composer.json') }}
+      - run: composer req symfony/console:^${{ matrix.symfony }}
       - run: vendor/bin/grumphp run
       - run: script -q -e -c "composer test"
       - run: script -q -e -c "composer infection"

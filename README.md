@@ -4,7 +4,6 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Coverage Status](https://img.shields.io/codecov/c/gh/phpsu/phpsu.svg?style=flat-square)](https://codecov.io/gh/phpsu/phpsu)
 [![Infection MSI](https://img.shields.io/endpoint?style=flat-square&url=https://badge-api.stryker-mutator.io/github.com/phpsu/phpsu/master)](https://infection.github.io)
-[![Quality Score](https://img.shields.io/scrutinizer/g/phpsu/phpsu.svg?style=flat-square)](https://scrutinizer-ci.com/g/phpsu/phpsu)
 [![Total Downloads](https://img.shields.io/packagist/dt/phpsu/phpsu.svg?style=flat-square)](https://packagist.org/packages/phpsu/phpsu)
 
 This package is compliant with [PSR-1], [PSR-2], [PSR-4] and [PSR-12]. If you notice compliance oversights, please send a patch via pull request.
@@ -57,7 +56,7 @@ you can execute any phpsu command via something like this:
 The following versions of PHP are supported by this version.
 
 * PHP `7.4`, `8.0`, `8.1`, `8.2`
-* Compatible and continuously tested with symfony `5`
+* Compatible and continuously tested with symfony `5`, `6`
 * for older versions go to [version 2.3.0](https://github.com/phpsu/phpsu/tree/2.3.0)
 * or [version 1.1.0](https://github.com/phpsu/phpsu/tree/1.1.0)
 

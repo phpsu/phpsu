@@ -46,7 +46,7 @@ class CommandExecutor
     {
         $process = Process::fromShellCommandline((string)$command);
         $process->setTimeout(null);
-        $process->setTty($output->isDecorated());
+        $process->setTty($output->isDecorated() && \Symfony\Component\Process\Process::isTtySupported());
 
         $errorOutput = $output;
         if ($output instanceof ConsoleOutputInterface) {
