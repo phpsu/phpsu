@@ -76,7 +76,7 @@ final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputI
     /**
      * {@inheritdoc}
      */
-    public function getErrorOutput()
+    public function getErrorOutput(): OutputInterface
     {
         return $this->stderr;
     }
