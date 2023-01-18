@@ -292,7 +292,8 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
                 ->addOption('opt')
                 ->addOption('skip-comments')
                 ->addOption('single-transaction')
-                ->addOption('lock-tables', 'false', false, true),
+                ->addOption('lock-tables', 'false', false, true)
+                ->addOption('no-tablespaces'),
             $from,
             false
         );
