@@ -14,3 +14,4 @@
 /infection.json     export-ignore
 /phpstan.neon       export-ignore
 /README.md          export-ignore
+/docker-compose.yml export-ignore

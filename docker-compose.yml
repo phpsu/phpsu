@@ -1,0 +1,19 @@
+version: '3.5'
+
+services:
+  web:
+    image: ghcr.io/pluswerk/php-dev:nginx-8.2-alpine
+
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ~/.ssh:/home/application/.ssh
+      - ~/.composer/cache:/home/application/.composer/cache
+      - ~/.gitconfig:/home/application/.gitconfig
+
+    environment:
+      - XDEBUG_CLIENT_HOST=${XDEBUG_CLIENT_HOST:-}
+      - XDEBUG_CLIENT_PORT=${XDEBUG_CLIENT_PORT:-9000}
+      - php.xdebug.idekey=${XDEBUG_IDEKEY:-PHPSTORM}
+      - APPLICATION_UID=${APPLICATION_UID:-1000}
+      - APPLICATION_GID=${APPLICATION_GID:-1000}
