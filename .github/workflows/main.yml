@@ -39,6 +39,7 @@ jobs:
           key: dependencies-php-${{ matrix.php }}-symfony-${{ matrix.symfony }}-composer-${{ hashFiles('composer.json') }}
       - run: composer req symfony/console:^${{ matrix.symfony }}
       - run: vendor/bin/grumphp run
+      - run: git config --global --add safe.directory /__w/phpsu/phpsu
       - run: script -q -e -c "composer test"
       - run: script -q -e -c "composer infection"
       - run: composer phpstan
