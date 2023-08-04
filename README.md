@@ -157,7 +157,7 @@ If you discover any security related issues, please email git@kanti.de instead o
 ## Credits
 
 - [Matthias Vogel](https://github.com/Kanti)
-- [Chris Ben](https://github.com/ChrisB9)
+- [Christian Rodriguez Benthake](https://github.com/ChrisB9)
 - [All Contributors](https://github.com/phpsu/phpsu/contributors)
 
 ## License
