@@ -15,6 +15,7 @@ use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConnection;
 use PHPSu\Options\SyncOptions;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
+use PHPSu\Tests\ControllerTest;
 use PHPUnit\Framework\TestCase;
 use SplFileObject;
 use SplTempFileObject;
@@ -148,7 +149,7 @@ final class CommandGeneratorTest extends TestCase
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/' './fileadmin/'",
             'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/' './uploads/'",
-            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='\''appHost'\'' --user='\''root'\'' --password='\''root'\'' '\''appDatabase'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `database`;USE `database`;'\'' && cat)' | mysql --host='host' --port=3307 --user='user' --password='pw'",
+            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''appHost'\'' --user='\''root'\'' --password='\''root'\'' '\''appDatabase'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `database`;USE `database`;'\'' && cat)' | mysql --host='host' --port=3307 --user='user' --password='pw'",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -178,7 +179,7 @@ SSH_CONFIG;
         $this->assertSame([
             'filesystem:fileadmin' => "ssh -F 'php://temp' 'serverEu' 'rsync -az '\''/var/www/production/fileadmin2/'\'' '\''/var/www/testing/fileadmin/'\'''",
             'filesystem:uploads' => "ssh -F 'php://temp' 'serverEu' 'rsync -az '\''/var/www/production/uploads/'\'' '\''/var/www/testing/uploads/'\'''",
-            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='\''appHost'\'' --user='\''root'\'' --password='\''root'\'' '\''appDatabase'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `database`;USE `database`;'\'' && cat) | mysql --host='\''host'\'' --port=3307 --user='\''user'\'' --password='\''pw'\'''",
+            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''appHost'\'' --user='\''root'\'' --password='\''root'\'' '\''appDatabase'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `database`;USE `database`;'\'' && cat) | mysql --host='\''host'\'' --port=3307 --user='\''user'\'' --password='\''pw'\'''",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -208,7 +209,7 @@ SSH_CONFIG;
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -az './fileadmin/' '../local2/fileadmin/'",
             'filesystem:uploads' => "rsync -az './uploads/' '../local2/uploads/'",
-            'database:app' => "mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='host' --port=3307 --user='user' --password='pw' 'database' | (echo 'CREATE DATABASE IF NOT EXISTS `database`;USE `database`;' && cat) | mysql --host='host' --port=3307 --user='user' --password='pw'",
+            'database:app' => "mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='host' --port=3307 --user='user' --password='pw' 'database' | (echo 'CREATE DATABASE IF NOT EXISTS `database`;USE `database`;' && cat) | mysql --host='host' --port=3307 --user='user' --password='pw'",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -238,7 +239,7 @@ SSH_CONFIG;
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/' 'stagingServer:/var/www/staging/fileadmin/'",
             'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/' 'stagingServer:/var/www/staging/uploads/'",
-            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='\''appHost'\'' --user='\''root'\'' --password='\''root'\'' '\''appDatabase'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `database`;USE `database`;'\'' && cat)' | ssh -F 'php://temp' 'stagingServer' 'mysql --host='\''host'\'' --port=3307 --user='\''user'\'' --password='\''pw'\'''",
+            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''appHost'\'' --user='\''root'\'' --password='\''root'\'' '\''appDatabase'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `database`;USE `database`;'\'' && cat)' | ssh -F 'php://temp' 'stagingServer' 'mysql --host='\''host'\'' --port=3307 --user='\''user'\'' --password='\''pw'\'''",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -268,7 +269,7 @@ SSH_CONFIG;
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/' '/var/www/staging/fileadmin/'",
             'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/' '/var/www/staging/uploads/'",
-            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='\''appHost'\'' --user='\''root'\'' --password='\''root'\'' '\''appDatabase'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `database`;USE `database`;'\'' && cat)' | mysql --host='host' --port=3307 --user='user' --password='pw'",
+            'database:app' => "ssh -F 'php://temp' 'serverEu' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''appHost'\'' --user='\''root'\'' --password='\''root'\'' '\''appDatabase'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `database`;USE `database`;'\'' && cat)' | mysql --host='host' --port=3307 --user='user' --password='pw'",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -304,7 +305,7 @@ SSH_CONFIG;
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' '/var/www/staging/fileadmin/' 'serverEu:/var/www/production/fileadmin2/'",
             'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' '/var/www/staging/uploads/' 'serverEu:/var/www/production/uploads/'",
-            'database:app' => "mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='host' --port=3307 --user='user' --password='pw' 'database' | (echo 'CREATE DATABASE IF NOT EXISTS `appDatabase`;USE `appDatabase`;' && cat) | ssh -F 'php://temp' 'serverEu' 'mysql --host='\''appHost'\'' --user='\''root'\'' --password='\''root'\'''",
+            'database:app' => "mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='host' --port=3307 --user='user' --password='pw' 'database' | (echo 'CREATE DATABASE IF NOT EXISTS `appDatabase`;USE `appDatabase`;' && cat) | ssh -F 'php://temp' 'serverEu' 'mysql --host='\''appHost'\'' --user='\''root'\'' --password='\''root'\'''",
         ], $result);
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host serverEu
@@ -334,7 +335,7 @@ SSH_CONFIG;
         $this->assertSame([
             'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' '/var/www/staging/fileadmin/' 'serverEu:/var/www/production/fileadmin2/'",
             'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' '/var/www/staging/uploads/' 'serverEu:/var/www/production/uploads/'",
-            'database:app' => "mysqldump --opt --skip-comments --single-transaction --lock-tables=false --host='host' --port=3307 --user='user' --password='pw' 'database' | (echo 'CREATE DATABASE IF NOT EXISTS `appDatabase`;USE `appDatabase`;' && cat) | gzip | ssh -F 'php://temp' 'serverEu' 'gunzip | mysql --host='\''appHost'\'' --user='\''root'\'' --password='\''root'\'''",
+            'database:app' => "mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='host' --port=3307 --user='user' --password='pw' 'database' | (echo 'CREATE DATABASE IF NOT EXISTS `appDatabase`;USE `appDatabase`;' && cat) | gzip | ssh -F 'php://temp' 'serverEu' 'gunzip | mysql --host='\''appHost'\'' --user='\''root'\'' --password='\''root'\'''",
         ], $result);
     }
 
