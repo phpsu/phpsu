@@ -1,22 +1,23 @@
 {
-    "timeout": 10,
-    "source": {
-        "directories": [
-            "src"
-        ]
-    },
-    "phpUnit": {
-        "configDir": "tests\/"
-    },
-    "logs": {
-        "text": "tests/test-results/infection.log",
-        "stryker": {
-            "badge": "master"
-        }
-    },
-    "mutators": {
-        "@default": true,
-        "IdenticalEqual": false,
-        "NotIdenticalNotEqual": false
+  "timeout" : 10,
+  "source" : {
+    "directories" : [
+      "src"
+    ]
+  },
+  "phpUnit" : {
+    "configDir" : "tests\/"
+  },
+  "logs" : {
+    "text" : "tests/test-results/infection.log",
+    "html" : "tests/test-results/infection.html",
+    "stryker" : {
+      "badge" : "master"
     }
+  },
+  "mutators" : {
+    "@default" : true,
+    "IdenticalEqual" : false,
+    "NotIdenticalNotEqual" : false
+  }
 }

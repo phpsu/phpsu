@@ -38,7 +38,7 @@
   "scripts": {
     "test": "XDEBUG_MODE=coverage vendor/bin/phpunit -c tests/phpunit.xml --testdox --color=always",
     "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox",
-    "infection": "XDEBUG_MODE=coverage vendor/bin/infection --threads=4 --only-covered --min-msi=89 --min-covered-msi=89 --ansi",
+    "infection": "XDEBUG_MODE=coverage vendor/bin/infection --threads=4 --only-covered --min-msi=91 --min-covered-msi=91 --ansi",
     "phpstan": "vendor/bin/phpstan  --ansi"
   },
   "autoload": {

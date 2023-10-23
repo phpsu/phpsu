@@ -265,7 +265,7 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
             $command = DockerCommandHelper::wrapCommand(
                 $this->getFromDatabase(),
                 $this->addArgumentsToShellCommand(
-                    ShellBuilder::command('mysql'),
+                    ShellBuilder::command($from->getDatabaseType() === 'mysql' ? 'mysql' : 'mariadb'),
                     $from,
                     true
                 )
@@ -282,7 +282,7 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
             );
             $tableInfo = true;
         }
-        $dumpCommand = ShellBuilder::command('mysqldump');
+        $dumpCommand = ShellBuilder::command($from->getDatabaseType() === 'mysql' ? 'mysqldump' : 'mariadb-dump');
         $verbosity = StringHelper::optionStringForVerbosity($this->getVerbosity());
         if ($verbosity) {
             $dumpCommand->addShortOption($verbosity);

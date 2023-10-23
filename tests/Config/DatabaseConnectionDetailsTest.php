@@ -140,4 +140,17 @@ class DatabaseConnectionDetailsTest extends TestCase
         $this->assertSame(2298, $connectionDetails->getPort());
         $this->assertSame('mysql://user2:pw2@host2:2298/database2', $connectionDetails->__toString());
     }
+
+    public function testDatabaseType(): void
+    {
+        $connectionDetails = DatabaseConnectionDetails::fromUrlString('mysql://user@192.168.0.1');
+        $this->assertSame('mysql', $connectionDetails->getDatabaseType());
+
+        $connectionDetails = DatabaseConnectionDetails::fromUrlString('mariadb://user@192.168.0.1');
+        $this->assertSame('mariadb', $connectionDetails->getDatabaseType());
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Database Type must be mysql or mariadb');
+        DatabaseConnectionDetails::fromUrlString('myCustomDb://user@192.168.0.1');
+    }
 }

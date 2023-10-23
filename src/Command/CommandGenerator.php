@@ -32,7 +32,7 @@ final class CommandGenerator
         $this->verbosity = $verbosity;
     }
 
-    public function getFile(): SplFileObject
+    private function getFile(): SplFileObject
     {
         if (!$this->file instanceof SplFileObject) {
             $this->file = new TempSshConfigFile();

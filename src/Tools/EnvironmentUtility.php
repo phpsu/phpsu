@@ -101,10 +101,7 @@ final class EnvironmentUtility
     {
         $contents = file_get_contents($this->spotVendorPath() . '/composer/installed.json') ?: '';
         $activeInstallations = json_decode($contents, false);
-        if (!($activeInstallations instanceof stdClass)) {
-            return null;
-        }
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if (!($activeInstallations instanceof stdClass) || json_last_error() !== JSON_ERROR_NONE) {
             return null;
         }
         foreach ($activeInstallations->packages as $installed) {

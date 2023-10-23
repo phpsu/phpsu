@@ -15,7 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 final class InfoCliCommand extends AbstractCliCommand
 {
-    public function configure(): void
+    protected function configure(): void
     {
         $this->setName('info')
             ->setDescription('show version information of all instances')
@@ -23,17 +23,10 @@ final class InfoCliCommand extends AbstractCliCommand
         ->addOption('instance', 'i', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Filter by one or more instances', []);
     }
 
-    public function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $symfonyStyle = new SymfonyStyle($input, $output);
         $symfonyStyle->title('List of all dependencies and their versions');
-        $this->printDependencyVersions($output, $symfonyStyle);
-        return 0;
-    }
-
-
-    public function printDependencyVersions(OutputInterface $output, SymfonyStyle $symfonyStyle): void
-    {
         $environmentUtility = new EnvironmentUtility();
         $output->writeln('<info>Locally installed</info>');
         $symfonyStyle->table(
@@ -45,5 +38,6 @@ final class InfoCliCommand extends AbstractCliCommand
                 ['ssh', $environmentUtility->isSshInstalled() ? '✔' : '✘', $environmentUtility->getSshVersion()]
             ]
         );
+        return 0;
     }
 }
