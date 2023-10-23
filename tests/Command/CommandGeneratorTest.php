@@ -48,6 +48,8 @@ final class CommandGeneratorTest extends TestCase
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
         $result = $commandGenerator->sshCommand('production', '', null);
+        $file->rewind();
+        $this->assertEquals('Host serverEu' . PHP_EOL, $file->getCurrentLine());
         $this->assertSame("ssh -F 'php://temp' 'serverEu' -t 'cd '\''/var/www/production'\'' ; bash --login'", (string)$result);
     }
 
@@ -69,6 +71,8 @@ final class CommandGeneratorTest extends TestCase
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
         $mysqlCommand = $commandGenerator->mysqlCommand('production', null, null);
+        $file->rewind();
+        $this->assertEquals('Host serverEu' . PHP_EOL, $file->getCurrentLine());
         $comparisonObject = ShellBuilder::new()
             ->createCommand('ssh')
             ->addShortOption('t')

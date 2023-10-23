@@ -18,11 +18,14 @@ final class DatabaseConnectionDetails
     private int $port;
     private string $database;
 
+    /** @var string mysql or mariadb */
+    private string $databaseType;
+
     private function __construct()
     {
     }
 
-    public static function fromDetails(string $database, string $user = '', string $password = '', string $host = '127.0.0.1', int $port = 3306): self
+    public static function fromDetails(string $database, string $user = '', string $password = '', string $host = '127.0.0.1', int $port = 3306, string $databaseType = 'mysql'): self
     {
         $self = new self();
         $self->setUser($user);
@@ -30,12 +33,13 @@ final class DatabaseConnectionDetails
         $self->setHost($host);
         $self->setPort($port);
         $self->setDatabase($database);
+        $self->setDatabaseType($databaseType);
         return $self;
     }
 
     public static function fromUrlString(string $url): self
     {
-        if (!preg_match('/[a-zA-Z]+\:\/\//', $url)) {
+        if (!preg_match('/[a-zA-Z]+:\/\//', $url)) {
             $url = 'mysql://' . $url;
         }
         $result = parse_url($url);
@@ -47,7 +51,8 @@ final class DatabaseConnectionDetails
             $result['user'] ?? '',
             $result['pass'] ?? '',
             $result['host'] ?? '',
-            $result['port'] ?? 3306
+            $result['port'] ?? 3306,
+            $result['scheme'] ?? 'mysql',
         );
     }
 
@@ -118,9 +123,25 @@ final class DatabaseConnectionDetails
         return $this;
     }
 
+    public function getDatabaseType(): string
+    {
+        return $this->databaseType;
+    }
+
+    public function setDatabaseType(string $databaseType): DatabaseConnectionDetails
+    {
+        if (!in_array($databaseType, ['mysql', 'mariadb'], true)) {
+            throw new Exception('Database Type must be mysql or mariadb');
+        }
+
+        $this->databaseType = $databaseType;
+        return $this;
+    }
+
     public function __toString(): string
     {
-        $result = 'mysql://';
+        $result = $this->getDatabaseType();
+        $result .= '://';
         $result .= $this->getUser();
         if ($this->getPassword() !== '') {
             $result .= ':' . $this->getPassword();

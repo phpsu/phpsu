@@ -27,17 +27,17 @@ final class MysqlCliCommand extends AbstractCliCommand
     {
         $this->setName('mysql')
             ->setDescription('connect to configured database')
-            ->setHelp('Connect to Database of AppInstance via SSH.' . PHP_EOL . '(connects from the executing location)')
+            ->setHelp(implode(PHP_EOL, ['Connect to Database of AppInstance via SSH.', '(connects from the executing location)']))
             ->addOption('dry-run', 'd', InputOption::VALUE_NONE, 'just display the commands.')
-            ->addOption('database', 'b', InputArgument::OPTIONAL, 'Which Database to connect to')
-            ->addArgument('instance', InputArgument::REQUIRED, 'Which AppInstance to connect to')
-            ->addArgument('mysqlcommand', InputArgument::OPTIONAL, 'Execute a mysql command instead of connecting to it');
+        ->addOption('database', 'b', InputArgument::OPTIONAL, 'Which Database to connect to')
+        ->addArgument('instance', InputArgument::REQUIRED, 'Which AppInstance to connect to')
+        ->addArgument('mysqlcommand', InputArgument::OPTIONAL, 'Execute a mysql command instead of connecting to it');
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         /** @var string $default */
-        $default = $input->hasArgument('instance') ? $this->getArgument($input, 'instance') ?? '' : '';
+        $default = $input->hasArgument('instance') ? $input->getArgument('instance') ?? '' : '';
         $input->setArgument(
             'instance',
             StringHelper::findStringInArray($default, $this->getAppInstancesWithHost()) ?: $default
@@ -46,7 +46,7 @@ final class MysqlCliCommand extends AbstractCliCommand
 
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
-        $default = $input->hasArgument('instance') ? $this->getArgument($input, 'instance') : '';
+        $default = $input->hasArgument('instance') ? $input->getArgument('instance') : '';
         $appInstancesWithHost = $this->getAppInstancesWithHost();
         if (!in_array($default, $appInstancesWithHost, true)) {
             $question = new ChoiceQuestion('Please select one of the AppInstances', $appInstancesWithHost);
@@ -57,8 +57,8 @@ final class MysqlCliCommand extends AbstractCliCommand
             $output->writeln('You selected: ' . $destination);
             $input->setArgument('instance', $destination);
         }
-        $default = $input->hasOption('database') ? $this->getOption($input, 'database') : '';
-        $instance = $this->getArgument($input, 'instance');
+        $default = $input->hasOption('database') ? $input->getOption('database') : '';
+        $instance = $input->getArgument('instance');
         assert(is_string($instance));
         $databases = $this->getDatabasesForAppInstance($instance);
         if (count($databases) > 1 && !in_array($default, $databases, true)) {
@@ -74,10 +74,10 @@ final class MysqlCliCommand extends AbstractCliCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $instance = $this->getArgument($input, 'instance');
-        $mysqlCommand = $this->getArgument($input, 'mysqlcommand') ?: '';
+        $instance = $input->getArgument('instance');
+        $mysqlCommand = $input->getArgument('mysqlcommand') ?: '';
         /** @var string|null $database */
-        $database = $this->getOption($input, 'database') ?: null;
+        $database = $input->getOption('database') ?: null;
         assert(is_string($instance) && is_string($mysqlCommand));
         return $this->controller->mysql(
             $output,

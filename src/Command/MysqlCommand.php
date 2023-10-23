@@ -69,16 +69,17 @@ final class MysqlCommand implements CommandInterface
         $ssh->setVerbosity($this->verbosity);
         $ssh->setInto($this->host);
         $ssh->setSshConfig($this->sshConfig);
+        $connectionDetails = $this->database->getConnectionDetails();
         $verbosity = StringHelper::optionStringForVerbosity($this->verbosity);
-        $mysql = ShellBuilder::command('mysql');
+        $mysql = ShellBuilder::command($connectionDetails->getDatabaseType() === 'mysql' ? 'mysql' : 'mariadb');
         if ($verbosity) {
             $mysql->addShortOption($verbosity);
         }
-        $mysql->addOption('user', $this->database->getConnectionDetails()->getUser(), true, true)
-            ->addOption('password', $this->database->getConnectionDetails()->getPassword(), true, true)
-            ->addOption('host', $this->database->getConnectionDetails()->getHost(), false, true)
-            ->addOption('port', (string)$this->database->getConnectionDetails()->getPort(), false, true)
-            ->addArgument($this->database->getConnectionDetails()->getDatabase())
+        $mysql->addOption('user', $connectionDetails->getUser(), true, true)
+            ->addOption('password', $connectionDetails->getPassword(), true, true)
+            ->addOption('host', $connectionDetails->getHost(), false, true)
+            ->addOption('port', (string)$connectionDetails->getPort(), false, true)
+            ->addArgument($connectionDetails->getDatabase())
         ;
         if ($this->command) {
             $mysql->addShortOption('e', $this->command);

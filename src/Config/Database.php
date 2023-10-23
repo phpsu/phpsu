@@ -32,15 +32,6 @@ final class Database implements DockerTraitSupportInterface
         return $this;
     }
 
-    /**
-     * todo: remove
-     * @deprecated will be removed in 3.0
-     */
-    public function getUrl(): string
-    {
-        return $this->connectionDetails->__toString();
-    }
-
     public function setUrl(string $url): Database
     {
         $this->connectionDetails = DatabaseConnectionDetails::fromUrlString($url);

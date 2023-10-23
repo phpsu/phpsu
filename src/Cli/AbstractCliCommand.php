@@ -23,26 +23,4 @@ abstract class AbstractCliCommand extends Command
         $this->configurationLoader = $configurationLoader;
         $this->controller = $controller;
     }
-
-    /**
-     * @param InputInterface $input
-     * @param string $argumentName
-     * @return string|string[]|null
-     */
-    public function getArgument(InputInterface $input, string $argumentName)
-    {
-        // @phpstan-ignore-next-line
-        return $input->getArgument($argumentName);
-    }
-
-    /**
-     * @param InputInterface $input
-     * @param string $argumentName
-     * @return bool|string|string[]|null
-     */
-    public function getOption(InputInterface $input, string $argumentName)
-    {
-        // @phpstan-ignore-next-line
-        return $input->getOption($argumentName);
-    }
 }
