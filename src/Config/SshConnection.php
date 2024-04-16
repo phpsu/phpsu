@@ -12,9 +12,12 @@ use InvalidArgumentException;
 final class SshConnection implements ConfigElement
 {
     private string $host;
+
     private SshUrl $url;
+
     /** @var string[] */
     private array $options = [];
+
     /** @var string[] */
     private array $from = [];
 
@@ -25,9 +28,10 @@ final class SshConnection implements ConfigElement
 
     public function setHost(string $host): SshConnection
     {
-        if (strpos($host, '/') !== false) {
+        if (str_contains($host, '/')) {
             throw new InvalidArgumentException(sprintf('host %s has invalid character', $host));
         }
+
         $this->host = $host;
         return $this;
     }
@@ -53,7 +57,6 @@ final class SshConnection implements ConfigElement
 
     /**
      * @param string[] $options
-     * @return SshConnection
      */
     public function setOptions(array $options): SshConnection
     {
@@ -71,7 +74,6 @@ final class SshConnection implements ConfigElement
 
     /**
      * @param string[] $from
-     * @return SshConnection
      */
     public function setFrom(array $from): SshConnection
     {

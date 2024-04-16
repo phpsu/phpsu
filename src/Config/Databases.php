@@ -38,6 +38,7 @@ final class Databases
         if (!isset($this->databases[$name])) {
             throw new Exception(sprintf('Database %s not found', $name));
         }
+
         return $this->databases[$name];
     }
 

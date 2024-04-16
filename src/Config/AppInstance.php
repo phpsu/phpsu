@@ -16,8 +16,11 @@ final class AppInstance
     use AddDatabaseTrait;
 
     private string $name;
+
     private string $host = '';
+
     private string $path = '';
+
     /** @var CompressionInterface[] */
     private array $compressions = [];
 
@@ -45,9 +48,10 @@ final class AppInstance
 
     public function setHost(string $host): AppInstance
     {
-        if (strpos($host, '/') !== false) {
+        if (str_contains($host, '/')) {
             throw new InvalidArgumentException(sprintf('host %s has invalid character', $host));
         }
+
         $this->host = $host;
         return $this;
     }

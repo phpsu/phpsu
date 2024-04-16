@@ -22,8 +22,8 @@ final class ProcessManagerTest extends TestCase
         $this->assertTrue($pList1->isRunning(), 'Process1 should be running');
         $this->assertTrue($pList2->isRunning(), 'Process2 should be running');
         $processManager->wait();
-        $this->assertNotTrue($pList1->isRunning(), 'Process1 shouldn\'t be running');
-        $this->assertNotTrue($pList2->isRunning(), 'Process2 shouldn\'t be running');
+        $this->assertNotTrue($pList1->isRunning(), "Process1 shouldn't be running");
+        $this->assertNotTrue($pList2->isRunning(), "Process2 shouldn't be running");
         $this->assertSame('Testing List1' . PHP_EOL, $pList1->getOutput());
         $this->assertSame('Testing List2' . PHP_EOL, $pList2->getOutput());
     }
@@ -34,6 +34,7 @@ final class ProcessManagerTest extends TestCase
         $pList1 = Process::fromShellCommandline('echo "Testing List1" && sleep 0.1')->setName('list1');
         $processManager->addProcess($pList1);
         $processManager->start();
+
         $pid = $pList1->getPid();
         // forcefully kill process
         $pList1->stop(0, 15);
@@ -76,21 +77,22 @@ final class ProcessManagerTest extends TestCase
         $processManager->start();
         try {
             $processManager->wait()->validateProcesses();
-        } catch (Exception $exception) {
+        } catch (Exception) {
             $this->assertSame([$name => $pError->getErrorOutput()], $processManager->getErrorOutputs());
             return;
         }
+
         $this->assertTrue(false, 'Exception should be thrown');
     }
 
     public function testAddOutputCallback(): void
     {
         $processManager = new ProcessManager();
-        $processManager->addOutputCallback(static function () {
-            return true;
-        });
+        $processManager->addOutputCallback(static fn(): bool => true);
+
         $property = (new ReflectionClass($processManager))->getProperty('outputCallbacks');
         $property->setAccessible(true);
+
         $callbacks = $property->getValue($processManager);
         assert(is_array($callbacks));
         foreach ($callbacks as $callback) {
@@ -102,11 +104,11 @@ final class ProcessManagerTest extends TestCase
     public function testAddStateChangeCallback(): void
     {
         $processManager = new ProcessManager();
-        $processManager->addStateChangeCallback(static function () {
-            return true;
-        });
+        $processManager->addStateChangeCallback(static fn(): bool => true);
+
         $property = (new ReflectionClass($processManager))->getProperty('stateChangeCallbacks');
         $property->setAccessible(true);
+
         $callbacks = $property->getValue($processManager);
         assert(is_array($callbacks));
         foreach ($callbacks as $callback) {
@@ -118,11 +120,11 @@ final class ProcessManagerTest extends TestCase
     public function testAddTickCallback(): void
     {
         $processManager = new ProcessManager();
-        $processManager->addTickCallback(static function () {
-            return true;
-        });
+        $processManager->addTickCallback(static fn(): bool => true);
+
         $property = (new ReflectionClass($processManager))->getProperty('tickCallbacks');
         $property->setAccessible(true);
+
         $callbacks = $property->getValue($processManager);
         assert(is_array($callbacks));
         foreach ($callbacks as $callback) {

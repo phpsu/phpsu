@@ -4,18 +4,23 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+use Stringable;
 use Exception;
 use InvalidArgumentException;
 
 /**
  * @internal
  */
-final class DatabaseConnectionDetails
+final class DatabaseConnectionDetails implements Stringable
 {
     private string $user;
+
     private string $password;
+
     private string $host;
+
     private int $port;
+
     private string $database;
 
     /** @var string mysql or mariadb */
@@ -42,10 +47,12 @@ final class DatabaseConnectionDetails
         if (!preg_match('/[a-zA-Z]+:\/\//', $url)) {
             $url = 'mysql://' . $url;
         }
+
         $result = parse_url($url);
         if (!$result) {
             throw new Exception('DatabaseUrl could not been parsed: ' . $url);
         }
+
         return self::fromDetails(
             ltrim($result['path'] ?? '', '/'),
             $result['user'] ?? '',
@@ -66,6 +73,7 @@ final class DatabaseConnectionDetails
         if ($user === '') {
             throw new InvalidArgumentException('User must be set');
         }
+
         $this->user = $user;
         return $this;
     }
@@ -88,12 +96,14 @@ final class DatabaseConnectionDetails
 
     public function setHost(string $host): DatabaseConnectionDetails
     {
-        if (strpos($host, '/') !== false) {
+        if (str_contains($host, '/')) {
             throw new InvalidArgumentException(sprintf('host %s has invalid character', $host));
         }
+
         if ($host === '') {
             throw new InvalidArgumentException('Host must be set');
         }
+
         $this->host = $host;
         return $this;
     }
@@ -108,6 +118,7 @@ final class DatabaseConnectionDetails
         if ($port <= 0 || $port >= 65535) {
             throw new Exception('port must be between 0 and 65535');
         }
+
         $this->port = $port;
         return $this;
     }
@@ -140,19 +151,22 @@ final class DatabaseConnectionDetails
 
     public function __toString(): string
     {
-        $result = $this->getDatabaseType();
+        $result = $this->databaseType;
         $result .= '://';
-        $result .= $this->getUser();
-        if ($this->getPassword() !== '') {
-            $result .= ':' . $this->getPassword();
+        $result .= $this->user;
+        if ($this->password !== '') {
+            $result .= ':' . $this->password;
         }
-        $result .= '@' . $this->getHost();
-        if ($this->getPort() !== 3306) {
-            $result .= ':' . $this->getPort();
+
+        $result .= '@' . $this->host;
+        if ($this->port !== 3306) {
+            $result .= ':' . $this->port;
         }
-        if ($this->getDatabase()) {
-            $result .= '/' . $this->getDatabase();
+
+        if ($this->database) {
+            $result .= '/' . $this->database;
         }
+
         return $result;
     }
 }

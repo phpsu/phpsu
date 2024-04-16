@@ -21,7 +21,7 @@ final class Controller implements ControllerInterface
 {
     public const PHPSU_ROOT_PATH = __DIR__ . '/../';
 
-    private CommandExecutor $executor;
+    private readonly CommandExecutor $executor;
 
     public function __construct(CommandExecutor $commandExecutor = null)
     {
@@ -35,6 +35,7 @@ final class Controller implements ControllerInterface
             $output->writeln((string)$sshCommand);
             return 0;
         }
+
         return $this->executor->passthru($sshCommand, $output);
     }
 
@@ -49,6 +50,7 @@ final class Controller implements ControllerInterface
             $output->writeln((string)$mysqlCommand);
             return 0;
         }
+
         return $this->executor->passthru($mysqlCommand, $output);
     }
 
@@ -62,6 +64,7 @@ final class Controller implements ControllerInterface
                 $output->writeln(sprintf('<info>%s</info>', $commandName));
                 $output->writeln($command);
             }
+
             return;
         }
 
@@ -74,6 +77,7 @@ final class Controller implements ControllerInterface
             $sectionMiddle->writeln(str_repeat('-', 20), OutputInterface::OUTPUT_RAW);
             $sectionBottom = $output->section();
         }
+
         $this->executor->executeParallel($commands, $sectionTop, $sectionBottom);
     }
 
@@ -89,6 +93,7 @@ final class Controller implements ControllerInterface
             $sshOptionSource->setCommand($command);
             $this->ssh($output, $config, $sshOptionSource);
         }
+
         if ($options->getDestination() !== 'local') {
             $sshOptionDestination = new SshOptions($options->getDestination());
             $sshOptionDestination->setDryRun($options->isDryRun());

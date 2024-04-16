@@ -15,7 +15,9 @@ final class GlobalConfig
     use AddDatabaseTrait;
 
     private SshConnections $sshConnections;
+
     private AppInstances $appInstances;
+
     /** @var array<string, string> */
     private array $defaultSshConfig = [
         'ForwardAgent' => 'yes',
@@ -37,10 +39,7 @@ final class GlobalConfig
     }
 
     /**
-     * @param string $host
-     * @param string $url
      * @param array<string, string> $options
-     * @return SshConnection
      */
     public function addSshConnection(string $host, string $url, array $options = []): SshConnection
     {
@@ -66,8 +65,6 @@ final class GlobalConfig
 
     /**
      * @param array<string, string> $options
-     * @return GlobalConfig
-     * @return GlobalConfig
      */
     public function setDefaultSshConfig(array $options = []): GlobalConfig
     {
@@ -119,12 +116,11 @@ final class GlobalConfig
         if ($filterFunction) {
             $appInstances = array_filter($appInstances, $filterFunction);
         }
+
         return array_keys($appInstances);
     }
 
     /**
-     * @param string $host
-     * @return void
      * @throws Exception
      */
     public function validateConnectionToHost(string $host): void
@@ -142,6 +138,7 @@ final class GlobalConfig
         if ($this->appInstances->has($connectionName)) {
             return $this->getAppInstance($connectionName)->getHost() ?: $connectionName;
         }
+
         return $connectionName;
     }
 

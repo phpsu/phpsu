@@ -6,3 +6,4 @@
 /phpsu-config.php
 composer.lock
 tests/.phpunit.result.cache
+var/

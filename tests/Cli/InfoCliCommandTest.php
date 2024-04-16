@@ -18,6 +18,7 @@ class InfoCliCommandTest extends TestCase
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
+
         $result =  $commandTester->getDisplay(true);
         $this->assertSame(0, $commandTester->getStatusCode());
         $this->assertStringMatchesFormat('

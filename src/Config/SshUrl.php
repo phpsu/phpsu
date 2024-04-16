@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
+use Stringable;
 use Exception;
 use InvalidArgumentException;
 
 /**
  * @api
  */
-final class SshUrl
+final class SshUrl implements Stringable
 {
     private string $user;
+
     private string $password;
+
     private string $host;
+
     private int $port;
 
     public function __construct(string $url)
@@ -22,10 +26,12 @@ final class SshUrl
         if (!preg_match('/[a-zA-Z]+\:\/\//', $url)) {
             $url = 'ssh://' . $url;
         }
+
         $result = parse_url($url);
         if (!$result) {
             throw new Exception('SshUrl could not been parsed: ' . $url);
         }
+
         $this->setUser($result['user'] ?? '');
         $this->setPassword($result['pass'] ?? '');
         $this->setHost($result['host'] ?? '');
@@ -42,6 +48,7 @@ final class SshUrl
         if ($user === '') {
             throw new InvalidArgumentException('User must be set');
         }
+
         $this->user = $user;
         return $this;
     }
@@ -64,12 +71,14 @@ final class SshUrl
 
     public function setHost(string $host): SshUrl
     {
-        if (strpos($host, '/') !== false) {
+        if (str_contains($host, '/')) {
             throw new InvalidArgumentException(sprintf('host %s has invalid character', $host));
         }
+
         if ($host === '') {
             throw new InvalidArgumentException('Host must be set');
         }
+
         $this->host = $host;
         return $this;
     }
@@ -84,6 +93,7 @@ final class SshUrl
         if ($port <= 0 || $port >= 65535) {
             throw new Exception('port must be between 0 and 65535');
         }
+
         $this->port = $port;
         return $this;
     }
@@ -91,14 +101,16 @@ final class SshUrl
     public function __toString(): string
     {
         $result = 'ssh://';
-        $result .= $this->getUser();
-        if ($this->getPassword() !== '') {
-            $result .= ':' . $this->getPassword();
+        $result .= $this->user;
+        if ($this->password !== '') {
+            $result .= ':' . $this->password;
         }
-        $result .= '@' . $this->getHost();
-        if ($this->getPort() !== 22) {
-            $result .= ':' . $this->getPort();
+
+        $result .= '@' . $this->host;
+        if ($this->port !== 22) {
+            $result .= ':' . $this->port;
         }
+
         return $result;
     }
 }

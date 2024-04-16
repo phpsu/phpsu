@@ -15,8 +15,11 @@ use PHPSu\Tools\EnvironmentUtility;
 final class Process extends \Symfony\Component\Process\Process
 {
     public const STATE_READY = 'ready';
+
     public const STATE_RUNNING = 'running';
+
     public const STATE_SUCCEEDED = 'succeeded';
+
     public const STATE_ERRORED = 'errored';
 
     private string $name = '';
@@ -27,7 +30,6 @@ final class Process extends \Symfony\Component\Process\Process
     }
 
     /**
-     * @param string $name
      * @return self<mixed>
      */
     public function setName(string $name): Process
@@ -38,14 +40,11 @@ final class Process extends \Symfony\Component\Process\Process
 
     public function getState(): string
     {
-        switch ($this->getStatus()) {
-            case self::STATUS_READY:
-                return self::STATE_READY;
-            case self::STATUS_STARTED:
-                return self::STATE_RUNNING;
-            case self::STATUS_TERMINATED:
-                return $this->getExitCode() === 0 ? self::STATE_SUCCEEDED : self::STATE_ERRORED;
-        }
-        throw new LogicException('This should never happen');
+        return match ($this->getStatus()) {
+            self::STATUS_READY => self::STATE_READY,
+            self::STATUS_STARTED => self::STATE_RUNNING,
+            self::STATUS_TERMINATED => $this->getExitCode() === 0 ? self::STATE_SUCCEEDED : self::STATE_ERRORED,
+            default => throw new LogicException('This should never happen'),
+        };
     }
 }

@@ -20,11 +20,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class SshCommand
 {
     private SshConfig $sshConfig;
+
     private string $into;
+
     private string $path = '';
+
     private int $verbosity = OutputInterface::VERBOSITY_NORMAL;
+
     private ?ShellInterface $command = null;
-    private ShellCommand $shellCommand;
+
+    private readonly ShellCommand $shellCommand;
 
     public function __construct()
     {
@@ -37,13 +42,15 @@ final class SshCommand
         if ($currentHost === $host) {
             throw new Exception(sprintf('the found host and the current Host are the same: %s', $host));
         }
-        $result = new static();
+
+        $result = new self();
         $result->setInto($host);
         $result->setVerbosity($verbosity);
         if (isset($global->getAppInstances()[$connectionName])) {
             $appInstance = $global->getAppInstances()[$connectionName];
             $result->setPath($appInstance->getPath());
         }
+
         return $result;
     }
 
@@ -98,11 +105,7 @@ final class SshCommand
     }
 
     /**
-     * @param string $option
      * @param string|ShellInterface $value
-     * @param bool $isShortOption
-     * @param bool $escape
-     * @param bool $useAssignOperator
      * @return $this
      * @throws ShellBuilderException
      */
@@ -112,37 +115,41 @@ final class SshCommand
             $args = [$option, $value, $escape, $useAssignOperator];
             $isShortOption ? $this->shellCommand->addShortOption(...$args) : $this->shellCommand->addOption(...$args);
         }
+
         return $this;
     }
 
     public function generate(ShellBuilder $shellBuilder): ShellBuilder
     {
         $command = $this->command;
-        if ($this->getInto() === '') {
+        if ($this->into === '') {
             return $command !== null ? $shellBuilder->add($command) : $shellBuilder;
         }
-        $file = $this->getSshConfig()->getFile();
-        $verbosity = StringHelper::optionStringForVerbosity($this->getVerbosity());
+
+        $file = $this->sshConfig->getFile();
+        $verbosity = StringHelper::optionStringForVerbosity($this->verbosity);
         $this->addOption($verbosity, '', true);
         $this->shellCommand->addShortOption('F', $file->getPathname())
-            ->addArgument($this->getInto());
-        if ($this->getPath() !== '') {
-            if (empty($command) || empty($command->__toArray())) {
+            ->addArgument($this->into);
+        if ($this->path !== '') {
+            if (!$command instanceof ShellInterface || $command->__toArray() === []) {
                 // keep it interactive if no command is specified
                 // todo: ShellBuilder needs to have a hasCommands method
                 $command = ShellBuilder::command('bash')->addOption('login');
             }
+
             $this->shellCommand->addShortOption(
                 't',
                 ShellBuilder::new()
                     ->createCommand('cd')
-                    ->addArgument($this->getPath())
+                    ->addArgument($this->path)
                     ->addToBuilder()
                     ->add($command)
             );
-        } elseif (!empty($command)) {
+        } elseif ($command instanceof ShellInterface) {
             $this->shellCommand->addArgument($command);
         }
+
         return $shellBuilder->add($this->shellCommand);
     }
 }

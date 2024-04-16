@@ -36,7 +36,7 @@ class CommandExecutorTest extends TestCase
 
         $commandExecutor = new CommandExecutor();
         $exitCode = $commandExecutor->passthru('ewj 2', $mockOutput);
-        $this->assertSame(127, $exitCode, 'command shouldn\'t be installed');
+        $this->assertSame(127, $exitCode, "command shouldn't be installed");
     }
 
     public function testPassthruPassesTtyThrough(): void
@@ -48,7 +48,7 @@ class CommandExecutorTest extends TestCase
         $commandExecutor = new CommandExecutor();
         $exitCode = $commandExecutor->passthru('ewj 2> /dev/null', $mockOutput);
         $this->assertNotEquals(0, $exitCode);
-        $this->assertSame(127, $exitCode, 'command shouldn\'t be installed');
+        $this->assertSame(127, $exitCode, "command shouldn't be installed");
     }
 
     public function testExecuteCommandsParallel(): void

@@ -13,17 +13,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 final class OutputCallback
 {
-    private OutputInterface $output;
-
-    public function __construct(OutputInterface $output)
+    public function __construct(private OutputInterface $output)
     {
-        $this->output = $output;
     }
 
     /**
      * @param Process<mixed> $process
-     * @param string $type
-     * @param string $data
      */
     public function __invoke(Process $process, string $type, string $data): void
     {
@@ -37,6 +32,7 @@ final class OutputCallback
                 $output = $output->getErrorOutput();
             }
         }
+
         $formatter = $output->getFormatter();
         $prefix = $formatter->format(sprintf('<fg=%s>%s:</> ', $color, $process->getName()));
         $outputString = '';
@@ -46,6 +42,7 @@ final class OutputCallback
                 $outputString .= $prefix . $extraLine . PHP_EOL;
             }
         }
+
         $output->write($outputString, false, $verbosity | OutputInterface::OUTPUT_RAW);
     }
 }

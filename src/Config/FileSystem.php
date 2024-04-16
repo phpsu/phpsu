@@ -12,7 +12,9 @@ use function array_merge;
 final class FileSystem implements ConfigElement
 {
     private string $name;
+
     private string $path;
+
     /** @var string[] */
     private array $excludes = [];
 
@@ -48,8 +50,6 @@ final class FileSystem implements ConfigElement
 
     /**
      * @param string[] $excludes
-     * @return FileSystem
-     * @return FileSystem
      */
     public function addExcludes(array $excludes): FileSystem
     {

@@ -18,6 +18,7 @@ use Symfony\Component\Console\Output\ConsoleSectionOutput;
 final class BufferedConsoleOutput extends StreamOutput implements ConsoleOutputInterface
 {
     private OutputInterface $stderr;
+
     /** @var mixed[] */
     private array $consoleSectionOutputs = [];
 

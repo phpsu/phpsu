@@ -113,9 +113,7 @@ final class SshConfigHost
     }
 
     /**
-     * @param string $name
      * @param string|int $config
-     * @return void
      */
     public function __set(string $name, $config): void
     {

@@ -22,7 +22,7 @@ use SplTempFileObject;
 
 final class CommandGeneratorTest extends TestCase
 {
-    private static function getGlobalConfig(): GlobalConfig
+    private function getGlobalConfig(): GlobalConfig
     {
         $globalConfig = new GlobalConfig();
         $globalConfig->addFilesystemObject((new FileSystem())->setName('fileadmin')->setPath('fileadmin'));
@@ -44,9 +44,10 @@ final class CommandGeneratorTest extends TestCase
 
     public function testSshGeneration(): void
     {
-        $globalConfig = static::getGlobalConfig();
+        $globalConfig = $this->getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
+
         $result = $commandGenerator->sshCommand('production', '', null);
         $file->rewind();
         $this->assertEquals('Host serverEu' . PHP_EOL, $file->getCurrentLine());
@@ -55,9 +56,10 @@ final class CommandGeneratorTest extends TestCase
 
     public function testSshWithCommand(): void
     {
-        $globalConfig = static::getGlobalConfig();
+        $globalConfig = $this->getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
+
         $lsCommand = ShellBuilder::command('ls')->addShortOption('alh')->addOption('color');
         $result = $commandGenerator->sshCommand('production', '', $lsCommand);
         $this->assertSame("ssh -F 'php://temp' 'serverEu' -t 'cd '\''/var/www/production'\'' ; ls -alh --color'", (string)$result);
@@ -67,9 +69,10 @@ final class CommandGeneratorTest extends TestCase
 
     public function testMysqlCommandGenerationForProduction(): void
     {
-        $globalConfig = static::getGlobalConfig();
+        $globalConfig = $this->getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
+
         $mysqlCommand = $commandGenerator->mysqlCommand('production', null, null);
         $file->rewind();
         $this->assertEquals('Host serverEu' . PHP_EOL, $file->getCurrentLine());
@@ -93,9 +96,10 @@ final class CommandGeneratorTest extends TestCase
 
     public function testMysqlCommandGenerationForProductionWithCommand(): void
     {
-        $globalConfig = static::getGlobalConfig();
+        $globalConfig = $this->getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
+
         $mysqlCommand = $commandGenerator->mysqlCommand('production', 'app', 'SELECT * FROM tablex');
         $comparisonObject = ShellBuilder::new()
             ->createCommand('ssh')
@@ -117,9 +121,10 @@ final class CommandGeneratorTest extends TestCase
 
     public function testMysqlCommandGenerationForLocalWithCommand(): void
     {
-        $globalConfig = static::getGlobalConfig();
+        $globalConfig = $this->getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
+
         $mysqlCommand = $commandGenerator->mysqlCommand('local', null, 'SELECT * FROM tablex');
         $comparisonObject = ShellBuilder::command('mysql')
             ->addOption('user', 'user', true, true)
@@ -137,7 +142,7 @@ final class CommandGeneratorTest extends TestCase
     {
         $this->expectExceptionMessage("Source and Destination are Identical: same");
         $this->expectException(Exception::class);
-        $globalConfig = static::getGlobalConfig();
+        $globalConfig = $this->getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $this->expectExceptionMessage('Source and Destination are Identical: same');
         $commandGenerator->syncCommands((new SyncOptions('same'))->setDestination('same'));
@@ -145,7 +150,7 @@ final class CommandGeneratorTest extends TestCase
 
     public function testProductionToLocalFromAnyThere(): void
     {
-        $globalConfig = static::getGlobalConfig();
+        $globalConfig = $this->getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
 
@@ -175,7 +180,7 @@ SSH_CONFIG;
 
     public function testProductionToTestingFromAnyThere(): void
     {
-        $globalConfig = static::getGlobalConfig();
+        $globalConfig = $this->getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
 
@@ -205,7 +210,7 @@ SSH_CONFIG;
 
     public function testLocalToLocal2FromAnyThere(): void
     {
-        $globalConfig = static::getGlobalConfig();
+        $globalConfig = $this->getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
 
@@ -235,7 +240,7 @@ SSH_CONFIG;
 
     public function testProductionToStagingFromAnyThere(): void
     {
-        $globalConfig = static::getGlobalConfig();
+        $globalConfig = $this->getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
 
@@ -265,7 +270,7 @@ SSH_CONFIG;
 
     public function testProductionToStagingFromStaging(): void
     {
-        $globalConfig = static::getGlobalConfig();
+        $globalConfig = $this->getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
 
@@ -291,7 +296,7 @@ SSH_CONFIG;
 
     public function testProductionToStagingFromStagingError(): void
     {
-        $globalConfig = static::getGlobalConfig();
+        $globalConfig = $this->getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
 
@@ -301,7 +306,7 @@ SSH_CONFIG;
 
     public function testStagingToProductionFromStaging(): void
     {
-        $globalConfig = static::getGlobalConfig();
+        $globalConfig = $this->getGlobalConfig();
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
 
@@ -327,11 +332,12 @@ SSH_CONFIG;
 
     public function testGzipCompression(): void
     {
-        $globalConfig = static::getGlobalConfig();
+        $globalConfig = $this->getGlobalConfig();
         $gzipCompression = new GzipCompression();
         foreach ($globalConfig->getAppInstances() as $appInstance) {
             $appInstance->setCompressions($gzipCompression);
         }
+
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
 

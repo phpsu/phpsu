@@ -1,8 +1,9 @@
+includes:
+  - phpstan-baseline.neon
+  - vendor/andersundsehr/phpstan-git-files/extension.php
+
 parameters:
   level: max
-  paths:
-    - src
-    - tests
-  reportUnmatchedIgnoredErrors: true
-  ignoreErrors:
-    - '#Access to an undefined property PHPSu\\Config\\SshConfig::\$[a-zA-Z0-9_\*]+#'
+  reportUnmatchedIgnoredErrors: false
+  universalObjectCratesClasses:
+    - PHPSu\Config\SshConfig

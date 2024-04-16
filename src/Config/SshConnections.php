@@ -55,12 +55,11 @@ final class SshConnections
                 }
             }
         }
+
         return $this->compiled;
     }
 
     /**
-     * @param string $source
-     * @param SshConnection $sshConnection
      * @param array<string, array<string, SshConnection>> $compiled
      * @return array<string, array<string, SshConnection>>
      * @throws Exception
@@ -71,9 +70,11 @@ final class SshConnections
         if ($source === $destination) {
             throw new Exception(sprintf('the source and destination Host can not be the same: %s', $source));
         }
+
         if ($this->compiled && isset($this->compiled[$destination][$source])) {
             throw new Exception(sprintf('suspicious Connection Model found: %s->%s has more than one definition', $source, $destination));
         }
+
         $compiled[$destination][$source] = $sshConnection;
         return $compiled;
     }
@@ -89,7 +90,6 @@ final class SshConnections
     }
 
     /**
-     * @param string $to
      * @return array<string, SshConnection>
      * @throws Exception
      */
@@ -99,6 +99,7 @@ final class SshConnections
         if (!isset($compiled[$to])) {
             throw new Exception(sprintf('Host %s not found in SshConnections', $to));
         }
+
         return $compiled[$to];
     }
 }

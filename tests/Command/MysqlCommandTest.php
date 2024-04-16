@@ -26,6 +26,7 @@ final class MysqlCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $global = new GlobalConfig();
         $global->addAppInstance('local')
             ->addDatabase('app', 'test', 'a', 'b');
@@ -35,7 +36,7 @@ final class MysqlCommandTest extends TestCase
             'app'
         );
         $database->setSshConfig($sshConfig);
-        static::assertSame('mysql --user=\'a\' --password=\'b\' --host=127.0.0.1 --port=3306 \'test\'', (string)$database->generate(ShellBuilder::new()));
+        static::assertSame("mysql --user='a' --password='b' --host=127.0.0.1 --port=3306 'test'", (string)$database->generate(ShellBuilder::new()));
     }
 
     /**
@@ -45,19 +46,22 @@ final class MysqlCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $global = new GlobalConfig();
         $global->addAppInstance('local');
         $global->addDatabase('app', 'test', 'a', 'b');
+
         $database = MysqlCommand::fromGlobal($global, 'local');
         $database->setSshConfig($sshConfig);
         $database->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
-        static::assertSame('mysql -vvv --user=\'a\' --password=\'b\' --host=127.0.0.1 --port=3306 \'test\'', (string)$database->generate(ShellBuilder::new()));
+        static::assertSame("mysql -vvv --user='a' --password='b' --host=127.0.0.1 --port=3306 'test'", (string)$database->generate(ShellBuilder::new()));
     }
 
     public function testDatabaseCommandGenerateWithTwoDatabases(): void
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $global = new GlobalConfig();
         $instance = $global->addAppInstance('local');
         $instance->addDatabase('app', 'test', 'a', 'b');
@@ -75,6 +79,7 @@ final class MysqlCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $global = new GlobalConfig();
         $global->addAppInstance('local');
         $global->addDatabase('app', 'test', 'a', 'b');
@@ -95,6 +100,7 @@ final class MysqlCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $global = new GlobalConfig();
         $global->addAppInstance('local')
             ->addDatabase('app', 'test', 'a', 'b');
@@ -105,6 +111,7 @@ final class MysqlCommandTest extends TestCase
         );
         $database->setSshConfig($sshConfig);
         $database->setCommand('SELECT * FROM tables');
+
         $result = $database->generate()->jsonSerialize();
         static::assertCount(1, $result);
         $mysql = $result[0];
@@ -123,6 +130,7 @@ final class MysqlCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $global = new GlobalConfig();
         $global->addSshConnection('prod', 'ssh://root@example.com');
         $global->addAppInstance('production', 'prod')
@@ -133,6 +141,7 @@ final class MysqlCommandTest extends TestCase
             'app'
         );
         $database->setSshConfig($sshConfig);
+
         $result = $database->generate()->jsonSerialize();
         static::assertCount(1, $result);
         $ssh = $result[0];

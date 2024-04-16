@@ -12,7 +12,7 @@ final class ConfigurationLoaderTest extends TestCase
 {
     private string $oldCwd;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $cwd = getcwd();
         assert(is_string($cwd));
@@ -38,7 +38,7 @@ final class ConfigurationLoaderTest extends TestCase
         $configurationLoader->getConfig();
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         chdir($this->oldCwd);
     }

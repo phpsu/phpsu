@@ -15,8 +15,6 @@ use function strlen;
 final class StringHelper
 {
     /**
-     * @param string $string
-     * @param int $maxLength
      * @return string[]
      */
     public static function splitString(string $string, int $maxLength): array
@@ -31,22 +29,23 @@ final class StringHelper
                 array_push($result, ...self::splitString(implode(' ', $exploded), $maxLength));
                 return $result;
             }
+
             $full .= ' ' . $part;
         }
+
         return [$full];
     }
 
     /**
-     * @param string $needle
      * @param string[] $haystack
-     * @return string|null
      */
     public static function findStringInArray(string $needle, array $haystack): ?string
     {
-        $remaining = array_filter($haystack, static fn (string $el) => stripos($el, $needle) === 0);
+        $remaining = array_filter($haystack, static fn (string $el): bool => stripos($el, $needle) === 0);
         if (count($remaining) === 1) {
             return array_shift($remaining);
         }
+
         return '';
     }
 
@@ -62,6 +61,7 @@ final class StringHelper
         if (isset($verbosities[$verbosity])) {
             return $verbosities[$verbosity];
         }
+
         throw new Exception(sprintf('Verbosity %d is not defined', $verbosity));
     }
 }

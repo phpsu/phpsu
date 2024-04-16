@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Process;
 
+use ReflectionException;
 use PHPSu\Process\Process;
 use PHPSu\Process\ProcessManager;
 use PHPSu\Process\StateChangeCallback;
@@ -162,12 +163,9 @@ final class StateChangeCallbackTest extends TestCase
     }
 
     /**
-     * @param ProcessManager $object
-     * @param string $propertyName
-     * @param mixed $value
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
-    public function setPrivateProperty(ProcessManager $object, string $propertyName, $value): void
+    public function setPrivateProperty(ProcessManager $object, string $propertyName, mixed $value): void
     {
         $property = (new ReflectionClass($object))->getProperty($propertyName);
         $property->setAccessible(true);

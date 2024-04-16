@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Process;
 
+use Exception;
 use PHPSu\Process\OutputCallback;
 use PHPSu\Process\Process;
 use PHPUnit\Framework\TestCase;
@@ -49,12 +50,12 @@ final class OutputCallbackTest extends TestCase
 
             public function setErrorOutput(OutputInterface $error): void
             {
-                throw new \Exception('not implemented');
+                throw new Exception('not implemented');
             }
 
             public function section(): ConsoleSectionOutput
             {
-                throw new \Exception('not implemented');
+                throw new Exception('not implemented');
             }
         };
         $callback = new OutputCallback($output);
@@ -67,7 +68,9 @@ final class OutputCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $callback = new OutputCallback($output);
         $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::ERR, 'message' . PHP_EOL . 'message2');
-        $this->assertSame("\e[31mtestName:\e[39m message\n" . "\e[31mtestName:\e[39m message2\n", $output->fetch());
+        $this->assertSame('[31mtestName:[39m message
+[31mtestName:[39m message2
+', $output->fetch());
     }
 
     public function testProcessColorStdVerboseMultiline(): void
@@ -75,7 +78,9 @@ final class OutputCallbackTest extends TestCase
         $output = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE, true);
         $callback = new OutputCallback($output);
         $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::OUT, 'message' . PHP_EOL . 'message2');
-        $this->assertSame("\e[33mtestName:\e[39m message\n" . "\e[33mtestName:\e[39m message2\n", $output->fetch());
+        $this->assertSame('[33mtestName:[39m message
+[33mtestName:[39m message2
+', $output->fetch());
     }
 
     public function testProcessColorErrQuite(): void
@@ -108,6 +113,8 @@ final class OutputCallbackTest extends TestCase
         $callback = new OutputCallback($output);
         $callback->__invoke(Process::fromShellCommandline('sleep 1')->setName('testName'), Process::ERR, 'message');
         $callback->__invoke(Process::fromShellCommandline('sleep 2')->setName('testName2'), Process::OUT, 'message2');
-        $this->assertSame("\e[31mtestName:\e[39m message\n" . "\e[33mtestName2:\e[39m message2\n", $output->fetch());
+        $this->assertSame('[31mtestName:[39m message
+[33mtestName2:[39m message2
+', $output->fetch());
     }
 }

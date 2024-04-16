@@ -125,6 +125,7 @@ class SshCliCommandTest extends TestCase
         assert($mockController instanceof ControllerInterface);
         $command = new SshCliCommand($mockConfigurationLoader, $mockController);
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
+
         $commandTester = new CommandTester($command);
 
         $this->expectException(Exception::class);
@@ -132,9 +133,6 @@ class SshCliCommandTest extends TestCase
         $commandTester->execute(['destination' => 'p']);
     }
 
-    /**
-     * @return GlobalConfig
-     */
     private function createConfig(): GlobalConfig
     {
         $globalConfig = new GlobalConfig();
@@ -145,9 +143,6 @@ class SshCliCommandTest extends TestCase
         return $globalConfig;
     }
 
-    /**
-     * @return GlobalConfig
-     */
     private function createConfigNoAppInstance(): GlobalConfig
     {
         $globalConfig = new GlobalConfig();
@@ -156,10 +151,9 @@ class SshCliCommandTest extends TestCase
     }
 
     /**
-     * @param GlobalConfig $config
      * @return ConfigurationLoaderInterface|MockObject
      */
-    private function createMockConfigurationLoader(GlobalConfig $config)
+    private function createMockConfigurationLoader(GlobalConfig $config): object
     {
         /** @var MockObject|ConfigurationLoaderInterface $mockConfigurationLoader */
         $mockConfigurationLoader = $this->createMock(ConfigurationLoaderInterface::class);

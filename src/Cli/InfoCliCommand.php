@@ -27,6 +27,7 @@ final class InfoCliCommand extends AbstractCliCommand
     {
         $symfonyStyle = new SymfonyStyle($input, $output);
         $symfonyStyle->title('List of all dependencies and their versions');
+
         $environmentUtility = new EnvironmentUtility();
         $output->writeln('<info>Locally installed</info>');
         $symfonyStyle->table(

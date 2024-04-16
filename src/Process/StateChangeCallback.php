@@ -13,20 +13,15 @@ use Symfony\Component\Console\Output\ConsoleSectionOutput;
  */
 final class StateChangeCallback
 {
-    private OutputInterface $output;
     /** @var Spinner[] */
     private array $processSpinners = [];
 
-    public function __construct(OutputInterface $output)
+    public function __construct(private readonly OutputInterface $output)
     {
-        $this->output = $output;
     }
 
     /**
-     * @param int $processId
      * @param Process<mixed> $process
-     * @param string $newState
-     * @param ProcessManager $manager
      */
     public function __invoke(int $processId, Process $process, string $newState, ProcessManager $manager): void
     {
@@ -44,13 +39,12 @@ final class StateChangeCallback
         foreach ($manager->getProcesses() as $processId => $process) {
             $lines[] = $this->getMessage($processId, $manager->getState($processId), $process->getName());
         }
+
         $sectionOutput->overwrite(implode(PHP_EOL, $lines));
     }
 
     /**
-     * @param int $processId
      * @param Process<mixed> $process
-     * @param string $state
      */
     private function normalCall(int $processId, Process $process, string $state): void
     {
@@ -79,6 +73,7 @@ final class StateChangeCallback
             default:
                 throw new LogicException('This should never happen (State not considered)');
         }
+
         return sprintf('<fg=%s>%s:</> %s', $color, $name, $statusSymbol);
     }
 
@@ -87,17 +82,19 @@ final class StateChangeCallback
         if (!isset($this->processSpinners[$processId])) {
             $this->processSpinners[$processId] = new Spinner();
         }
+
         return $this->processSpinners[$processId];
     }
 
     public function getTickCallback(): callable
     {
         $lastTick = microtime(true);
-        return function (ProcessManager $manager) use (&$lastTick) {
+        return function (ProcessManager $manager) use (&$lastTick): void {
             $currentTick = microtime(true);
             if ($currentTick - $lastTick < 0.1) {
                 return;
             }
+
             $lastTick = $currentTick;
             if ($this->output instanceof ConsoleSectionOutput) {
                 $this->sectionCall($this->output, $manager);

@@ -23,13 +23,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.4', '8.0', '8.1', '8.2']
-        symfony: ['5', '6']
+        php: ['8.1', '8.2', '8.3']
+        symfony: ['5', '6', '7']
         exclude:
-          - symfony: '6'
-            php: '7.4'
+          - symfony: '7'
+            php: '8.1'
     name: 'PHP ${{ matrix.php }} + Symfony: ${{ matrix.symfony }}'
     steps:
+      - run: git config --global --add safe.directory /__w/phpsu/phpsu
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Cache dependenciess
@@ -39,12 +40,12 @@ jobs:
           key: dependencies-php-${{ matrix.php }}-symfony-${{ matrix.symfony }}-composer-${{ hashFiles('composer.json') }}
       - run: composer req symfony/console:^${{ matrix.symfony }}
       - run: vendor/bin/grumphp run
-      - run: git config --global --add safe.directory /__w/phpsu/phpsu
       - run: script -q -e -c "composer test"
       - run: script -q -e -c "composer infection"
       - run: composer phpstan
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v3
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           file: ./tests/test-results/coverage.xml
 
   docker:

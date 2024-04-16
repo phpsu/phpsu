@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Command;
 
+use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
 use PHPSu\Command\DatabaseCommand;
 use PHPSu\Config\Compression\Bzip2Compression;
 use PHPSu\Config\Compression\GzipCompression;
@@ -24,6 +25,7 @@ final class DatabaseCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $database = new DatabaseCommand();
         $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
@@ -42,9 +44,11 @@ final class DatabaseCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $database = new DatabaseCommand();
         $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
         $fromConnection->setRemoveDefinerFromDump(true);
+
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
         $database->setSshConfig($sshConfig)
             ->setFromDatabase($fromConnection)
@@ -61,9 +65,11 @@ final class DatabaseCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $database = new DatabaseCommand();
         $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
         $fromConnection->setRemoveDefinerFromDump(true);
+
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
         $database->setSshConfig($sshConfig)
             ->setFromDatabase($fromConnection)
@@ -80,6 +86,7 @@ final class DatabaseCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $database = new DatabaseCommand();
         $fromConnection = (new Database())
             ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
@@ -108,6 +115,7 @@ final class DatabaseCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $database = new DatabaseCommand();
         $fromConnection = (new Database())
             ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
@@ -141,6 +149,7 @@ final class DatabaseCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $database = new DatabaseCommand();
         $fromConnection = (new Database())
             ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
@@ -176,9 +185,7 @@ final class DatabaseCommandTest extends TestCase
     }
 
     /**
-     * @param string $host
-     * @return ShellCommand
-     * @throws \PHPSu\ShellCommandBuilder\Exception\ShellBuilderException
+     * @throws ShellBuilderException
      */
     private function getSshCommand(string $host = 'hostc'): ShellCommand
     {
@@ -190,9 +197,7 @@ final class DatabaseCommandTest extends TestCase
 
     /**
      * @param array<string, string|int> $db
-     * @param string $newDb
-     * @return ShellBuilder
-     * @throws \PHPSu\ShellCommandBuilder\Exception\ShellBuilderException
+     * @throws ShellBuilderException
      */
     private function getMysqlDumpCommand(array $db, string $newDb): ShellBuilder
     {
@@ -220,8 +225,7 @@ final class DatabaseCommandTest extends TestCase
 
     /**
      * @param array<string, string|int> $db
-     * @return \PHPSu\ShellCommandBuilder\ShellCommand
-     * @throws \PHPSu\ShellCommandBuilder\Exception\ShellBuilderException
+     * @throws ShellBuilderException
      */
     private function getMysqlCommand(array $db): ShellCommand
     {
@@ -230,6 +234,7 @@ final class DatabaseCommandTest extends TestCase
         if (isset($db['port'])) {
             $command->addOption('port', $db['port'], false, true);
         }
+
         return $command->addOption('user', $db['user'], true, true)
             ->addOption('password', $db['password'], true, true);
     }
@@ -238,6 +243,7 @@ final class DatabaseCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $database = new DatabaseCommand();
         $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
@@ -258,6 +264,7 @@ final class DatabaseCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $database = new DatabaseCommand();
         $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
@@ -278,6 +285,7 @@ final class DatabaseCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $database = new DatabaseCommand();
         $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
@@ -298,6 +306,7 @@ final class DatabaseCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $database = new DatabaseCommand();
         $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
@@ -318,6 +327,7 @@ final class DatabaseCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $database = new DatabaseCommand();
         $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
@@ -338,6 +348,7 @@ final class DatabaseCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $database = new DatabaseCommand();
         $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
@@ -358,6 +369,7 @@ final class DatabaseCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $database = new DatabaseCommand();
         $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromDetails('sequelmovie', 'root', 'root#password\'"_!', 'database'));
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
@@ -376,6 +388,7 @@ final class DatabaseCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $database = new DatabaseCommand();
         $gzipCompression = new GzipCompression();
         $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));

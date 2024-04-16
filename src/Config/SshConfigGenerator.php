@@ -12,9 +12,6 @@ use Exception;
 final class SshConfigGenerator
 {
     /**
-     * @param string $source
-     * @param string $destination
-     * @param SshConnections $sshConnections
      * @return SshConnection[]
      * @throws Exception
      */
@@ -32,13 +29,11 @@ final class SshConfigGenerator
                 $shortest = $connectionPath;
             }
         }
+
         return $shortest;
     }
 
     /**
-     * @param string $source
-     * @param string $destination
-     * @param SshConnections $sshConnections
      * @return SshConnection[][]
      * @throws Exception
      */
@@ -47,25 +42,25 @@ final class SshConfigGenerator
         if ($source === $destination) {
             return [[]];
         }
+
         $result = [];
         foreach ($sshConnections->getPossibilities($destination) as $host => $possibleConnection) {
             if ($host === '') {
                 return [[(clone $possibleConnection)->setFrom([])]];
             }
+
             $possibleSubConnections = $this->findAllPaths($source, $host, $sshConnections);
             foreach ($possibleSubConnections as $possibleSubConnection) {
                 $possibleSubConnection[] = (clone $possibleConnection)->setFrom([$host]);
                 $result[] = $possibleSubConnection;
             }
         }
+
         return $result;
     }
 
     /**
-     * @param SshConnections $sshConnections
      * @param array<string, string> $defaultSshConfig
-     * @param string $currentHost
-     * @return SshConfig
      * @throws Exception
      */
     public function generate(SshConnections $sshConnections, array $defaultSshConfig, string $currentHost): SshConfig
@@ -82,22 +77,28 @@ final class SshConfigGenerator
                 if ($dsn->getPort() !== 22) {
                     $host->Port = $dsn->getPort();
                 }
+
                 if (isset($fromHosts[0]) && $fromHosts[0] !== $currentHost) {
                     $host->ProxyJump = $fromHosts[0];
                 }
+
                 foreach ($sshConnection->getOptions() as $key => $value) {
                     $host->{$key} = $value;
                 }
+
                 $sshConfig->{$sshConnection->getHost()} = $host;
             }
         }
-        if (!empty($defaultSshConfig)) {
+
+        if ($defaultSshConfig !== []) {
             $host = new SshConfigHost();
             foreach ($defaultSshConfig as $key => $value) {
                 $host->{$key} = $value;
             }
+
             $sshConfig->__set('*', $host);
         }
+
         return $sshConfig;
     }
 }

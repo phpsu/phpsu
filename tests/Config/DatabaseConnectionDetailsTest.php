@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Config;
 
+use Exception;
 use PHPSu\Config\DatabaseConnectionDetails;
 use PHPUnit\Framework\TestCase;
 
@@ -149,7 +150,7 @@ class DatabaseConnectionDetailsTest extends TestCase
         $connectionDetails = DatabaseConnectionDetails::fromUrlString('mariadb://user@192.168.0.1');
         $this->assertSame('mariadb', $connectionDetails->getDatabaseType());
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('Database Type must be mysql or mariadb');
         DatabaseConnectionDetails::fromUrlString('myCustomDb://user@192.168.0.1');
     }

@@ -95,14 +95,12 @@ final class EnvironmentUtilityTest extends TestCase
     }
 
     /**
-     * @param ShellInterface|null $command
-     * @return EnvironmentUtility
      * @throws ReflectionException
      */
     private function getEnvironmentUtility(?ShellInterface $command): EnvironmentUtility
     {
         $executor = new class extends CommandExecutor {
-            public static ?ShellInterface $command;
+            public static ?ShellInterface $command = null;
 
             public function runCommand(ShellInterface $command): Process
             {
@@ -112,12 +110,7 @@ final class EnvironmentUtilityTest extends TestCase
             }
         };
         $executor::$command = $command;
-        $environmentUtility = new EnvironmentUtility();
-        $reflection = new ReflectionClass($environmentUtility);
-        $property = $reflection->getProperty('commandExecutor');
-        $property->setAccessible(true);
-        $property->setValue($environmentUtility, $executor);
-        return $environmentUtility;
+        return new EnvironmentUtility($executor);
     }
 
     /**
@@ -130,6 +123,7 @@ final class EnvironmentUtilityTest extends TestCase
         $property = $reflection->getProperty('phpsuRootPath');
         $property->setAccessible(true);
         $property->setValue($environmentUtility, __DIR__ . '/../fixtures/installed/autoload/vendor/phpsu/phpsu');
+
         $version = $environmentUtility->getInstalledPackageVersion('phpsu/phpsu');
         static::assertEquals('1.2.3', $version);
     }

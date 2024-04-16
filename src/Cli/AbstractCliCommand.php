@@ -14,13 +14,8 @@ use Symfony\Component\Console\Input\InputInterface;
  */
 abstract class AbstractCliCommand extends Command
 {
-    protected ConfigurationLoaderInterface $configurationLoader;
-    protected ControllerInterface $controller;
-
-    public function __construct(ConfigurationLoaderInterface $configurationLoader, ControllerInterface $controller)
+    public function __construct(protected ConfigurationLoaderInterface $configurationLoader, protected ControllerInterface $controller)
     {
         parent::__construct();
-        $this->configurationLoader = $configurationLoader;
-        $this->controller = $controller;
     }
 }
