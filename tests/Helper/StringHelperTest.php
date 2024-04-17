@@ -15,6 +15,7 @@ class StringHelperTest extends TestCase
         $result = StringHelper::splitString('', 10);
         $this->assertSame([''], $result);
     }
+
     public function testThatSplitStringSplitsAtRightPosition(): void
     {
         $result = StringHelper::splitString('test 12_1 12_2 12_3', 10);
@@ -53,7 +54,7 @@ class StringHelperTest extends TestCase
     public function testUndefinedVerbosityException(): void
     {
         $verbosity = 9999;
-        $this->expectExceptionMessage("Verbosity $verbosity is not defined");
+        $this->expectExceptionMessage(sprintf('Verbosity %d is not defined', $verbosity));
         StringHelper::optionStringForVerbosity($verbosity);
     }
 }

@@ -50,9 +50,10 @@ final class SshCliCommand extends AbstractCliCommand
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $default = $input->hasArgument('destination') ? $input->getArgument('destination') : '';
-        if (empty($this->getAppInstancesWithHost())) {
+        if (!$this->getAppInstancesWithHost()) {
             throw new Exception('You need to define at least one AppInstance besides local');
         }
+
         if (!in_array($default, $this->getAppInstancesWithHost(), true)) {
             $question = new ChoiceQuestion('Please select one of the AppInstances', $this->getAppInstancesWithHost());
             $question->setErrorMessage('AppInstance %s not found in Config.');
@@ -76,6 +77,7 @@ final class SshCliCommand extends AbstractCliCommand
         foreach ($commandArray as $command) {
             $builder->addSingle($command, true);
         }
+
         return $this->controller->ssh(
             $output,
             $this->configurationLoader->getConfig(),
@@ -92,10 +94,9 @@ final class SshCliCommand extends AbstractCliCommand
     private function getAppInstancesWithHost(): array
     {
         if ($this->instances === null) {
-            $this->instances = $this->configurationLoader->getConfig()->getAppInstanceNames(static function (AppInstance $instance) {
-                return $instance->getHost() !== '';
-            });
+            $this->instances = $this->configurationLoader->getConfig()->getAppInstanceNames(static fn(AppInstance $instance): bool => $instance->getHost() !== '');
         }
+
         return $this->instances;
     }
 }

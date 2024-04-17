@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Config;
 
+use ReflectionClass;
+use Exception;
 use PHPSu\Config\TempSshConfigFile;
 use PHPSu\Tests\Command\CommandGeneratorTest;
 use PHPUnit\Framework\TestCase;
@@ -12,7 +14,7 @@ final class TempSshConfigFileTest extends TestCase
 {
     private string $oldCwd = '';
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $cwd = getcwd();
         assert(is_string($cwd));
@@ -30,21 +32,20 @@ final class TempSshConfigFileTest extends TestCase
 
     public function testConstructDifferentFolder(): void
     {
-        $reflection = new \ReflectionClass(TempSshConfigFile::class);
-        $property = $reflection->getProperty('fileName');
-        $property->setAccessible(true);
-        $oldValue = $property->getValue();
-        $property->setValue('/etc/hosts/.phpsu/ssh_config');
-        static::expectException(\Exception::class);
+        $reflection = new ReflectionClass(TempSshConfigFile::class);
+        $oldValue = $reflection->getStaticPropertyValue('fileName');
+        $reflection->setStaticPropertyValue('fileName', '/etc/hosts/.phpsu/ssh_config');
+
+        static::expectException(Exception::class);
         static::expectExceptionMessage(sprintf('Directory "%s" was not created', '/etc/hosts/.phpsu'));
         try {
             new TempSshConfigFile();
         } finally {
-            $property->setValue($oldValue);
+            $reflection->setStaticPropertyValue('fileName', $oldValue);
         }
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         exec(sprintf('rm -rf %s', escapeshellarg(__DIR__ . '/../fixtures/.phpsu/')));
         chdir($this->oldCwd);

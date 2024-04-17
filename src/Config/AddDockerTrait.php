@@ -12,7 +12,9 @@ namespace PHPSu\Config;
 trait AddDockerTrait
 {
     protected bool $executeInDocker = false;
+
     protected bool $isSudoEnabled = false;
+
     protected string $container = '';
 
     public function executeInDocker(bool $enable): self

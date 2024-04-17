@@ -8,11 +8,13 @@ use SplFileObject;
 
 /**
  * @internal
+ *
  */
 final class SshConfig
 {
     /** @var SshConfigHost[] */
     private array $hosts = [];
+
     private SplFileObject $file;
 
     public static function fromGlobal(GlobalConfig $global, string $currentHost): SshConfig
@@ -62,8 +64,10 @@ final class SshConfig
             foreach ($config->getConfig() as $key => $value) {
                 $result .= '  ' . $key . ' ' . $value . PHP_EOL;
             }
+
             $result .= PHP_EOL;
         }
+
         return $result;
     }
 }

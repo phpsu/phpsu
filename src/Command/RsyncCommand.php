@@ -18,27 +18,29 @@ use PHPSu\ShellCommandBuilder\ShellBuilder;
 final class RsyncCommand implements CommandInterface, GroupedCommandInterface
 {
     private string $name;
+
     private SshConfig $sshConfig;
+
     /** @var array<string> */
     private array $shortOptions = ['az'];
+
     /** @var array<string> */
     private array $options = [];
+
     private string $sourceHost = '';
+
     private string $sourcePath;
 
     private string $destinationHost = '';
+
     private string $toPath;
+
     /** @var array<string> */
     private array $excludeList = [];
+
     private string $verbosity = '';
 
     /**
-     * @param GlobalConfig $global
-     * @param string $sourceInstanceName
-     * @param string $destinationInstanceName
-     * @param string $currentHost
-     * @param bool $all
-     * @param int $verbosity
      * @return RsyncCommand[]
      */
     public static function fromGlobal(GlobalConfig $global, string $sourceInstanceName, string $destinationInstanceName, string $currentHost, bool $all, int $verbosity): array
@@ -51,12 +53,15 @@ final class RsyncCommand implements CommandInterface, GroupedCommandInterface
             if ($sourceInstance->hasFilesystem($fileSystemName)) {
                 $fromFilesystem = $sourceInstance->getFilesystem($fileSystemName);
             }
+
             $toFilesystem = $fileSystem;
             if ($destinationInstance->hasFilesystem($fileSystemName)) {
                 $toFilesystem = $destinationInstance->getFilesystem($fileSystemName);
             }
-            $result[] = static::fromAppInstances($sourceInstance, $destinationInstance, $fromFilesystem, $toFilesystem, $currentHost, $all, $verbosity);
+
+            $result[] = self::fromAppInstances($sourceInstance, $destinationInstance, $fromFilesystem, $toFilesystem, $currentHost, $all, $verbosity);
         }
+
         return $result;
     }
 
@@ -65,12 +70,13 @@ final class RsyncCommand implements CommandInterface, GroupedCommandInterface
         $fromRelPath = ($sourceFilesystem->getPath() !== '' ? '/' : '') . $sourceFilesystem->getPath();
         $toRelPath = ($destinationFilesystem->getPath() !== '' ? '/' : '') . $destinationFilesystem->getPath();
 
-        $result = new static();
+        $result = new self();
         $result->setName('filesystem:' . $sourceFilesystem->getName());
         $result->setSourceHost($source->getHost() === $currentHost ? '' : $source->getHost());
         $result->setDestinationHost($destination->getHost() === $currentHost ? '' : $destination->getHost());
         $result->setSourcePath(rtrim($source->getPath() === '' ? '.' : $source->getPath(), '/*') . $fromRelPath . '/');
         $result->setToPath(rtrim($destination->getPath() === '' ? '.' : $destination->getPath(), '/') . $toRelPath . '/');
+
         $result->verbosity = StringHelper::optionStringForVerbosity($verbosity);
         if (!$all) {
             foreach (array_unique(array_merge($sourceFilesystem->getExcludes(), $destinationFilesystem->getExcludes())) as $exclude) {
@@ -114,12 +120,13 @@ final class RsyncCommand implements CommandInterface, GroupedCommandInterface
         $list = [];
         foreach (explode(' ', $options) as $option) {
             $current = str_replace(['-', '--'], '', $option);
-            if (strpos($option, '--') === 0) {
+            if (str_starts_with($option, '--')) {
                 $list[] = $current;
             } else {
                 $shortOptions[] = $current;
             }
         }
+
         $this->shortOptions = $shortOptions;
         $this->options = $list;
         return $this;
@@ -170,13 +177,11 @@ final class RsyncCommand implements CommandInterface, GroupedCommandInterface
     }
 
     /**
-     * @param ShellBuilder $shellBuilder
-     * @return ShellBuilder
      * @throws ShellBuilderException
      */
     public function generate(ShellBuilder $shellBuilder): ShellBuilder
     {
-        $hostsDifferentiate = $this->getSourceHost() !== $this->getDestinationHost();
+        $hostsDifferentiate = $this->sourceHost !== $this->destinationHost;
         $fromHostPart = '';
         $toHostPart = '';
 
@@ -184,15 +189,19 @@ final class RsyncCommand implements CommandInterface, GroupedCommandInterface
         if ($this->verbosity) {
             $command->addShortOption($this->verbosity);
         }
+
         foreach ($this->shortOptions as $option) {
             $command->addShortOption(trim($option));
         }
+
         foreach ($this->options as $option) {
             $command->addOption(trim($option));
         }
+
         foreach ($this->excludeList as $option) {
             $command->addOption('exclude', $option);
         }
+
         if ($hostsDifferentiate) {
             $file = $this->sshConfig->getFile();
             $command->addShortOption(
@@ -200,21 +209,23 @@ final class RsyncCommand implements CommandInterface, GroupedCommandInterface
                 ShellBuilder::command('ssh')
                 ->addShortOption('F', $file->getPathname())
             );
-            $fromHostPart = $this->getSourceHost() !== '' ? $this->getSourceHost() . ':' : '';
-            $toHostPart = $this->getDestinationHost() !== '' ? $this->getDestinationHost() . ':' : '';
+            $fromHostPart = $this->sourceHost !== '' ? $this->sourceHost . ':' : '';
+            $toHostPart = $this->destinationHost !== '' ? $this->destinationHost . ':' : '';
         }
-        $from = $fromHostPart . $this->getSourcePath();
-        $to = $toHostPart . $this->getToPath();
+
+        $from = $fromHostPart . $this->sourcePath;
+        $to = $toHostPart . $this->toPath;
         $command->addArgument($from)->addArgument($to);
         $command = DockerCommandHelper::wrapCommand(new FileSystem(), $command, false);
 
         if (!$hostsDifferentiate) {
             $sshCommand = new SshCommand();
-            $sshCommand->setSshConfig($this->getSshConfig());
-            $sshCommand->setInto($this->getSourceHost());
+            $sshCommand->setSshConfig($this->sshConfig);
+            $sshCommand->setInto($this->sourceHost);
             $sshCommand->setCommand($command);
             return $sshCommand->generate($shellBuilder);
         }
+
         return $shellBuilder->add($command);
     }
 }

@@ -30,25 +30,19 @@ final class ProcessManager
 
     public function addOutputCallback(callable $callback): ProcessManager
     {
-        $this->outputCallbacks[] = static function () use ($callback) {
-            return $callback(...func_get_args());
-        };
+        $this->outputCallbacks[] = static fn() => $callback(...func_get_args());
         return $this;
     }
 
     public function addStateChangeCallback(callable $callback): ProcessManager
     {
-        $this->stateChangeCallbacks[] = static function () use ($callback) {
-            return $callback(...func_get_args());
-        };
+        $this->stateChangeCallbacks[] = static fn() => $callback(...func_get_args());
         return $this;
     }
 
     public function addTickCallback(callable $callback): ProcessManager
     {
-        $this->tickCallbacks[] = static function () use ($callback) {
-            return $callback(...func_get_args());
-        };
+        $this->tickCallbacks[] = static fn() => $callback(...func_get_args());
         return $this;
     }
 
@@ -64,16 +58,16 @@ final class ProcessManager
     {
         foreach ($this->processes as $processId => $process) {
             $this->notifyStateChangeCallbacks($processId, $process, $this->processStates[$processId], $this);
-            $process->start(function (string $type, string $data) use ($process) {
+            $process->start(function (string $type, string $data) use ($process): void {
                 $this->notifyOutputCallbacks($process, $type, $data);
             });
         }
+
         return $this;
     }
 
     /**
      * @param Process<mixed> $process
-     * @return $this
      */
     public function addProcess(Process $process): ProcessManager
     {
@@ -99,25 +93,27 @@ final class ProcessManager
                 if ($process->isRunning()) {
                     $isAProcessRunning = true;
                 }
+
                 $newState = $process->getState();
                 if ($this->processStates[$processId] !== $newState) {
                     $this->processStates[$processId] = $newState;
                     $this->notifyStateChangeCallbacks($processId, $process, $this->processStates[$processId], $this);
                 }
+
                 $this->notifyTickCallbacks($this);
             }
+
             // Sleep starting with 100ns for very fast Processes.
             // Going up in 100ns steps, until 100ms steps.
             // To keep the wait function "green"
             usleep(min(100 * 1000, $count += 100));
         } while ($isAProcessRunning);
+
         return $this;
     }
 
     /**
      * @param Process<mixed> $process
-     * @param string $type
-     * @param string $data
      */
     private function notifyOutputCallbacks(Process $process, string $type, string $data): void
     {
@@ -127,10 +123,7 @@ final class ProcessManager
     }
 
     /**
-     * @param int $processId
      * @param Process<mixed> $process
-     * @param string $newState
-     * @param ProcessManager $manager
      */
     private function notifyStateChangeCallbacks(int $processId, Process $process, string $newState, ProcessManager $manager): void
     {
@@ -157,6 +150,7 @@ final class ProcessManager
                 $errors[$process->getName()] = $process->getErrorOutput();
             }
         }
+
         return $errors;
     }
 
@@ -168,6 +162,7 @@ final class ProcessManager
                 $errors[] = $process->getName();
             }
         }
+
         if ($errors !== []) {
             throw new Exception(sprintf('Error in Process%s %s', count($errors) > 1 ? 'es' : '', implode(', ', $errors)));
         }
@@ -178,6 +173,7 @@ final class ProcessManager
         if (isset($this->processStates[$processId])) {
             return $this->processStates[$processId];
         }
+
         throw new InvalidArgumentException(sprintf('No Process found with id: %d', $processId));
     }
 }

@@ -14,14 +14,12 @@ use PHPSu\ShellCommandBuilder\ShellInterface;
 final class MysqlOptions
 {
     private string $appInstance = 'local';
-    private ?string $command;
-    private ?string $database;
-    private bool $dryRun = false;
 
-    public function __construct()
-    {
-        $this->command = null;
-    }
+    private ?string $command = null;
+
+    private ?string $database = null;
+
+    private bool $dryRun = false;
 
     public function getAppInstance(): string
     {

@@ -20,9 +20,11 @@ final class TempSshConfigFile extends SplFileObject
         if (!file_exists($directory) && (!@mkdir($directory, 0777, true) && !is_dir($directory))) {
             throw new Exception(sprintf('Directory "%s" was not created', $directory));
         }
+
         if (!file_exists(self::$fileName)) {
             touch(self::$fileName);
         }
+
         parent::__construct(self::$fileName, 'w+');
     }
 }

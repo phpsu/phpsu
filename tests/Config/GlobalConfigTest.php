@@ -22,7 +22,7 @@ final class GlobalConfigTest extends TestCase
 {
     public function testSshFromGlobalConfig(): void
     {
-        $global = static::getGlobalConfig();
+        $global = self::getGlobalConfig();
 
         $sshCommand = SshCommand::fromGlobal($global, 'production', 'local', OutputInterface::VERBOSITY_NORMAL);
         $this->assertEquals((new SshCommand())->setInto('serverEu')->setPath('/var/www/production'), $sshCommand);
@@ -36,7 +36,7 @@ final class GlobalConfigTest extends TestCase
 
     public function testDatabaseFromGlobalConfig(): void
     {
-        $global = static::getGlobalConfig();
+        $global = self::getGlobalConfig();
 
         $rsyncCommands = DatabaseCommand::fromGlobal($global, 'production', 'testing', 'local', false, OutputInterface::VERBOSITY_NORMAL);
         $connectionDetails = DatabaseConnectionDetails::fromUrlString('mysql://user:pw@host:3307/database');
@@ -53,7 +53,7 @@ final class GlobalConfigTest extends TestCase
 
     public function testRsyncFromGlobalConfig(): void
     {
-        $global = static::getGlobalConfig();
+        $global = self::getGlobalConfig();
 
         $rsyncCommands = RsyncCommand::fromGlobal($global, 'production', 'testing', 'local', false, OutputInterface::VERBOSITY_NORMAL);
         $this->assertEquals([
@@ -64,7 +64,7 @@ final class GlobalConfigTest extends TestCase
 
     public function testSshConfigFromGlobalConfig(): void
     {
-        $global = static::getGlobalConfig();
+        $global = self::getGlobalConfig();
 
         $sshConfig = SshConfig::fromGlobal($global, 'local');
         $sshConfigExpected = new SshConfig();
@@ -79,7 +79,7 @@ final class GlobalConfigTest extends TestCase
 
     public function testOverwriteDefaultSshConfig(): void
     {
-        $global = static::getGlobalConfig();
+        $global = self::getGlobalConfig();
         $global->setDefaultSshConfig(['ForwardAgent' => 'no']);
 
         $sshConfig = SshConfig::fromGlobal($global, 'local');
@@ -96,10 +96,11 @@ final class GlobalConfigTest extends TestCase
 
     public function testAddSshConnectionAndChangeFrom(): void
     {
-        $global = static::getGlobalConfig();
+        $global = self::getGlobalConfig();
         $global->addSshConnection('host42', 'ssh://user@localhost')->setFrom(['serverEu']);
         $sshConnections = $global->getSshConnections();
         $sshConnections->compile();
+
         $result = $sshConnections->getPossibilities('host42');
         $this->assertArrayHasKey('serverEu', $result);
     }
@@ -113,6 +114,7 @@ final class GlobalConfigTest extends TestCase
         $global->addSshConnectionObject((new SshConnection())->setHost('serverEu')->setUrl('user@server.eu'));
         $global->addAppInstanceObject((new AppInstance())->setName('production')->setHost('serverEu')->setPath('/var/www/production'));
         $global->addAppInstanceObject((new AppInstance())->setName('testing')->setHost('serverEu')->setPath('/var/www/testing'));
+
         $cwd = getcwd();
         assert(is_string($cwd));
         $global->addAppInstance('local', 'local', $cwd);

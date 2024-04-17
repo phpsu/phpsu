@@ -16,9 +16,12 @@ final class Database implements DockerTraitSupportInterface
     use AddDockerTrait;
 
     private string $name;
+
     private DatabaseConnectionDetails $connectionDetails;
+
     /** @var string[] */
     private array $excludes = [];
+
     private bool $noDefiner = true;
 
     public function getName(): string
@@ -44,9 +47,11 @@ final class Database implements DockerTraitSupportInterface
             $this->setContainer($this->connectionDetails->getHost());
             $this->connectionDetails->setHost('127.0.0.1');
         }
+
         if ($this->isDockerEnabled() && $this->connectionDetails->getPort() !== 3306) {
             $this->connectionDetails->setPort(3306);
         }
+
         return $this->connectionDetails;
     }
 
@@ -66,8 +71,6 @@ final class Database implements DockerTraitSupportInterface
 
     /**
      * @param string[] $excludes
-     * @return Database
-     * @return Database
      */
     public function addExcludes(array $excludes): Database
     {

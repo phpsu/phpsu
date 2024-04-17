@@ -21,15 +21,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class MysqlCommand implements CommandInterface
 {
     private ?string $command = null;
+
     private SshConfig $sshConfig;
+
     private Database $database;
+
     private string $host;
+
     private int $verbosity;
 
     public static function fromGlobal(GlobalConfig $global, string $whichInstance, ?string $database = null, int $verbosity = OutputInterface::VERBOSITY_NORMAL): self
     {
         $command = new self();
         $command->setVerbosity($verbosity);
+
         $appInstance = $global->getAppInstance($whichInstance);
         // using global is a fallback for local where if databases are only defined globally
         $source = $appInstance->getDatabases() ? $appInstance : $global;
@@ -37,8 +42,10 @@ final class MysqlCommand implements CommandInterface
             if (count($source->getDatabases()) > 1) {
                 throw new Exception('There are multiple databases defined, please specify the one to connect to.');
             }
+
             $database = array_keys($source->getDatabases())[0];
         }
+
         $command->database = $source->getDatabase($database);
         $command->host = $appInstance->getHost();
         return $command;
@@ -64,17 +71,19 @@ final class MysqlCommand implements CommandInterface
 
     public function generate(ShellBuilder $shellBuilder = null): ShellBuilder
     {
-        $shellBuilder = $shellBuilder ?? ShellBuilder::new();
+        $shellBuilder ??= ShellBuilder::new();
         $ssh = new SshCommand();
         $ssh->setVerbosity($this->verbosity);
         $ssh->setInto($this->host);
         $ssh->setSshConfig($this->sshConfig);
+
         $connectionDetails = $this->database->getConnectionDetails();
         $verbosity = StringHelper::optionStringForVerbosity($this->verbosity);
         $mysql = ShellBuilder::command($connectionDetails->getDatabaseType() === 'mysql' ? 'mysql' : 'mariadb');
         if ($verbosity) {
             $mysql->addShortOption($verbosity);
         }
+
         $mysql->addOption('user', $connectionDetails->getUser(), true, true)
             ->addOption('password', $connectionDetails->getPassword(), true, true)
             ->addOption('host', $connectionDetails->getHost(), false, true)
@@ -89,7 +98,7 @@ final class MysqlCommand implements CommandInterface
 
 //      Disable autocomplete for faster mysql-connection
 //      $mysql->addShortOption('A');
-        $ssh->setCommand(DockerCommandHelper::wrapCommand($this->database, $mysql, empty($this->command)));
+        $ssh->setCommand(DockerCommandHelper::wrapCommand($this->database, $mysql, !$this->command));
         return $ssh->generate($shellBuilder);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Command;
 
+use Exception;
 use PHPSu\Command\SshCommand;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
@@ -18,6 +19,7 @@ final class SshCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta');
@@ -28,6 +30,7 @@ final class SshCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
@@ -39,6 +42,7 @@ final class SshCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
@@ -50,6 +54,7 @@ final class SshCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
@@ -61,6 +66,7 @@ final class SshCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
@@ -72,6 +78,7 @@ final class SshCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $ssh = new SshCommand();
         $ssh->setSshConfig($sshConfig)
             ->setInto('hosta')
@@ -86,7 +93,7 @@ final class SshCommandTest extends TestCase
     public function testSameException(): void
     {
         $this->expectExceptionMessage("the found host and the current Host are the same: same");
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
         $this->expectExceptionMessage('the found host and the current Host are the same: same');

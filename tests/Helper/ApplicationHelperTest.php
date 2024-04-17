@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Helper;
 
+use ReflectionException;
 use ErrorException;
 use PHPSu\Exceptions\EnvironmentException;
 use PHPSu\Helper\ApplicationHelper;
@@ -42,15 +43,15 @@ class ApplicationHelperTest extends TestCase
     }
 
     /**
-     * @param string $method
      * @return mixed
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function callPrivateMethod(string $method)
     {
         $object = new ApplicationHelper();
         $reflection = (new ReflectionClass($object))->getMethod($method);
         $reflection->setAccessible(true);
+
         $args = func_get_args();
         array_shift($args);
         return $reflection->invoke($object, ...$args);

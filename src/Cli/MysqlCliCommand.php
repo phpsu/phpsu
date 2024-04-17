@@ -57,6 +57,7 @@ final class MysqlCliCommand extends AbstractCliCommand
             $output->writeln('You selected: ' . $destination);
             $input->setArgument('instance', $destination);
         }
+
         $default = $input->hasOption('database') ? $input->getOption('database') : '';
         $instance = $input->getArgument('instance');
         assert(is_string($instance));
@@ -100,11 +101,11 @@ final class MysqlCliCommand extends AbstractCliCommand
         if ($this->instances === null) {
             $this->instances = $this->configurationLoader->getConfig()->getAppInstanceNames();
         }
+
         return $this->instances;
     }
 
     /**
-     * @param string $appInstance
      * @return string[]
      */
     private function getDatabasesForAppInstance(string $appInstance): array

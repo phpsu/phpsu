@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
     bootstrap="phpunit-bootstrap.php"
-    convertErrorsToExceptions="true"
-    convertNoticesToExceptions="true"
-    convertWarningsToExceptions="true"
     beStrictAboutTestsThatDoNotTestAnything="true"
-    beStrictAboutCoversAnnotation="true"
     beStrictAboutOutputDuringTests="true"
     beStrictAboutChangesToGlobalState="true"
     enforceTimeLimit="true"
@@ -16,11 +12,10 @@
     timeoutForLargeTests="1"
     timeoutForMediumTests="1"
     timeoutForSmallTests="1"
-    colors="true">
+    colors="true"
+    cacheDirectory="var/.phpunit.cache"
+    beStrictAboutCoverageMetadata="true">
   <coverage>
-    <include>
-      <directory suffix=".php">../src/</directory>
-    </include>
     <report>
       <clover outputFile="test-results/coverage.xml"/>
       <html outputDirectory="test-results/report" lowUpperBound="49" highLowerBound="89"/>
@@ -37,4 +32,9 @@
     <testdoxHtml outputFile="test-results/testdox.html"/>
     <testdoxText outputFile="test-results/testdox.txt"/>
   </logging>
+  <source>
+    <include>
+      <directory suffix=".php">../src/</directory>
+    </include>
+  </source>
 </phpunit>

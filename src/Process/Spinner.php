@@ -28,6 +28,7 @@ final class Spinner
         if ($this->state >= count(self::PONG)) {
             $this->state = 0;
         }
+
         return self::PONG[$this->state++];
     }
 }

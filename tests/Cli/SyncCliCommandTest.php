@@ -62,9 +62,6 @@ class SyncCliCommandTest extends TestCase
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
-    /**
-     * @return GlobalConfig
-     */
     private function createConfig(): GlobalConfig
     {
         $globalConfig = new GlobalConfig();
@@ -76,10 +73,9 @@ class SyncCliCommandTest extends TestCase
     }
 
     /**
-     * @param GlobalConfig $config
      * @return ConfigurationLoaderInterface|MockObject
      */
-    private function createMockConfigurationLoader(GlobalConfig $config)
+    private function createMockConfigurationLoader(GlobalConfig $config): object
     {
         /** @var MockObject|ConfigurationLoaderInterface $mockConfigurationLoader */
         $mockConfigurationLoader = $this->createMock(ConfigurationLoaderInterface::class);

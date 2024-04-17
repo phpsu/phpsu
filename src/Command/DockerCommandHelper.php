@@ -14,11 +14,7 @@ use PHPSu\ShellCommandBuilder\ShellInterface;
 final class DockerCommandHelper
 {
     /**
-     * @param ConfigElement $configElement
-     * @param ShellInterface $command
-     * @param bool $enableInteractive
      * @param array<string, string> $variables sets environment variables directly to the docker command
-     * @return ShellInterface
      * @throws ShellBuilderException
      */
     public static function wrapCommand(ConfigElement $configElement, ShellInterface $command, bool $enableInteractive, array $variables = []): ShellInterface
@@ -28,14 +24,16 @@ final class DockerCommandHelper
             if (!$configElement->isDockerEnabled()) {
                 return $command;
             }
+
             $builder = ShellBuilder::new()
                 ->createCommand('docker')
                 ->addArgument('exec')
                 ->addShortOption($enableInteractive ? 'it' : 'i')
-                ->if(!empty($variables), static function (ShellCommand $command) use ($variables) {
+                ->if((bool)$variables, static function (ShellCommand $command) use ($variables): ShellCommand {
                     foreach ($variables as $key => $variable) {
                         $command->addShortOption('e', sprintf('%s=%s', $key, escapeshellarg($variable)));
                     }
+
                     return $command;
                 })
                 ->addArgument($configElement->getContainer())
@@ -44,8 +42,10 @@ final class DockerCommandHelper
             if ($configElement->useSudo()) {
                 return ShellBuilder::command('sudo')->addArgument($builder, false)->addToBuilder();
             }
+
             return $builder;
         }
+
         return $command;
     }
 }

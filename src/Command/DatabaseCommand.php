@@ -27,17 +27,22 @@ use function strlen;
 final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
 {
     private string $name;
+
     private SshConfig $sshConfig;
+
     /** @var string[] */
     private array $excludes = [];
 
     private Database $fromDatabase;
+
     private string $fromHost;
 
     private Database $toDatabase;
+
     private string $toHost;
 
     private int $verbosity = OutputInterface::VERBOSITY_NORMAL;
+
     private CompressionInterface $compression;
 
     public function __construct()
@@ -46,12 +51,6 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
     }
 
     /**
-     * @param GlobalConfig $global
-     * @param string $fromInstanceName
-     * @param string $toInstanceName
-     * @param string $currentHost
-     * @param bool $all
-     * @param int $verbosity
      * @return DatabaseCommand[]
      */
     public static function fromGlobal(
@@ -65,7 +64,7 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
         $fromInstance = $global->getAppInstance($fromInstanceName);
         $toInstance = $global->getAppInstance($toInstanceName);
 
-        $compression = static::getCompressionOverlap($fromInstance, $toInstance);
+        $compression = self::getCompressionOverlap($fromInstance, $toInstance);
 
         $result = [];
         foreach ($global->getDatabases() as $databaseName => $database) {
@@ -73,18 +72,22 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
             if ($fromInstance->hasDatabase($databaseName)) {
                 $fromDatabase = $fromInstance->getDatabase($databaseName);
             }
+
             $toDatabase = $database;
             if ($toInstance->hasDatabase($databaseName)) {
                 $toDatabase = $toInstance->getDatabase($databaseName);
             }
-            $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost, $all, $verbosity, $compression);
+
+            $result[] = self::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost, $all, $verbosity, $compression);
         }
+
         foreach ($fromInstance->getDatabases() as $databaseName => $fromDatabase) {
             if ($toInstance->hasDatabase($databaseName)) {
                 $toDatabase = $toInstance->getDatabase($databaseName);
-                $result[] = static::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost, $all, $verbosity, $compression);
+                $result[] = self::fromAppInstances($fromInstance, $toInstance, $fromDatabase, $toDatabase, $currentHost, $all, $verbosity, $compression);
             }
         }
+
         return $result;
     }
 
@@ -98,7 +101,7 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
         int $verbosity,
         CompressionInterface $compression
     ): DatabaseCommand {
-        $result = new static();
+        $result = new self();
         $result->setName('database:' . $fromDatabase->getName());
         $result->setFromHost($from->getHost() === $currentHost ? '' : $from->getHost());
         $result->setToHost($to->getHost() === $currentHost ? '' : $to->getHost());
@@ -109,6 +112,7 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
         if (!$all) {
             $result->setExcludes(array_unique(array_merge($fromDatabase->getExcludes(), $toDatabase->getExcludes())));
         }
+
         return $result;
     }
 
@@ -116,11 +120,12 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
     {
         foreach ($fromInstance->getCompressions() as $fromCompression) {
             foreach ($toInstance->getCompressions() as $toCompression) {
-                if (get_class($fromCompression) === get_class($toCompression)) {
+                if ($fromCompression::class === $toCompression::class) {
                     return $fromCompression;
                 }
             }
         }
+
         return new EmptyCompression();
     }
 
@@ -157,7 +162,6 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
 
     /**
      * @param string[] $excludes
-     * @return DatabaseCommand
      */
     public function setExcludes(array $excludes): DatabaseCommand
     {
@@ -232,10 +236,6 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
     }
 
     /**
-     * @param ShellCommand $command
-     * @param DatabaseConnectionDetails $connectionDetails
-     * @param bool $excludeDatabase
-     * @return ShellCommand
      * @throws ShellBuilderException
      */
     private function addArgumentsToShellCommand(ShellCommand $command, DatabaseConnectionDetails $connectionDetails, bool $excludeDatabase): ShellCommand
@@ -244,26 +244,28 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
         if ($connectionDetails->getPort() !== 3306) {
             $command->addOption('port', (string)$connectionDetails->getPort(), false, true);
         }
+
         $command->addOption('user', $connectionDetails->getUser(), true, true)
             ->addOption('password', $connectionDetails->getPassword(), true, true);
 
         if (!$excludeDatabase) {
             $command->addArgument($connectionDetails->getDatabase());
         }
+
         return $command;
     }
 
     public function generate(ShellBuilder $shellBuilder): ShellBuilder
     {
-        $hostsDifferentiate = $this->getFromHost() !== $this->getToHost();
-        $from = $this->getFromDatabase()->getConnectionDetails();
-        $to = $this->getToDatabase()->getConnectionDetails();
+        $hostsDifferentiate = $this->fromHost !== $this->toHost;
+        $from = $this->fromDatabase->getConnectionDetails();
+        $to = $this->toDatabase->getConnectionDetails();
         $tableInfo = false;
         $dbBuilder = ShellBuilder::new();
-        if ($this->getExcludes()) {
-            $sqlPart = $this->generateSqlQuery($from->getDatabase(), $this->getExcludes());
+        if ($this->excludes) {
+            $sqlPart = $this->generateSqlQuery($from->getDatabase(), $this->excludes);
             $command = DockerCommandHelper::wrapCommand(
-                $this->getFromDatabase(),
+                $this->fromDatabase,
                 $this->addArgumentsToShellCommand(
                     ShellBuilder::command($from->getDatabaseType() === 'mysql' ? 'mysql' : 'mariadb'),
                     $from,
@@ -282,11 +284,13 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
             );
             $tableInfo = true;
         }
+
         $dumpCommand = ShellBuilder::command($from->getDatabaseType() === 'mysql' ? 'mysqldump' : 'mariadb-dump');
-        $verbosity = StringHelper::optionStringForVerbosity($this->getVerbosity());
+        $verbosity = StringHelper::optionStringForVerbosity($this->verbosity);
         if ($verbosity) {
             $dumpCommand->addShortOption($verbosity);
         }
+
         $dumpCommand = $this->addArgumentsToShellCommand(
             $dumpCommand
                 ->addOption('opt')
@@ -302,7 +306,7 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
         if ($tableInfo) {
             $dumpCommand->addArgument('${TBLIST}', false);
             $dumpCommand = DockerCommandHelper::wrapCommand(
-                $this->getFromDatabase(),
+                $this->fromDatabase,
                 $dumpCommand,
                 false,
                 ['TBLIST' => '${TBLIST}']
@@ -311,8 +315,9 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
                 ->add($dbBuilder)
                 ->and($dumpCommand);
         } else {
-            $dumpBuilder->add(DockerCommandHelper::wrapCommand($this->getFromDatabase(), $dumpCommand, false));
+            $dumpBuilder->add(DockerCommandHelper::wrapCommand($this->fromDatabase, $dumpCommand, false));
         }
+
         $dumpBuilder
             ->pipe(
                 $dumpBuilder->createGroup()
@@ -322,47 +327,40 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
                     ->and('cat')
             );
         $removeDefinerCommand = $this->getRemoveDefinerCommand();
-        $compressCmd = $this->getCompression()->getCompressCommand();
-        $unCompressCmd = $this->getCompression()->getUnCompressCommand();
+        $compressCmd = $this->compression->getCompressCommand();
+        $unCompressCmd = $this->compression->getUnCompressCommand();
         $importCommand = $this->addArgumentsToShellCommand(
             ShellBuilder::command('mysql'),
             $to,
             true
         );
         $dumpBuilder->if(
-            $this->getFromDatabase()->shouldDefinerBeRemoved(),
-            static function (ShellBuilder $builder) use ($removeDefinerCommand) {
-                return $builder->pipe($removeDefinerCommand);
-            }
+            $this->fromDatabase->shouldDefinerBeRemoved(),
+            static fn(ShellBuilder $builder): ShellBuilder => $builder->pipe($removeDefinerCommand)
         )
-            ->if(!empty($compressCmd), static function (ShellBuilder $builder) use ($compressCmd) {
-                return $builder->pipe($compressCmd);
-            });
+            ->if($compressCmd !== '' && $compressCmd !== '0', static fn(ShellBuilder $builder): ShellBuilder => $builder->pipe($compressCmd));
         if ($hostsDifferentiate) {
-            if ($this->getFromHost() !== '') {
+            if ($this->fromHost !== '') {
                 $sshCommand = new SshCommand();
-                $sshCommand->setSshConfig($this->getSshConfig());
-                $sshCommand->setInto($this->getFromHost());
-                $sshCommand->setVerbosity($this->getVerbosity());
+                $sshCommand->setSshConfig($this->sshConfig);
+                $sshCommand->setInto($this->fromHost);
+                $sshCommand->setVerbosity($this->verbosity);
                 $sshCommand->setCommand($dumpBuilder);
                 $sshCommand->generate($shellBuilder);
             }
+
             $importBuilder = ShellBuilder::new();
-            $importCommand = DockerCommandHelper::wrapCommand($this->getToDatabase(), $importCommand, false);
-            if ($this->getToHost() !== '') {
+            $importCommand = DockerCommandHelper::wrapCommand($this->toDatabase, $importCommand, false);
+            if ($this->toHost !== '') {
                 $importBuilder = (new SshCommand())
-                    ->setSshConfig($this->getSshConfig())
-                    ->setInto($this->getToHost())
-                    ->setVerbosity($this->getVerbosity())
+                    ->setSshConfig($this->sshConfig)
+                    ->setInto($this->toHost)
+                    ->setVerbosity($this->verbosity)
                     ->setCommand(
                         $importBuilder->if(
-                            !empty($unCompressCmd),
-                            static function (ShellBuilder $builder) use ($unCompressCmd, $importCommand) {
-                                return $builder->add($unCompressCmd)->pipe($importCommand);
-                            },
-                            static function (ShellBuilder $builder) use ($importCommand) {
-                                return $builder->add($importCommand);
-                            }
+                            $unCompressCmd !== '' && $unCompressCmd !== '0',
+                            static fn(ShellBuilder $builder): ShellBuilder => $builder->add($unCompressCmd)->pipe($importCommand),
+                            static fn(ShellBuilder $builder): ShellBuilder => $builder->add($importCommand)
                         )
                     )
                     ->generate(ShellBuilder::new());
@@ -371,17 +369,17 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
             } else {
                 $importBuilder->add($importCommand);
             }
+
             return $shellBuilder->if(
-                empty($shellBuilder->__toArray()),
-                static function (ShellBuilder $builder) use ($dumpBuilder) {
-                    return $builder->add($dumpBuilder);
-                }
+                $shellBuilder->__toArray() === [],
+                static fn(ShellBuilder $builder): ShellBuilder => $builder->add($dumpBuilder)
             )->pipe($importBuilder);
         }
+
         $sshCommand = new SshCommand();
-        $sshCommand->setSshConfig($this->getSshConfig());
-        $sshCommand->setInto($this->getFromHost());
-        $sshCommand->setVerbosity($this->getVerbosity());
+        $sshCommand->setSshConfig($this->sshConfig);
+        $sshCommand->setInto($this->fromHost);
+        $sshCommand->setVerbosity($this->verbosity);
         $sshCommand->setCommand($dumpBuilder->pipe($importCommand));
         return $sshCommand->generate($shellBuilder);
     }
@@ -403,7 +401,6 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
 
     /**
      * @param string[] $excludes
-     * @return string
      */
     private function getExcludeSqlPart(array $excludes): string
     {
@@ -412,28 +409,28 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
         foreach ($excludes as $exclude) {
             $stringLength = strlen($exclude);
             // can be replaced in php 8.0 with str_starts_with and str_end_with
-            if ($stringLength >= 3 && strncmp($exclude, '/', 1) === 0 && $exclude[$stringLength - 1] === '/') {
-                $result .= ' AND table_name NOT REGEXP \'' . substr($exclude, 1, $stringLength - 2) . '\'';
+            if ($stringLength >= 3 && str_starts_with($exclude, '/') && $exclude[$stringLength - 1] === '/') {
+                $result .= " AND table_name NOT REGEXP '" . substr($exclude, 1, $stringLength - 2) . "'";
             } else {
-                $simpleExclude[] = '\'' . $exclude . '\'';
+                $simpleExclude[] = "'" . $exclude . "'";
             }
         }
+
         if ($simpleExclude) {
             $result .= ' AND table_name NOT IN(' . implode(',', $simpleExclude) . ')';
         }
+
         return $result;
     }
 
     /**
-     * @param string $database
      * @param string[] $excludes
-     * @return string
      */
     private function generateSqlQuery(string $database, array $excludes): string
     {
         $whereCondition = $this->getExcludeSqlPart($excludes);
         return <<<SQL
-SET group_concat_max_len = 51200; SELECT GROUP_CONCAT(table_name separator ' ') FROM information_schema.tables WHERE table_schema='$database'$whereCondition
+SET group_concat_max_len = 51200; SELECT GROUP_CONCAT(table_name separator ' ') FROM information_schema.tables WHERE table_schema='{$database}'{$whereCondition}
 SQL;
     }
 }

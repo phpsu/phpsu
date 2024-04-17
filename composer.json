@@ -1,7 +1,7 @@
 {
   "name": "phpsu/phpsu",
-  "license": "MIT",
   "description": "Synchronisation Utility: File and Database",
+  "license": "MIT",
   "type": "library",
   "keywords": [
     "phpsu",
@@ -9,16 +9,6 @@
     "mysql",
     "mysqldump"
   ],
-  "homepage": "https://phpsu.de/",
-  "config": {
-    "optimize-autoloader": true,
-    "process-timeout": 0,
-    "allow-plugins": {
-      "phpro/grumphp": true,
-      "infection/extension-installer": true,
-      "pluswerk/grumphp-config": true
-    }
-  },
   "authors": [
     {
       "name": "Matthias Vogel",
@@ -28,19 +18,28 @@
     {
       "name": "Christian Rodriguez Benthake",
       "email": "git@cben.co",
-      "role": "Developer",
-      "homepage": "https://cben.dev"
+      "homepage": "https://cben.dev",
+      "role": "Developer"
     }
   ],
-  "bin": [
-    "phpsu"
-  ],
-  "scripts": {
-    "test": "XDEBUG_MODE=coverage vendor/bin/phpunit -c tests/phpunit.xml --testdox --color=always",
-    "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox",
-    "infection": "XDEBUG_MODE=coverage vendor/bin/infection --threads=4 --only-covered --min-msi=91 --min-covered-msi=91 --ansi",
-    "phpstan": "vendor/bin/phpstan  --ansi"
+  "homepage": "https://phpsu.de/",
+  "require": {
+    "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
+    "ext-json": "*",
+    "composer-runtime-api": "^2.0.0",
+    "phpsu/shellcommandbuilder": "^2.0",
+    "symfony/console": "^5.0 || ^6.0 || ^7.0",
+    "symfony/process": "^5.0 || ^6.0 || ^7.0"
   },
+  "require-dev": {
+    "infection/infection": "^0.28.1",
+    "phpunit/phpunit": "^10.5.18",
+    "pluswerk/grumphp-config": "^7.0.1"
+  },
+  "suggest": {
+    "bamarni/composer-bin-plugin": "Dependency-Independent use of phpsu"
+  },
+  "minimum-stability": "stable",
   "autoload": {
     "psr-4": {
       "PHPSu\\": "src"
@@ -51,33 +50,24 @@
       "PHPSu\\Tests\\": "tests"
     }
   },
-  "minimum-stability": "stable",
-  "require": {
-    "php": "~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0",
-    "ext-json": "*",
-    "composer-runtime-api": "^2.0.0",
-    "phpsu/shellcommandbuilder": "^2.0",
-    "symfony/console": "^5.0 || ^6.0",
-    "symfony/process": "^5.0 || ^6.0"
-  },
-  "require-dev": {
-    "pluswerk/grumphp-config": "^5.0.2",
-    "rector/rector": "^0.12.23",
-    "spatie/phpunit-watcher": "^1.23.6",
-    "phpstan/phpstan": "^1.9.3",
-    "infection/infection": "^0.26.0",
-    "phpunit/php-invoker": "^3.1.1",
-    "phpunit/phpunit": "^9.5.27"
-  },
-  "suggest": {
-    "bamarni/composer-bin-plugin": "Dependency-Independent use of phpsu"
-  },
-  "extra": {
-    "pluswerk/grumphp-config": {
-      "auto-setting": false
+  "bin": [
+    "phpsu"
+  ],
+  "config": {
+    "allow-plugins": {
+      "ergebnis/composer-normalize": true,
+      "infection/extension-installer": true,
+      "phpro/grumphp": true,
+      "phpstan/extension-installer": true,
+      "pluswerk/grumphp-config": true
     },
-    "grumphp": {
-      "config-default-path": "grumphp.yml"
-    }
+    "optimize-autoloader": true,
+    "process-timeout": 0
+  },
+  "scripts": {
+    "infection": "XDEBUG_MODE=coverage vendor/bin/infection --threads=4 --only-covered --min-msi=91 --min-covered-msi=91 --ansi",
+    "phpstan": "vendor/bin/phpstan  --ansi",
+    "test": "XDEBUG_MODE=coverage vendor/bin/phpunit -c tests/phpunit.xml --testdox --color=always",
+    "test:watch": "vendor/bin/phpunit-watcher watch -c tests/phpunit.xml --testdox"
   }
 }

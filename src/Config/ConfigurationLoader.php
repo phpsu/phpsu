@@ -20,8 +20,10 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
             if (!file_exists($file)) {
                 throw new RuntimeException(sprintf('%s does not exist', $file));
             }
+
             $this->config = require $file;
         }
+
         return $this->config;
     }
 }

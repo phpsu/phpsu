@@ -24,7 +24,7 @@ final class ApplicationHelper
     private function getPhpSuVersionFromGlobals(): ?string
     {
         $pharVersion = '@phpsu_version@';
-        return strpos($pharVersion, '@') === 0 ? null : $pharVersion;
+        return str_starts_with($pharVersion, '@') ? null : $pharVersion;
     }
 
     private function getPhpSuVersionFromVendor(): ?string
@@ -37,6 +37,7 @@ final class ApplicationHelper
         if (!file_exists($gitPath)) {
             return null;
         }
+
         $file = file_get_contents($gitPath . '/HEAD') ?: '';
         return trim(str_replace('ref: refs/heads/', '', $file));
     }

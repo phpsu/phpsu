@@ -14,10 +14,6 @@ final class FileSystems
     /** @var FileSystem[] */
     private array $fileSystems = [];
 
-    /**
-     * @param FileSystem $fileSystem
-     * @return void
-     */
     public function add(FileSystem $fileSystem): void
     {
         $this->fileSystems[$fileSystem->getName()] = $fileSystem;
@@ -41,6 +37,7 @@ final class FileSystems
         if (!isset($this->fileSystems[$name])) {
             throw new Exception(sprintf('Filesystem %s not found', $name));
         }
+
         return $this->fileSystems[$name];
     }
 }

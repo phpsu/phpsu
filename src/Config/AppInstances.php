@@ -30,6 +30,7 @@ final class AppInstances
         if (!isset($this->instances[$name])) {
             throw new Exception(sprintf('App Instance with name %s not found', $name));
         }
+
         return $this->instances[$name];
     }
 

@@ -39,6 +39,7 @@ final class RsyncCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $rsync = new RsyncCommand();
         $rsync->setSshConfig($sshConfig)
             ->setOptions('-r')
@@ -53,6 +54,7 @@ final class RsyncCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $rsync = new RsyncCommand();
         $rsync->setSshConfig($sshConfig)
             ->setOptions('-r --colorize')
@@ -175,6 +177,7 @@ final class RsyncCommandTest extends TestCase
     {
         $sshConfig = new SshConfig();
         $sshConfig->setFile(new SplTempFileObject());
+
         $rsync = new RsyncCommand();
         $rsync->setName('rsyncName')
             ->setSshConfig($sshConfig)

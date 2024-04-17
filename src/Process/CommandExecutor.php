@@ -17,9 +17,6 @@ class CommandExecutor
 {
     /**
      * @param string[] $commands
-     * @param OutputInterface $logOutput
-     * @param OutputInterface $statusOutput
-     * @return void
      */
     public function executeParallel(array $commands, OutputInterface $logOutput, OutputInterface $statusOutput): void
     {
@@ -30,6 +27,7 @@ class CommandExecutor
             $process->setName($name);
             $manager->addProcess($process);
         }
+
         $callback = new StateChangeCallback($statusOutput);
         $manager->addStateChangeCallback($callback);
         $manager->addTickCallback($callback->getTickCallback());
@@ -39,8 +37,6 @@ class CommandExecutor
 
     /**
      * @param ShellInterface|string $command
-     * @param OutputInterface $output
-     * @return int
      */
     public function passthru($command, OutputInterface $output): int
     {
@@ -53,7 +49,7 @@ class CommandExecutor
             $errorOutput = $output->getErrorOutput();
         }
 
-        return $process->run(static function ($type, $buffer) use ($output, $errorOutput) {
+        return $process->run(static function ($type, $buffer) use ($output, $errorOutput): void {
             if ($type == \Symfony\Component\Process\Process::OUT) {
                 $output->write($buffer);
             } else {
@@ -63,7 +59,6 @@ class CommandExecutor
     }
 
     /**
-     * @param ShellInterface $command
      * @return Process<mixed>
      * @throws ShellBuilderException
      */

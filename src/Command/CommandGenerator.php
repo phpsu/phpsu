@@ -23,13 +23,11 @@ use function in_array;
 final class CommandGenerator
 {
     private ?SplFileObject $file = null;
-    private GlobalConfig $globalConfig;
-    private int $verbosity;
 
-    public function __construct(GlobalConfig $globalConfig, int $verbosity = OutputInterface::VERBOSITY_NORMAL)
+
+
+    public function __construct(private readonly GlobalConfig $globalConfig, private readonly int $verbosity = OutputInterface::VERBOSITY_NORMAL)
     {
-        $this->globalConfig = $globalConfig;
-        $this->verbosity = $verbosity;
     }
 
     private function getFile(): SplFileObject
@@ -37,6 +35,7 @@ final class CommandGenerator
         if (!$this->file instanceof SplFileObject) {
             $this->file = new TempSshConfigFile();
         }
+
         return $this->file;
     }
 
@@ -50,8 +49,10 @@ final class CommandGenerator
     {
         $sshConfig = SshConfig::fromGlobal($this->globalConfig, $currentHost);
         $sshConfig->setFile($this->getFile());
+
         $sshCommand = SshCommand::fromGlobal($this->globalConfig, $destination, $currentHost, $this->verbosity);
         $sshCommand->setSshConfig($sshConfig);
+
         $sshConfig->writeConfig();
         $sshCommand->setCommand($command);
         return $sshCommand->generate(ShellBuilder::new());
@@ -61,15 +62,16 @@ final class CommandGenerator
     {
         $sshConfig = SshConfig::fromGlobal($this->globalConfig, $instance);
         $sshConfig->setFile($this->getFile());
+
         $mysqlCommand = MysqlCommand::fromGlobal($this->globalConfig, $instance, $database, $this->verbosity);
         $mysqlCommand->setCommand($command);
         $mysqlCommand->setSshConfig($sshConfig);
+
         $sshConfig->writeConfig();
         return $mysqlCommand->generate();
     }
 
     /**
-     * @param SyncOptions $options
      * @return string[]
      * @throws Exception
      */
@@ -78,9 +80,11 @@ final class CommandGenerator
         if ($options->getSource() === $options->getDestination()) {
             throw new Exception(sprintf('Source and Destination are Identical: %s', $options->getSource()));
         }
+
         if (!in_array($options->getCurrentHost(), ['', 'local'], true)) {
             $this->globalConfig->validateConnectionToHost($options->getCurrentHost());
         }
+
         $sshConfig = SshConfig::fromGlobal($this->globalConfig, $options->getCurrentHost());
         $sshConfig->setFile($this->getFile());
 
@@ -92,6 +96,7 @@ final class CommandGenerator
                 $result[$rsyncCommand->getName()] = (string)$rsyncCommand->generate(ShellBuilder::new());
             }
         }
+
         if (!$options->isNoDatabases()) {
             $databaseCommands = DatabaseCommand::fromGlobal($this->globalConfig, $options->getSource(), $options->getDestination(), $options->getCurrentHost(), $options->isAll(), $this->verbosity);
             foreach ($databaseCommands as $databaseCommand) {
@@ -99,6 +104,7 @@ final class CommandGenerator
                 $result[$databaseCommand->getName()] = (string)$databaseCommand->generate(ShellBuilder::new());
             }
         }
+
         $sshConfig->writeConfig();
         return $result;
     }

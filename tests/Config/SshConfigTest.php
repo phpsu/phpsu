@@ -17,6 +17,7 @@ final class SshConfigTest extends TestCase
         $sshConfig = new SshConfig();
         $file = new SplTempFileObject();
         $file->fwrite('This should be overwritten');
+
         $sshConfig->setFile($file);
         $sshConfig->hostc = new SshConfigHost();
         $sshConfig->hostc->User = 'user';
