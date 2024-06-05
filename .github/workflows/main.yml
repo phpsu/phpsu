@@ -1,4 +1,4 @@
-on: [push, pull_request, release]
+on: [push, pull_request, release, workflow_dispatch]
 name: Test
 jobs:
   roave_bc_check:
@@ -38,7 +38,7 @@ jobs:
         with:
           path: ~/.composer/cache/files
           key: dependencies-php-${{ matrix.php }}-symfony-${{ matrix.symfony }}-composer-${{ hashFiles('composer.json') }}
-      - run: composer req symfony/console:^${{ matrix.symfony }}
+      - run: composer req symfony/console:^${{ matrix.symfony }} symfony/process:^${{ matrix.symfony }}
       - run: vendor/bin/grumphp run
       - run: script -q -e -c "composer test"
       - run: script -q -e -c "composer infection"

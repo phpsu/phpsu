@@ -24,6 +24,11 @@ final class Database implements DockerTraitSupportInterface
 
     private bool $noDefiner = true;
 
+    /**
+     * @var bool https://mariadb.org/mariadb-dump-file-compatibility-change/
+     */
+    private bool $allowSandboxMode = false;
+
     public function getName(): string
     {
         return $this->name;
@@ -92,6 +97,17 @@ final class Database implements DockerTraitSupportInterface
     public function setRemoveDefinerFromDump(bool $removeIt): Database
     {
         $this->noDefiner = $removeIt;
+        return $this;
+    }
+
+    public function shouldAllowSandboxMode(): bool
+    {
+        return $this->allowSandboxMode;
+    }
+
+    public function setAllowSandboxMode(bool $allowSandboxMode): Database
+    {
+        $this->allowSandboxMode = $allowSandboxMode;
         return $this;
     }
 }

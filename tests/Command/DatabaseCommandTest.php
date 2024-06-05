@@ -35,7 +35,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToDatabase($toConnection)
             ->setToHost('');
         $this->assertSame(
-            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -56,7 +56,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToDatabase($toConnection)
             ->setToHost('');
         $this->assertSame(
-            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat) | sed -e '\''s/DEFINER[ ]*=[ ]*[^*]*\*/\*/; s/DEFINER[ ]*=[ ]*[^*]*PROCEDURE/PROCEDURE/; s/DEFINER[ ]*=[ ]*[^*]*FUNCTION/FUNCTION/'\''' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -68,7 +68,9 @@ final class DatabaseCommandTest extends TestCase
 
         $database = new DatabaseCommand();
         $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
-        $fromConnection->setRemoveDefinerFromDump(true);
+        $fromConnection
+            ->setRemoveDefinerFromDump(true)
+            ->setAllowSandboxMode(true);
 
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
         $database->setSshConfig($sshConfig)
@@ -91,6 +93,7 @@ final class DatabaseCommandTest extends TestCase
         $fromConnection = (new Database())
             ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
             ->setRemoveDefinerFromDump(false)
+            ->setAllowSandboxMode(true)
             ->executeInDocker(true);
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
         $database->setSshConfig($sshConfig)
@@ -120,6 +123,7 @@ final class DatabaseCommandTest extends TestCase
         $fromConnection = (new Database())
             ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
             ->setRemoveDefinerFromDump(false)
+            ->setAllowSandboxMode(true)
             ->executeInDocker(true)
             ->enableSudoForDocker(true);
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
@@ -154,6 +158,7 @@ final class DatabaseCommandTest extends TestCase
         $fromConnection = (new Database())
             ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
             ->setRemoveDefinerFromDump(false)
+            ->setAllowSandboxMode(true)
             ->executeInDocker(true);
         $toConnection = (new Database())
             ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'))
@@ -255,7 +260,7 @@ final class DatabaseCommandTest extends TestCase
             ->setCompression(new GzipCompression());
 
         $this->assertSame(
-            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::REMOVE_DEFINER_PART . " | gzip' | gunzip | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . " | gzip' | gunzip | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -276,7 +281,7 @@ final class DatabaseCommandTest extends TestCase
             ->setCompression(new Bzip2Compression());
 
         $this->assertSame(
-            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::REMOVE_DEFINER_PART . " | bzip2' | bunzip2 | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . " | bzip2' | bunzip2 | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -297,7 +302,7 @@ final class DatabaseCommandTest extends TestCase
             ->setVerbosity(OutputInterface::VERBOSITY_QUIET);
 
         $this->assertSame(
-            "ssh -q -F 'php://temp' 'hostc' 'mysqldump -q " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "ssh -q -F 'php://temp' 'hostc' 'mysqldump -q " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -318,7 +323,7 @@ final class DatabaseCommandTest extends TestCase
             ->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
 
         $this->assertSame(
-            "ssh -v -F 'php://temp' 'hostc' 'mysqldump -v " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "ssh -v -F 'php://temp' 'hostc' 'mysqldump -v " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -339,7 +344,7 @@ final class DatabaseCommandTest extends TestCase
             ->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
 
         $this->assertSame(
-            "ssh -vv -F 'php://temp' 'hostc' 'mysqldump -vv " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "ssh -vv -F 'php://temp' 'hostc' 'mysqldump -vv " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -360,7 +365,7 @@ final class DatabaseCommandTest extends TestCase
             ->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
 
         $this->assertSame(
-            "ssh -vvv -F 'php://temp' 'hostc' 'mysqldump -vvv " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "ssh -vvv -F 'php://temp' 'hostc' 'mysqldump -vvv " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -379,7 +384,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToDatabase($toConnection)
             ->setToHost('');
         $this->assertSame(
-            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root#password'\''\'\'''\''\"_!'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root#password'\''\'\'''\''\"_!'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }

@@ -1,2 +1,6 @@
 parameters:
-	ignoreErrors: []
+	ignoreErrors:
+		-
+			message: "#^Caught class Symfony\\\\Component\\\\Process\\\\Exception\\\\ProcessStartFailedException not found\\.$#"
+			count: 1
+			path: src/Tools/EnvironmentUtility.php

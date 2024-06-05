@@ -20,7 +20,11 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 final class ControllerTest extends TestCase
 {
+    public const REMOVE_SANDBOX_MODE = " | grep -v '\''enable the sandbox mode'\''";
+
     public const REMOVE_DEFINER_PART = " | sed -e '\''s/DEFINER[ ]*=[ ]*[^*]*\*/\*/; s/DEFINER[ ]*=[ ]*[^*]*PROCEDURE/PROCEDURE/; s/DEFINER[ ]*=[ ]*[^*]*FUNCTION/FUNCTION/'\''";
+
+    public const MYSQL_DUMP_MODIFICATION_PART = self::REMOVE_SANDBOX_MODE . self::REMOVE_DEFINER_PART;
 
     public const MYSQLDUMP_OPTIONS = "--opt --skip-comments --single-transaction --lock-tables=false --no-tablespaces --complete-insert";
 
@@ -132,7 +136,7 @@ final class ControllerTest extends TestCase
             'filesystem:fileadmin',
             "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -156,7 +160,7 @@ final class ControllerTest extends TestCase
             'filesystem:fileadmin',
             "rsync -az --exclude '*.mp4' --exclude '*.mp3' --exclude '*.zip' --exclude '*.rar' -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -183,7 +187,7 @@ final class ControllerTest extends TestCase
 
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'TBLIST=`mysql --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' -AN -e \"SET group_concat_max_len = 51200; SELECT GROUP_CONCAT(table_name separator '\'' '\'') FROM information_schema.tables WHERE table_schema='\''testdb'\'' AND table_name NOT REGEXP '\''cache'\'' AND table_name NOT REGEXP '\''c'\'' AND table_name NOT IN('\''table1'\'','\''table2'\'','\''table4'\'','\''table3'\'')\"` && mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' \${TBLIST} | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'TBLIST=`mysql --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' -AN -e \"SET group_concat_max_len = 51200; SELECT GROUP_CONCAT(table_name separator '\'' '\'') FROM information_schema.tables WHERE table_schema='\''testdb'\'' AND table_name NOT REGEXP '\''cache'\'' AND table_name NOT REGEXP '\''c'\'' AND table_name NOT IN('\''table1'\'','\''table2'\'','\''table4'\'','\''table3'\'')\"` && mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' \${TBLIST} | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -206,7 +210,7 @@ final class ControllerTest extends TestCase
         $controller = new Controller();
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
 
-        $lines = "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'TBLIST=`docker '\''exec'\'' -i '\''test'\'' mysql --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' -AN -e \"SET group_concat_max_len = 51200; SELECT GROUP_CONCAT(table_name separator '\'' '\'') FROM information_schema.tables WHERE table_schema='\''testdb'\'' AND table_name NOT IN('\''table1'\'')\"` && docker '\''exec'\'' -i -e '\''TBLIST='\''\'\'''\''\${TBLIST}'\''\'\'''\'''\'' '\''test'\'' mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' \${TBLIST} | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'";
+        $lines = "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'TBLIST=`docker '\''exec'\'' -i '\''test'\'' mysql --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' -AN -e \"SET group_concat_max_len = 51200; SELECT GROUP_CONCAT(table_name separator '\'' '\'') FROM information_schema.tables WHERE table_schema='\''testdb'\'' AND table_name NOT IN('\''table1'\'')\"` && docker '\''exec'\'' -i -e '\''TBLIST='\''\'\'''\''\${TBLIST}'\''\'\'''\'''\'' '\''test'\'' mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' \${TBLIST} | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'";
         static::assertSame($lines, trim(explode("\n", $output->fetch())[1]));
     }
 
@@ -228,7 +232,7 @@ final class ControllerTest extends TestCase
             'filesystem:fileadmin',
             "rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' 'projectEu:/srv/www/project/test.project/fileadmin/' './testInstance/fileadmin/'",
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -272,7 +276,7 @@ final class ControllerTest extends TestCase
 
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
@@ -293,7 +297,7 @@ final class ControllerTest extends TestCase
 
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
             '',
         ];
         $this->assertSame($lines, explode(PHP_EOL, $output->fetch()));
@@ -317,9 +321,9 @@ final class ControllerTest extends TestCase
 
         $lines = [
             'database:database',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
             'database:database2',
-            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb2'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234_2`;USE `test1234_2`;'\'' && cat)" . self::REMOVE_DEFINER_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
+            "ssh -F '.phpsu/config/ssh_config' 'projectEu' 'mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb2'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234_2`;USE `test1234_2`;'\'' && cat)" . self::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'",
             '',
         ];
         $this->assertSame($lines, explode("\n", $output->fetch()));
