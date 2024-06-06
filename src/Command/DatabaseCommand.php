@@ -326,6 +326,7 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
                     ->addToBuilder()
                     ->and('cat')
             );
+        $removeSandboxModeCommand = $this->getRemoveSandboxModeCommand();
         $removeDefinerCommand = $this->getRemoveDefinerCommand();
         $compressCmd = $this->compression->getCompressCommand();
         $unCompressCmd = $this->compression->getUnCompressCommand();
@@ -334,10 +335,15 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
             $to,
             true
         );
-        $dumpBuilder->if(
-            $this->fromDatabase->shouldDefinerBeRemoved(),
-            static fn(ShellBuilder $builder): ShellBuilder => $builder->pipe($removeDefinerCommand)
-        )
+        $dumpBuilder
+            ->if(
+                !$this->fromDatabase->shouldAllowSandboxMode(),
+                static fn(ShellBuilder $builder): ShellBuilder => $builder->pipe($removeSandboxModeCommand)
+            )
+            ->if(
+                $this->fromDatabase->shouldDefinerBeRemoved(),
+                static fn(ShellBuilder $builder): ShellBuilder => $builder->pipe($removeDefinerCommand)
+            )
             ->if($compressCmd !== '' && $compressCmd !== '0', static fn(ShellBuilder $builder): ShellBuilder => $builder->pipe($compressCmd));
         if ($hostsDifferentiate) {
             if ($this->fromHost !== '') {
@@ -390,6 +396,15 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
             ->addShortOption(
                 'e',
                 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/; s/DEFINER[ ]*=[ ]*[^*]*PROCEDURE/PROCEDURE/; s/DEFINER[ ]*=[ ]*[^*]*FUNCTION/FUNCTION/'
+            );
+    }
+
+    private function getRemoveSandboxModeCommand(): ShellInterface
+    {
+        return ShellBuilder::command('grep')
+            ->addShortOption(
+                'v',
+                'enable the sandbox mode'
             );
     }
 

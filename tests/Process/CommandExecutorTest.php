@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Process;
 
 use PHPSu\Process\CommandExecutor;
+use PHPUnit\Framework\Constraint\StringContains;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -32,7 +33,7 @@ class CommandExecutorTest extends TestCase
         $mockOutput->expects($this->never())->method('write');
         $mockOutput->expects($this->never())->method('writeLn');
 
-        $mockErrorOutput->expects($this->once())->method('write')->with("sh: 1: ewj: not found\n");
+        $mockErrorOutput->expects($this->once())->method('write')->with(new StringContains("ewj: not found"));
 
         $commandExecutor = new CommandExecutor();
         $exitCode = $commandExecutor->passthru('ewj 2', $mockOutput);

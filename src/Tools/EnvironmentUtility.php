@@ -9,6 +9,7 @@ use PHPSu\Exceptions\CommandExecutionException;
 use PHPSu\Process\CommandExecutor;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
 use stdClass;
+use Symfony\Component\Process\Exception\ProcessStartFailedException;
 
 /**
  * @internal
@@ -41,7 +42,12 @@ final class EnvironmentUtility
 
     public function isCommandInstalled(string $command): bool
     {
-        $output = $this->commandExecutor->runCommand(ShellBuilder::command($command));
+        try {
+            $output = $this->commandExecutor->runCommand(ShellBuilder::command($command));
+        } catch (ProcessStartFailedException) {
+            return false;
+        }
+
         if ($output->getExitCode() === 127) {
             return false;
         }
