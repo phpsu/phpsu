@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Process;
 
+use Generator;
 use PHPSu\Process\CommandExecutor;
+use PHPUnit\Framework\Constraint\Constraint;
+use PHPUnit\Framework\Constraint\IsIdentical;
 use PHPUnit\Framework\Constraint\StringContains;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -13,43 +16,45 @@ use Symfony\Component\Console\Output\Output;
 
 class CommandExecutorTest extends TestCase
 {
-    public function testPassthruPassesSuccessfullyThrough(): void
+    public static function provideCommands(): Generator
     {
-        $mockOutput = $this->createMock(Output::class);
-        $mockOutput->expects($this->once())->method('isDecorated')->willReturn(false);
-        $mockOutput->expects($this->once())->method('write')->with("foo\n");
-        $mockOutput->expects($this->never())->method('writeLn');
-        $commandExecutor = new CommandExecutor();
-        $exitCode = $commandExecutor->passthru('echo "foo"', $mockOutput);
-        $this->assertSame(0, $exitCode);
+        yield 'echo "hello world"' => [
+            'echo "hello world"',
+            0,
+            new IsIdentical("hello world\n"),
+            new IsIdentical('')
+        ];
+        yield 'ewj: not found' => [
+            'ewj 2',
+            127,
+            new IsIdentical(''),
+            new StringContains("ewj: not found"),
+        ];
+        yield 'no stderr output' => [
+            'ewj 2> /dev/null',
+            127,
+            new IsIdentical(''),
+            new IsIdentical(''),
+        ];
     }
 
-    public function testPassthruPassesUnsuccessfullyThrough(): void
+    /**
+     * @dataProvider provideCommands
+     */
+    public function testPassthru(string $command, int $expectedExitCode, Constraint $expectedStdout, Constraint $expectedStderr): void
     {
-        $mockOutput = $this->createMock(ConsoleOutput::class);
-        $mockErrorOutput = $this->createMock(ConsoleOutput::class);
-        $mockOutput->expects($this->once())->method('isDecorated')->willReturn(false);
-        $mockOutput->expects($this->once())->method('getErrorOutput')->willReturn($mockErrorOutput);
-        $mockOutput->expects($this->never())->method('write');
-        $mockOutput->expects($this->never())->method('writeLn');
-
-        $mockErrorOutput->expects($this->once())->method('write')->with(new StringContains("ewj: not found"));
+        $stdoutStream = fopen('php://temp', 'rwb+');
+        $this->assertIsResource($stdoutStream);
+        $stderrStream = fopen('php://temp', 'rwb+');
+        $this->assertIsResource($stderrStream);
 
         $commandExecutor = new CommandExecutor();
-        $exitCode = $commandExecutor->passthru('ewj 2', $mockOutput);
-        $this->assertSame(127, $exitCode, "command shouldn't be installed");
-    }
-
-    public function testPassthruPassesTtyThrough(): void
-    {
-        $mockOutput = $this->createMock(Output::class);
-        $mockOutput->expects($this->once())->method('isDecorated')->willReturn(true);
-        $mockOutput->expects($this->never())->method('write');
-        $mockOutput->expects($this->never())->method('writeLn');
-        $commandExecutor = new CommandExecutor();
-        $exitCode = $commandExecutor->passthru('ewj 2> /dev/null', $mockOutput);
-        $this->assertNotEquals(0, $exitCode);
-        $this->assertSame(127, $exitCode, "command shouldn't be installed");
+        $realExitCode = $commandExecutor->passthru($command, stdout: $stdoutStream, stderr: $stderrStream);
+        rewind($stderrStream);
+        static::assertThat(stream_get_contents($stderrStream), $expectedStderr, 'stderr');
+        rewind($stdoutStream);
+        static::assertThat(stream_get_contents($stdoutStream), $expectedStdout, 'stdout');
+        $this->assertSame($expectedExitCode, $realExitCode, 'exit code should be 0');
     }
 
     public function testExecuteCommandsParallel(): void
