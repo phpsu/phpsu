@@ -138,14 +138,13 @@ final class SshCommand
                 $command = ShellBuilder::command('bash')->addOption('login');
             }
 
-            $this->shellCommand->addShortOption(
-                't',
-                ShellBuilder::new()
+            $this->shellCommand->addShortOption('t'); // keep interactivity
+
+            $this->shellCommand->addArgument(ShellBuilder::new()
                     ->createCommand('cd')
                     ->addArgument($this->path)
                     ->addToBuilder()
-                    ->add($command)
-            );
+                    ->add($command));
         } elseif ($command instanceof ShellInterface) {
             $this->shellCommand->addArgument($command);
         }

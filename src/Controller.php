@@ -36,7 +36,7 @@ final class Controller implements ControllerInterface
             return 0;
         }
 
-        return $this->executor->passthru($sshCommand, $output);
+        return $this->executor->passthru($sshCommand);
     }
 
     public function mysql(OutputInterface $output, GlobalConfig $config, MysqlOptions $options): int
@@ -51,7 +51,7 @@ final class Controller implements ControllerInterface
             return 0;
         }
 
-        return $this->executor->passthru($mysqlCommand, $output);
+        return $this->executor->passthru($mysqlCommand);
     }
 
 

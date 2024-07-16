@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
+use RuntimeException;
 use PHPSu\ShellCommandBuilder\Definition\Pattern;
 use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
 use PHPSu\ShellCommandBuilder\ShellInterface;
@@ -37,25 +38,18 @@ class CommandExecutor
 
     /**
      * @param ShellInterface|string $command
+     * @param resource|null $stdin
+     * @param resource|null $stdout
+     * @param resource|null $stderr
      */
-    public function passthru($command, OutputInterface $output): int
+    public function passthru($command, $stdin = null, $stdout = null, $stderr = null): int
     {
-        $process = Process::fromShellCommandline((string)$command);
-        $process->setTimeout(null);
-        $process->setTty($output->isDecorated() && \Symfony\Component\Process\Process::isTtySupported());
-
-        $errorOutput = $output;
-        if ($output instanceof ConsoleOutputInterface) {
-            $errorOutput = $output->getErrorOutput();
+        $process = proc_open((string)$command, [$stdin ?: STDIN, $stdout ?: STDOUT, $stderr ?: STDERR], $_);
+        if (!is_resource($process)) {
+            throw new RuntimeException('Could not open process');
         }
 
-        return $process->run(static function ($type, $buffer) use ($output, $errorOutput): void {
-            if ($type == \Symfony\Component\Process\Process::OUT) {
-                $output->write($buffer);
-            } else {
-                $errorOutput->write($buffer);
-            }
-        });
+        return proc_close($process);
     }
 
     /**
