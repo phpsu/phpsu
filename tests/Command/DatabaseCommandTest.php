@@ -35,7 +35,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToDatabase($toConnection)
             ->setToHost('');
         $this->assertSame(
-            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "set -o pipefail && ssh -F 'php://temp' 'hostc' 'set -o pipefail && mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -56,7 +56,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToDatabase($toConnection)
             ->setToHost('');
         $this->assertSame(
-            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "set -o pipefail && ssh -F 'php://temp' 'hostc' 'set -o pipefail && mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -79,7 +79,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToDatabase($toConnection)
             ->setToHost('');
         $this->assertSame(
-            "mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='database' --user='root' --password='root' 'sequelmovie' | (echo 'CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;' && cat) | sed -e 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/; s/DEFINER[ ]*=[ ]*[^*]*PROCEDURE/PROCEDURE/; s/DEFINER[ ]*=[ ]*[^*]*FUNCTION/FUNCTION/' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "set -o pipefail && mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='database' --user='root' --password='root' 'sequelmovie' | (echo 'CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;' && cat) | sed -e 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/; s/DEFINER[ ]*=[ ]*[^*]*PROCEDURE/PROCEDURE/; s/DEFINER[ ]*=[ ]*[^*]*FUNCTION/FUNCTION/' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -101,17 +101,8 @@ final class DatabaseCommandTest extends TestCase
             ->setFromHost('hostc')
             ->setToDatabase($toConnection)
             ->setToHost('');
-        $dump = $this->getMysqlDumpCommand(['host' => '127.0.0.1', 'user' => 'root', 'password' => 'root', 'database' => 'sequelmovie'], 'sequelmovie2');
-        $builder = $this->getSshCommand()
-            ->addArgument(ShellBuilder::command('docker')
-                ->addArgument('exec')
-                ->addShortOption('i')
-                ->addArgument('database')
-                ->addArgument($dump, false))
-            ->addToBuilder()
-            ->pipe($this->getMysqlCommand(['host' => '127.0.0.1', 'user' => 'root', 'password' => 'root', 'database' => 'sequelmovie', 'port' => '2206']));
         $generated = $database->generate(ShellBuilder::new());
-        $this->assertEquals((string)$builder, (string)$generated);
+        $this->assertEquals("set -o pipefail && ssh -F 'php://temp' 'hostc' 'set -o pipefail && docker '\''exec'\'' -i '\''database'\'' mysqldump --opt --skip-comments --single-transaction --lock-tables=false --no-tablespaces --complete-insert --host='\''127.0.0.1'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'", (string)$generated);
     }
 
     public function testDatabaseCommandGenerateWithDockerAndSudo(): void
@@ -132,21 +123,8 @@ final class DatabaseCommandTest extends TestCase
             ->setFromHost('hostc')
             ->setToDatabase($toConnection)
             ->setToHost('');
-        $dump = $this->getMysqlDumpCommand(['host' => '127.0.0.1', 'user' => 'root', 'password' => 'root', 'database' => 'sequelmovie'], 'sequelmovie2');
-        $builder = $this->getSshCommand()
-            ->addArgument(ShellBuilder::command('sudo')
-                ->addArgument(
-                    ShellBuilder::command('docker')
-                        ->addArgument('exec')
-                        ->addShortOption('i')
-                        ->addArgument('database')
-                        ->addArgument($dump, false),
-                    false
-                ))
-            ->addToBuilder()
-            ->pipe($this->getMysqlCommand(['host' => '127.0.0.1', 'user' => 'root', 'password' => 'root', 'database' => 'sequelmovie', 'port' => '2206']));
         $generated = $database->generate(ShellBuilder::new());
-        $this->assertEquals((string)$builder, (string)$generated);
+        $this->assertEquals("set -o pipefail && ssh -F 'php://temp' 'hostc' 'set -o pipefail && sudo docker '\''exec'\'' -i '\''database'\'' mysqldump --opt --skip-comments --single-transaction --lock-tables=false --no-tablespaces --complete-insert --host='\''127.0.0.1'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'", (string)$generated);
     }
 
     public function testDatabaseCommandGenerateWithDockerOnBothSides(): void
@@ -169,79 +147,8 @@ final class DatabaseCommandTest extends TestCase
             ->setFromHost('hostc')
             ->setToDatabase($toConnection)
             ->setToHost('');
-        $dump = $this->getMysqlDumpCommand(['host' => '127.0.0.1', 'user' => 'root', 'password' => 'root', 'database' => 'sequelmovie'], 'sequelmovie2');
-        $builder = $this->getSshCommand()
-            ->addArgument(ShellBuilder::command('docker')
-                ->addArgument('exec')
-                ->addShortOption('i')
-                ->addArgument('database')
-                ->addArgument($dump, false))
-            ->addToBuilder()
-            ->pipe(ShellBuilder::command('docker')
-                ->addArgument('exec')
-                ->addShortOption('i')
-                ->addArgument('test')
-                ->addArgument(
-                    $this->getMysqlCommand(['host' => '127.0.0.1', 'user' => 'root', 'password' => 'root', 'database' => 'sequelmovie']),
-                    false
-                ));
         $generated = $database->generate(ShellBuilder::new());
-        $this->assertEquals((string)$builder, (string)$generated);
-    }
-
-    /**
-     * @throws ShellBuilderException
-     */
-    private function getSshCommand(string $host = 'hostc'): ShellCommand
-    {
-        return ShellBuilder::command('ssh')
-            ->addShortOption('F')
-            ->addArgument('php://temp')
-            ->addArgument($host);
-    }
-
-    /**
-     * @param array<string, string|int> $db
-     * @throws ShellBuilderException
-     */
-    private function getMysqlDumpCommand(array $db, string $newDb): ShellBuilder
-    {
-        return ShellBuilder::command('mysqldump')
-            ->addOption('opt')
-            ->addOption('skip-comments')
-            ->addOption('single-transaction')
-            ->addOption('lock-tables', 'false', false, true)
-            ->addOption('no-tablespaces')
-            ->addOption('complete-insert')
-            ->addOption('host', $db['host'], true, true)
-            ->addOption('user', $db['user'], true, true)
-            ->addOption('password', $db['password'], true, true)
-            ->addArgument($db['database'])
-            ->addToBuilder()
-            ->pipe(
-                ShellBuilder::new()
-                    ->createGroup()
-                    ->createCommand('echo')
-                    ->addArgument(sprintf('CREATE DATABASE IF NOT EXISTS `%s`;USE `%s`;', $newDb, $newDb))
-                    ->addToBuilder()
-                    ->and('cat')
-            );
-    }
-
-    /**
-     * @param array<string, string|int> $db
-     * @throws ShellBuilderException
-     */
-    private function getMysqlCommand(array $db): ShellCommand
-    {
-        $command = ShellBuilder::command('mysql')
-            ->addOption('host', $db['host'], true, true);
-        if (isset($db['port'])) {
-            $command->addOption('port', $db['port'], false, true);
-        }
-
-        return $command->addOption('user', $db['user'], true, true)
-            ->addOption('password', $db['password'], true, true);
+        $this->assertEquals("set -o pipefail && ssh -F 'php://temp' 'hostc' 'set -o pipefail && docker '\''exec'\'' -i '\''database'\'' mysqldump --opt --skip-comments --single-transaction --lock-tables=false --no-tablespaces --complete-insert --host='\''127.0.0.1'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)' | docker 'exec' -i 'test' mysql --host='127.0.0.1' --user='root' --password='root'", (string)$generated);
     }
 
     public function testDatabaseCommandGzip(): void
@@ -260,7 +167,7 @@ final class DatabaseCommandTest extends TestCase
             ->setCompression(new GzipCompression());
 
         $this->assertSame(
-            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . " | gzip' | gunzip | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "set -o pipefail && ssh -F 'php://temp' 'hostc' 'set -o pipefail && mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . " | gzip' | gunzip | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -281,7 +188,7 @@ final class DatabaseCommandTest extends TestCase
             ->setCompression(new Bzip2Compression());
 
         $this->assertSame(
-            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . " | bzip2' | bunzip2 | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "set -o pipefail && ssh -F 'php://temp' 'hostc' 'set -o pipefail && mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . " | bzip2' | bunzip2 | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -302,7 +209,7 @@ final class DatabaseCommandTest extends TestCase
             ->setVerbosity(OutputInterface::VERBOSITY_QUIET);
 
         $this->assertSame(
-            "ssh -q -F 'php://temp' 'hostc' 'mysqldump -q " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "set -o pipefail && ssh -q -F 'php://temp' 'hostc' 'set -o pipefail && mysqldump -q " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -323,7 +230,7 @@ final class DatabaseCommandTest extends TestCase
             ->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
 
         $this->assertSame(
-            "ssh -v -F 'php://temp' 'hostc' 'mysqldump -v " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "set -o pipefail && ssh -v -F 'php://temp' 'hostc' 'set -o pipefail && mysqldump -v " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -344,7 +251,7 @@ final class DatabaseCommandTest extends TestCase
             ->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
 
         $this->assertSame(
-            "ssh -vv -F 'php://temp' 'hostc' 'mysqldump -vv " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "set -o pipefail && ssh -vv -F 'php://temp' 'hostc' 'set -o pipefail && mysqldump -vv " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -365,7 +272,7 @@ final class DatabaseCommandTest extends TestCase
             ->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
 
         $this->assertSame(
-            "ssh -vvv -F 'php://temp' 'hostc' 'mysqldump -vvv " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "set -o pipefail && ssh -vvv -F 'php://temp' 'hostc' 'set -o pipefail && mysqldump -vvv " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }
@@ -384,7 +291,7 @@ final class DatabaseCommandTest extends TestCase
             ->setToDatabase($toConnection)
             ->setToHost('');
         $this->assertSame(
-            "ssh -F 'php://temp' 'hostc' 'mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root#password'\''\'\'''\''\"_!'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
+            "set -o pipefail && ssh -F 'php://temp' 'hostc' 'set -o pipefail && mysqldump " . ControllerTest::MYSQLDUMP_OPTIONS . " --host='\''database'\'' --user='\''root'\'' --password='\''root#password'\''\'\'''\''\"_!'\'' '\''sequelmovie'\'' | (echo '\''CREATE DATABASE IF NOT EXISTS `sequelmovie2`;USE `sequelmovie2`;'\'' && cat)" . ControllerTest::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --port=2206 --user='root' --password='root'",
             (string)$database->generate(ShellBuilder::new())
         );
     }

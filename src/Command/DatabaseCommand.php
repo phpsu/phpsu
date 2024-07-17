@@ -351,7 +351,7 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
                 $sshCommand->setSshConfig($this->sshConfig);
                 $sshCommand->setInto($this->fromHost);
                 $sshCommand->setVerbosity($this->verbosity);
-                $sshCommand->setCommand($dumpBuilder);
+                $sshCommand->setCommand($this->prependPipefail($dumpBuilder));
                 $sshCommand->generate($shellBuilder);
             }
 
@@ -363,10 +363,12 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
                     ->setInto($this->toHost)
                     ->setVerbosity($this->verbosity)
                     ->setCommand(
-                        $importBuilder->if(
-                            $unCompressCmd !== '' && $unCompressCmd !== '0',
-                            static fn(ShellBuilder $builder): ShellBuilder => $builder->add($unCompressCmd)->pipe($importCommand),
-                            static fn(ShellBuilder $builder): ShellBuilder => $builder->add($importCommand)
+                        $this->prependPipefail(
+                            $importBuilder->if(
+                                $unCompressCmd !== '' && $unCompressCmd !== '0',
+                                static fn(ShellBuilder $builder): ShellBuilder => $builder->add($unCompressCmd)->pipe($importCommand),
+                                static fn(ShellBuilder $builder): ShellBuilder => $builder->add($importCommand)
+                            )
                         )
                     )
                     ->generate(ShellBuilder::new());
@@ -376,18 +378,28 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
                 $importBuilder->add($importCommand);
             }
 
-            return $shellBuilder->if(
+            $dumpBuilderPackagedIfNeeded = $shellBuilder->if(
                 $shellBuilder->__toArray() === [],
                 static fn(ShellBuilder $builder): ShellBuilder => $builder->add($dumpBuilder)
-            )->pipe($importBuilder);
+            );
+            return $this->prependPipefail($dumpBuilderPackagedIfNeeded->pipe($importBuilder));
+        }
+
+        if (!$this->fromHost) {
+            return $this->prependPipefail($dumpBuilder->pipe($importCommand));
         }
 
         $sshCommand = new SshCommand();
         $sshCommand->setSshConfig($this->sshConfig);
         $sshCommand->setInto($this->fromHost);
         $sshCommand->setVerbosity($this->verbosity);
-        $sshCommand->setCommand($dumpBuilder->pipe($importCommand));
-        return $sshCommand->generate($shellBuilder);
+        $sshCommand->setCommand($this->prependPipefail($dumpBuilder->pipe($importCommand)));
+        return $this->prependPipefail($sshCommand->generate($shellBuilder));
+    }
+
+    public function prependPipefail(ShellInterface $shell): ShellBuilder
+    {
+        return ShellBuilder::command('set')->addShortOption('o', 'pipefail', false)->addToBuilder()->and($shell);
     }
 
     private function getRemoveDefinerCommand(): ShellInterface
