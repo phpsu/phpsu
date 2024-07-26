@@ -30,7 +30,11 @@ final class Controller implements ControllerInterface
 
     public function ssh(OutputInterface $output, GlobalConfig $config, SshOptions $options): int
     {
-        $sshCommand = (new CommandGenerator($config, $output->getVerbosity()))->sshCommand($options->getDestination(), $options->getCurrentHost(), $options->getCommand());
+        $sshCommand = (new CommandGenerator($config, $output->getVerbosity()))->sshCommand(
+            $options->getDestination(),
+            $options->getCurrentHost(),
+            $options->getCommand()
+        );
         if ($options->isDryRun()) {
             $output->writeln((string)$sshCommand);
             return 0;
@@ -43,6 +47,7 @@ final class Controller implements ControllerInterface
     {
         $mysqlCommand = (new CommandGenerator($config, $output->getVerbosity()))->mysqlCommand(
             $options->getAppInstance(),
+            $options->getCurrentHost(),
             $options->getDatabase(),
             $options->getCommand()
         );
