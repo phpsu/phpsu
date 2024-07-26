@@ -15,6 +15,8 @@ final class MysqlOptions
 {
     private string $appInstance = 'local';
 
+    private string $currentHost = 'local';
+
     private ?string $command = null;
 
     private ?string $database = null;
@@ -29,6 +31,17 @@ final class MysqlOptions
     public function setAppInstance(string $appInstance): self
     {
         $this->appInstance = $appInstance;
+        return $this;
+    }
+
+    public function getCurrentHost(): string
+    {
+        return $this->currentHost;
+    }
+
+    public function setCurrentHost(string $currentHost): MysqlOptions
+    {
+        $this->currentHost = $currentHost;
         return $this;
     }
 

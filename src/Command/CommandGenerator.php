@@ -58,9 +58,9 @@ final class CommandGenerator
         return $sshCommand->generate(ShellBuilder::new());
     }
 
-    public function mysqlCommand(string $instance, ?string $database, ?string $command): ShellInterface
+    public function mysqlCommand(string $instance, string $currentHost, ?string $database, ?string $command): ShellInterface
     {
-        $sshConfig = SshConfig::fromGlobal($this->globalConfig, $instance);
+        $sshConfig = SshConfig::fromGlobal($this->globalConfig, $currentHost);
         $sshConfig->setFile($this->getFile());
 
         $mysqlCommand = MysqlCommand::fromGlobal($this->globalConfig, $instance, $database, $this->verbosity);

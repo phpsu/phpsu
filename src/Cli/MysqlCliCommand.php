@@ -29,6 +29,7 @@ final class MysqlCliCommand extends AbstractCliCommand
             ->setDescription('connect to configured database')
             ->setHelp(implode(PHP_EOL, ['Connect to Database of AppInstance via SSH.', '(connects from the executing location)']))
             ->addOption('dry-run', 'd', InputOption::VALUE_NONE, 'just display the commands.')
+            ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'The Source AppInstance.', 'local')
         ->addOption('database', 'b', InputArgument::OPTIONAL, 'Which Database to connect to')
         ->addArgument('instance', InputArgument::REQUIRED, 'Which AppInstance to connect to')
         ->addArgument('mysqlcommand', InputArgument::OPTIONAL, 'Execute a mysql command instead of connecting to it');
@@ -76,6 +77,8 @@ final class MysqlCliCommand extends AbstractCliCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $instance = $input->getArgument('instance');
+        /** @var string $currentHost */
+        $currentHost = $input->getOption('from');
         $mysqlCommand = $input->getArgument('mysqlcommand') ?: '';
         /** @var string|null $database */
         $database = $input->getOption('database') ?: null;
@@ -85,6 +88,7 @@ final class MysqlCliCommand extends AbstractCliCommand
             $this->configurationLoader->getConfig(),
             (new MysqlOptions())
                 ->setAppInstance($instance)
+                ->setCurrentHost($currentHost)
                 ->setCommand($mysqlCommand)
                 ->setDatabase($database)
                 ->setDryRun((bool)$input->getOption('dry-run'))

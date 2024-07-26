@@ -71,7 +71,7 @@ final class CommandGeneratorTest extends TestCase
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
 
-        $mysqlCommand = $commandGenerator->mysqlCommand('production', null, null);
+        $mysqlCommand = $commandGenerator->mysqlCommand('production', 'local', null, null);
         $file->rewind();
         $this->assertEquals('Host serverEu' . PHP_EOL, $file->getCurrentLine());
         $comparisonObject = ShellBuilder::new()
@@ -98,7 +98,7 @@ final class CommandGeneratorTest extends TestCase
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
 
-        $mysqlCommand = $commandGenerator->mysqlCommand('production', 'app', 'SELECT * FROM tablex');
+        $mysqlCommand = $commandGenerator->mysqlCommand('production', 'local', 'app', 'SELECT * FROM tablex');
         $comparisonObject = ShellBuilder::new()
             ->createCommand('ssh')
             ->addShortOption('F', 'php://temp')
@@ -123,7 +123,7 @@ final class CommandGeneratorTest extends TestCase
         $commandGenerator = new CommandGenerator($globalConfig);
         $commandGenerator->setFile($file = new SplTempFileObject());
 
-        $mysqlCommand = $commandGenerator->mysqlCommand('local', null, 'SELECT * FROM tablex');
+        $mysqlCommand = $commandGenerator->mysqlCommand('local', 'local', null, 'SELECT * FROM tablex');
         $comparisonObject = ShellBuilder::command('mysql')
             ->addOption('user', 'user', true, true)
             ->addOption('password', 'pw', true, true)
