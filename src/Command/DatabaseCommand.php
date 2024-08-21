@@ -414,6 +414,7 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
     private function getRemoveSandboxModeCommand(): ShellInterface
     {
         return ShellBuilder::command('grep')
+            ->addShortOption('a')
             ->addShortOption(
                 'v',
                 'enable the sandbox mode'

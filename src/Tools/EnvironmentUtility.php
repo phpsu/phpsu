@@ -91,15 +91,22 @@ final class EnvironmentUtility
         }
 
         preg_match_all(
-            '/(.*Ver (?\'dump\'[\d.a-z]+).*)(.*Distrib (?\'mysql\'[\d.a-z]+).*)/m',
+            '/(.*Ver (?\'dump\'[\d.]+).*)/m',
             trim($output),
-            $matches,
+            $matchesDump,
+            PREG_SET_ORDER,
+            0
+        );
+        preg_match_all(
+            '/(.*Distrib (?\'mysql\'[\d.]+).*){0,1}/m',
+            trim($output),
+            $matchesMysql,
             PREG_SET_ORDER,
             0
         );
         return [
-            'mysqlVersion' => $matches[0]['mysql'] ?? '-',
-            'dumpVersion' => $matches[0]['dump'] ?? '-',
+            'mysqlVersion' => $matchesMysql[0]['mysql'] ?? $matchesDump[0]['dump'] ?? '-',
+            'dumpVersion' => $matchesDump[0]['dump'] ?? '-',
         ];
     }
 
