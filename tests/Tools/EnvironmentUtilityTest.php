@@ -83,6 +83,20 @@ final class EnvironmentUtilityTest extends TestCase
     }
 
     /**
+     * @throws CommandExecutionException|ReflectionException
+     */
+    public function testGetInstalledMysqlVersionInstalledMysql8(): void
+    {
+        $echo = ShellBuilder::command('echo')->addArgument('mysqldump  Ver 8.0.39-0ubuntu0.20.04.1 for Linux on x86_64 ((Ubuntu))');
+        $environmentUtility = $this->getEnvironmentUtility($echo);
+        $version = $environmentUtility->getMysqlDumpVersion();
+        $this->assertEquals([
+            'mysqlVersion' => '8.0.39',
+            'dumpVersion' => '8.0.39',
+        ], $version);
+    }
+
+    /**
      * @throws CommandExecutionException
      * @throws ReflectionException
      * @throws ShellBuilderException

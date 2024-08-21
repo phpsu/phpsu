@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 final class ControllerTest extends TestCase
 {
-    public const REMOVE_SANDBOX_MODE = " | grep -v '\''enable the sandbox mode'\''";
+    public const REMOVE_SANDBOX_MODE = " | grep -a -v '\''enable the sandbox mode'\''";
 
     public const REMOVE_DEFINER_PART = " | sed -e '\''s/DEFINER[ ]*=[ ]*[^*]*\*/\*/; s/DEFINER[ ]*=[ ]*[^*]*PROCEDURE/PROCEDURE/; s/DEFINER[ ]*=[ ]*[^*]*FUNCTION/FUNCTION/'\''";
 
