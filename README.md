@@ -62,6 +62,7 @@ The following versions of PHP are supported by this version.
 * or [version 1.1.0](https://github.com/phpsu/phpsu/tree/1.1.0)
 
 Required for synchronisation are:
+* ``bash`` on execution System (and the ssh user needs to have a shell where `set -o pipefail` is possible (eg. not sh on debian as that is dash and does not work))
 * ``ssh`` on execution System
 * ``rsync`` on executing System
 * ``mysqldump`` on source System
