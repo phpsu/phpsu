@@ -328,6 +328,7 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
             );
         $removeSandboxModeCommand = $this->getRemoveSandboxModeCommand();
         $removeDefinerCommand = $this->getRemoveDefinerCommand();
+        $removeNoAutoCreateUserCommand = $this->getRemoveNoAutoCreateUserCommand();
         $compressCmd = $this->compression->getCompressCommand();
         $unCompressCmd = $this->compression->getUnCompressCommand();
         $importCommand = $this->addArgumentsToShellCommand(
@@ -343,6 +344,10 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
             ->if(
                 $this->fromDatabase->shouldDefinerBeRemoved(),
                 static fn(ShellBuilder $builder): ShellBuilder => $builder->pipe($removeDefinerCommand)
+            )
+            ->if(
+                $this->fromDatabase->shouldNoAutoCreateUserRemoved(),
+                static fn(ShellBuilder $builder): ShellBuilder => $builder->pipe($removeNoAutoCreateUserCommand)
             )
             ->if($compressCmd !== '' && $compressCmd !== '0', static fn(ShellBuilder $builder): ShellBuilder => $builder->pipe($compressCmd));
         if ($hostsDifferentiate) {
@@ -408,6 +413,14 @@ final class DatabaseCommand implements CommandInterface, GroupedCommandInterface
             ->addShortOption(
                 'e',
                 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/; s/DEFINER[ ]*=[ ]*[^*]*PROCEDURE/PROCEDURE/; s/DEFINER[ ]*=[ ]*[^*]*FUNCTION/FUNCTION/'
+            );
+    }
+
+    private function getRemoveNoAutoCreateUserCommand(): ShellInterface
+    {
+        return ShellBuilder::command('sed')
+            ->addArgument(
+                's/NO_AUTO_CREATE_USER//'
             );
     }
 

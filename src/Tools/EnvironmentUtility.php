@@ -63,7 +63,7 @@ final class EnvironmentUtility
         }
 
         preg_match('/rsync *version ([0-9.]*).*/', $command->getOutput(), $result);
-        return trim($result[1]);
+        return trim($result[1] ?? throw new CommandExecutionException('Could not determine rsync version'));
     }
 
     public function getSshVersion(): string
@@ -76,7 +76,7 @@ final class EnvironmentUtility
         // ssh -V writes the version into STDERR instead of STDOUT
         $output = $command->getOutput() ?: $command->getErrorOutput();
         preg_match('/OpenSSH_([a-zA-Z0-9\.]*)/', $output, $result);
-        return trim($result[1]);
+        return trim($result[1] ?? throw new CommandExecutionException('Could not determine Ssh version'));
     }
 
     /**
