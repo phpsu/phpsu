@@ -24,7 +24,7 @@ class CommandExecutor
         $manager = new ProcessManager();
         foreach ($commands as $name => $command) {
             $logOutput->writeln(sprintf('<fg=yellow>%s:</> <fg=white;options=bold>running command: %s</>', $name, $command), OutputInterface::VERBOSITY_VERBOSE);
-            $process = Process::fromShellCommandline($command, null, null, null, null);
+            $process = new Process(['bash', '-c', $command], null, null, null, null);
             $process->setName($name);
             $manager->addProcess($process);
         }
