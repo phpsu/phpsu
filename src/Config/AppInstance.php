@@ -94,6 +94,14 @@ final class AppInstance
     }
 
     /**
+     * @return FileSystem[]
+     */
+    public function getFilesystems(): array
+    {
+        return $this->fileSystems->getAll();
+    }
+
+    /**
      * @return Database[]
      */
     public function getDatabases(): array
