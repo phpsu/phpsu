@@ -69,7 +69,7 @@ final class MysqlCommand implements CommandInterface
         return $this;
     }
 
-    public function generate(ShellBuilder $shellBuilder = null): ShellBuilder
+    public function generate(?ShellBuilder $shellBuilder = null): ShellBuilder
     {
         $shellBuilder ??= ShellBuilder::new();
         $ssh = new SshCommand();

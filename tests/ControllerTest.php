@@ -24,7 +24,9 @@ final class ControllerTest extends TestCase
 
     public const REMOVE_DEFINER_PART = " | sed -e '\''s/DEFINER[ ]*=[ ]*[^*]*\*/\*/; s/DEFINER[ ]*=[ ]*[^*]*PROCEDURE/PROCEDURE/; s/DEFINER[ ]*=[ ]*[^*]*FUNCTION/FUNCTION/'\''";
 
-    public const MYSQL_DUMP_MODIFICATION_PART = self::REMOVE_SANDBOX_MODE . self::REMOVE_DEFINER_PART;
+    public const REMOVE_NO_AUTO_CREATE_USER = " | sed '\''s/NO_AUTO_CREATE_USER//'\''";
+
+    public const MYSQL_DUMP_MODIFICATION_PART = self::REMOVE_SANDBOX_MODE . self::REMOVE_DEFINER_PART . self::REMOVE_NO_AUTO_CREATE_USER;
 
     public const MYSQLDUMP_OPTIONS = "--opt --skip-comments --single-transaction --lock-tables=false --no-tablespaces --complete-insert";
 

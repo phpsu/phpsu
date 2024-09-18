@@ -24,6 +24,8 @@ final class Database implements DockerTraitSupportInterface
 
     private bool $noDefiner = true;
 
+    private bool $removeNoAutoCreateUser = true;
+
     /**
      * @var bool https://mariadb.org/mariadb-dump-file-compatibility-change/
      */
@@ -97,6 +99,17 @@ final class Database implements DockerTraitSupportInterface
     public function setRemoveDefinerFromDump(bool $removeIt): Database
     {
         $this->noDefiner = $removeIt;
+        return $this;
+    }
+
+    public function shouldNoAutoCreateUserRemoved(): bool
+    {
+        return $this->removeNoAutoCreateUser;
+    }
+
+    public function setRemoveNoAutoCreateUser(bool $removeIt): Database
+    {
+        $this->removeNoAutoCreateUser = $removeIt;
         return $this;
     }
 

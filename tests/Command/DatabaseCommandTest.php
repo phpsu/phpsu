@@ -70,7 +70,8 @@ final class DatabaseCommandTest extends TestCase
         $fromConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'));
         $fromConnection
             ->setRemoveDefinerFromDump(true)
-            ->setAllowSandboxMode(true);
+            ->setAllowSandboxMode(true)
+            ->setRemoveNoAutoCreateUser(false);
 
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
         $database->setSshConfig($sshConfig)
@@ -93,6 +94,7 @@ final class DatabaseCommandTest extends TestCase
         $fromConnection = (new Database())
             ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
             ->setRemoveDefinerFromDump(false)
+            ->setRemoveNoAutoCreateUser(false)
             ->setAllowSandboxMode(true)
             ->executeInDocker(true);
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
@@ -115,6 +117,7 @@ final class DatabaseCommandTest extends TestCase
             ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
             ->setRemoveDefinerFromDump(false)
             ->setAllowSandboxMode(true)
+            ->setRemoveNoAutoCreateUser(false)
             ->executeInDocker(true)
             ->enableSudoForDocker(true);
         $toConnection = (new Database())->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'));
@@ -137,6 +140,7 @@ final class DatabaseCommandTest extends TestCase
             ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@database/sequelmovie'))
             ->setRemoveDefinerFromDump(false)
             ->setAllowSandboxMode(true)
+            ->setRemoveNoAutoCreateUser(false)
             ->executeInDocker(true);
         $toConnection = (new Database())
             ->setConnectionDetails(DatabaseConnectionDetails::fromUrlString('mysql://root:root@127.0.0.1:2206/sequelmovie2'))

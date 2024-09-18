@@ -14,6 +14,7 @@
     timeoutForSmallTests="1"
     colors="true"
     cacheDirectory="var/.phpunit.cache"
+    testdox="true"
     beStrictAboutCoverageMetadata="true">
   <coverage>
     <report>
