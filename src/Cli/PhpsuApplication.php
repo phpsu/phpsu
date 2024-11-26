@@ -22,6 +22,7 @@ final class PhpsuApplication
         $application->add(new SshCliCommand($configurationLoader, new Controller()));
         $application->add(new MysqlCliCommand($configurationLoader, new Controller()));
         $application->add(new InfoCliCommand($configurationLoader, new Controller()));
+        $application->add(new InitCliCommand($configurationLoader, new Controller()));
         return $application;
     }
 }

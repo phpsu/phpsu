@@ -102,4 +102,12 @@ final class SshConnections
 
         return $compiled[$to];
     }
+
+    /**
+     * @return \PHPSu\Config\SshConnection[]
+     */
+    public function getConnections(): array
+    {
+        return $this->connections;
+    }
 }
