@@ -1,0 +1,17 @@
+{
+  "main": "sync.php",
+  "output": "index.phar",
+  "banner": [
+    "This file is part of the phpsu project.",
+    "",
+    "(c) Matthias Vogel <git@kanti.de>",
+    "",
+    "This source file is subject to the MIT license that is bundled",
+    "with this source code in the file LICENSE."
+  ],
+  "compression": "GZ",
+  "compactors": [
+    "KevinGH\\Box\\Compactor\\Json",
+    "KevinGH\\Box\\Compactor\\Php"
+  ]
+}

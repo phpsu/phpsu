@@ -1,0 +1,50 @@
+{
+  "name": "phpsu/phpsu",
+  "description": "phpsu",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Matthias Vogel",
+      "email": "m.vogel@andersundsehr.com"
+    }
+  ],
+  "require": {
+    "ext-pdo": "*",
+    "ext-pdo_mysql": "*",
+    "ext-pdo_pgsql": "*",
+    "ext-pdo_sqlite": "*",
+    "doctrine/dbal": "^4.2",
+    "helhum/dotenv-connector": "^3.1",
+    "kanti/secrets": "^1",
+    "kanti/ssh-tunnel": "^1",
+    "nunomaduro/collision": "^8.6",
+    "symfony/process": "^7.2"
+  },
+  "require-dev": {
+    "pluswerk/grumphp-config": "^7.1",
+    "symfony/var-dumper": "^7.2"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../*"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Phpsu\\Phpsu\\": "src/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "ergebnis/composer-normalize": true,
+      "helhum/dotenv-connector": true,
+      "phpro/grumphp": true,
+      "phpstan/extension-installer": true,
+      "pluswerk/grumphp-config": true
+    }
+  },
+  "scripts": {
+    "build-phar": "box compile"
+  }
+}

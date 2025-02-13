@@ -1,0 +1,226 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Config\\:\\:getDestination\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Config\\:\\:getSource\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Config\\:\\:getTableConfig\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Config\\\\Config\\:\\:__construct\\(\\) has parameter \\$instances with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Config\\\\Config\\:\\:__construct\\(\\) has parameter \\$syncModes with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Config\\\\Config\\:\\:create\\(\\) has parameter \\$instances with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Config\\\\Config\\:\\:create\\(\\) has parameter \\$syncModes with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Config\\\\SyncMode\\:\\:create\\(\\) has parameter \\$databaseExclude with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Config\\\\SyncMode\\:\\:create\\(\\) has parameter \\$databaseInclude with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Config\\\\SyncMode\\:\\:create\\(\\) has parameter \\$databaseVolatileExclude with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Config\\\\SyncMode\\:\\:create\\(\\) has parameter \\$databaseVolatileInclude with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Config\\\\SyncMode\\:\\:create\\(\\) has parameter \\$filesExclude with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Config\\\\SyncMode\\:\\:create\\(\\) has parameter \\$filesInclude with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Config\\\\SyncMode\\:\\:create\\(\\) has parameter \\$timestampColumnNames with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Only iterables can be unpacked, mixed given in argument \\#1\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Parameter \\#1 \\.\\.\\.\\$value of closure expects string, mixed given\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Parameter \\$databaseExclude of class Phpsu\\\\Phpsu\\\\Config\\\\SyncMode constructor expects array\\<int, string\\>, array\\|bool\\|string given\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Parameter \\$databaseInclude of class Phpsu\\\\Phpsu\\\\Config\\\\SyncMode constructor expects array\\<int, string\\>, array\\|bool\\|string given\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Parameter \\$databaseVolatileExclude of class Phpsu\\\\Phpsu\\\\Config\\\\SyncMode constructor expects array\\<int, string\\>, array\\|bool\\|string given\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Parameter \\$databaseVolatileInclude of class Phpsu\\\\Phpsu\\\\Config\\\\SyncMode constructor expects array\\<int, string\\>, array\\|bool\\|string given\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Parameter \\$filesExclude of class Phpsu\\\\Phpsu\\\\Config\\\\SyncMode constructor expects array\\<int, string\\>, array\\|bool\\|string given\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Parameter \\$filesInclude of class Phpsu\\\\Phpsu\\\\Config\\\\SyncMode constructor expects array\\<int, string\\>, array\\|bool\\|string given\\.$#"
+			count: 1
+			path: src/Config/SyncMode.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\BulkInsert\\:\\:extractColumns\\(\\) has parameter \\$dataset with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Dbal/BulkInsert.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\BulkInsert\\:\\:extractColumns\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Dbal/BulkInsert.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\BulkInsert\\:\\:insert\\(\\) has parameter \\$rows with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Dbal/BulkInsert.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\BulkInsert\\:\\:insert\\(\\) has parameter \\$types with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Dbal/BulkInsert.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\BulkInsert\\:\\:insert\\(\\) should return int but returns int\\|string\\.$#"
+			count: 1
+			path: src/Dbal/BulkInsert.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\BulkInsert\\:\\:parameters\\(\\) has parameter \\$dataset with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Dbal/BulkInsert.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\BulkInsert\\:\\:parameters\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Dbal/BulkInsert.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\BulkInsert\\:\\:quoteColumns\\(\\) has parameter \\$columns with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Dbal/BulkInsert.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\BulkInsert\\:\\:quoteColumns\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Dbal/BulkInsert.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\BulkInsert\\:\\:sql\\(\\) has parameter \\$rows with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Dbal/BulkInsert.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\BulkInsert\\:\\:stringifyColumns\\(\\) has parameter \\$columns with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Dbal/BulkInsert.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\BulkInsert\\:\\:types\\(\\) has parameter \\$types with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Dbal/BulkInsert.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\BulkInsert\\:\\:types\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Dbal/BulkInsert.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\Connection\\:\\:count\\(\\) should return int but returns mixed\\.$#"
+			count: 1
+			path: src/Dbal/Connection.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\Dbal\\\\Connection\\:\\:truncate\\(\\) should return int but returns int\\|string\\.$#"
+			count: 1
+			path: src/Dbal/Connection.php
+
+		-
+			message: "#^Property Phpsu\\\\Phpsu\\\\MultiThrowableException\\:\\:\\$throwables \\(array\\<int, Throwable\\>\\) does not accept array\\<int\\|string, Throwable\\>\\.$#"
+			count: 1
+			path: src/MultiThrowableException.php
+
+		-
+			message: "#^Else branch is unreachable because previous condition is always true\\.$#"
+			count: 1
+			path: src/SyncCommand.php
+
+		-
+			message: "#^Method Phpsu\\\\Phpsu\\\\SyncCommand\\:\\:estimateBestChunkSize\\(\\) has parameter \\$row with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/SyncCommand.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: src/SyncCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$lastSync of method Phpsu\\\\Phpsu\\\\SyncCommand\\:\\:syncTable\\(\\) expects DateTimeImmutable\\|null, DateTimeImmutable\\|false given\\.$#"
+			count: 1
+			path: src/SyncCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method Doctrine\\\\DBAL\\\\Query\\\\Expression\\\\ExpressionBuilder\\:\\:gte\\(\\) expects string, string\\|null given\\.$#"
+			count: 2
+			path: src/SyncCommand.php
+
+		-
+			message: "#^Variable \\$destinationConnection might not be defined\\.$#"
+			count: 1
+			path: src/SyncCommand.php
+
+		-
+			message: "#^Variable \\$sourceConnection might not be defined\\.$#"
+			count: 1
+			path: src/SyncCommand.php
