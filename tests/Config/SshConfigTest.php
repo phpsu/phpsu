@@ -40,6 +40,7 @@ final class SshConfigTest extends TestCase
         $sshConfig->{'*'}->IdentityFile = './docker/testCaseD/id_rsa';
 
         $sshConfig->writeConfig();
+
         $expectedSshConfigString = <<<'SSH_CONFIG'
 Host hostc
   HostName host_c

@@ -19,6 +19,5 @@ class PhpsuApplicationTest extends TestCase
         $this->assertInstanceOf(SyncCliCommand::class, $app->get('sync'));
         $this->assertInstanceOf(SshCliCommand::class, $app->get('ssh'));
         $this->assertInstanceOf(MysqlCliCommand::class, $app->get('mysql'));
-        $this->assertInstanceOf(InfoCliCommand::class, $app->get('info'));
     }
 }

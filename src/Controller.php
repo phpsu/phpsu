@@ -23,7 +23,7 @@ final class Controller implements ControllerInterface
 
     private readonly CommandExecutor $executor;
 
-    public function __construct(CommandExecutor $commandExecutor = null)
+    public function __construct(?CommandExecutor $commandExecutor = null)
     {
         $this->executor = $commandExecutor ?? new CommandExecutor();
     }

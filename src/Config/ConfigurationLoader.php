@@ -21,7 +21,12 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
                 throw new RuntimeException(sprintf('%s does not exist', $file));
             }
 
-            $this->config = require $file;
+            $config = require $file;
+            if (!$config instanceof GlobalConfig) {
+                throw new RuntimeException(sprintf('Invalid config file %s (it needs to return a ' . GlobalConfig::class . ' class)', $file));
+            }
+
+            $this->config = $config;
         }
 
         return $this->config;
