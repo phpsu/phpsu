@@ -107,10 +107,9 @@ final class GlobalConfig
     }
 
     /**
-     * @param callable|null $filterFunction
      * @return string[]
      */
-    public function getAppInstanceNames(callable $filterFunction = null): array
+    public function getAppInstanceNames(?callable $filterFunction = null): array
     {
         $appInstances = $this->appInstances->getAll();
         if ($filterFunction) {
@@ -143,7 +142,7 @@ final class GlobalConfig
     }
 
     /**
-     * @return string[]
+     * @return array<string, string>
      */
     public function getDefaultSshConfig(): array
     {

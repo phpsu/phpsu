@@ -6,6 +6,7 @@ namespace PHPSu\Tests\Process;
 
 use Generator;
 use PHPSu\Process\CommandExecutor;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\Constraint\IsIdentical;
 use PHPUnit\Framework\Constraint\StringContains;
@@ -38,9 +39,7 @@ class CommandExecutorTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideCommands
-     */
+    #[DataProvider('provideCommands')]
     public function testPassthru(string $command, int $expectedExitCode, Constraint $expectedStdout, Constraint $expectedStderr): void
     {
         $stdoutStream = fopen('php://temp', 'rwb+');

@@ -60,6 +60,7 @@ final class SshCliCommand extends AbstractCliCommand
             $questionHelper = $this->getHelper('question');
             assert($questionHelper instanceof QuestionHelper);
             $destination = $questionHelper->ask($input, $output, $question);
+            assert(is_scalar($destination));
             $output->writeln('You selected: ' . $destination);
             $input->setArgument('destination', $destination);
         }

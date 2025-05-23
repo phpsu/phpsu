@@ -8,7 +8,6 @@ use SplFileObject;
 
 /**
  * @internal
- *
  */
 final class SshConfig
 {

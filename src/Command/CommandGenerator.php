@@ -39,7 +39,7 @@ final class CommandGenerator
         return $this->file;
     }
 
-    public function setFile(SplFileObject $file = null): CommandGenerator
+    public function setFile(?SplFileObject $file = null): CommandGenerator
     {
         $this->file = $file;
         return $this;

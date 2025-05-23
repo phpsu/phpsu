@@ -36,7 +36,7 @@ final class MysqlCommandTest extends TestCase
             'app'
         );
         $database->setSshConfig($sshConfig);
-        static::assertSame("mysql --user='a' --password='b' --host=127.0.0.1 --port=3306 'test'", (string)$database->generate(ShellBuilder::new()));
+        self::assertSame("mysql --user='a' --password='b' --host=127.0.0.1 --port=3306 'test'", (string)$database->generate(ShellBuilder::new()));
     }
 
     /**
@@ -54,7 +54,7 @@ final class MysqlCommandTest extends TestCase
         $database = MysqlCommand::fromGlobal($global, 'local');
         $database->setSshConfig($sshConfig);
         $database->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
-        static::assertSame("mysql -vvv --user='a' --password='b' --host=127.0.0.1 --port=3306 'test'", (string)$database->generate(ShellBuilder::new()));
+        self::assertSame("mysql -vvv --user='a' --password='b' --host=127.0.0.1 --port=3306 'test'", (string)$database->generate(ShellBuilder::new()));
     }
 
     public function testDatabaseCommandGenerateWithTwoDatabases(): void
@@ -66,8 +66,8 @@ final class MysqlCommandTest extends TestCase
         $instance = $global->addAppInstance('local');
         $instance->addDatabase('app', 'test', 'a', 'b');
         $instance->addDatabase('app2', 'test', 'a', 'b');
-        static::expectException(Exception::class);
-        static::expectExceptionMessage('There are multiple databases defined, please specify the one to connect to.');
+        self::expectException(Exception::class);
+        self::expectExceptionMessage('There are multiple databases defined, please specify the one to connect to.');
         $database = MysqlCommand::fromGlobal(
             $global,
             'local'
@@ -84,8 +84,8 @@ final class MysqlCommandTest extends TestCase
         $global->addAppInstance('local');
         $global->addDatabase('app', 'test', 'a', 'b');
         $global->addDatabase('app2', 'test', 'a', 'b');
-        static::expectException(Exception::class);
-        static::expectExceptionMessage('There are multiple databases defined, please specify the one to connect to.');
+        self::expectException(Exception::class);
+        self::expectExceptionMessage('There are multiple databases defined, please specify the one to connect to.');
         $database = MysqlCommand::fromGlobal(
             $global,
             'local'
@@ -113,14 +113,17 @@ final class MysqlCommandTest extends TestCase
         $database->setCommand('SELECT * FROM tables');
 
         $result = $database->generate()->jsonSerialize();
-        static::assertCount(1, $result);
-        $mysql = $result[0];
-        static::assertSame('mysql', $mysql['executable']);
-        static::assertCount(6, $mysql['arguments']);
-        $sqlCommand = $mysql['arguments'][5];
-        static::assertTrue($sqlCommand['isShortOption']);
-        static::assertEquals("'SELECT * FROM tables'", $sqlCommand['value']);
-        static::assertEquals("e", $sqlCommand['argument']);
+        self::assertCount(1, $result);
+        $mysql = $result[0] ?? [];
+        self::assertIsArray($mysql);
+        self::assertSame('mysql', $mysql['executable'] ?? null);
+        self::assertIsArray($mysql['arguments']);
+        self::assertCount(6, $mysql['arguments']);
+        $sqlCommand = $mysql['arguments'][5] ?? null;
+        self::assertIsArray($sqlCommand);
+        self::assertTrue($sqlCommand['isShortOption']);
+        self::assertEquals("'SELECT * FROM tables'", $sqlCommand['value']);
+        self::assertEquals("e", $sqlCommand['argument']);
     }
 
     /**
@@ -143,10 +146,12 @@ final class MysqlCommandTest extends TestCase
         $database->setSshConfig($sshConfig);
 
         $result = $database->generate()->jsonSerialize();
-        static::assertCount(1, $result);
+        self::assertCount(1, $result);
         $ssh = $result[0];
-        static::assertSame('ssh', $ssh['executable']);
-        static::assertCount(4, $ssh['arguments']);
+        self::assertIsArray($ssh);
+        self::assertSame('ssh', $ssh['executable']);
+        self::assertIsArray($ssh['arguments']);
+        self::assertCount(4, $ssh['arguments']);
         $mysql = ShellBuilder::command('mysql')
             ->addOption('user', 'a', true, true)
             ->addOption('password', 'b', true, true)
@@ -154,7 +159,11 @@ final class MysqlCommandTest extends TestCase
             ->addOption('port', '3306', false, true)
             ->addArgument('test')
         ;
-        static::assertEquals('t', $ssh['arguments'][0]['argument']);
-        static::assertEquals($mysql->__toArray(), $ssh['arguments'][3]['value']);
+        $arg = $ssh['arguments'][0] ?? null;
+        self::assertIsArray($arg);
+        self::assertEquals('t', $arg['argument'] ?? null);
+        $arg = $ssh['arguments'][3] ?? null;
+        self::assertIsArray($arg);
+        self::assertEquals($mysql->__toArray(), $arg['value'] ?? null);
     }
 }

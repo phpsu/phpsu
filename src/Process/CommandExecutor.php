@@ -51,16 +51,4 @@ class CommandExecutor
 
         return proc_close($process);
     }
-
-    /**
-     * @return Process<mixed>
-     * @throws ShellBuilderException
-     */
-    public function runCommand(ShellInterface $command): Process
-    {
-        $process = new Process(Pattern::split((string)$command));
-        $process->setTimeout(null);
-        $process->run();
-        return $process;
-    }
 }

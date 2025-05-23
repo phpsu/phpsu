@@ -39,7 +39,7 @@ final class StringHelper
     /**
      * @param string[] $haystack
      */
-    public static function findStringInArray(string $needle, array $haystack): ?string
+    public static function findStringInArray(string $needle, array $haystack): string
     {
         $remaining = array_filter($haystack, static fn (string $el): bool => stripos($el, $needle) === 0);
         if (count($remaining) === 1) {

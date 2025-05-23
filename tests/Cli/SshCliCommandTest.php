@@ -18,12 +18,13 @@ use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
+use function assert;
+
 class SshCliCommandTest extends TestCase
 {
     public function testSshCliCommandDryRun(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
-        assert($mockConfigurationLoader instanceof ConfigurationLoaderInterface);
         $command = new SshCliCommand($mockConfigurationLoader, new Controller());
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
@@ -43,7 +44,6 @@ class SshCliCommandTest extends TestCase
     public function testSshCliCommandDryRunMultipleCommands(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
-        assert($mockConfigurationLoader instanceof ConfigurationLoaderInterface);
         $command = new SshCliCommand($mockConfigurationLoader, new Controller());
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
@@ -64,7 +64,6 @@ class SshCliCommandTest extends TestCase
     public function testSshCliCommandDryRunInteractive(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
-        assert($mockConfigurationLoader instanceof ConfigurationLoaderInterface);
         $command = new SshCliCommand($mockConfigurationLoader, new Controller());
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
@@ -87,10 +86,7 @@ class SshCliCommandTest extends TestCase
     {
         $globalConfig = $this->createConfig();
         $mockConfigurationLoader = $this->createMockConfigurationLoader($globalConfig);
-        assert($mockConfigurationLoader instanceof ConfigurationLoaderInterface);
-        /** @var MockObject|ControllerInterface $mockController */
         $mockController = $this->createMock(ControllerInterface::class);
-        assert(method_exists($mockController, 'expects'));
         $mockController->expects($this->once())
             ->method('ssh')
             ->with(
@@ -99,7 +95,6 @@ class SshCliCommandTest extends TestCase
                 $this->equalTo(new SshOptions('production'))
             )
             ->willReturn(208);
-        assert($mockController instanceof ControllerInterface);
         $command = new SshCliCommand($mockConfigurationLoader, $mockController);
         $command->setHelperSet(new HelperSet([
             new QuestionHelper(),
@@ -119,10 +114,7 @@ class SshCliCommandTest extends TestCase
     {
         $globalConfig = $this->createConfigNoAppInstance();
         $mockConfigurationLoader = $this->createMockConfigurationLoader($globalConfig);
-        assert($mockConfigurationLoader instanceof ConfigurationLoaderInterface);
-        /** @var MockObject|ControllerInterface $mockController */
         $mockController = $this->createMock(ControllerInterface::class);
-        assert($mockController instanceof ControllerInterface);
         $command = new SshCliCommand($mockConfigurationLoader, $mockController);
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
 
@@ -150,14 +142,9 @@ class SshCliCommandTest extends TestCase
         return $globalConfig;
     }
 
-    /**
-     * @return ConfigurationLoaderInterface|MockObject
-     */
-    private function createMockConfigurationLoader(GlobalConfig $config): object
+    private function createMockConfigurationLoader(GlobalConfig $config): ConfigurationLoaderInterface&MockObject
     {
-        /** @var MockObject|ConfigurationLoaderInterface $mockConfigurationLoader */
         $mockConfigurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
-        assert(method_exists($mockConfigurationLoader, 'expects'));
         $mockConfigurationLoader->expects($this->atLeastOnce())
             ->method('getConfig')
             ->willReturn($config);

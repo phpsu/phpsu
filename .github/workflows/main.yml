@@ -5,11 +5,11 @@ jobs:
     name: Roave BC Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
       - name: fetch tags
         run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
       - name: "Roave BC Check"
-        uses: "addnab/docker-run-action@v3"
+        uses: addnab/docker-run-action@v3
         with:
           image: "nyholm/roave-bc-check-ga"
           options: "--env GITHUB_REPOSITORY=${{ github.repository }} --user 1001 --volume ${{ github.workspace }}:/app"
@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.1', '8.2', '8.3']
+        php: ['8.1', '8.2', '8.3', '8.4']
         symfony: ['5', '6', '7']
         exclude:
           - symfony: '7'
@@ -32,9 +32,9 @@ jobs:
     steps:
       - run: git config --global --add safe.directory /__w/phpsu/phpsu
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Cache dependenciess
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.composer/cache/files
           key: dependencies-php-${{ matrix.php }}-symfony-${{ matrix.symfony }}-composer-${{ hashFiles('composer.json') }}
@@ -42,8 +42,7 @@ jobs:
       - run: vendor/bin/grumphp run
       - run: script -q -e -c "composer test"
       - run: script -q -e -c "composer infection"
-      - run: composer phpstan
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./tests/test-results/coverage.xml
@@ -53,25 +52,25 @@ jobs:
     steps:
       -
         name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v3
       -
         name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       -
         name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: little-core-labs/get-git-tag@v3.0.1
+      - uses: little-core-labs/get-git-tag@v3.0.2
         id: tag
       -
         name: Build (and push) to docker hub
         id: docker_build_latest
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         with:
           push: ${{ startsWith(github.ref, 'refs/tags/') }}
           tags: phpsu/phpsu:latest,phpsu/phpsu:${{ steps.date.outputs.date }},phpsu/phpsu:${{ steps.tag.outputs.tag || '0' }},phpsu/phpsu:${{ steps.tag.outputs.tag || '0' }}-${{ steps.date.outputs.date }}

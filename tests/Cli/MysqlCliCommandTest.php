@@ -25,7 +25,6 @@ final class MysqlCliCommandTest extends TestCase
     public function testMysqlCliCommandDryRunMultipleCommands(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
-        assert($mockConfigurationLoader instanceof ConfigurationLoaderInterface);
         $command = new MysqlCliCommand($mockConfigurationLoader, new Controller());
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
 
@@ -56,7 +55,6 @@ final class MysqlCliCommandTest extends TestCase
     public function testMysqlCliCommandDryRunInteractiveForInstance(): void
     {
         $mockConfigurationLoader = $this->createMockConfigurationLoader($this->createConfig());
-        assert($mockConfigurationLoader instanceof ConfigurationLoaderInterface);
         $command = new MysqlCliCommand($mockConfigurationLoader, new Controller());
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
 
@@ -92,7 +90,6 @@ final class MysqlCliCommandTest extends TestCase
         $config->getAppInstance('production')
             ->addDatabase('beta', 'testtest', 'root', 'pass', 'a');
         $mockConfigurationLoader = $this->createMockConfigurationLoader($config);
-        assert($mockConfigurationLoader instanceof ConfigurationLoaderInterface);
         $command = new MysqlCliCommand($mockConfigurationLoader, new Controller());
         $command->setHelperSet(new HelperSet([new QuestionHelper()]));
 
@@ -135,14 +132,9 @@ final class MysqlCliCommandTest extends TestCase
         return $globalConfig;
     }
 
-    /**
-     * @return ConfigurationLoaderInterface|MockObject
-     */
-    private function createMockConfigurationLoader(GlobalConfig $config): object
+    private function createMockConfigurationLoader(GlobalConfig $config): ConfigurationLoaderInterface&MockObject
     {
-        /** @var MockObject|ConfigurationLoaderInterface $mockConfigurationLoader */
         $mockConfigurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
-        assert(method_exists($mockConfigurationLoader, 'expects'));
         $mockConfigurationLoader->expects($this->atLeastOnce())
             ->method('getConfig')
             ->willReturn($config);

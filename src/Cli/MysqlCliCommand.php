@@ -13,6 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
+use function assert;
 use function in_array;
 
 /**
@@ -55,6 +56,7 @@ final class MysqlCliCommand extends AbstractCliCommand
             $questionHelper = $this->getHelper('question');
             assert($questionHelper instanceof QuestionHelper);
             $destination = $questionHelper->ask($input, $output, $question);
+            assert(is_scalar($destination));
             $output->writeln('You selected: ' . $destination);
             $input->setArgument('instance', $destination);
         }
@@ -69,6 +71,7 @@ final class MysqlCliCommand extends AbstractCliCommand
             $questionHelper = $this->getHelper('question');
             assert($questionHelper instanceof QuestionHelper);
             $database = $questionHelper->ask($input, $output, $question);
+            assert(is_scalar($database));
             $output->writeln('You selected: ' . $database);
             $input->setOption('database', $database);
         }

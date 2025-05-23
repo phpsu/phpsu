@@ -82,7 +82,7 @@ final class ProcessManagerTest extends TestCase
             return;
         }
 
-        $this->assertTrue(false, 'Exception should be thrown');
+        throw new Exception('Expected exception not thrown');
     }
 
     public function testAddOutputCallback(): void
