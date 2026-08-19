@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Command;
 
 use Exception;
-use GrumPHP\Task\Shell;
 use PHPSu\Command\CommandGenerator;
 use PHPSu\Config\AppInstance;
 use PHPSu\Config\Compression\GzipCompression;
@@ -88,7 +87,7 @@ final class CommandGeneratorTest extends TestCase
                 ->addArgument('appDatabase')
             )->addToBuilder();
         assert($mysqlCommand instanceof ShellBuilder);
-        static::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
+        self::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
     }
 
     public function testMysqlCommandGenerationForProductionWithCommand(): void
@@ -112,7 +111,7 @@ final class CommandGeneratorTest extends TestCase
                     ->addShortOption('e', 'SELECT * FROM tablex')
             )->addToBuilder();
         assert($mysqlCommand instanceof ShellBuilder);
-        static::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
+        self::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
     }
 
     public function testMysqlCommandGenerationForLocalWithCommand(): void
@@ -130,7 +129,7 @@ final class CommandGeneratorTest extends TestCase
             ->addArgument('database')
             ->addShortOption('e', 'SELECT * FROM tablex')->addToBuilder();
         assert($mysqlCommand instanceof ShellBuilder);
-        static::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
+        self::assertEquals($comparisonObject->jsonSerialize(), $mysqlCommand->jsonSerialize());
     }
 
     public function testFromAndToSameDisallowed(): void

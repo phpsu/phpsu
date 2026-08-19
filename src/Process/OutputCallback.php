@@ -11,9 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @internal
  */
-final class OutputCallback
+final readonly class OutputCallback
 {
-    public function __construct(private readonly OutputInterface $output)
+    public function __construct(private OutputInterface $output)
     {
     }
 

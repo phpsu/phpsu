@@ -115,7 +115,7 @@ final class SshConfigHost
     /**
      * @param string|int $config
      */
-    public function __set(string $name, $config): void
+    public function __set(string $name, mixed $config): void
     {
         $this->options[$name] = (string)$config;
     }

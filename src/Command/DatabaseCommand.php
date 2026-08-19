@@ -18,7 +18,6 @@ use PHPSu\ShellCommandBuilder\ShellCommand;
 use PHPSu\ShellCommandBuilder\ShellInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function get_class;
 use function strlen;
 
 /**

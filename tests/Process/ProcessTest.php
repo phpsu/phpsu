@@ -17,7 +17,6 @@ class ProcessTest extends TestCase
         $reflectionClass =  (new ReflectionClass($process))->getParentClass();
         assert($reflectionClass instanceof ReflectionClass);
         $reflection = $reflectionClass->getProperty('status');
-        $reflection->setAccessible(true);
         $reflection->setValue($process, '-1');
         $this->assertSame('-1', $process->getStatus());
         $this->expectException(LogicException::class);

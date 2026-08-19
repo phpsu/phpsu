@@ -9,7 +9,6 @@ use PHPSu\Config\Database;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Helper\StringHelper;
-use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
 use Symfony\Component\Console\Output\OutputInterface;
 

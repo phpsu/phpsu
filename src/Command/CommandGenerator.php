@@ -9,7 +9,6 @@ use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
 use PHPSu\Config\TempSshConfigFile;
 use PHPSu\Options\SyncOptions;
-use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
 use PHPSu\ShellCommandBuilder\ShellInterface;
 use SplFileObject;

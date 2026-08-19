@@ -11,12 +11,9 @@ use PHPSu\Options\MysqlOptions;
 use PHPSu\Options\SshOptions;
 use PHPSu\Options\SyncOptions;
 use PHPSu\Process\CommandExecutor;
-use PHPSu\ShellCommandBuilder\ShellBuilder;
-use PHPSu\ShellCommandBuilder\ShellInterface;
 use PHPSu\Tests\TestHelper\BufferedConsoleOutput;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\ConsoleOutput;
 
 final class ControllerTest extends TestCase
 {
@@ -81,7 +78,7 @@ final class ControllerTest extends TestCase
         $output = new BufferedOutput();
         $controller->mysql($output, $config, $options);
         $fetch = trim($output->fetch());
-        static::assertEquals('mysql --user=\'user\' --password=\'#!;~"\' --host=99.88.77.123 --port=3306 \'web\'', $fetch);
+        self::assertEquals('mysql --user=\'user\' --password=\'#!;~"\' --host=99.88.77.123 --port=3306 \'web\'', $fetch);
     }
 
     public function testMysqlCommand(): void
@@ -101,7 +98,7 @@ final class ControllerTest extends TestCase
             ->setDatabase('test2')
             ->setCommand('SELECT * FROM web')
             ->setAppInstance('production');
-        static::assertEquals(11, $controller->mysql(new BufferedOutput(), $config, $options));
+        self::assertEquals(11, $controller->mysql(new BufferedOutput(), $config, $options));
     }
 
     public function testMysqlCommandInDockerDryRun(): void
@@ -117,7 +114,7 @@ final class ControllerTest extends TestCase
         $output = new BufferedOutput();
         (new Controller())->mysql($output, $config, $options);
         $fetch = trim($output->fetch());
-        static::assertEquals('docker \'exec\' -it \'web\' mysql --user=\'user\' --password=\'#!;~"\' --host=127.0.0.1 --port=3306 \'web\'', $fetch);
+        self::assertEquals('docker \'exec\' -it \'web\' mysql --user=\'user\' --password=\'#!;~"\' --host=127.0.0.1 --port=3306 \'web\'', $fetch);
     }
 
     public function testFilesystemAndDatabase(): void
@@ -213,7 +210,7 @@ final class ControllerTest extends TestCase
         $controller->sync($output, $config, (new SyncOptions('testing'))->setDryRun(true));
 
         $lines = "set -o pipefail && ssh -F '.phpsu/config/ssh_config' 'projectEu' 'set -o pipefail && TBLIST=`docker '\''exec'\'' -i '\''test'\'' mysql --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' -AN -e \"SET group_concat_max_len = 51200; SELECT GROUP_CONCAT(table_name separator '\'' '\'') FROM information_schema.tables WHERE table_schema='\''testdb'\'' AND table_name NOT IN('\''table1'\'')\"` && docker '\''exec'\'' -i -e '\''TBLIST='\''\'\'''\''\${TBLIST}'\''\'\'''\'''\'' '\''test'\'' mysqldump " . self::MYSQLDUMP_OPTIONS . " --host='\''127.0.0.1'\'' --user='\''test'\'' --password='\''aaaaaaaa'\'' '\''testdb'\'' \${TBLIST} | (echo '\''CREATE DATABASE IF NOT EXISTS `test1234`;USE `test1234`;'\'' && cat)" . self::MYSQL_DUMP_MODIFICATION_PART . "' | mysql --host='127.0.0.1' --user='root' --password='root'";
-        static::assertSame($lines, trim(explode("\n", $output->fetch())[1]));
+        self::assertSame($lines, trim(explode("\n", $output->fetch())[1]));
     }
 
     public function testAllOptionShouldOverwriteExcludes(): void

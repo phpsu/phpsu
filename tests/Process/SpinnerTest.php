@@ -30,7 +30,6 @@ class SpinnerTest extends TestCase
     private function setSpinnerStateToNumber(Spinner $spinner, int $number): Spinner
     {
         $reflection =  (new ReflectionClass($spinner))->getProperty('state');
-        $reflection->setAccessible(true);
         $reflection->setValue($spinner, $number);
         return $spinner;
     }

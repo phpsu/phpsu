@@ -8,7 +8,6 @@ use ReflectionException;
 use PHPSu\Process\Process;
 use PHPSu\Process\ProcessManager;
 use PHPSu\Process\StateChangeCallback;
-use PHPSu\Tools\EnvironmentUtility;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\Console\Formatter\OutputFormatter;
@@ -168,7 +167,6 @@ final class StateChangeCallbackTest extends TestCase
     public function setPrivateProperty(ProcessManager $object, string $propertyName, mixed $value): void
     {
         $property = (new ReflectionClass($object))->getProperty($propertyName);
-        $property->setAccessible(true);
         $property->setValue($object, $value);
     }
 }

@@ -91,7 +91,6 @@ final class ProcessManagerTest extends TestCase
         $processManager->addOutputCallback(static fn(): bool => true);
 
         $property = (new ReflectionClass($processManager))->getProperty('outputCallbacks');
-        $property->setAccessible(true);
 
         $callbacks = $property->getValue($processManager);
         assert(is_array($callbacks));
@@ -107,7 +106,6 @@ final class ProcessManagerTest extends TestCase
         $processManager->addStateChangeCallback(static fn(): bool => true);
 
         $property = (new ReflectionClass($processManager))->getProperty('stateChangeCallbacks');
-        $property->setAccessible(true);
 
         $callbacks = $property->getValue($processManager);
         assert(is_array($callbacks));
@@ -123,7 +121,6 @@ final class ProcessManagerTest extends TestCase
         $processManager->addTickCallback(static fn(): bool => true);
 
         $property = (new ReflectionClass($processManager))->getProperty('tickCallbacks');
-        $property->setAccessible(true);
 
         $callbacks = $property->getValue($processManager);
         assert(is_array($callbacks));

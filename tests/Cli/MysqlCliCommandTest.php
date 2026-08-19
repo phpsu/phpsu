@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PHPSu\Tests\Cli;
 
 use PHPSu\Cli\MysqlCliCommand;
-use PHPSu\Cli\SshCliCommand;
 use PHPSu\Config\ConfigurationLoaderInterface;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Controller;
