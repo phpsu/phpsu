@@ -10,6 +10,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->parallel();
     $rectorConfig->importNames();
     $rectorConfig->importShortClasses();
+    $rectorConfig->removeUnusedImports();
     $rectorConfig->cacheClass(FileCacheStorage::class);
     $rectorConfig->cacheDirectory('./var/cache/rector');
 
@@ -21,7 +22,6 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->sets(
         [
             ...RectorSettings::sets(true),
-            ...RectorSettings::setsTypo3(false),
         ]
     );
 
@@ -30,7 +30,6 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->skip(
         [
             ...RectorSettings::skip(),
-            ...RectorSettings::skipTypo3(),
 
             /**
              * rector should not touch these files

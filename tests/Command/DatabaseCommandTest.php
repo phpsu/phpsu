@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PHPSu\Tests\Command;
 
-use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
 use PHPSu\Command\DatabaseCommand;
 use PHPSu\Config\Compression\Bzip2Compression;
 use PHPSu\Config\Compression\GzipCompression;
@@ -12,8 +11,6 @@ use PHPSu\Config\Database;
 use PHPSu\Config\DatabaseConnectionDetails;
 use PHPSu\Config\SshConfig;
 use PHPSu\ShellCommandBuilder\ShellBuilder;
-use PHPSu\ShellCommandBuilder\ShellCommand;
-use PHPSu\ShellCommandBuilder\ShellInterface;
 use PHPSu\Tests\ControllerTest;
 use PHPUnit\Framework\TestCase;
 use SplTempFileObject;

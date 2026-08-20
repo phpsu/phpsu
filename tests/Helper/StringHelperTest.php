@@ -6,7 +6,6 @@ namespace PHPSu\Tests\Helper;
 
 use PHPSu\Helper\StringHelper;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Output\OutputInterface;
 
 class StringHelperTest extends TestCase
 {

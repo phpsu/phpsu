@@ -5,15 +5,10 @@ declare(strict_types=1);
 namespace PHPSu\Tools;
 
 use PHPSu\Controller;
-use PHPSu\Exceptions\CommandExecutionException;
-use PHPSu\Process\CommandExecutor;
-use PHPSu\ShellCommandBuilder\ShellBuilder;
 use stdClass;
-use Symfony\Component\Process\Exception\ProcessStartFailedException;
 
 use function assert;
 use function is_array;
-use function is_object;
 use function is_string;
 
 /**

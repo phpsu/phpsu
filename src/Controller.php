@@ -17,11 +17,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @internal
  */
-final class Controller implements ControllerInterface
+final readonly class Controller implements ControllerInterface
 {
     public const PHPSU_ROOT_PATH = __DIR__ . '/../';
 
-    private readonly CommandExecutor $executor;
+    private CommandExecutor $executor;
 
     public function __construct(?CommandExecutor $commandExecutor = null)
     {

@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace PHPSu\Helper;
 
 use PHPSu\Controller;
-use PHPSu\Exceptions\EnvironmentException;
 use PHPSu\Tools\EnvironmentUtility;
-
-use function strpos;
 
 /**
  * @internal

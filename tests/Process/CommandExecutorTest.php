@@ -12,8 +12,6 @@ use PHPUnit\Framework\Constraint\IsIdentical;
 use PHPUnit\Framework\Constraint\StringContains;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\Output;
 
 class CommandExecutorTest extends TestCase
 {
@@ -50,9 +48,9 @@ class CommandExecutorTest extends TestCase
         $commandExecutor = new CommandExecutor();
         $realExitCode = $commandExecutor->passthru($command, stdout: $stdoutStream, stderr: $stderrStream);
         rewind($stderrStream);
-        static::assertThat(stream_get_contents($stderrStream), $expectedStderr, 'stderr');
+        self::assertThat(stream_get_contents($stderrStream), $expectedStderr, 'stderr');
         rewind($stdoutStream);
-        static::assertThat(stream_get_contents($stdoutStream), $expectedStdout, 'stdout');
+        self::assertThat(stream_get_contents($stdoutStream), $expectedStdout, 'stdout');
         $this->assertSame($expectedExitCode, $realExitCode, 'exit code should be 0');
     }
 

@@ -106,7 +106,6 @@ final class SshCommand
 
     /**
      * @param string|ShellInterface $value
-     * @return $this
      * @throws ShellBuilderException
      */
     public function addOption(string $option, $value = '', bool $isShortOption = false, bool $escape = true, bool $useAssignOperator = false): self

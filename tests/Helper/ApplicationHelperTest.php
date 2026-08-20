@@ -6,7 +6,6 @@ namespace PHPSu\Tests\Helper;
 
 use ReflectionException;
 use ErrorException;
-use PHPSu\Exceptions\EnvironmentException;
 use PHPSu\Helper\ApplicationHelper;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -48,7 +47,6 @@ class ApplicationHelperTest extends TestCase
     {
         $object = new ApplicationHelper();
         $reflection = (new ReflectionClass($object))->getMethod($method);
-        $reflection->setAccessible(true);
 
         $args = func_get_args();
         array_shift($args);

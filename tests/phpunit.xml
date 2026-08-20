@@ -1,41 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
-    bootstrap="phpunit-bootstrap.php"
-    beStrictAboutTestsThatDoNotTestAnything="true"
-    beStrictAboutOutputDuringTests="true"
-    beStrictAboutChangesToGlobalState="true"
-    enforceTimeLimit="true"
-    executionOrder="default"
-    resolveDependencies="true"
-    timeoutForLargeTests="1"
-    timeoutForMediumTests="1"
-    timeoutForSmallTests="1"
-    colors="true"
-    cacheDirectory="var/.phpunit.cache"
-    testdox="true"
-    beStrictAboutCoverageMetadata="true">
-  <coverage>
-    <report>
-      <clover outputFile="test-results/coverage.xml"/>
-      <html outputDirectory="test-results/report" lowUpperBound="49" highLowerBound="89"/>
-      <text outputFile="test-results/report.txt" showUncoveredFiles="false"/>
-    </report>
-  </coverage>
-  <testsuites>
-    <testsuite name="All">
-      <directory suffix="Test.php">../tests/</directory>
-    </testsuite>
-  </testsuites>
-  <logging>
-    <junit outputFile="test-results/logfile.xml"/>
-    <testdoxHtml outputFile="test-results/testdox.html"/>
-    <testdoxText outputFile="test-results/testdox.txt"/>
-  </logging>
-  <source>
-    <include>
-      <directory suffix=".php">../src/</directory>
-    </include>
-  </source>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" bootstrap="phpunit-bootstrap.php" beStrictAboutTestsThatDoNotTestAnything="true" beStrictAboutOutputDuringTests="true" beStrictAboutChangesToGlobalState="true" enforceTimeLimit="true" executionOrder="default" resolveDependencies="true" timeoutForLargeTests="1" timeoutForMediumTests="1" timeoutForSmallTests="1" colors="true" cacheDirectory="var/.phpunit.cache" testdox="true" beStrictAboutCoverageMetadata="true">
+    <coverage>
+        <report>
+            <clover outputFile="test-results/coverage.xml"/>
+            <html outputDirectory="test-results/report" lowUpperBound="49" highLowerBound="89"/>
+            <text outputFile="test-results/report.txt" showUncoveredFiles="false"/>
+        </report>
+    </coverage>
+    <testsuites>
+        <testsuite name="All">
+            <directory suffix="Test.php">../tests/</directory>
+        </testsuite>
+    </testsuites>
+    <logging>
+        <junit outputFile="test-results/logfile.xml"/>
+        <testdoxHtml outputFile="test-results/testdox.html"/>
+        <testdoxText outputFile="test-results/testdox.txt"/>
+    </logging>
+    <source>
+        <include>
+            <directory suffix=".php">../src/</directory>
+        </include>
+    </source>
 </phpunit>

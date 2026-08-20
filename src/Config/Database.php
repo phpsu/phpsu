@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace PHPSu\Config;
 
-use Exception;
-
 use function array_merge;
 
 /**

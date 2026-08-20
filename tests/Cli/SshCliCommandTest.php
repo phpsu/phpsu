@@ -18,8 +18,6 @@ use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
-use function assert;
-
 class SshCliCommandTest extends TestCase
 {
     public function testSshCliCommandDryRun(): void

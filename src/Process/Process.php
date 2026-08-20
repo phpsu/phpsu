@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace PHPSu\Process;
 
-use Generator;
 use LogicException;
-use PHPSu\Exceptions\CommandExecutionException;
-use PHPSu\Tools\EnvironmentUtility;
 
 /**
  * @internal

@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace PHPSu\Process;
 
 use RuntimeException;
-use PHPSu\ShellCommandBuilder\Definition\Pattern;
-use PHPSu\ShellCommandBuilder\Exception\ShellBuilderException;
 use PHPSu\ShellCommandBuilder\ShellInterface;
-use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
