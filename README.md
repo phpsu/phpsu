@@ -100,6 +100,13 @@ $globalConfig->addAppInstance('local')
 return $globalConfig;
 ````
 
+Instead of (or additionally to) `addSshConnection()` you can include existing ssh config files, read more in [Using existing SSH config files](docs/Configuration/SshConfigFiles.md):
+
+````php
+$globalConfig->addSshConfigFile('ssh/config');
+$globalConfig->addSshConfigFile('https://example.com/ssh_config');
+````
+
 ## CLI Examples
 
 ````bash

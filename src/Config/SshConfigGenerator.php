@@ -39,7 +39,7 @@ final class SshConfigGenerator
      */
     public function findAllPaths(string $source, string $destination, SshConnections $sshConnections): array
     {
-        if ($source === $destination) {
+        if ($source === $destination || $sshConnections->isExternalHost($destination)) {
             return [[]];
         }
 

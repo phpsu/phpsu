@@ -143,4 +143,24 @@ final class SshConfigGeneratorTest extends TestCase
         $sshConfigExpected->{'*'}->ForwardAgent = 'yes';
         $this->assertEquals($sshConfigExpected, $sshConfig);
     }
+
+    public function testConnectionOverExternalHost(): void
+    {
+        $sshConnections = new SshConnections();
+        $sshConnections->add((new SshConnection())->setHost('hostb')
+            ->setUrl('user@host_b')
+            ->setFrom(['bastion']));
+        $sshConnections->addExternalHosts('bastion');
+
+        $sshConfigGenerator = new SshConfigGenerator();
+        $this->assertEquals([[]], $sshConfigGenerator->findAllPaths('local', 'bastion', $sshConnections));
+        $sshConfig = $sshConfigGenerator->generate($sshConnections, [], 'local');
+
+        $sshConfigExpected = new SshConfig();
+        $sshConfigExpected->hostb = new SshConfigHost();
+        $sshConfigExpected->hostb->User = 'user';
+        $sshConfigExpected->hostb->HostName = 'host_b';
+        $sshConfigExpected->hostb->ProxyJump = 'bastion';
+        $this->assertEquals($sshConfigExpected, $sshConfig);
+    }
 }

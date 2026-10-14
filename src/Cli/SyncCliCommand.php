@@ -27,12 +27,13 @@ final class SyncCliCommand extends AbstractCliCommand
             ->addOption('no-db', null, InputOption::VALUE_NONE, 'Do not sync Databases.')
             ->addOption('from', null, InputOption::VALUE_OPTIONAL, 'Only show commands that would be run.', '')
             ->addArgument('source', InputArgument::REQUIRED, 'The Source AppInstance.')
-            ->addArgument('destination', InputArgument::OPTIONAL, 'The Destination AppInstance.', 'local');
+            ->addArgument('destination', InputArgument::OPTIONAL, 'The Destination AppInstance.', 'local')
+            ->addRefreshSshConfigOption();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $configuration = $this->configurationLoader->getConfig();
+        $configuration = $this->getLoadedConfig($input, $output);
         $instances = $configuration->getAppInstanceNames();
         /** @var string $source */
         $source = $input->getArgument('source');

@@ -34,7 +34,8 @@ final class SshCliCommand extends AbstractCliCommand
             ->addOption('dry-run', 'd', InputOption::VALUE_NONE, 'Only show commands that would be run.')
             ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'The Source AppInstance.', 'local')
             ->addArgument('destination', InputArgument::REQUIRED, 'The Destination AppInstance.')
-            ->addArgument('commands', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'Run commands on remote ssh', []);
+            ->addArgument('commands', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'Run commands on remote ssh', [])
+            ->addRefreshSshConfigOption();
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
@@ -81,7 +82,7 @@ final class SshCliCommand extends AbstractCliCommand
 
         return $this->controller->ssh(
             $output,
-            $this->configurationLoader->getConfig(),
+            $this->getLoadedConfig($input, $output),
             (new SshOptions($destination))
                 ->setCurrentHost($currentHost)
                 ->setCommand($builder)

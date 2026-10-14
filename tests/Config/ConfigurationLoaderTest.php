@@ -24,6 +24,7 @@ final class ConfigurationLoaderTest extends TestCase
     {
         $configurationLoader = new ConfigurationLoader();
         $expectedConfig = new GlobalConfig();
+        $expectedConfig->setConfigDirectory((string)realpath(__DIR__ . '/../fixtures'));
         $expectedConfig->addFilesystem('var/storage', 'var/storage');
         $expectedConfig->addAppInstance('production', '', 'testProduction');
         $expectedConfig->addAppInstance('local', '', 'testLocal');
