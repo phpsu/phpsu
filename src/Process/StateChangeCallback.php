@@ -79,9 +79,7 @@ final class StateChangeCallback
 
     private function getSpinner(int $processId): Spinner
     {
-        if (!isset($this->processSpinners[$processId])) {
-            $this->processSpinners[$processId] = new Spinner();
-        }
+        $this->processSpinners[$processId] ??= new Spinner();
 
         return $this->processSpinners[$processId];
     }

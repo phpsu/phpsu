@@ -106,9 +106,7 @@ final class MysqlCliCommand extends AbstractCliCommand
      */
     private function getAppInstancesWithHost(): array
     {
-        if ($this->instances === null) {
-            $this->instances = $this->configurationLoader->getConfig()->getAppInstanceNames();
-        }
+        $this->instances ??= $this->configurationLoader->getConfig()->getAppInstanceNames();
 
         return $this->instances;
     }
