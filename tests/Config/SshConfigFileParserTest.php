@@ -84,6 +84,49 @@ final class SshConfigFileParserTest extends TestCase
         $this->assertCount(6, $result['removed']);
     }
 
+    public function testSanitizeAllowsPlainHostNameAndProxyJump(): void
+    {
+        $content = implode("\n", [
+            'Host hosta',
+            '  HostName a.example.com',
+            '  HostName=%h.example.com',
+            '  HostName "2001:db8::1"',
+            '  HostName b.example.com   ',
+            '  ProxyJump bastion',
+            '  ProxyJump user@bastion:2222,ssh://jump-user@[2001:db8::1]:22',
+            '  proxyjump=NONE',
+        ]);
+        $result = (new SshConfigFileParser())->sanitize($content);
+        $this->assertSame(str_replace("\n", PHP_EOL, $content), $result['content']);
+        $this->assertSame([], $result['removed']);
+    }
+
+    /**
+     * OpenSSH puts the ProxyJump user and the HostName (%h) into the shell command it creates for ProxyJump
+     */
+    public function testSanitizeRemovesShellMetacharactersFromHostNameAndProxyJump(): void
+    {
+        $content = implode("\n", [
+            'Host hosta',
+            '  ProxyJump u$(touch /tmp/pwned)@bastion',
+            '  ProxyJump ssh://u`id`@bastion',
+            '  ProxyJump bastion;id',
+            '  ProxyJump bastion|id',
+            '  ProxyJump bastion,u$(id)@other',
+            '  ProxyJump bastion:22$(id)',
+            '  ProxyJump "u\'id\'@bastion"',
+            '  ProxyJump',
+            '  HostName "x\']$(touch /tmp/pwned)\'"',
+            '  HostName a.example.com;id',
+            '  HostName a b',
+            '  HostName "a.example.com"$(id)',
+            '  User u',
+        ]);
+        $result = (new SshConfigFileParser())->sanitize($content);
+        $this->assertSame(implode(PHP_EOL, ['Host hosta', '  User u']), $result['content']);
+        $this->assertCount(12, $result['removed']);
+    }
+
     public function testExtractHosts(): void
     {
         $content = implode("\n", [

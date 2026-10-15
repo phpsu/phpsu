@@ -26,7 +26,16 @@ final class SshConfigFileParser
     ];
 
     /**
-     * removes all keywords that execute commands.
+     * values of these keywords end up in the shell command ssh creates for ProxyJump, so only plain values are allowed
+     * @var array<string, string>
+     */
+    private const VALIDATED_KEYWORDS = [
+        'hostname' => '/^[A-Za-z0-9._:%-]+$/',
+        'proxyjump' => '/^(?:none|(?:ssh:\/\/)?(?:[A-Za-z0-9._-]+@)?(?:[A-Za-z0-9._-]+|\[[0-9A-Fa-f:.]+\])(?::\d{1,5})?(?:,(?:ssh:\/\/)?(?:[A-Za-z0-9._-]+@)?(?:[A-Za-z0-9._-]+|\[[0-9A-Fa-f:.]+\])(?::\d{1,5})?)*)$/i',
+    ];
+
+    /**
+     * removes all keywords that execute commands and HostName/ProxyJump values containing anything but plain host names.
      * Match blocks containing an exec criteria are removed completely, otherwise their options would apply to all hosts.
      *
      * @return array{content: string, removed: string[]}
@@ -42,7 +51,7 @@ final class SshConfigFileParser
                 $insideRemovedMatchBlock = $keyword === 'match' && preg_match('/(^|[\s=])!?exec([\s=]|$)/i', $this->getArguments($line));
             }
 
-            if ($insideRemovedMatchBlock || in_array($keyword, self::FORBIDDEN_KEYWORDS, true)) {
+            if ($insideRemovedMatchBlock || in_array($keyword, self::FORBIDDEN_KEYWORDS, true) || !$this->isValidValue($keyword, $line)) {
                 $removed[] = trim($line);
                 continue;
             }
@@ -78,6 +87,20 @@ final class SshConfigFileParser
         }
 
         return array_values($hosts);
+    }
+
+    private function isValidValue(string $keyword, string $line): bool
+    {
+        if (!isset(self::VALIDATED_KEYWORDS[$keyword])) {
+            return true;
+        }
+
+        $value = trim($this->getArguments($line));
+        if (preg_match('/^"([^"]*)"$/', $value, $matches)) {
+            $value = $matches[1];
+        }
+
+        return (bool)preg_match(self::VALIDATED_KEYWORDS[$keyword], $value);
     }
 
     private function getKeyword(string $line): string

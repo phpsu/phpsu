@@ -61,6 +61,10 @@ A ssh config file can execute commands on your machine. Therefore phpsu removes 
 `ProxyCommand`, `LocalCommand`, `PermitLocalCommand`, `RemoteCommand`, `KnownHostsCommand`, `PKCS11Provider`, `SecurityKeyProvider`, `XAuthLocation`, `Include`
 and complete `Match` blocks that use `exec`.
 
+ssh runs `ProxyJump` through a shell command that contains the jump user and the `HostName` of the target.
+So `HostName` and `ProxyJump` lines are only kept if they contain plain host names
+(`HostName` letters, digits, `.`, `-`, `_`, `:` and `%` tokens; `ProxyJump` a comma separated list of `[ssh://][user@]host[:port]` or `none`).
+
 The removed lines are listed at the top of the cached file and shown with `-v`.  
 Use `ProxyJump` instead of `ProxyCommand`.  
 Local files are used as they are.
