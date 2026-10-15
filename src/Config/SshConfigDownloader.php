@@ -134,24 +134,17 @@ final readonly class SshConfigDownloader implements SshConfigDownloaderInterface
      * @param string[] $headers
      * @return array{string[], string}
      */
-    private function streamTransport(string $url, array $headers): array
+    public function streamTransport(string $url, array $headers): array
     {
         $stream = @fopen($url, 'rb', false, stream_context_create($this->getStreamContextOptions($headers)));
         if ($stream === false) {
             throw new RuntimeException(sprintf('download of %s failed: %s', $url, error_get_last()['message'] ?? 'unknown error'));
         }
 
-        try {
-            $body = stream_get_contents($stream);
-            $wrapperData = stream_get_meta_data($stream)['wrapper_data'] ?? [];
-        } finally {
-            fclose($stream);
-        }
+        $body = (string)stream_get_contents($stream);
+        $wrapperData = stream_get_meta_data($stream)['wrapper_data'] ?? [];
+        fclose($stream);
 
-        if ($body === false) {
-            throw new RuntimeException(sprintf('download of %s failed: could not read response', $url));
-        }
-
-        return [array_filter(is_array($wrapperData) ? $wrapperData : [], is_string(...)), $body];
+        return [array_values(array_filter(is_array($wrapperData) ? $wrapperData : [], is_string(...))), $body];
     }
 }

@@ -128,6 +128,11 @@ final class SshConfigDownloaderTest extends TestCase
         ], (new SshConfigDownloader(2.5))->getStreamContextOptions(['User-Agent: phpsu']));
     }
 
+    public function testStreamTransport(): void
+    {
+        $this->assertSame([[], "Host a\n"], (new SshConfigDownloader())->streamTransport('data://text/plain;base64,' . base64_encode("Host a\n"), []));
+    }
+
     public function testOnlyHttpsIsAllowed(): void
     {
         $this->expectException(RuntimeException::class);

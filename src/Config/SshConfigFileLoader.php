@@ -159,7 +159,7 @@ final readonly class SshConfigFileLoader
         }
 
         $tempFile = $cacheFile . '.' . getmypid() . '.tmp';
-        if (file_put_contents($tempFile, $header . PHP_EOL . $content . PHP_EOL) === false) {
+        if (@file_put_contents($tempFile, $header . PHP_EOL . $content . PHP_EOL) === false) {
             throw new RuntimeException(sprintf('could not write ssh config cache file %s', $cacheFile));
         }
 

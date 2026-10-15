@@ -332,6 +332,19 @@ final class SshConfigFileLoaderTest extends TestCase
         (new SshConfigFileLoader($this->directory . '/file/cache', $this->createDownloader(["Host remote\n"])))->loadAll($config, new BufferedOutput());
     }
 
+    public function testCacheFileCanNotBeWritten(): void
+    {
+        $loader = new SshConfigFileLoader($this->directory . '/cache', $this->createDownloader(["Host remote\n"]));
+        $cacheFile = $this->directory . '/cache/' . $loader->getCacheFileName('https://example.com/ssh_config');
+        mkdir($cacheFile . '.' . getmypid() . '.tmp', 0777, true);
+        $config = $this->createConfig();
+        $config->addSshConfigFile('https://example.com/ssh_config');
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('could not write ssh config cache file ' . $cacheFile);
+        $loader->loadAll($config, new BufferedOutput());
+    }
+
     public function testStaleCacheWarningContainsDate(): void
     {
         $downloader = $this->createDownloader(["Host first\n", new RuntimeException('failed')]);
