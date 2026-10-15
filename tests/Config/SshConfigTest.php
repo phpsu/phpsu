@@ -66,4 +66,38 @@ Host *
 SSH_CONFIG;
         $this->assertSame($expectedSshConfigString, CommandGeneratorTest::implodeTempFile($file));
     }
+
+    public function testWriteConfigWithIncludes(): void
+    {
+        $sshConfig = new SshConfig();
+        $file = new SplTempFileObject();
+        $sshConfig->setFile($file);
+
+        $sshConfig->{'*'} = new SshConfigHost();
+        $sshConfig->{'*'}->ForwardAgent = 'yes';
+
+        $sshConfig->hosta = new SshConfigHost();
+        $sshConfig->hosta->HostName = 'host_a';
+
+        $sshConfig->addInclude('/project/ssh/config');
+        $sshConfig->addInclude('/project/path with space/config');
+        $this->assertSame(['/project/ssh/config', '/project/path with space/config'], $sshConfig->getIncludes());
+
+        $sshConfig->writeConfig();
+
+        $expectedSshConfigString = <<<'SSH_CONFIG'
+Host hosta
+  HostName host_a
+
+Match all
+  Include /project/ssh/config
+  Include "/project/path with space/config"
+
+Host *
+  ForwardAgent yes
+
+
+SSH_CONFIG;
+        $this->assertSame($expectedSshConfigString, CommandGeneratorTest::implodeTempFile($file));
+    }
 }

@@ -7,6 +7,8 @@ namespace PHPSu\Tests\Cli;
 use PHPSu\Cli\SyncCliCommand;
 use PHPSu\Config\ConfigurationLoaderInterface;
 use PHPSu\Config\GlobalConfig;
+use PHPSu\Config\SshConfigDownloaderInterface;
+use PHPSu\Config\SshConfigFileLoader;
 use PHPSu\Controller;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -58,6 +60,37 @@ class SyncCliCommandTest extends TestCase
         $this->assertStringContainsString("filesystem:storage\n", $output);
         $this->assertStringContainsString("rsync -az -e 'ssh -F '\''.phpsu/config/ssh_config'\''' './var/storage/' 'us:/var/www/var/storage/'\n", $output);
         $this->assertSame(0, $commandTester->getStatusCode());
+    }
+
+    public function testSyncCliCommandLoadsSshConfigFiles(): void
+    {
+        $cacheDirectory = sys_get_temp_dir() . '/phpsu-sync-cli-test-' . getmypid();
+        $config = $this->createConfig();
+        $sshConfigFile = $config->addSshConfigFile('https://example.com/ssh_config');
+        $downloader = $this->createMock(SshConfigDownloaderInterface::class);
+        $downloader->expects($this->once())
+            ->method('download')
+            ->with('https://example.com/ssh_config')
+            ->willReturn("Host remote\n");
+
+        $command = new SyncCliCommand($this->createMockConfigurationLoader($config), new Controller(), new SshConfigFileLoader($cacheDirectory, $downloader));
+        $command->setHelperSet(new HelperSet([
+            new QuestionHelper(),
+        ]));
+
+        try {
+            $commandTester = new CommandTester($command);
+            $commandTester->execute([
+                'source' => 'p',
+                '--dry-run' => true,
+                '--refresh-ssh-config' => true,
+            ]);
+            $this->assertSame(0, $commandTester->getStatusCode());
+            $this->assertSame(['remote'], $sshConfigFile->getHosts());
+            $this->assertStringContainsString('Include ' . $cacheDirectory . '/', (string)file_get_contents('.phpsu/config/ssh_config'));
+        } finally {
+            exec(sprintf('rm -rf %s', escapeshellarg($cacheDirectory)));
+        }
     }
 
     private function createConfig(): GlobalConfig

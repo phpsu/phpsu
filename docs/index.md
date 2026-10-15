@@ -7,6 +7,7 @@
         - [Excluding Filesystem Elements](Configuration/Filesystem.md#Excluding-Filesystem-Elements)
         - [Exclude Pattern](Configuration/Filesystem.md#Exclude-Pattern)
    - [Configure Database](Configuration/Database.md)
+   - [Using existing SSH config files](Configuration/SshConfigFiles.md)
    - [Config for single Server and Local](Configuration/index.md#Writing-the-Configuration)
    - [Config for multi Server Setup](Configuration/index.md#Writing-the-Configuration)
    - [Config for Server with Proxy](Configuration/index.md#Writing-the-Configuration)

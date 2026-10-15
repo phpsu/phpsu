@@ -18,6 +18,11 @@ final class GlobalConfig
 
     private AppInstances $appInstances;
 
+    /** @var SshConfigFile[] */
+    private array $sshConfigFiles = [];
+
+    private ?string $configDirectory = null;
+
     /** @var array<string, string> */
     private array $defaultSshConfig = [
         'ForwardAgent' => 'yes',
@@ -47,6 +52,49 @@ final class GlobalConfig
         $sshConnection->setHost($host)->setUrl($url)->setOptions($options);
         $this->sshConnections->add($sshConnection);
         return $sshConnection;
+    }
+
+    public function addSshConfigFileObject(SshConfigFile $sshConfigFile): GlobalConfig
+    {
+        $this->sshConfigFiles[] = $sshConfigFile;
+        return $this;
+    }
+
+    /**
+     * add an existing ssh config file, all its Hosts can be used like ssh connections.
+     * $source can be a path (relative to the phpsu-config.php, absolute or starting with ~/) or a https url.
+     * Downloaded files are cached in .phpsu/ssh-configs for $ttl seconds and all command executing options are removed.
+     */
+    public function addSshConfigFile(string $source, int $ttl = SshConfigFile::DEFAULT_TTL): SshConfigFile
+    {
+        $sshConfigFile = (new SshConfigFile($source))->setTtl($ttl);
+        $this->sshConfigFiles[] = $sshConfigFile;
+        return $sshConfigFile;
+    }
+
+    /**
+     * @return SshConfigFile[]
+     */
+    public function getSshConfigFiles(): array
+    {
+        return $this->sshConfigFiles;
+    }
+
+    /**
+     * @internal
+     */
+    public function setConfigDirectory(string $configDirectory): GlobalConfig
+    {
+        $this->configDirectory = $configDirectory;
+        return $this;
+    }
+
+    /**
+     * the directory relative ssh config file paths are resolved against
+     */
+    public function getConfigDirectory(): string
+    {
+        return $this->configDirectory ?? (string)getcwd();
     }
 
     public function addAppInstanceObject(AppInstance $appInstance): GlobalConfig

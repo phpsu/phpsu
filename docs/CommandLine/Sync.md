@@ -99,6 +99,15 @@ it can shorten the connections and speed up syncing.
 ``--from`` accepts any sshConnection Host.  
 > !! It is not recommended to install phpsu on a production system.
 
+### The Option --refresh-ssh-config
+
+```bash
+phpsu sync source destination --refresh-ssh-config
+```
+
+Downloads all [ssh config files](../Configuration/SshConfigFiles.md) added via url again, ignoring the cache.  
+The option is available for `sync`, `ssh` and `mysql`.
+
 
 ## Examples
 

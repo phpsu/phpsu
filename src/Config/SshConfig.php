@@ -14,11 +14,34 @@ final class SshConfig
     /** @var SshConfigHost[] */
     private array $hosts = [];
 
+    /** @var string[] */
+    private array $includes = [];
+
     private SplFileObject $file;
 
     public static function fromGlobal(GlobalConfig $global, string $currentHost): SshConfig
     {
-        return (new SshConfigGenerator())->generate($global->getSshConnections(), $global->getDefaultSshConfig(), $currentHost);
+        $sshConfig = (new SshConfigGenerator())->generate($global->getSshConnections(), $global->getDefaultSshConfig(), $currentHost);
+        foreach ($global->getSshConfigFiles() as $sshConfigFile) {
+            if ($sshConfigFile->getPath() !== null) {
+                $sshConfig->addInclude($sshConfigFile->getPath());
+            }
+        }
+
+        return $sshConfig;
+    }
+
+    public function addInclude(string $path): void
+    {
+        $this->includes[] = $path;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getIncludes(): array
+    {
+        return $this->includes;
     }
 
     public function __isset(string $name): bool
@@ -55,18 +78,44 @@ final class SshConfig
         $this->file->fwrite($this->toFileString());
     }
 
+    /**
+     * ssh uses the first obtained value, so the order is: SshConnections, included ssh config files, default config (Host *)
+     */
     private function toFileString(): string
     {
+        $hosts = $this->hosts;
+        $defaultHost = $hosts['*'] ?? null;
+        unset($hosts['*']);
+
         $result = '';
-        foreach ($this->hosts as $host => $config) {
-            $result .= 'Host ' . $host . PHP_EOL;
-            foreach ($config->getConfig() as $key => $value) {
-                $result .= '  ' . $key . ' ' . $value . PHP_EOL;
+        foreach ($hosts as $host => $config) {
+            $result .= $this->hostToString((string)$host, $config);
+        }
+
+        if ($this->includes !== []) {
+            // Match all ends the previous Host block, otherwise the Includes would only apply to that Host
+            $result .= 'Match all' . PHP_EOL;
+            foreach ($this->includes as $include) {
+                $result .= '  Include ' . (preg_match('/\s/', $include) ? '"' . $include . '"' : $include) . PHP_EOL;
             }
 
             $result .= PHP_EOL;
         }
 
+        if ($defaultHost instanceof SshConfigHost) {
+            $result .= $this->hostToString('*', $defaultHost);
+        }
+
         return $result;
+    }
+
+    private function hostToString(string $host, SshConfigHost $config): string
+    {
+        $result = 'Host ' . $host . PHP_EOL;
+        foreach ($config->getConfig() as $key => $value) {
+            $result .= '  ' . $key . ' ' . $value . PHP_EOL;
+        }
+
+        return $result . PHP_EOL;
     }
 }
