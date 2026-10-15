@@ -56,14 +56,25 @@ Hosts with wildcards (eg. `Host *.example.com`) still work within ssh, but phpsu
 
 ### Security
 
-A ssh config file can execute commands on your machine. Therefore phpsu removes these options from downloaded files:
+A ssh config file can execute commands on your machine (eg. `ProxyCommand`, `LocalCommand`, `Match exec`).
+Therefore phpsu only keeps an allowlist of options from downloaded files and writes every kept line again,
+so ssh reads exactly what phpsu checked (quoted or escaped keywords like `"ProxyCommand"` can not slip through):
 
-`ProxyCommand`, `LocalCommand`, `PermitLocalCommand`, `RemoteCommand`, `KnownHostsCommand`, `PKCS11Provider`, `SecurityKeyProvider`, `XAuthLocation`, `Include`
-and complete `Match` blocks that use `exec`.
+`Host`, `Match` (only with `all`, `canonical`, `final`, `host`, `originalhost`, `user`, `localuser`, `localnetwork`, `tagged`),
+`HostName`, `User`, `Port`, `ProxyJump`, `IdentityFile`, `IdentitiesOnly`, `IdentityAgent`, `CertificateFile`, `AddKeysToAgent`, `ForwardAgent`,
+`PreferredAuthentications`, `PubkeyAuthentication`, `PasswordAuthentication`, `KbdInteractiveAuthentication`,
+`PubkeyAcceptedAlgorithms`, `PubkeyAcceptedKeyTypes`, `HostKeyAlgorithms`, `HostKeyAlias`, `KexAlgorithms`, `Ciphers`, `MACs`,
+`StrictHostKeyChecking`, `UserKnownHostsFile`, `GlobalKnownHostsFile`, `CheckHostIP`, `HashKnownHosts`, `UpdateHostKeys`, `VerifyHostKeyDNS`,
+`ConnectTimeout`, `ConnectionAttempts`, `ServerAliveInterval`, `ServerAliveCountMax`, `TCPKeepAlive`, `Compression`, `AddressFamily`, `BatchMode`, `LogLevel`,
+`ControlMaster`, `ControlPath`, `ControlPersist`,
+`CanonicalizeHostname`, `CanonicalDomains`, `CanonicalizeFallbackLocal`, `CanonicalizeMaxDots`, `CanonicalizePermittedCNAMEs`.
+
+Everything else is removed, `Match` blocks with `exec` or unknown criteria are removed completely.
+Values containing quotes, backslashes or control characters are removed as well.
 
 ssh runs `ProxyJump` through a shell command that contains the jump user and the `HostName` of the target.
-So `HostName` and `ProxyJump` lines are only kept if they contain plain host names
-(`HostName` letters, digits, `.`, `-`, `_`, `:` and `%` tokens; `ProxyJump` a comma separated list of `[ssh://][user@]host[:port]` or `none`).
+So `HostName`, `Port` and `ProxyJump` lines are only kept if they contain plain values
+(`HostName` letters, digits, `.`, `-`, `_`, `:` and `%` tokens; `Port` digits; `ProxyJump` a comma separated list of `[ssh://][user@]host[:port]` or `none`).
 
 The removed lines are listed at the top of the cached file and shown with `-v`.  
 Use `ProxyJump` instead of `ProxyCommand`.  

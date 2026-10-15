@@ -10,19 +10,58 @@ namespace PHPSu\Config;
 final class SshConfigFileParser
 {
     /**
-     * keywords that execute local commands, load code or include further files
-     * @var string[]
+     * the only keywords kept in downloaded ssh config files (lowercase => written as)
+     * everything that executes commands, loads code, includes files, forwards ports or sends local data is missing on purpose
+     * @var array<string, string>
      */
-    private const FORBIDDEN_KEYWORDS = [
-        'include',
-        'knownhostscommand',
-        'localcommand',
-        'permitlocalcommand',
-        'pkcs11provider',
-        'proxycommand',
-        'remotecommand',
-        'securitykeyprovider',
-        'xauthlocation',
+    private const ALLOWED_KEYWORDS = [
+        'host' => 'Host',
+        'match' => 'Match',
+        'hostname' => 'HostName',
+        'user' => 'User',
+        'port' => 'Port',
+        'proxyjump' => 'ProxyJump',
+        'identityfile' => 'IdentityFile',
+        'identitiesonly' => 'IdentitiesOnly',
+        'identityagent' => 'IdentityAgent',
+        'certificatefile' => 'CertificateFile',
+        'addkeystoagent' => 'AddKeysToAgent',
+        'forwardagent' => 'ForwardAgent',
+        'preferredauthentications' => 'PreferredAuthentications',
+        'pubkeyauthentication' => 'PubkeyAuthentication',
+        'passwordauthentication' => 'PasswordAuthentication',
+        'kbdinteractiveauthentication' => 'KbdInteractiveAuthentication',
+        'pubkeyacceptedalgorithms' => 'PubkeyAcceptedAlgorithms',
+        'pubkeyacceptedkeytypes' => 'PubkeyAcceptedKeyTypes',
+        'hostkeyalgorithms' => 'HostKeyAlgorithms',
+        'hostkeyalias' => 'HostKeyAlias',
+        'kexalgorithms' => 'KexAlgorithms',
+        'ciphers' => 'Ciphers',
+        'macs' => 'MACs',
+        'stricthostkeychecking' => 'StrictHostKeyChecking',
+        'userknownhostsfile' => 'UserKnownHostsFile',
+        'globalknownhostsfile' => 'GlobalKnownHostsFile',
+        'checkhostip' => 'CheckHostIP',
+        'hashknownhosts' => 'HashKnownHosts',
+        'updatehostkeys' => 'UpdateHostKeys',
+        'verifyhostkeydns' => 'VerifyHostKeyDNS',
+        'connecttimeout' => 'ConnectTimeout',
+        'connectionattempts' => 'ConnectionAttempts',
+        'serveraliveinterval' => 'ServerAliveInterval',
+        'serveralivecountmax' => 'ServerAliveCountMax',
+        'tcpkeepalive' => 'TCPKeepAlive',
+        'compression' => 'Compression',
+        'addressfamily' => 'AddressFamily',
+        'batchmode' => 'BatchMode',
+        'loglevel' => 'LogLevel',
+        'controlmaster' => 'ControlMaster',
+        'controlpath' => 'ControlPath',
+        'controlpersist' => 'ControlPersist',
+        'canonicalizehostname' => 'CanonicalizeHostname',
+        'canonicaldomains' => 'CanonicalDomains',
+        'canonicalizefallbacklocal' => 'CanonicalizeFallbackLocal',
+        'canonicalizemaxdots' => 'CanonicalizeMaxDots',
+        'canonicalizepermittedcnames' => 'CanonicalizePermittedCNAMEs',
     ];
 
     /**
@@ -31,12 +70,30 @@ final class SshConfigFileParser
      */
     private const VALIDATED_KEYWORDS = [
         'hostname' => '/^[A-Za-z0-9._:%-]+$/',
+        'port' => '/^\d{1,5}$/',
         'proxyjump' => '/^(?:none|(?:ssh:\/\/)?(?:[A-Za-z0-9._-]+@)?(?:[A-Za-z0-9._-]+|\[[0-9A-Fa-f:.]+\])(?::\d{1,5})?(?:,(?:ssh:\/\/)?(?:[A-Za-z0-9._-]+@)?(?:[A-Za-z0-9._-]+|\[[0-9A-Fa-f:.]+\])(?::\d{1,5})?)*)$/i',
     ];
 
     /**
-     * removes all keywords that execute commands and HostName/ProxyJump values containing anything but plain host names.
-     * Match blocks containing an exec criteria are removed completely, otherwise their options would apply to all hosts.
+     * Match criteria => whether they take an argument (exec and everything unknown is not allowed)
+     * @var array<string, bool>
+     */
+    private const ALLOWED_MATCH_CRITERIA = [
+        'all' => false,
+        'canonical' => false,
+        'final' => false,
+        'host' => true,
+        'originalhost' => true,
+        'user' => true,
+        'localuser' => true,
+        'localnetwork' => true,
+        'tagged' => true,
+    ];
+
+    /**
+     * Only keeps allowed keywords with valid values and writes them again from the parsed tokens,
+     * so ssh reads exactly what was validated (no matter how the original line was quoted or escaped).
+     * Match blocks with exec or unknown criteria are removed completely, otherwise their options would apply to all hosts.
      *
      * @return array{content: string, removed: string[]}
      */
@@ -46,17 +103,25 @@ final class SshConfigFileParser
         $removed = [];
         $insideRemovedMatchBlock = false;
         foreach (preg_split('/\R/', $content) ?: [] as $line) {
-            $keyword = $this->getKeyword($line);
-            if ($keyword === 'host' || $keyword === 'match') {
-                $insideRemovedMatchBlock = $keyword === 'match' && preg_match('/(^|[\s=])!?exec([\s=]|$)/i', $this->getArguments($line));
+            $tokens = $this->tokenize($line);
+            if ($tokens === []) {
+                $result[] = '';
+                continue;
             }
 
-            if ($insideRemovedMatchBlock || in_array($keyword, self::FORBIDDEN_KEYWORDS, true) || !$this->isValidValue($keyword, $line)) {
+            $keyword = strtolower($tokens[0] ?? '');
+            $arguments = array_slice($tokens ?? [], 1);
+            if ($keyword === 'host' || $keyword === 'match') {
+                $insideRemovedMatchBlock = $keyword === 'match' && !$this->isValidMatch($arguments);
+            }
+
+            if ($tokens === null || $insideRemovedMatchBlock || !$this->isValid($keyword, $arguments)) {
                 $removed[] = trim($line);
                 continue;
             }
 
-            $result[] = $line;
+            $indent = $keyword === 'host' || $keyword === 'match' ? '' : '  ';
+            $result[] = $indent . self::ALLOWED_KEYWORDS[$keyword] . ' ' . implode(' ', array_map($this->quote(...), $arguments));
         }
 
         return ['content' => implode(PHP_EOL, $result), 'removed' => $removed];
@@ -71,13 +136,12 @@ final class SshConfigFileParser
     {
         $hosts = [];
         foreach (preg_split('/\R/', $content) ?: [] as $line) {
-            if ($this->getKeyword($line) !== 'host') {
+            $tokens = $this->tokenize($line) ?? [];
+            if (strtolower($tokens[0] ?? '') !== 'host') {
                 continue;
             }
 
-            preg_match_all('/"([^"]*)"|(\S+)/', $this->getArguments($line), $matches, PREG_SET_ORDER);
-            foreach ($matches as $match) {
-                $pattern = $match[2] ?? $match[1] ?? '';
+            foreach (array_slice($tokens, 1) as $pattern) {
                 if ($pattern === '' || strpbrk($pattern, '*?!') !== false) {
                     continue;
                 }
@@ -89,31 +153,127 @@ final class SshConfigFileParser
         return array_values($hosts);
     }
 
-    private function isValidValue(string $keyword, string $line): bool
+    /**
+     * splits a line like OpenSSH does: the keyword may be double quoted and ends at whitespace or a single "=",
+     * the arguments support single and double quotes, backslash escapes and # comments.
+     *
+     * @return null|string[] null if the quotes are invalid, an empty array for empty lines and comments
+     */
+    public function tokenize(string $line): ?array
     {
-        if (!isset(self::VALIDATED_KEYWORDS[$keyword])) {
-            return true;
+        $length = strlen($line);
+        $position = strspn($line, " \t\f\r\n");
+        if ($position >= $length || $line[$position] === '#') {
+            return [];
         }
 
-        $value = trim($this->getArguments($line));
-        if (preg_match('/^"([^"]*)"$/', $value, $matches)) {
-            $value = $matches[1];
+        if ($line[$position] === '"') {
+            $end = strpos($line, '"', $position + 1);
+            if ($end === false) {
+                return null;
+            }
+
+            $keyword = substr($line, $position + 1, $end - $position - 1);
+            $position = $end + 1;
+        } else {
+            $keywordLength = strcspn($line, " \t\f\r\n=", $position);
+            $keyword = substr($line, $position, $keywordLength);
+            $position += $keywordLength;
         }
 
-        return (bool)preg_match(self::VALIDATED_KEYWORDS[$keyword], $value);
+        $position += strspn($line, " \t\f\r\n", $position);
+        if ($position < $length && $line[$position] === '=') {
+            $position++;
+        }
+
+        $tokens = [$keyword];
+        while (true) {
+            $position += strspn($line, " \t\f\r\n", $position);
+            if ($position >= $length || $line[$position] === '#') {
+                break;
+            }
+
+            $argument = '';
+            $quote = null;
+            for (; $position < $length; $position++) {
+                $char = $line[$position];
+                $next = $line[$position + 1] ?? '';
+                if ($char === '\\' && (in_array($next, ["'", '"', '\\'], true) || ($quote === null && $next === ' '))) {
+                    $argument .= $next;
+                    $position++;
+                } elseif ($quote === null && str_contains(" \t\f\r\n", $char)) {
+                    break;
+                } elseif ($quote === null && ($char === '"' || $char === "'")) {
+                    $quote = $char;
+                } elseif ($quote === $char) {
+                    $quote = null;
+                } else {
+                    $argument .= $char;
+                }
+            }
+
+            if ($quote !== null) {
+                return null;
+            }
+
+            $tokens[] = $argument;
+        }
+
+        return $keyword === '' ? null : $tokens;
     }
 
-    private function getKeyword(string $line): string
+    /**
+     * @param string[] $arguments
+     */
+    private function isValid(string $keyword, array $arguments): bool
     {
-        if (!preg_match('/^\s*([A-Za-z0-9]+)/', $line, $matches)) {
-            return '';
+        if (!isset(self::ALLOWED_KEYWORDS[$keyword]) || $arguments === []) {
+            return false;
         }
 
-        return strtolower($matches[1]);
+        foreach ($arguments as $argument) {
+            // quotes, backslashes and control characters can not be written back safely
+            if (preg_match('/["\\\\\x00-\x1f\x7f]/', $argument)) {
+                return false;
+            }
+        }
+
+        if (isset(self::VALIDATED_KEYWORDS[$keyword])) {
+            return count($arguments) === 1 && preg_match(self::VALIDATED_KEYWORDS[$keyword], $arguments[0]);
+        }
+
+        return true;
     }
 
-    private function getArguments(string $line): string
+    /**
+     * @param string[] $arguments
+     */
+    private function isValidMatch(array $arguments): bool
     {
-        return (string)preg_replace('/^\s*[A-Za-z0-9]+\s*=?\s*/', '', $line, 1);
+        if ($arguments === []) {
+            return false;
+        }
+
+        while ($arguments !== []) {
+            $criteria = strtolower(ltrim(array_shift($arguments), '!'));
+            if (!isset(self::ALLOWED_MATCH_CRITERIA[$criteria])) {
+                return false;
+            }
+
+            if (self::ALLOWED_MATCH_CRITERIA[$criteria] && array_shift($arguments) === null) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function quote(string $argument): string
+    {
+        if (preg_match('/^[A-Za-z0-9._%:@\/+,~*?!\[\]-]+$/', $argument)) {
+            return $argument;
+        }
+
+        return '"' . $argument . '"';
     }
 }
