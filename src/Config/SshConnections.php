@@ -17,6 +17,9 @@ final class SshConnections
     /** @var ?array<string, array<string, SshConnection>> */
     private ?array $compiled = null;
 
+    /** @var array<string, string> hosts that are defined in included ssh config files */
+    private array $externalHosts = [];
+
 
     public function addConnections(SshConnection ...$sshConnections): void
     {
@@ -30,6 +33,22 @@ final class SshConnections
     {
         $this->connections[] = $sshConnection;
         $this->compiled = null;
+    }
+
+    public function addExternalHosts(string ...$hosts): void
+    {
+        foreach ($hosts as $host) {
+            $this->externalHosts[$host] = $host;
+        }
+    }
+
+    /**
+     * true if the host is only defined in an included ssh config file (SshConnections take precedence)
+     * @throws Exception
+     */
+    public function isExternalHost(string $host): bool
+    {
+        return isset($this->externalHosts[$host]) && !isset($this->getCompiled()[$host]);
     }
 
     public function compile(): void
@@ -97,6 +116,10 @@ final class SshConnections
     {
         $compiled = $this->getCompiled();
         if (!isset($compiled[$to])) {
+            if (isset($this->externalHosts[$to])) {
+                return [];
+            }
+
             throw new Exception(sprintf('Host %s not found in SshConnections', $to));
         }
 

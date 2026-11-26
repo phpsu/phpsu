@@ -33,7 +33,8 @@ final class MysqlCliCommand extends AbstractCliCommand
             ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'The Source AppInstance.', 'local')
         ->addOption('database', 'b', InputArgument::OPTIONAL, 'Which Database to connect to')
         ->addArgument('instance', InputArgument::REQUIRED, 'Which AppInstance to connect to')
-        ->addArgument('mysqlcommand', InputArgument::OPTIONAL, 'Execute a mysql command instead of connecting to it');
+        ->addArgument('mysqlcommand', InputArgument::OPTIONAL, 'Execute a mysql command instead of connecting to it')
+        ->addRefreshSshConfigOption();
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
@@ -88,7 +89,7 @@ final class MysqlCliCommand extends AbstractCliCommand
         assert(is_string($instance) && is_string($mysqlCommand));
         return $this->controller->mysql(
             $output,
-            $this->configurationLoader->getConfig(),
+            $this->getLoadedConfig($input, $output),
             (new MysqlOptions())
                 ->setAppInstance($instance)
                 ->setCurrentHost($currentHost)
@@ -105,9 +106,7 @@ final class MysqlCliCommand extends AbstractCliCommand
      */
     private function getAppInstancesWithHost(): array
     {
-        if ($this->instances === null) {
-            $this->instances = $this->configurationLoader->getConfig()->getAppInstanceNames();
-        }
+        $this->instances ??= $this->configurationLoader->getConfig()->getAppInstanceNames();
 
         return $this->instances;
     }

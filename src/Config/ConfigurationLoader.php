@@ -26,6 +26,7 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
                 throw new RuntimeException(sprintf('Invalid config file %s (it needs to return a ' . GlobalConfig::class . ' class)', $file));
             }
 
+            $config->setConfigDirectory(dirname($file));
             $this->config = $config;
         }
 
