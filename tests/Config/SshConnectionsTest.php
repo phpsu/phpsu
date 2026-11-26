@@ -31,4 +31,21 @@ final class SshConnectionsTest extends TestCase
         $this->expectExceptionMessage('Host test not found in SshConnections');
         $sshConnections->getPossibilities('test');
     }
+
+    public function testExternalHosts(): void
+    {
+        $sshConnections = new SshConnections();
+        $sshConnections->add($connection = (new SshConnection())->setHost('hosta')->setUrl('user@host_a'));
+        $sshConnections->addExternalHosts('hosta', 'hostb');
+
+        $this->assertFalse($sshConnections->isExternalHost('hosta'), 'SshConnections take precedence');
+        $this->assertTrue($sshConnections->isExternalHost('hostb'));
+        $this->assertFalse($sshConnections->isExternalHost('hostc'));
+        $this->assertSame(['' => $connection], $sshConnections->getPossibilities('hosta'));
+        $this->assertSame([], $sshConnections->getPossibilities('hostb'));
+        $this->assertSame(['hosta'], $sshConnections->getAllHosts());
+
+        $this->expectExceptionMessage('Host hostc not found in SshConnections');
+        $sshConnections->getPossibilities('hostc');
+    }
 }

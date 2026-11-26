@@ -13,9 +13,12 @@ use PHPSu\Config\DatabaseConnectionDetails;
 use PHPSu\Config\FileSystem;
 use PHPSu\Config\GlobalConfig;
 use PHPSu\Config\SshConfig;
+use PHPSu\Config\SshConfigFile;
 use PHPSu\Config\SshConfigHost;
 use PHPSu\Config\SshConnection;
 use PHPUnit\Framework\TestCase;
+use SplTempFileObject;
+use PHPSu\Tests\Command\CommandGeneratorTest;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class GlobalConfigTest extends TestCase
@@ -119,5 +122,39 @@ final class GlobalConfigTest extends TestCase
         assert(is_string($cwd));
         $global->addAppInstance('local', 'local', $cwd);
         return $global;
+    }
+
+    public function testAddSshConfigFile(): void
+    {
+        $global = new GlobalConfig();
+        $local = $global->addSshConfigFile('ssh/config');
+        $url = $global->addSshConfigFile('https://example.com/ssh_config', 60);
+        $object = new SshConfigFile('~/.ssh/config');
+        $this->assertSame($global, $global->addSshConfigFileObject($object));
+
+        $this->assertSame([$local, $url, $object], $global->getSshConfigFiles());
+        $this->assertSame(600, $local->getTtl());
+        $this->assertSame(60, $url->getTtl());
+        $this->assertSame(getcwd(), $global->getConfigDirectory());
+        $this->assertSame('/project', $global->setConfigDirectory('/project')->getConfigDirectory());
+    }
+
+    public function testSshConfigWithIncludesFromGlobalConfig(): void
+    {
+        $global = new GlobalConfig();
+        $global->addSshConfigFile('ssh/config')->setLoaded('/project/ssh/config', ['hosta']);
+        $global->addSshConfigFile('https://example.com/ssh_config')->setLoaded(null, []);
+        $global->addSshConfigFile('https://example.com/other')->setLoaded('/cache/other.conf', ['remote']);
+
+        $sshConfig = SshConfig::fromGlobal($global, 'local');
+        $this->assertSame(['/project/ssh/config', '/cache/other.conf'], $sshConfig->getIncludes());
+
+        $file = new SplTempFileObject();
+        $sshConfig->setFile($file);
+        $sshConfig->writeConfig();
+
+        $content = CommandGeneratorTest::implodeTempFile($file);
+        $this->assertStringContainsString("Match all\n  Include /project/ssh/config\n", $content);
+        $this->assertStringContainsString("Match originalhost remote\n  Include /cache/other.conf\n", $content);
     }
 }

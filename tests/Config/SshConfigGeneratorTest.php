@@ -143,4 +143,40 @@ final class SshConfigGeneratorTest extends TestCase
         $sshConfigExpected->{'*'}->ForwardAgent = 'yes';
         $this->assertEquals($sshConfigExpected, $sshConfig);
     }
+
+    public function testConnectionOverExternalHost(): void
+    {
+        $sshConnections = new SshConnections();
+        $sshConnections->add((new SshConnection())->setHost('hostb')
+            ->setUrl('user@host_b')
+            ->setFrom(['bastion']));
+        $sshConnections->addExternalHosts('bastion');
+
+        $sshConfigGenerator = new SshConfigGenerator();
+        $this->assertEquals([[]], $sshConfigGenerator->findAllPaths('local', 'bastion', $sshConnections));
+        $sshConfig = $sshConfigGenerator->generate($sshConnections, [], 'local');
+
+        $sshConfigExpected = new SshConfig();
+        $sshConfigExpected->hostb = new SshConfigHost();
+        $sshConfigExpected->hostb->User = 'user';
+        $sshConfigExpected->hostb->HostName = 'host_b';
+        $sshConfigExpected->hostb->ProxyJump = 'bastion';
+        $this->assertEquals($sshConfigExpected, $sshConfig);
+    }
+
+    public function testFindShortestPathPrefersTheShortestPath(): void
+    {
+        $sshConnections = new SshConnections();
+        // the longer path is found last
+        $sshConnections->addConnections(...[
+            $toA = (new SshConnection())->setHost('hosta')->setFrom([]),
+            $toB = (new SshConnection())->setHost('hostb')->setFrom(['hosta']),
+            $toCFromA = (new SshConnection())->setHost('hostc')->setFrom(['hosta']),
+            $toCFromB = (new SshConnection())->setHost('hostc')->setFrom(['hostb']),
+        ]);
+
+        $sshConfigGenerator = new SshConfigGenerator();
+        $this->assertEquals([[$toA, $toCFromA], [$toA, $toB, $toCFromB]], $sshConfigGenerator->findAllPaths('local', 'hostc', $sshConnections));
+        $this->assertEquals([$toA, $toCFromA], $sshConfigGenerator->findShortestPath('local', 'hostc', $sshConnections));
+    }
 }

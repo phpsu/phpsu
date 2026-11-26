@@ -343,6 +343,52 @@ SSH_CONFIG;
         ], $result);
     }
 
+    public function testSshToExternalHost(): void
+    {
+        $globalConfig = $this->getGlobalConfig();
+        $globalConfig->addAppInstance('external', 'externalServer', '/var/www/external');
+        $globalConfig->addSshConfigFile('/project/ssh_config')->setLoaded('/project/ssh_config', ['externalServer']);
+        $globalConfig->getSshConnections()->addExternalHosts('externalServer');
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile($file = new SplTempFileObject());
+
+        $result = $commandGenerator->sshCommand('external', '', null);
+        $this->assertSame("ssh -F 'php://temp' 'externalServer' -t 'cd '\''/var/www/external'\'' ; bash --login'", (string)$result);
+        $expectedSshConfigString = <<<'SSH_CONFIG'
+Host serverEu
+  HostName server.eu
+  User user
+
+Host stagingServer
+  HostName stagingServer.server.eu
+  User staging
+
+Match all
+  Include /project/ssh_config
+
+Host *
+  ForwardAgent yes
+  ServerAliveInterval 120
+
+
+SSH_CONFIG;
+        $this->assertSame($expectedSshConfigString, self::implodeTempFile($file));
+    }
+
+    public function testSyncFromExternalHostIsValid(): void
+    {
+        $globalConfig = $this->getGlobalConfig();
+        $globalConfig->getSshConnections()->addExternalHosts('externalServer');
+        $commandGenerator = new CommandGenerator($globalConfig);
+        $commandGenerator->setFile(new SplTempFileObject());
+
+        $result = $commandGenerator->syncCommands((new SyncOptions('production'))->setDestination('staging')->setCurrentHost('externalServer')->setNoDatabases(true));
+        $this->assertSame([
+            'filesystem:fileadmin' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/fileadmin2/' 'stagingServer:/var/www/staging/fileadmin/'",
+            'filesystem:uploads' => "rsync -az -e 'ssh -F '\''php://temp'\''' 'serverEu:/var/www/production/uploads/' 'stagingServer:/var/www/staging/uploads/'",
+        ], $result);
+    }
+
     public static function implodeTempFile(SplFileObject $file): string
     {
         /** @var string[] $array */
