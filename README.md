@@ -55,8 +55,8 @@ you can execute any phpsu command via something like this:
 
 The following versions of PHP are supported by this version.
 
-* PHP `8.1`, `8.2`, `8.3`
-* Compatible and continuously tested with symfony `5`, `6`, `7`
+* PHP `8.2`, `8.3`, `8.4`, `8.5`, `8.6`
+* Compatible and continuously tested with symfony `6`, `7`
 * for older versions go to [version 3.1.0](https://github.com/phpsu/phpsu/tree/3.1.0)
 * for older versions go to [version 2.3.0](https://github.com/phpsu/phpsu/tree/2.3.0)
 * or [version 1.1.0](https://github.com/phpsu/phpsu/tree/1.1.0)
