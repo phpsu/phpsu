@@ -24,7 +24,7 @@
   ],
   "homepage": "https://phpsu.de/",
   "require": {
-    "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
+    "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0 || ~8.6.0",
     "ext-json": "*",
     "composer-runtime-api": "^2.0.0",
     "phpsu/shellcommandbuilder": "^2.0",

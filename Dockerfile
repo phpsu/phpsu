@@ -1,4 +1,4 @@
-FROM php:8.5-alpine3.23
+FROM php:8.6-alpine3.23
 
 RUN apk add mariadb-client openssh rsync sshpass bash
 
